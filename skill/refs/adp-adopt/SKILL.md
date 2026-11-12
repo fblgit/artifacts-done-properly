@@ -20,7 +20,7 @@ Why: a page without part ids has no stable anchors, and its history lives only i
 
 ## Step B: move to the multi-file layout
 
-1. Start a reference project with `ADP new starter REF --catalog CATALOG` (rename its `.txt` files, see `adp-new`) and copy its shell, `adp.js` and `content.js` structure: a thin `index.html`, `adp.js`, `content.js`, `styles/*`, `parts/*`.
+1. Start a reference project with `ADP new starter REF --catalog CATALOG` and copy its shell, `adp.js` and `content.js` structure: a thin `index.html`, `adp.js`, `content.js`, `styles/*`, `parts/*`.
 2. Move the page's own copy and views into those files; use `ADP new starter DIR --content FILE` to build views from a content file, then `--data` for records.
 3. Prove parity: render old and new in a headless browser and compare every element's computed style and box in every view and state, at the widths and themes in use. No parity proof, no publish.
 4. `ADP check DIR`, publish with `ADP files DIR`, then `ADP export` and `ADP record` (road `adp-edit`).
