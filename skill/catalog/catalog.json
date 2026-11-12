@@ -14312,6 +14312,101 @@
      "--f-display (optional)"
     ]
    }
+  },
+  {
+   "kind": "component",
+   "group": "Patterns",
+   "version": "0.1.0",
+   "status": "new",
+   "id": "pattern.mindmap",
+   "name": "Mind map",
+   "summary": "A mind-map you make and arrange with drag and drop: a tidy tree left to right, add, edit and delete nodes, drop on a node or on a line between siblings, and a Move to menu that does every drop from the keyboard.",
+   "about": "A mind-map you make and arrange with drag and drop: a tidy tree from left to right, the root at the left, pills for the nodes, smooth curves for the connectors. The component holds no storage: data goes in, every user change comes out whole through onChange, and the page saves it.",
+   "tags": [
+    "mind map",
+    "tree",
+    "drag and drop",
+    "outline",
+    "hierarchy",
+    "move",
+    "keyboard",
+    "pointer events"
+   ],
+   "files": [
+    {
+     "path": "kit/patterns/mindmap.js",
+     "role": "script",
+     "sha256": "229d6fbd5ede3a6295a068b3fd93d9aa5a2bb20214a1f8d2a6147e3d7c70b59c",
+     "bytes": 30405
+    },
+    {
+     "path": "kit/patterns/mindmap.css",
+     "role": "style",
+     "sha256": "c6313d9d4c69b52af027a878c15307b8f4c010156744f205f974a603d3fa4a90",
+     "bytes": 5825
+    },
+    {
+     "path": "kit/samples/mindmap.json",
+     "role": "sample",
+     "sha256": "bf991ed4d3a274b9850e3e4b9a573bb39077a12ba97f0d0f63d51a87e7f02d25",
+     "bytes": 1550
+    }
+   ],
+   "requires": [
+    "kit.dom"
+   ],
+   "globals": [],
+   "provides": [
+    "Kit.mindmap.mount",
+    "update(next)",
+    "destroy()"
+   ],
+   "needs": {
+    "config": [
+     [
+      "Kit.mindmap.mount(root, opts)",
+      "data {nodes [{id, text, parent, order, collapsed}]}, onChange(next) with the whole next data, readOnly, label; returns {update(next), destroy()}"
+     ]
+    ],
+    "db": {
+     "reads": [],
+     "writes": []
+    },
+    "tokens": [
+     "--bg",
+     "--panel",
+     "--sunk",
+     "--ink",
+     "--ink-2",
+     "--ink-3",
+     "--rule",
+     "--rule-2",
+     "--accent",
+     "--accent-ink",
+     "--danger",
+     "--f-ui",
+     "--accent-soft (optional)",
+     "--shadow (optional)",
+     "--r (optional)"
+    ]
+   },
+   "preview": {
+    "render": "pattern.mindmap",
+    "samples": [
+     "kit/samples/mindmap.json"
+    ]
+   },
+   "source": [
+    {
+     "board": "Catalog, 2026-11-13",
+     "file": "viz.buckets (kit/viz/buckets.js)",
+     "what": "the pointer drag with a drop line, and a Move to menu that does the same without a drag"
+    }
+   ],
+   "changed": [],
+   "hash": "aa1b020923a1",
+   "at": "2026-11-13T00:00:00Z",
+   "by": "claude-sonnet-5-5"
   }
  ]
 }
