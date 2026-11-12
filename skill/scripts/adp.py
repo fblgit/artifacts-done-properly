@@ -1,66 +1,65 @@
 #!/usr/bin/env python3
-"""adp/2 parts tool (artifact-dataplane skill): part markers -> per-part hashes -> manifest -> diff.
+"""adp/1 parts tool (artifact-dataplane skill): part markers -> per-part hashes -> manifest -> diff.
 
-  adp.py check    DIR                               markers balance, ids valid and unique, each part has data-part="<id>"
-  adp.py manifest DIR                               manifest JSON on stdout (schema, page_hash, parts, files, parents)
+  adp.py setup [--scope user|project|local] [--dry-run] [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
+  adp.py init [DIR]                                 DIR/.adp/config.json for project onboarding (idempotent)
+  adp.py log [-n N]                                 the last N lines of log.jsonl (every command appends one; project .adp/ else ~/.adp/)
+  adp.py check    PAGE|DIR                          markers balance, ids valid and unique, each part has data-part="<id>"
+  adp.py manifest PAGE|DIR [--file NAME=PATH ...]   manifest JSON on stdout (schema, page_hash, parts, files, parents)
   adp.py diff     OLD.json NEW.json                 added / removed / changed parts, deepest first, own elements +/-
-  adp.py diff-pages OLD_DIR NEW_DIR                 the same from two DIRs, plus the added/removed lines per deepest part
+  adp.py diff-pages OLD NEW [--file NAME=PATH ...]  the same from two pages (or two DIRs), plus the added/removed lines per deepest part
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
-  adp.py new PROJECT [--title T] [--by NAME] [--data FILE|DIR]
-                                                    creates PROJECT/.adp with independent persistent live/preview and portable Makefile launch targets.
-                                                    --standalone DIR retains the low-level standalone artifact scaffold for legacy integrations.
-                                                    the one start: the starter page, the whole kit, the seed (--data: a JSON list or {docs} of {collection, id, data},
-                                                    or a DIR of collection/id.json) and the first publish, packed. Prints the ordered list: check, pack,
-                                                    publish, open, status/seed, export
-  adp.py pack DIR                                   the first publish only: refresh the seed, rebuild DIR.pack (loader + pack.json), bake DIR.adp/bundle/ (the first
-                                                    export asks a delta over it). Refused once DIR.adp/state.json exists: export, then propose
-  adp.py take DIR ID ...                            the one Artifact read that brings the catalog entries' files (registryDependencies first) as text into DIR/kit; then adp.py propose DIR --by <you> sends them
+  adp.py templates                                  the templates `new` can start from
+  adp.py new TEMPLATE DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]
+                                                    a ready adp/2 artifact in DIR (seed.json and seed/ included; --data as in seed), plus ONE publish object: with a fetched catalog index
+                                                    (saved, or --catalog) its `files` already carry the taken kit entries, --theme and --layout.
+                                                    --content: views from a content file (`## Lead` text; `## View: <label> (id: <id>)`;
+                                                    under it `### Section <id> - <title>` + one ```html block each, used verbatim); the
+                                                    starter's welcome view goes; prints built {views, sections, parts, bytes}
   adp.py files DIR [--since MANIFEST.json] [--batch N] [--out DIR]
-                                                    the catalog site's own publish (a page packed or live is refused). The publish arguments for DIR; --since: only
-                                                    changed files (null = removed). Files artifacts do not serve (archives, .py: use .txt) are left out and listed
-                                                    under `skipped`. Over N files (default 250; a publish takes 255) `files` becomes `batches`, each also written
-                                                    to DIR.adp/publish-N.json: publish the site with the first, the rest to the url
-  adp.py kit consume PACK [--site DIR]            verify and import an exported kit entry
+                                                    the publish arguments for DIR; --since: only changed files (null = removed).
+                                                    Files artifacts do not serve (archives, .py: use .txt) are left out and listed under
+                                                    `skipped`. Over N files (default 250; a publish takes 255) `files` becomes `batches`, each
+                                                    also written to DIR.adp/publish-N.json: publish the page with the first, the rest to the url
   adp.py pins publish-1.json=VERSION_ID ... [--out vermap.json]
-                                                    {path: version id} for CAT_VERMAP from the batches and the id each publish returned (the catalog site)
-  adp.py site [URL]                              the user's catalog: URL saves it (~/.adp/config.json); prints the Artifact read that
-                                                    fetches its adp.json into ~/.adp/sites/<id>/, or the fetched index's ver and built
-  adp.py take SITE ID ... [--url URL] [--config C.json]
-                                                    the catalog site's own publish by reference: a files map taking catalog entries, registryDependencies first. SITE is the catalog
-                                                    url (its fetched index is the live one), `-` for the saved catalog, or a local adp.json
+                                                    {path: version id} for CAT_VERMAP from the batches and the id each publish returned
+  adp.py catalog [URL]                              the user's catalog: URL saves it (~/.adp/config.json); prints the Artifact read that
+                                                    fetches its catalog.json into ~/.adp/catalogs/<id>/, or the fetched index's ver and built
+  adp.py take CATALOG ID ... [--url URL] [--config C.json]
+                                                    a files map taking catalog entries by reference, requires first. CATALOG is the catalog
+                                                    url (its fetched index is the live one), `-` for the saved catalog, or a local catalog.json
                                                     (the repo's build: not the live catalog, so the output carries a warning)
-  adp.py suggest SITE --for "free words" [--n 3] [--kind K]
-                                                    catalog entries ranked by keywords/description overlap, grouped by the name's first word (no model call)
-  adp.py kit list [SITE] [--kind K] [--tag T]    one JSON line per entry; SITE defaults to the catalog the plugin ships (- is the saved catalog)
-  adp.py kit show ID [SITE]                      name, title, description, about, keywords, files, registryDependencies, exports
-  adp.py kit describe ID [SITE]                  the mount signature: dependencies, exports, registryDependencies, file paths
+  adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--batches] [--dry-run]
+                                                    writes DIR/seed.json (adp-seed/2) and DIR/seed/pack-N.json: the first docs (parts,
+                                                    content, changes/000001, agents, manifest/current last) plus every --data doc (a JSON
+                                                    list or {docs} of {collection, id, data}, or a DIR of collection/id.json); the page
+                                                    expands them on its first open by an editor. --data docs in a generated collection
+                                                    merge into the generated doc (a parts title, the change summary). Empty content is
+                                                    skipped (skipped_empty). --batches: the same docs as ArtifactData batches instead, for
+                                                    an agent that writes them itself; --dry-run: counts only
+  adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]
+                                                    catalog entries ranked by tag/summary overlap, grouped by kind prefix (no model call)
+  adp.py kit list [CATALOG] [--kind K] [--tag T]    one JSON line per entry; CATALOG defaults to - (the saved catalog)
+  adp.py kit show ID [CATALOG]                      name, summary, about, tags, files, requires, provides
+  adp.py kit describe ID [CATALOG]                  the mount signature: needs, provides, requires, file paths, the sample path
 The loop (docs/architecture.md "The loop"; each reads what the model fetched, from files):
-  adp.py export DIR --url URL [--full] [--version V]
-                                                    the one read of a page. Prints the export ask and the outbox list (exit 2: run them in order, then run
-                                                    the same export again; --full forces a full bundle). The second run unpacks the bundle and writes
-                                                    DIR.adp/incoming/, state.json, the nested repo (base/live/work) and report.json, merges live
-                                                    into work when nothing is held, updates ~/.adp/artifacts.json
-  adp.py import UNPACKED DIR [--title T] [--by B]
-                                                    a page from an unpacked bundle (references/loop.md)
-  adp.py unpack OUTBOX_DIR OUT --request AT [--over BASE]
-                                                    joins and checks the bundle that answers the ask (every sha256, the tree against the page index)
-                                                    into OUT; a delta lays over BASE (export runs it)
-  adp.py kit check [NAME] [--site DIR]              recompute a kit item (or all) from kit/<name>/registry-item.json: declared / failing; exit 1 on failing
-  adp.py apply NAME --base B.json --repo R.json --artifact A.json [--write]   RFC 7396 patch of an artifact edit onto a record; conflicts held
+  adp.py export DIR --url URL [--files-listing F.json] [--docs D.json] [--version V]
+                                                    remote-to-local incoming: without the listing or the docs it prints the reads (exit 2);
+                                                    with them DIR.adp/incoming/, state.json, the nested repo (base/live/work), report.json,
+                                                    live merged into work when nothing is held; ~/.adp/artifacts.json updated
   adp.py classify BASE.json LIVE.json INCOMING.json new/ours/theirs/applied/held/retired over parts and files (contract 4)
-  adp.py propose DIR --by NAME [--summary S] [--retire ID --reason R ...] [--repo DIR] [--code-rev REV] [--no-code]
-                                                    local-to-remote incoming: the incoming/<pid> doc and its one ArtifactData batch; a board's records that cite files in git
-                                                    also carry codemap/code and codemap/trace (adp_code.py), derived here, nothing to run;
-                                                    exit 2 with the list when anything is held, a part is deleted unretired, there was no export, or the page is stale
+  adp.py propose DIR --by NAME --summary S [--retire ID --reason R ...]
+                                                    local-to-remote incoming: the incoming/<pid> doc and its one ArtifactData batch;
+                                                    exit 2 with the list when anything is held, a part is deleted unretired, or no export
   adp.py ack DIR [--result FILE | stdin] [--proposal PID]
                                                     a publish or batch result into state.json; --proposal: an applied one moves base
-  adp.py gate [--input FILE | stdin]                the PreToolUse hook decision: allow a pinned data write; allow the proposal batch, the export ask and an answering write; deny any other framework write, and any write while the page is stale
+  adp.py gate [--input FILE | stdin]                the PreToolUse hook decision: deny while the inbox holds anything or a pin is stale
   adp.py hold DIR ID ... --by NAME [--hours H] [--pins P.json] [--config C.json] [--unlock PREFIX ...]
-                                                    the catalog site's hold batch for parts you will touch (a page changes by propose)
+                                                    the hold batch for parts you will touch
   adp.py record OLD.json DIR --seq N --by NAME --summary S [--version V] [--threads T,..] [--pins P.json]
                 [--config C.json] [--unlock PREFIX ...] [--holds H.json]
-                                                    the catalog site's record batch after a publish; OLD.json is manifest/current as read (a page records by propose)
+                                                    the record batch after a publish; OLD.json is manifest/current as read
   adp.py config DIR [--doc C.json]                  the switches: defaults, current values, locked, locked_parts, links
   adp.py config set KEY VALUE [--doc C.json] [--by NAME] [--pins P.json] [--out DIR]
                                                     the pinned write of config/current (+ a changes/d-<ms> data change)
@@ -76,14 +75,14 @@ when edit.locked is true ({error: "locked", by, at, reason}) and when a changed 
 With edit.require-hold, record also needs --holds H.json (parts/<id> docs as {id: {holder: ..}} or a {id: holder} map) and refuses
 changed existing parts with no holder, deepest only ({error: "unheld", parts}). VALUE in `config set` is JSON when it parses, else text.
 
-DIR (adp/2, the only layout: the artifact laid out at its published paths; a single .html page is refused): every file is hashed; the text files with markers
+DIR (adp/2, a multi-file artifact laid out at its published paths): every file is hashed; the text files with markers
 (.html .js .mjs .css) are parsed one by one, markers must balance within a file, data-part roots may sit in any file;
-each file's text outside its parts is hashed as _rest:<path>. The manifest (schema adp/2) carries part_file {id: path}.
+each file's text outside its parts is hashed as _rest:<path>. Schema adp/2 adds part_file {id: path}.
 
 Markers (HTML or JS/CSS comments): <!-- part:ID --> ... <!-- /part:ID -->  |  /* part:ID */ ... /* /part:ID */
 ID: dot-separated lowercase kebab, e.g. triage.keys-table. Hash: sha256 of the text between the markers with
 whitespace runs collapsed, first 12 hex; a parent's text includes its children. Stdlib only; run with python3 -I."""
-import contextlib, datetime, difflib, hashlib, io, json, os, re, shutil, sys
+import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys
 
 ID = r'[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*'
 TAG = re.compile(r'<[A-Za-z][A-Za-z0-9-]*')   # an opening tag (also inside JS template strings)
@@ -111,15 +110,16 @@ def parse(text):
     return parts, bad
 
 
-def file_parts(text):
-    """One marked file of a DIR -> {parts, parents, elements}; its leftover text is REST here (manifest_dir names it _rest:<path>)."""
+def manifest(text, files):
     parts, bad = parse(text)
     if bad: sys.exit('adp check failed:\n  ' + '\n  '.join(bad))
     hp = {p: H(norm(text[s:e])) for p, (s, e, _) in parts.items()}
     hp[REST] = H(norm(own(text, parts, '')))      # everything outside every part: a change there still shows
     el = {p: len(TAG.findall(own(text, parts, p))) for p in [*parts, REST]}   # own elements, children excluded
-    return {'parts': dict(sorted(hp.items())), 'parents': {**{p: par for p, (_, _, par) in sorted(parts.items())}, REST: ''},
-            'elements': dict(sorted(el.items()))}
+    hf = {n: hashlib.sha256(open(f, 'rb').read()).hexdigest()[:12] for n, f in files.items()}
+    lines = sorted(f'{p}={h}' for p, h in hp.items()) + sorted(f'file:{n}={h}' for n, h in hf.items())
+    return {'schema': 'adp/1', 'page_hash': H('\n'.join(lines)), 'parts': dict(sorted(hp.items())), 'files': hf,
+            'parents': {**{p: par for p, (_, _, par) in sorted(parts.items())}, REST: ''}, 'elements': dict(sorted(el.items()))}
 
 
 TEXT = ('.html', '.js', '.mjs', '.css')
@@ -154,7 +154,7 @@ def manifest_dir(d):
     files, marked = load(d)
     parts, el, par, where = {}, {}, {}, {}
     for f, t in marked.items():
-        m = file_parts(t)
+        m = manifest(t, {})
         for k, h in m['parts'].items():
             kk = f'{REST}:{f}' if k == REST else k
             if kk in parts: sys.exit(f'adp check failed: part {kk} in {where[kk]} and {f}')
@@ -174,25 +174,6 @@ def own(text, parts, p):
     return MARK.sub('', ''.join(out) + text[i:e])
 
 
-def own_texts(d):
-    """{part id: own text} for every marked file of a DIR: the part's region minus its child parts, as written (own_hashes hashes it normalized).
-    The text outside every part is `_rest:<path>`. propose reads it for the live files and the work files to carry the line edits between them."""
-    out = {}
-    for f, t in load(d)[1].items():
-        parts, bad = parse(t)
-        if bad: continue
-        for k in parts: out[k] = own(t, parts, k)
-        out[f'{REST}:{f}'] = own(t, parts, '')
-    return out
-
-
-def own_hashes(d):
-    """{part id: own hash} for every marked file of a DIR: the sha12 of the part's own text (its region minus its child parts, whitespace collapsed),
-    the same rule file_parts applies to the leftover. A parent's whole hash moves when a child does; this one moves only with the part's own text,
-    so a proposal or a change record can say which region really changed. The text outside every part is `_rest:<path>`."""
-    return {k: H(norm(v)) for k, v in own_texts(d).items()}
-
-
 def diff(o, n):
     op, np_ = o.get('parts', {}), n.get('parts', {})
     par = {**o.get('parents', {}), **n.get('parents', {})}
@@ -210,7 +191,6 @@ def diff(o, n):
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TPL = os.path.join(HERE, 'templates')
-SITE = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'adp', 'site')     # the kit's files, when the plugin ships them
 now = lambda: datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 slugify = lambda s: re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')[:40] or 'artifact'
 
@@ -233,20 +213,11 @@ def opt(a, name, default=None):
     return a[a.index(name) + 1] if name in a and a.index(name) + 1 < len(a) else default
 
 
-SWITCHES = ('--write', '--hook', '--no-code')     # flags that take no value
-
-
-def manifest_of(m):
-    """manifest/current is stored bare ({version,files,parts,..}) or wrapped ({data:{..}}, no files/parts): the one unwrap (JS: ADP.manifest)."""
-    return m['data'] if isinstance(m, dict) and isinstance(m.get('data'), dict) and 'parts' not in m and 'files' not in m else m
-
-
 def bare(a):
-    """positional args: everything that is not a --flag or a flag's value (a SWITCHES flag has none)"""
+    """positional args: everything that is not a --flag or a flag's value"""
     out, skip = [], False
     for x in a:
         if skip: skip = False
-        elif x in SWITCHES: pass
         elif x.startswith('--'): skip = True
         else: out.append(x)
     return out
@@ -263,52 +234,33 @@ CAT_URL = re.compile(r'https://claude\.ai/(?:code/)?artifact/[A-Za-z0-9-]+/?$')
 
 
 def cat_dir(url):
-    return os.path.join(ADP_HOME, 'sites', url.rstrip('/').rsplit('/', 1)[-1])
+    return os.path.join(ADP_HOME, 'catalogs', url.rstrip('/').rsplit('/', 1)[-1])
 
 
-def fetch_call(url, paths=None):
-    """The one Artifact read that brings a catalog's live index and seed to disk, where `take`, `new` and `catalog` find them:
-    adp.json (the entries and their files), seed.json and its first pack (the kit's docs, which `new` seeds into every new artifact)."""
-    return {'tool': 'Artifact', 'action': 'read', 'url': url, 'paths': paths or ['adp.json', SEED, f'{SEED_DIR}/pack-001.json'], 'out_dir': cat_dir(url), 'then': 'run the command again'}
+def fetch_call(url):
+    """The one Artifact read that brings a catalog's live index to disk, where `take` and `catalog` find it."""
+    return {'tool': 'Artifact', 'action': 'read', 'url': url, 'path': 'catalog.json', 'out_dir': cat_dir(url), 'then': 'run the command again'}
 
 
-def kit_docs(cat_root, files, url, ver, at, entries=True, all_parts=False):
-    """The kit's docs for an artifact that took `files` from the catalog at cat_root (its fetched seed.json and packs): entries/<name>
-    (every entry, as the catalog describes it), parts/<id> for every taken file the catalog cut into a part (its hash, so the record
-    matches the file), and kit/self (where the kit came from). [] when the catalog's seed is not on disk."""
-    idx, docs = read_seed(cat_root)
-    if not docs: return []
-    out = [('entries', i, x) for c, i, x, *_ in docs if c == 'entries'] if entries else []
-    out += [('parts', i, dict(x, version='1', at=at, summary=f'taken from the catalog, version {ver or "?"}', holder='', hold_until=''))
-            for c, i, x, *_ in docs if c == 'parts' and (x.get('file') in files or (all_parts and x.get('file', '').startswith('kit/')))]
-    out += [('files', i, x) for c, i, x, *_ in docs if c == 'files' and (i in files or x.get('path') in files)]    # 0.5.3: files/<path> {text, sha256}, the sha the entry's Merkle hash is built from
-    out.append(('kit', 'self', {'site': url, 'ver': ver or '', 'at': at, 'by': idx.get('by', ''), 'entries': len([1 for c, *_ in out if c == 'entries']),
-                                'files': len(files), 'note': 'the Artifact Kit this page carries, taken by reference from catalog; a take of more pins the same ver'}))
-    return out
-
-
-def saved_site():
+def saved_catalog():
     p = os.path.join(ADP_HOME, 'config.json')
-    return (json.load(open(p)) if os.path.isfile(p) else {}).get('site')
+    return (json.load(open(p)) if os.path.isfile(p) else {}).get('catalog')
 
 
-def site_cmd(a):
+def catalog_cmd(a):
     pos = bare(a[1:])
     if pos:
         if not CAT_URL.match(pos[0]): sys.exit('catalog: a claude.ai artifact url (https://claude.ai/artifact/<id>)')
         p = os.path.join(ADP_HOME, 'config.json'); os.makedirs(ADP_HOME, exist_ok=True)
-        cfg = json.load(open(p)) if os.path.isfile(p) else {}; cfg['site'] = pos[0].rstrip('/')
+        cfg = json.load(open(p)) if os.path.isfile(p) else {}; cfg['catalog'] = pos[0].rstrip('/')
         json.dump(cfg, open(p, 'w'), indent=1)
-    url = saved_site()
-    if not url: return emit({'site': None, 'next': 'adp.py site <url> saves the user\'s catalog (SKILL.md says how to find it); never assume one'})
-    idx = os.path.join(cat_dir(url), 'adp.json')
-    out = {'site': url, 'index': idx, 'fetched': os.path.isfile(idx)}
+    url = saved_catalog()
+    if not url: return emit({'catalog': None, 'next': 'adp.py catalog <url> saves the user\'s catalog (SKILL.md says how to find it); never assume one'})
+    idx = os.path.join(cat_dir(url), 'catalog.json')
+    out = {'catalog': url, 'index': idx, 'fetched': os.path.isfile(idx)}
     if out['fetched']:
         c = json.load(open(idx)); out.update(ver=c.get('ver') or None, built=c.get('built'), entries=len(c.get('entries', [])))
-        sidx, sdocs = read_seed(cat_dir(url)); missing = [pk for pk in sidx.get('packs', []) if not os.path.isfile(os.path.join(cat_dir(url), pk))]
-        out['seed'] = {'docs': len(sdocs), 'packs': len(sidx.get('packs', [])), 'fetched': bool(sidx) and not missing}
-        if not sidx or missing: out['fetch'] = fetch_call(url, missing or None); out['note'] = 'the kit docs are not on disk: new seeds the whole kit only once this read has run'
-        else: out['refresh'] = fetch_call(url)      # the same read, when the catalog has published since
+        out['refresh'] = fetch_call(url)      # the same read, when the catalog has published since
     else: out['fetch'] = fetch_call(url)
     return emit(out)
 
@@ -342,13 +294,13 @@ def publish_args(d, only=None):
 
 
 def page_deps(d):
-    """the files index.html loads, in order, local or taken, then the seed: they go up with the page so version 1 renders and seeds"""
+    """the local files index.html loads, in order: they go up with the page so version 1 renders"""
     p = os.path.join(d, 'index.html')
     if not os.path.isfile(p): return []
     out = []
     for ref in re.findall(r'(?:src|href)="([^"]+)"', open(p, encoding='utf-8').read()):
-        if not re.match(r'(?:[a-z]+:|#|//)', ref) and ref not in out: out.append(ref.split('?')[0].split('#')[0])
-    return out + [SEED, *read_seed(d)[0].get('packs', [])]
+        if not re.match(r'(?:[a-z]+:|#|//)', ref) and ref not in out and os.path.isfile(os.path.join(d, ref)): out.append(ref)
+    return out
 
 
 def batched(out, d, n, where):
@@ -360,272 +312,10 @@ def batched(out, d, n, where):
     os.makedirs(where, exist_ok=True); paths = []
     for i, b in enumerate(bs, 1):
         p = os.path.join(where, f'publish-{i}.json'); json.dump(b, open(p, 'w'), indent=0); paths.append(os.path.abspath(p))
-    out.pop('files'); out['batch_files'] = paths; out['batch_sizes'] = [len(b) for b in bs]
-    out['note'] = (f'{len(m)} files in {len(bs)} publishes, each a `files` map written to batch_files[i] (not printed: a map this size would drown the result). '
-                   'Read batch_files[0] and publish the page with it as `files` (new artifact: add capabilities, icon); then each other batch file to the '
+    out.pop('files'); out['batches'] = bs; out['batch_files'] = paths
+    out['note'] = (f'{len(m)} files: publish the page with batches[0] (new artifact: add capabilities, icon), then each other batch to the '
                    'same url; every publish passes file_path and root, the tool refuses files without them; note every version id, then adp.py pins')
     return out
-
-
-LOADER = """<!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{title}}</title></head><body>
-<script>
-  const idOf = p => p.replace(/[^A-Za-z0-9_.\\-]/g, c => '~' + c.charCodeAt(0).toString(16) + '~'), CH = 150000, own = k => !k.startsWith('seed/') && !k.startsWith('$');
-  const hex = async t => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t))), b => b.toString(16).padStart(2, '0')).join('');
-  const group = snap => { const by = {}; snap.docs.forEach(d => { const x = d.data(); (by[x.path] = by[x.path] || []).push(x); }); return Object.entries(by).map(([path, xs]) => (xs.sort((a, b) => a.c - b.c), {path, text: xs.map(x => x.text).join(''), sha: xs[0].sha, n: xs[0].n, got: xs.length})); };
-  const pool = async (items, fn, start = 96, max = 192) => {      // heavy parallelism that backs off: halve on resource_exhausted, grow back slowly
-    let limit = start, i = 0, active = 0, ok = 0, err = null;
-    await new Promise(fin => {
-      const next = () => { while (!err && active < limit && i < items.length) { active++; go(items[i++], 0); } if (active === 0 && (err || i >= items.length)) fin(); };
-      const go = async (it, tries) => {
-        try { await fn(it); if (++ok % limit === 0 && limit < max) limit++; }
-        catch (e) { if (e && e.code === 'resource_exhausted' && tries < 8) { limit = Math.max(8, limit >> 1); await new Promise(r => setTimeout(r, 400 * (tries + 1))); return go(it, tries + 1); } err = err || e; }
-        active--; next();
-      };
-      next();
-    });
-    if (err) throw err;
-  };
-  async function settle(P, cl, db) {      // behind the render: the page's files become records, are checked, and the pack goes
-    try {
-      const user = await cl.use('user'), art = await cl.use('artifact');
-      if (!db || !art || !user || !await user.canEdit()) return;
-      const ks = Object.keys(P).filter(own).sort(), st = await db.doc('status/files').get();
-      const pk = await hex(JSON.stringify(ks.map(p => [p, P[p]])));      // a new pack (an update published as loader + pack.json) is settled again
-      if (!(st.exists && st.data().state === 'verified' && st.data().pack === pk)) {
-        const jobs = ks.flatMap(p => { const t = P[p], n = Math.max(1, Math.ceil(t.length / CH)); return Array.from({length: n}, (_, c) => ({p, t, n, c, id: idOf(p) + (n > 1 ? '.c' + c : '')})); });
-        await pool(jobs, async j => db.collection('files').doc(j.id).set({path: j.p, c: j.c, n: j.n, text: j.t.slice(j.c * CH, (j.c + 1) * CH), sha: j.c ? '' : await hex(j.t)}));
-        const keep = new Set(jobs.map(j => j.id));      // records of an older pack (a file removed, or chunked differently) go
-        await pool((await db.collection('files').get()).docs.filter(x => !keep.has(x.id)), async x => db.collection('files').doc(x.id).delete());
-        const back = group(await db.collection('files').get()), by = Object.fromEntries(back.map(x => [x.path, x]));
-        if (back.length !== ks.length) return;
-        for (const p of ks) { const x = by[p]; if (!x || x.got !== x.n || x.text !== P[p] || x.sha !== await hex(P[p])) return; }      // anything that does not match: the pack stays
-        await db.doc('status/files').set({state: 'verified', files: ks.length, pack: pk, at: new Date().toISOString()});
-      }
-      for (let i = 0; ; i++) {      // the pack also carries the seed: it stays until the page has finished seeding its database
-        const sd = await db.doc('status/seed').get(); if (sd.exists && sd.data().state === 'done') break;
-        if (i >= 200) return; await new Promise(r => setTimeout(r, 3000));
-      }
-      await art.publish({'pack.json': null});
-    } catch (_) {}      // the pack stays: a page that could not settle is a page that still works
-  }
-  const KEEP = ['data-skin', 'data-skin-with', 'data-skin-font', 'media'];      // a theme link's switches: its inline <style> keeps them, or every theme applies at once
-  const keep = (l, st) => { for (const a of KEEP) if (l.hasAttribute(a)) st.setAttribute(a, l.getAttribute(a)); return st; };
-  async function records(db) {
-    const back = group(await db.collection('files').get()), R = {};
-    for (const x of back) { if (x.sha && await hex(x.text) !== x.sha) throw new Error('the record for ' + x.path + ' does not match its sha256'); R[x.path] = x.text; }
-    return R;
-  }
-  async function getPack() {
-    let P = null; try { const r = await fetch('pack.json'); if (r.ok) P = await r.json(); } catch (_) {}
-    const cl = window.claude, db = cl && await cl.use('db').catch(() => null);
-    if (P && P.$base === 'records') {      // a delta pack (an applied proposal on a settled page): the changed files over the records
-      if (!db) throw new Error('this page has a delta pack and no database to read its files from');
-      const R = await records(db); for (const k of P.$removed || []) delete R[k];
-      for (const k of Object.keys(P)) if (!k.startsWith('$')) R[k] = P[k];
-      P = R;
-    }
-    if (P) { settle(P, cl, db); return P; }
-    if (!db) throw new Error('this page has no pack.json and no database to read its files from');
-    return records(db);
-  }
-(async () => {
-  const P = await getPack().catch(e => { document.body.textContent = 'This page could not load its files: ' + e.message; throw e; }), key = u => String(u).split('?')[0].replace(/^\\.?\\//, '');
-  window.ADP_FILES = Object.keys(P);
-  const real = window.fetch.bind(window);
-  window.fetch = (u, o) => key(u) in P ? Promise.resolve(new Response(P[key(u)], {status: 200, headers: {'content-type': /\\.json$/.test(key(u)) ? 'application/json' : 'text/plain'}})) : real(u, o);
-  const own = u => { const k = key(u); return !/^[a-z][a-z0-9+.-]*:/i.test(String(u)) && k in P ? k : null; };      // a file the pack holds, by a relative path
-  const mime = k => /\\.css$/.test(k) ? 'text/css' : /\\.svg$/.test(k) ? 'image/svg+xml' : /\\.json$/.test(k) ? 'application/json' : 'text/javascript';
-  const blob = k => URL.createObjectURL(new Blob([P[k]], {type: mime(k)}));
-  const css = (l, k) => { const st = keep(l, document.createElement('style')); st.textContent = P[k]; document.head.appendChild(st);
-    for (const p of ['disabled', 'media']) Object.defineProperty(l, p, {configurable: true, get: () => st[p], set: v => { st[p] = v; }});      // the page toggles its link (kit.skins: disabled, media); the style it became follows
-    setTimeout(() => l.dispatchEvent(new Event('load')), 0); };      // a stylesheet becomes inline css: the page's style policy refuses a blob link
-  for (const [proto, prop] of [[HTMLScriptElement.prototype, 'src'], [HTMLLinkElement.prototype, 'href'], [HTMLImageElement.prototype, 'src']]) {      // files the page adds later (kit parts load on demand)
-    const d = Object.getOwnPropertyDescriptor(proto, prop); Object.defineProperty(proto, prop, Object.assign({}, d, {set(v) { const k = own(v); if (k && this instanceof HTMLLinkElement && /\\.css$/.test(k)) return css(this, k); d.set.call(this, k ? blob(k) : v); }}));
-  }
-  const setAttr = Element.prototype.setAttribute;
-  Element.prototype.setAttribute = function (n, v) { const k = /^(src|href)$/i.test(n) && /^(SCRIPT|LINK|IMG)$/.test(this.tagName) ? own(v) : null; if (k && this.tagName === 'LINK' && /\\.css$/.test(k)) return css(this, k); return setAttr.call(this, n, k ? blob(k) : v); };
-  const HOME = 'index.html', doc = new DOMParser().parseFromString(P[HOME], 'text/html'), run = [];
-  for (const l of [...doc.querySelectorAll('link[rel=stylesheet]')]) { const h = l.getAttribute('href'); if (h in P) { const st = keep(l, document.createElement('style')); st.textContent = P[h]; l.replaceWith(st); } }
-  for (const sc of [...doc.querySelectorAll('script')]) { run.push(sc); sc.replaceWith(document.createComment('script')); }
-  document.title = doc.title || document.title;
-  for (const n of [...doc.head.childNodes]) if (n.nodeName !== 'TITLE') document.head.appendChild(document.adoptNode(n));
-  for (const a of doc.body.attributes) document.body.setAttribute(a.name, a.value);
-  document.body.textContent = ''; for (const n of [...doc.body.childNodes]) document.body.appendChild(document.adoptNode(n));
-  for (const sc of run) { const n = document.createElement('script'); for (const a of sc.attributes) if (a.name !== 'src') n.setAttribute(a.name, a.value);
-    const src = sc.getAttribute('src'); if (src && !(src in P)) n.src = src; else n.textContent = src ? P[src] : sc.textContent;
-    document.body.appendChild(n); await new Promise(r => n.src ? (n.onload = n.onerror = r) : r()); }
-})();
-</script></body></html>
-"""
-
-
-def build_pack(d, title):
-    """The published form of DIR: one pack.json (every file of the page, the seed, and the whole kit as {path: text}) and a loader
-    index.html that unpacks it in the browser. Returns the Artifact publish arguments: two files, whatever the page holds."""
-    dist = d.rstrip('/') + '.pack'; os.makedirs(dist, exist_ok=True); pack = {}
-    for p in tree(d):
-        if p.startswith('.') or not served(p): continue
-        try: pack[p] = open(os.path.join(d, p), encoding='utf-8').read()
-        except UnicodeDecodeError: pass
-    kp = os.path.join(d, 'kit', 'all.json'); idx = os.path.join(SITE, 'adp.json')
-    if os.path.isfile(kp):      # the kit `new` took from the page's own catalog (sha256-checked there), not the plugin's copy
-        for p, text in json.load(open(kp, encoding='utf-8')).items():
-            if p not in pack and served(p): pack[p] = text
-    elif os.path.isfile(idx):   # a page with no packed kit: the catalog the plugin ships
-        for e in json.load(open(idx))['entries']:
-            for f in e['files']:
-                q = os.path.join(SITE, f['path'])
-                if f['path'] not in pack and os.path.isfile(q) and served(f['path']):
-                    try: pack[f['path']] = open(q, encoding='utf-8').read()
-                    except UnicodeDecodeError: pass
-    if 'index.html' not in pack:
-        raise ValueError('Cannot package ADP: index.html is missing or unreadable')
-    # Packaging must not turn missing startup dependencies into a successful artifact.
-    refs = re.findall(r'<(?:script|link)\b[^>]*?\b(?:src|href)=[\"\']([^\"\']+)', pack['index.html'], re.I)
-    missing = sorted({ref.split('?')[0].split('#')[0] for ref in refs
-                      if not re.match(r'(?:[a-z][a-z0-9+.-]*:|#|//)', ref, re.I)
-                      and ref.split('?')[0].split('#')[0] not in pack})
-    if missing:
-        raise ValueError('Cannot package ADP: missing startup files: ' + ', '.join(missing))
-    json.dump(pack, open(os.path.join(dist, 'pack.json'), 'w'), separators=(',', ':'))
-    open(os.path.join(dist, 'index.html'), 'w', encoding='utf-8').write(LOADER.replace('{{title}}', title.replace('<', '&lt;')))
-    return {'file_path': os.path.join(dist, 'index.html'), 'root': dist, 'files': {'pack.json': 'pack.json'}}
-
-
-def is_packed(d):
-    """DIR is published packed (a loader and pack.json, or settled: the loader alone, the files as records): `new` and `import` leave DIR.pack,
-    an export of such a url records page=pack|records."""
-    if os.path.isfile(os.path.join(d.rstrip('/') + '.pack', 'pack.json')): return True
-    try: return bool(json.load(open(os.path.join(d.rstrip('/') + '.adp', 'state.json'))).get('page'))
-    except (OSError, ValueError): return False
-
-
-def live_line(d):
-    return f'the page is live: run adp.py export {d} --url <its url> and the calls it prints, then adp.py propose {d} --by <you>'
-
-
-def is_live(d):
-    return os.path.isfile(os.path.join(d.rstrip('/') + '.adp', 'state.json'))
-
-
-def bake_bundle(d, dist):
-    """DIR.adp/bundle/: the first publish as the page will export it (the pack's files, the seed's docs, bundle.json {kind: full, at: the seed version}),
-    so the first `export` asks a delta over it."""
-    b = os.path.join(d.rstrip('/') + '.adp', 'bundle'); shutil.rmtree(b, ignore_errors=True); os.makedirs(b)
-    for p, text in json.load(open(os.path.join(dist, 'pack.json'), encoding='utf-8')).items():
-        if is_seed(p): continue
-        q = os.path.join(b, p); os.makedirs(os.path.dirname(q), exist_ok=True)
-        with open(q, 'w', encoding='utf-8', newline='') as g: g.write(text)
-    idx, docs = read_seed(d); recs = {}
-    for c, i, x, *_ in docs: recs.setdefault(c, {})[i] = x
-    json.dump(recs, open(os.path.join(b, 'docs.json'), 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
-    json.dump({'schema': 'adp-bundle/1', 'kind': 'full', 'page': 'pack', 'at': idx.get('version', ''), 'by': idx.get('by', '')}, open(os.path.join(b, 'bundle.json'), 'w', encoding='utf-8'))
-
-
-def pack_road(d):
-    """The first publish of DIR: refresh the seed, rebuild DIR.pack (loader + pack.json, the whole page and kit), bake DIR.adp/bundle/. Refused once the page is live."""
-    if is_live(d): sys.exit(live_line(d))
-    if os.path.isfile(os.path.join(d, SEED)): seed_file(d)
-    m = re.search(r'<title>(.*?)</title>', open(os.path.join(d, 'index.html'), encoding='utf-8').read(), re.S)
-    out = build_pack(d, m.group(1).strip() if m else 'Artifact'); bake_bundle(d, out['root'])
-    return {'publish': out, 'packed': True,
-            'note': 'publish `publish` (file_path, root, files: pack.json) to the url; first publish: the `new` output, capabilities included. Open the url as an editor once: the loader writes the files records and drops pack.json'}
-
-
-def pack_cmd(a):
-    pos = bare(a[1:])
-    if len(pos) != 1 or not os.path.isfile(os.path.join(pos[0], 'index.html')): sys.exit('usage: adp.py pack DIR   (DIR holds the page: index.html, seed.json ...)')
-    return emit(pack_road(pos[0]))
-
-
-def import_cmd(a):
-    """adp.py import UNPACKED DIR [--title T] [--by B]: the other end of `unpack`. UNPACKED is what unpack wrote (the files, docs.json). DIR becomes a
-    new page from it: the same files, a seed built from the exported records, one pack.json and a loader, and the same two-file publish as `new`.
-    Moving a page, forking it or restoring it is this command; the live page never re-imports. status/ is not carried: the new page seeds its own."""
-    pos = bare(a[1:])
-    if len(pos) != 2 or not os.path.isdir(pos[0]): sys.exit('usage: adp.py import UNPACKED DIR [--title T] [--by B]   (UNPACKED: what adp.py unpack wrote)')
-    src, d = pos
-    if os.path.exists(d) and os.listdir(d): sys.exit(f'import: {d} is not empty')
-    title, by = opt(a, '--title', 'Imported page'), opt(a, '--by', 'adp')
-    for p in tree(src):
-        if p in ('docs.json', 'bundle.json') or p.startswith('.') or p == SEED or p.startswith(SEED_DIR + '/'): continue
-        dst = os.path.join(d, p); os.makedirs(os.path.dirname(dst), exist_ok=True); shutil.copyfile(os.path.join(src, p), dst)
-    dj = os.path.join(src, 'docs.json'); recs = json.load(open(dj, encoding='utf-8')) if os.path.isfile(dj) else {}
-    data = [(c, i, x) for c, ds in recs.items() if c not in ('status', 'outbox', 'manifest') for i, x in ds.items()]
-    seed_file(d, by, data=data, summary='Imported from an export: the files and records of another page.', role='maintainer of this page')
-    return emit({'template': 'import', 'dir': d, 'title': title, 'publish': dict(build_pack(d, title), capabilities=tmeta('starter').get('capabilities', {})),
-                 'seed': dict(read_seed(d)[0].get('collections', {})),
-                 'next': ['Artifact publish with the `publish` arguments (first publish: add icon; label "adp/2 import"); open it once as an editor: the page seeds itself and settles']})
-
-
-def unpack_cmd(a):
-    """adp.py unpack OUTBOX_DIR OUT --request AT [--over BASE]: the command `adp.py export DIR --url URL` prints after the outbox list. OUTBOX_DIR is the
-    outbox folder `ArtifactData list outbox out_dir=...` wrote. Joins the chunks, checks the length and sha256 of the bundle and of every file, writes the
-    files as they were, the records to OUT/docs.json ({collection: {id: data}}) and the joined bundle to OUT/bundle.json. A delta bundle goes over BASE,
-    the last unpack's OUT: its files and records replace BASE's, what its index drops goes, and the merged tree must match the index (a gap in the page's
-    log stops it: run `adp.py export DIR --url URL --full`). --request AT takes the bundle that answers the ask (its `at`); none yet = the page has not
-    answered. Any mismatch stops with nothing written."""
-    pos = bare(a[1:])
-    if len(pos) != 2 or not os.path.isdir(pos[0]) or not opt(a, '--request'):
-        sys.exit('usage: adp.py unpack OUTBOX_DIR OUT --request AT [--over BASE]   (as adp.py export DIR --url URL prints it; OUTBOX_DIR: the folder its outbox list wrote)')
-    src, out = pos; docs = {}
-    for f in sorted(os.listdir(src)):
-        if f.endswith('.json'):
-            j = json.load(open(os.path.join(src, f), encoding='utf-8')); docs[f[:-5]] = j.get('data', j) if isinstance(j, dict) else {}
-    metas = {i: d for i, d in docs.items() if d.get('schema') == 'adp-bundle/1' and 'chunks' in d and d.get('state') == 'done'}
-    AGAIN = 'Run adp.py export DIR --url URL, its two ArtifactData calls, and the same export again.'
-    if not metas: sys.exit('unpack: no finished bundle in ' + src + '. ' + AGAIN)
-    ask = opt(a, '--request')      # the bundle that answers this ask (pattern.outbox writes the ask's `at` as `request`)
-    bid = next((i for i, m in metas.items() if m.get('request') == ask), None)
-    if not bid: sys.exit(f'unpack: the page has not answered export ask {ask}. Stop: report "open the page" to the session that called you; '
-                         f'once it is open, run the outbox list and the same export again.')
-    m = metas[bid]
-    parts = [docs.get(f'{bid}-c{i:03d}') for i in range(m['chunks'])]
-    if any(c is None or c.get('n') != i or c.get('bundle') != bid for i, c in enumerate(parts)): sys.exit(f'unpack: bundle {bid} is missing chunks (expected {m["chunks"]}). ' + AGAIN)
-    text = ''.join(c['text'] for c in parts)
-    if len(text.encode('utf-16-le')) // 2 != m['chars'] or hashlib.sha256(text.encode('utf-8')).hexdigest() != m['sha256']: sys.exit(f'unpack: bundle {bid} does not match its recorded length and sha256. ' + AGAIN)      # chars: the page's JS length, in UTF-16 units
-    b = json.loads(text); bad = []
-    for p, f in b['files'].items():
-        if hashlib.sha256(f['text'].encode('utf-8')).hexdigest() != f['sha256']: bad.append(p)
-        n = os.path.normpath(p)
-        if os.path.isabs(n) or n.startswith('..'): sys.exit(f'unpack: refusing the path {p}')
-    if bad: sys.exit('unpack: sha256 differs for ' + ', '.join(bad[:5]) + (' ...' if len(bad) > 5 else '') + '. ' + AGAIN)
-    if len(b['files']) != m['files'] or len(b['docs']) != m['docs']: sys.exit('unpack: the bundle holds a different count than its meta doc records. ' + AGAIN)
-    files = {p: f['text'] for p, f in b['files'].items()}; byc = {}
-    for x in b['docs']: byc.setdefault(x['collection'], {})[x['id']] = x['data']
-    kind, ix = b.get('kind', 'full'), b.get('index') or {}
-    if kind == 'delta':
-        base = opt(a, '--over')
-        if not base or not os.path.isfile(os.path.join(base, 'docs.json')): sys.exit(f'unpack: bundle {bid} is a delta and needs the last unpack. Run adp.py export DIR --url URL --full, its two ArtifactData calls, and the same export again.')
-        old = {}
-        for root, _, fs in os.walk(base):
-            for f in fs:
-                rel = os.path.relpath(os.path.join(root, f), base).replace(os.sep, '/')
-                if rel not in ('docs.json', 'bundle.json'): old[rel] = open(os.path.join(root, f), encoding='utf-8', newline='').read()
-        files = {**{p: t for p, t in old.items() if p in ix.get('files', {})}, **files}
-        od = json.load(open(os.path.join(base, 'docs.json'), encoding='utf-8')); keep = set(ix.get('docs', {}))
-        merged = {}
-        for c, ds in od.items():
-            for i, d in ds.items():
-                if f'{c}/{i}' in keep: merged.setdefault(c, {})[i] = d
-        for c, ds in byc.items(): merged.setdefault(c, {}).update(ds)
-        byc = merged
-    if ix:      # every file and record of the tree must be the page's: a gap in its log, or a base that is not the agent's, stops here
-        import adp_kit
-        miss = [p for p, h in ix.get('files', {}).items() if p not in files or hashlib.sha256(files[p].encode('utf-8')).hexdigest() != h]
-        miss += [p for p in files if p not in ix.get('files', {})]
-        have = {f'{c}/{i}': d for c, ds in byc.items() for i, d in ds.items()}
-        miss += [k for k, h in ix.get('docs', {}).items() if k not in have or hashlib.sha256(adp_kit.canon(have[k]).encode('utf-8')).hexdigest() != h]
-        if miss: sys.exit(f'unpack: {len(miss)} file(s) or record(s) differ from the page\'s index ({", ".join(miss[:5])}{" ..." if len(miss) > 5 else ""}). Nothing was written. Run adp.py export DIR --url URL --full, its two ArtifactData calls, and the same export again.')
-    if os.path.isdir(out) and opt(a, '--over') and os.path.abspath(out) == os.path.abspath(opt(a, '--over')): shutil.rmtree(out)
-    for p, t in files.items():
-        dst = os.path.join(out, p); os.makedirs(os.path.dirname(dst), exist_ok=True)
-        with open(dst, 'w', encoding='utf-8', newline='') as g: g.write(t)
-    json.dump(byc, open(os.path.join(out, 'docs.json'), 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
-    with open(os.path.join(out, 'bundle.json'), 'w', encoding='utf-8', newline='') as g: g.write(text)      # the chunks joined and verified: the one file
-    return emit({'bundle': bid, 'kind': kind, 'base': b.get('base', ''), 'page': b.get('page', ''), 'by': b['by'], 'at': b['at'], 'files': len(files), 'docs': sum(len(v) for v in byc.values()),
-                 'carried': {'files': len(b['files']), 'docs': len(b['docs'])}, 'out': out, 'verified': 'bundle sha256, every file sha256' + (', the whole tree against the page index' if ix else '')})
 
 
 def pins(a):
@@ -637,7 +327,75 @@ def pins(a):
         for p in json.load(open(f)): vm[p] = ver
     out = opt(a, '--out') or os.path.join(os.path.dirname(os.path.abspath(pairs[0].rsplit('=', 1)[0])), 'vermap.json')
     json.dump(vm, open(out, 'w'), indent=0, sort_keys=True)
-    return emit({'pinned': len(vm), 'vermap': os.path.abspath(out), 'next': f'CAT_URL=<url> CAT_VERMAP={out} make site, then publish adp.json to the same url'})
+    return emit({'pinned': len(vm), 'vermap': os.path.abspath(out), 'next': f'CAT_URL=<url> CAT_VERMAP={out} make catalog, then publish catalog.json to the same url'})
+
+
+SECTION = re.compile(r'^###\s+Section\s+(\S+)\s*(?:[\u2014\u2013-]+\s*(.*?))?\s*$')
+VIEWH = re.compile(r'^##\s+View:\s*(.*?)\s*(?:\(\s*id:\s*(\S+?)\s*\))?\s*$')
+
+
+def read_content(path):
+    """-> (lead, [{label, id, sections: [(id, title, html)]}]) from a content file; a malformed one exits 2 with the line."""
+    def bad(n, msg): sys.stderr.write(f'{path}:{n}: {msg}\n'); sys.exit(2)
+    lines = open(path, encoding='utf-8').read().split('\n'); lead, views, sec, mode = [], [], None, ''
+    i = 0
+    while i < len(lines):
+        l = lines[i]; i += 1
+        if re.match(r'^##\s+Lead\s*$', l): mode = 'lead'; continue
+        mv = VIEWH.match(l)
+        if mv:
+            if not mv.group(2) or not re.fullmatch(ID, mv.group(2)): bad(i, f'view "{mv.group(1)}" has no (id: <id>) with a valid id')
+            views.append({'label': mv.group(1), 'id': mv.group(2), 'sections': []}); mode = 'view'; sec = None; continue
+        if re.match(r'^##\s', l) and not l.startswith('###'): mode = ''; continue
+        ms = SECTION.match(l)
+        if ms and mode == 'view':
+            if not re.fullmatch(ID, ms.group(1)): bad(i, f'section id {ms.group(1)} is not a part id')
+            sec = [ms.group(1), ms.group(2) or ms.group(1), None, i]; views[-1]['sections'].append(sec); continue
+        if mode == 'lead': lead.append(l)
+        elif mode == 'view' and sec and sec[2] is None and l.strip() == '```html':
+            body = []
+            while i < len(lines) and lines[i].rstrip() != '```': body.append(lines[i]); i += 1
+            if i >= len(lines): bad(sec[3], f'section {sec[0]}: the html block is not closed')
+            i += 1; sec[2] = '\n'.join(body)
+    for v in views:
+        for sid, _, html, n in v['sections']:
+            if html is None: bad(n, f'section {sid} has no ```html block')
+    return '\n'.join(lead).strip(), [{**v, 'sections': [x[:3] for x in v['sections']]} for v in views]
+
+
+def build_content(d, path):
+    """Replace the starter's welcome view with the views of a content file: parts/app.js and content.js, the html verbatim."""
+    lead, views = read_content(path)
+    ids = [v['id'] for v in views] + [x[0] for v in views for x in v['sections']]
+    dup = sorted({i for i in ids if ids.count(i) > 1} | ({'settings'} & set(ids)))
+    if dup: sys.stderr.write(f'{path}: ids used twice, or taken by the settings view: {", ".join(dup)}\n'); sys.exit(2)
+    # a section named page.lead is the page's lead (the header owns that part), not a card
+    for v in views:
+        for x in [x for x in v['sections'] if x[0] == 'page.lead']: v['sections'].remove(x); lead = lead or x[2].strip()
+    views = [v for v in views if v['sections']]
+    if not views: sys.stderr.write(f'{path}: no `## View: <label> (id: <id>)` with sections\n'); sys.exit(2)
+    ap, cp = os.path.join(d, 'parts', 'app.js'), os.path.join(d, 'content.js')
+    js, cj = open(ap, encoding='utf-8').read(), open(cp, encoding='utf-8').read()
+    q = json.dumps; titles, vjs, cont = {}, [], {}
+    for v in views:
+        cards = '\n'.join(f'      <!-- part:{i} --><div class="card" data-part="{i}" data-comment-target></div><!-- /part:{i} -->' for i, _, _ in v['sections'])
+        vjs.append(f"  /* part:{v['id']} */\n  {q(v['id'])}: {{\n    label: {q(v['label'])},\n    parts: {q([v['id']] + [x[0] for x in v['sections']])},\n"
+                   f"    html: () => `<section class=\"view\" data-part=\"{v['id']}\" data-comment-target aria-label={q(v['label'])}>\n{cards}\n    </section>`,\n  }},\n  /* /part:{v['id']} */")
+        titles[v['id']] = v['label']
+        for i, t, h in v['sections']: titles[i] = t; cont[i] = {'part': i, 'title': t, 'html': h}
+    a0, a1 = js.index('  /* part:home */'), js.index('  /* /part:home */') + len('  /* /part:home */')
+    js = js[:a0] + '\n'.join(vjs) + js[a1:]
+    js = re.sub(r"  home: 'Home', 'home.welcome'.*?'home.about': 'How this page works',\n", lambda _: '  ' + ', '.join(f'{q(k)}: {q(t)}' for k, t in titles.items()) + ',\n', js, flags=re.S)
+    js = re.sub(r"/\* A switch of the template's own.*?\n\}\n\n", '', js, flags=re.S)
+    js = re.sub(r"\n  else if \(window\.ADP && ADP\.config\) \{ const c = \$\('\[data-part=\"home\.about\"\]'\).*?\}\n", '\n', js)
+    js = js.replace("show(view === 'settings' ? 'home' : 'settings')", "show(view === 'settings' ? Object.keys(VIEWS)[0] : 'settings')")
+    m = re.search(r'window\.ADP_CONTENT\s*=\s*(\{.*\})\s*;', cj, re.S); old = json.loads(m.group(1))
+    new_c = {k: v for k, v in old.items() if k.startswith('settings')}
+    new_c['page.lead'] = dict(old['page.lead'], html=lead or old['page.lead']['html']); new_c.update(cont)
+    body = '{\n' + ',\n'.join(f' {q(k, ensure_ascii=False)}: {q(v, ensure_ascii=False)}' for k, v in new_c.items()) + '\n}'
+    cj = cj[:m.start(1)] + body + cj[m.end(1):]
+    open(ap, 'w', encoding='utf-8').write(js); open(cp, 'w', encoding='utf-8').write(cj)
+    return {'views': len(views), 'sections': len(cont), 'parts': len(views) + len(cont), 'bytes': sum(len(c['html'].encode()) for c in cont.values())}
 
 
 def taken(src, ids, a):
@@ -648,163 +406,103 @@ def taken(src, ids, a):
         try: code = take(['take', src, *ids, *pass_on])
         except SystemExit as e: code = e.code if isinstance(e.code, int) else 1; err.write(str(e.code) if not isinstance(e.code, int) and e.code is not None else '')
     out = json.loads(buf.getvalue()) if buf.getvalue().strip() else {}
-    if code and not out: out = {'error': 'take failed', 'site': src, 'reason': err.getvalue().strip()}   # the take's own message, so the caller sees why (a local index needs --url)
+    if code and not out: out = {'error': 'take failed', 'catalog': src, 'reason': err.getvalue().strip()}   # the take's own message, so the caller sees why (a local index needs --url)
     return out, code
 
 
-NEW_USAGE = 'usage: adp.py new DIR [--title T] [--by NAME] [--data FILE|DIR] [--standalone] (DIR is the project by default)'
-
-
-def new_target(a):
-    pos, i = [], 1
-    while i < len(a):
-        if a[i] in ('--title', '--by', '--data') and i + 1 < len(a): i += 2
-        elif a[i] == '--standalone': i += 1
-        elif a[i].startswith('--'): sys.exit(f'new: no option {a[i]}. ' + NEW_USAGE)
-        else: pos.append(a[i]); i += 1
-    if len(pos) != 1: sys.exit(NEW_USAGE)
-    return pos[0]
-
-
 def new(a):
-    d = new_target(a)
-    if '--standalone' in a: return new_standalone(a)
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'mcp'))
-    from workspace_bootstrap import create_workspace
-    try: result = create_workspace(d, opt(a, '--title', 'Untitled artifact'), opt(a, '--by', 'adp'), optall(a, '--data'))
-    except (OSError, ValueError) as error: sys.exit('new: ' + str(error))
-    return emit(result)
-
-
-def new_standalone(a):
-    d = new_target(a)
+    pos = bare(a[1:])
+    if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]')
+    name, d = pos
     if os.path.exists(d) and os.listdir(d): sys.exit(f'{d} exists and is not empty')
-    bundled = os.path.join(SITE, 'adp.json')
-    if not os.path.isfile(bundled): sys.exit(f'new: the plugin ships no catalog ({bundled})')
-    meta = tmeta('starter'); title = opt(a, '--title', 'Untitled artifact'); slug = slugify(title); by = opt(a, '--by', 'adp')
-    files = {p: os.path.join(TPL, 'starter', p) for p in tree(os.path.join(TPL, 'starter')) if p != 'template.json'}
+    meta = tmeta(name); title = opt(a, '--title', 'Untitled artifact'); slug = opt(a, '--slug') or slugify(title)
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]*', slug): sys.exit('--slug: lowercase kebab, e.g. status-pill')
+    content = opt(a, '--content')
+    if content:
+        if not os.path.isfile(content): sys.exit(f'--content: no file {content}')
+        if name != 'starter' and tmeta(name).get('base') != 'starter': sys.exit('--content needs the starter or a template based on it')
+        read_content(content)       # a malformed file fails before anything is written
+    layers = ([meta['base']] if meta.get('base') else []) + [name]
+    files = {}
+    for layer in layers:
+        src = os.path.join(TPL, layer)
+        for p in tree(src):
+            if p != 'template.json': files[p] = os.path.join(src, p)
+    for p in meta.get('drop', []): files.pop(p, None)
     files['adp.js'] = os.path.join(HERE, 'assets', 'adp.js')
     sub = lambda t: t.replace('{{title}}', title).replace('{{slug}}', slug)
     for p, src in sorted(files.items()):
         dst = os.path.join(d, sub(p)); os.makedirs(os.path.dirname(dst), exist_ok=True)
         if p == 'adp.js': shutil.copyfile(src, dst); continue
         with open(src, encoding='utf-8') as f, open(dst, 'w', encoding='utf-8') as g: g.write(sub(f.read()))
-    tk = meta.get('take', [])
-    out = {'dir': d, 'title': title, 'publish': dict(publish_args(d), capabilities=meta.get('capabilities', {}))}
-    try: cat, _ = index_of(bundled, a)
-    except OldFormat as e: emit({'error': 'new failed', 'site': bundled, 'reason': str(e)}); sys.exit(2)
-    t, code = taken(bundled, tk, ['--url', 'adp:bundled'])
-    if code: emit(t); sys.exit(2)
-    json.dump(cat, open(os.path.join(d, 'adp.json'), 'w'), separators=(',', ':')); out['publish']['files']['adp.json'] = 'adp.json'      # the Catalog view reads it when the db has no entries/
-    tf = {p: v for p, v in t['files'].items() if p not in out['publish']['files']}      # a file the scaffold wrote (adp.js, the runtime) wins over the catalog's copy
-    want = {f['path']: f.get('sha256') for e in cat['entries'] for f in e['files']}
-    def kit_text(p):
-        q = os.path.join(SITE, p)
-        if not os.path.isfile(q): return None
-        try: return open(q, encoding='utf-8').read()
-        except UnicodeDecodeError: return None
-    for p in list(tf):
-        text = kit_text(p)
-        if text is not None:
-            os.makedirs(os.path.dirname(os.path.join(d, p)), exist_ok=True); open(os.path.join(d, p), 'w', encoding='utf-8').write(text); tf[p] = p
-    packed = {p: x for p in want for x in [kit_text(p)] if x is not None}      # every kit file travels in pack.json: the page carries the whole kit
-    miss = sorted(p for p in want if p not in packed)
-    if miss: sys.exit(f'new: {len(miss)} kit files of the plugin\'s catalog are not on disk (first: {miss[0]}). Reinstall the plugin.')
-    os.makedirs(os.path.join(d, 'kit'), exist_ok=True); json.dump(packed, open(os.path.join(d, 'kit', 'all.json'), 'w'), separators=(',', ':')); tf['kit/all.json'] = 'kit/all.json'
-    out['publish']['files'].update(tf)
-    kit = kit_docs(SITE, tf, '', t['site'].get('ver'), now(), entries=True, all_parts=True)
-    if not kit: sys.exit(f'new: the plugin\'s catalog seed is not on disk ({SITE}/{SEED}). Reinstall the plugin.')
-    seed_file(d, by, data=kit + data_docs(optall(a, '--data')), summary='First build of this page on adp/2: the whole Artifact Kit, its entries and its files.', role='maintainer of this page')
-    out['publish'] = dict(pack_road(d)['publish'], capabilities=meta.get('capabilities', {}))
-    out['seed'] = dict(read_seed(d)[0].get('collections', {})); out['entries'] = len(cat['entries'])
+    built = build_content(d, content) if content else None
+    seed_file(d, opt(a, '--by', 'adp'), data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
+    design = meta.get('design') or (tmeta(meta['base']).get('design', '') if meta.get('base') else '')
+    tk = list(dict.fromkeys(meta.get('take', []) + optall(a, '--theme') + optall(a, '--layout')))
+    out = {'template': name, 'dir': d, 'title': title, 'slug': slug,
+           'publish': dict(publish_args(d), capabilities=meta.get('capabilities', {})),
+           'take': tk,
+           'design': design}
+    if built: out['built'] = built
+    src = opt(a, '--catalog'); saved = saved_catalog()
+    if src is None and saved and os.path.isfile(os.path.join(cat_dir(saved), 'catalog.json')): src = saved
+    merged = bool(src and tk)
+    if merged:
+        t, code = taken(src, tk, a)
+        if code: emit(t); sys.exit(2)
+        out['publish']['files'].update(t['files']); out['catalog'] = t['catalog']; out['entries'] = t['entries']
     out['next'] = ['adp.py check ' + d,
-                   'adp.py pack ' + d + '   (run after your last edit to DIR)',
-                   'Artifact publish with the `publish` arguments: file_path, root, files, capabilities, icon, label "adp/2 start"',
-                   'Open the url the publish returned in the browser pane (navigate): the page expands seed.json and seed/ into its database on that first open',
-                   'ArtifactData get status/seed until state is done',
-                   'stop: the user confirms the page in the browser; then run the export below',
-                   'adp.py export ' + d + ' --url URL   (the url the publish returned; run its two ArtifactData calls, then the same export again; the first export is a delta over ' + d.rstrip('/') + '.adp/bundle)']
+                   'Design it: read `design` above, take a theme and the layouts the content needs from the catalog, then write page.css and the views for this content (a script that emits them beats typing)' if design and not built else '',
+                   'Artifact publish with the `publish` arguments (first publish: add icon; label "adp/2 start"); its files already carry the kit entries' if merged else 'Artifact publish with the `publish` arguments (first publish: add icon; label "adp/2 start")',
+                   ('adp.py take ' + (saved or '<catalog url>') + ' ' + ' '.join(tk) + ', then publish those files to the same url') if tk and not merged else '',
+                   'Open the page as an editor (you, or the owner): it expands seed.json and seed/ into its database on that first open and shows what ADP is while it does. Only when nobody can open it: adp.py seed ' + d + ' --batches prints the ArtifactData batches']
+    out['next'] = [x for x in out['next'] if x]
     return emit(out)
-
-
-def take_into(d, ids):
-    """`take DIR ID ...`: the one Artifact read that brings the entries' files (registryDependencies first) as text into DIR/kit; propose carries them."""
-    url = saved_site() or sys.exit('take: no saved catalog; adp.py site <url> saves it')
-    cat, _ = index_of(url, [])
-    by = {e['name']: e for e in map(rec, cat['entries'])}; order, seen = [], set()
-    def visit(i):
-        if i in seen: return
-        if i not in by: sys.exit(f'no entry {i} in {url}')
-        seen.add(i)
-        for r in by[i].get('registryDependencies', []): visit(r)
-        order.append(i)
-    for i in ids: visit(i)
-    paths = [f['path'] for i in order for f in by[i]['files']]
-    return emit({'entries': order, 'calls': [{'tool': 'Artifact', 'action': 'read', 'url': url, 'paths': paths, 'out_dir': os.path.join(d, 'kit')}],
-                 'then': f'after the Artifact read, run adp.py propose {d} --by <you>'})
 
 
 def take(a):
     pos = bare(a[1:])
-    if len(pos) < 2: sys.exit('usage: adp.py take DIR ID ...   (the one Artifact read into DIR/kit)\n       adp.py take SITE ID ... [--url URL] [--config C.json]   (the catalog site: SITE is its url, - (saved), or a local adp.json)')
-    if os.path.isdir(pos[0]): return take_into(pos[0], pos[1:])
+    if len(pos) < 2: sys.exit('usage: adp.py take CATALOG ID ... [--url URL] [--config C.json]   CATALOG: the catalog url, - (saved), or a local catalog.json')
     src = pos[0]
-    if src == '-': src = saved_site() or sys.exit('take: no saved catalog; adp.py site <url> saves one')
+    if src == '-': src = saved_catalog() or sys.exit('take: no saved catalog; adp.py catalog <url> saves one')
     live = bool(CAT_URL.match(src))
     if live:
-        url, idx = src.rstrip('/'), os.path.join(cat_dir(src), 'adp.json')
-        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'site': url, 'fetch': fetch_call(url)}); sys.exit(2)
+        url, idx = src.rstrip('/'), os.path.join(cat_dir(src), 'catalog.json')
+        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': url, 'fetch': fetch_call(url)}); sys.exit(2)
     else:
         idx = src
-        if not os.path.isfile(idx): sys.exit(f'take: {src} is neither a catalog url nor a adp.json')
+        if not os.path.isfile(idx): sys.exit(f'take: {src} is neither a catalog url nor a catalog.json')
         cfg = cvalues(read_doc(opt(a, '--config'))) if opt(a, '--config') else {}
-        url = opt(a, '--url') or cfg.get('links.site') or json.load(open(idx)).get('url')
+        url = opt(a, '--url') or cfg.get('links.catalog') or json.load(open(idx)).get('url')
         if not url: sys.exit('take: no catalog url. Pass the catalog url as CATALOG (then the index is the live one), or --url with a local index')
-    cat = json.load(open(idx)); refuse_old(cat); by = {e['name']: e for e in map(rec, cat['entries'])}
+    cat = json.load(open(idx)); by = {e['id']: e for e in cat['entries']}
     order, seen = [], set()
     def visit(i):
         if i in seen: return
         if i not in by: sys.exit(f'no entry {i} in {pos[0]}')
         seen.add(i)
-        for r in by[i].get('registryDependencies', []): visit(r)
+        for r in by[i].get('requires', []): visit(r)
         order.append(i)
     for i in pos[1:]: visit(i)
     m = {}
     for i in order:
         for f in by[i]['files']:
+            if f.get('role') == 'sample' and i not in pos[1:]: continue
             m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))
     info = {'url': url, 'index': os.path.abspath(idx), 'live': live, 'ver': cat.get('ver') or None, 'built': cat.get('built')}
     if not live: info['warning'] = 'a local index is a build, not the live catalog: a file it lists may be missing there. adp.py take <catalog url> ... reads the fetched live index'
-    return emit({'site': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}})
-
-
-OLD_FORMAT = 'this catalog is in the pre-0.5.3 format; refresh it from a catalog published at 0.5.3+ (adp.py site <url>)'
-
-
-class OldFormat(SystemExit):
-    """A catalog index in the pre-0.5.3 shape (an entry with `id`, or without `type`): refused, never read."""
-
-
-def refuse_old(cat):
-    if any('id' in e or 'type' not in e for e in cat['entries']): raise OldFormat(OLD_FORMAT)
-    return cat
+    return emit({'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}})
 
 
 def index_of(src, a):
-    """(catalog dict, warning or None) for a SITE argument, resolved as `take` does: url (fetched index), - (saved), or a local adp.json."""
-    if src == '-': src = saved_site() or sys.exit('no saved catalog; adp.py site <url> saves one')
+    """(catalog dict, warning or None) for a CATALOG argument, resolved as `take` does: url (fetched index), - (saved), or a local catalog.json."""
+    if src == '-': src = saved_catalog() or sys.exit('no saved catalog; adp.py catalog <url> saves one')
     if CAT_URL.match(src):
-        idx = os.path.join(cat_dir(src), 'adp.json')
-        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'site': src.rstrip('/'), 'fetch': fetch_call(src.rstrip('/'))}); sys.exit(2)
-        return refuse_old(json.load(open(idx))), None
-    if not os.path.isfile(src): sys.exit(f'{src} is neither a catalog url nor a adp.json')
-    return refuse_old(json.load(open(src))), 'a local index is a build, not the live catalog: a file it lists may be missing there'
-
-
-def rec(e):
-    """A catalog entry (a record: name, description, keywords, registryDependencies, dependencies, meta, modules) with the working fields the
-    readers below use added: exports (the ones its modules declare), about."""
-    return dict(e, exports=[x['name'] for mo in e.get('modules', []) for x in mo.get('exports', [])], about=e.get('docs') or e.get('description', ''))
+        idx = os.path.join(cat_dir(src), 'catalog.json')
+        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': src.rstrip('/'), 'fetch': fetch_call(src.rstrip('/'))}); sys.exit(2)
+        return json.load(open(idx)), None
+    if not os.path.isfile(src): sys.exit(f'{src} is neither a catalog url nor a catalog.json')
+    return json.load(open(src)), 'a local index is a build, not the live catalog: a file it lists may be missing there'
 
 
 WORD = re.compile(r'[a-z0-9]+')
@@ -812,101 +510,41 @@ WORD = re.compile(r'[a-z0-9]+')
 
 def suggest(a):
     pos, words, n = bare(a[1:]), opt(a, '--for'), int(opt(a, '--n', 3))
-    if len(pos) != 1 or not words: sys.exit('usage: adp.py suggest SITE --for "free words" [--n 3] [--kind K]')
+    if len(pos) != 1 or not words: sys.exit('usage: adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]')
     cat, warn = index_of(pos[0], a); want = set(WORD.findall(words.lower())); want |= {w[:-1] for w in want if len(w) > 3 and w.endswith('s')}
     groups = {}
-    for e in map(rec, cat['entries']):
-        kind = e['name'].split('.')[0]
-        if opt(a, '--kind') and opt(a, '--kind') not in (kind, e['type'].split(':')[-1]): continue
-        hit = [t for t in e.get('keywords', []) if want & set(WORD.findall(t.lower()))]
-        sw = want & set(WORD.findall((e.get('description', '') + ' ' + e.get('title', '')).lower()))
+    for e in cat['entries']:
+        kind = e['id'].split('.')[0]
+        if opt(a, '--kind') and kind != opt(a, '--kind'): continue
+        tags = {t.lower(): t for t in e.get('tags', [])}
+        hit = [t for t in e.get('tags', []) if want & set(WORD.findall(t.lower()))]
+        sw = want & set(WORD.findall((e.get('summary', '') + ' ' + e.get('name', '')).lower()))
         score = 3 * len(hit) + len(sw)
-        if score: groups.setdefault(kind, []).append((score, e['name'], {'id': e['name'], 'kind': kind, 'why': 'keywords: ' + ', '.join(hit or sorted(sw)),
-                  'registryDependencies': e.get('registryDependencies', []), 'takes': len(e['files'])}))
+        if score: groups.setdefault(kind, []).append((score, e['id'], {'id': e['id'], 'kind': kind, 'why': 'tags: ' + ', '.join(hit or sorted(sw)),
+                  'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') != 'sample'])}))
     out = [x[2] for k in sorted(groups) for x in sorted(groups[k], key=lambda t: (-t[0], t[1]))[:n]]
     if warn: sys.stderr.write('warning: ' + warn + '\n')
     return emit(out)
 
 
-def kit_consume(path, a):
-    """`kit consume PACK [--site DIR]`: the repo end of the catalog bench's Export. PACK is the adp-seed/2 pack the bench wrote to
-    ns/users/<uid>/bench/<name>/pack (field `text`; save it to a file). Every entries/<name> doc must pass its schema, name its folder
-    kit/<name>/, and carry a files/<id> doc per file whose sha256 and bytes match and whose item hash recomputes; then the files and
-    registry-item.json are written under SITE and `kit check <name>` runs on them. Any mismatch stops with nothing written."""
-    import adp_kit
-    site = os.path.abspath(opt(a, '--site', 'adp/site'))
-    try: pack = json.load(open(path, encoding='utf-8'))
-    except (OSError, ValueError) as e: sys.exit('kit consume: ' + str(e))
-    if not isinstance(pack, dict) or pack.get('schema') != 'adp-seed/2' or not isinstance(pack.get('docs'), list): sys.exit('kit consume: not an adp-seed/2 pack (schema, docs)')
-    by = lambda c: {x['id']: x['data'] for x in pack['docs'] if x.get('collection') == c}
-    ents, fdocs = by('entries'), by('files'); out, plan = [], []
-    if not ents: sys.exit('kit consume: the pack holds no entries/<name> doc')
-    for name, e in ents.items():
-        if e.get('name') != name: sys.exit('kit consume: entries/%s names %s' % (name, e.get('name')))
-        raw = {k: v for k, v in e.items() if k not in adp_kit.ENVELOPE}; raw['files'] = [{k: v for k, v in f.items() if k not in ('sha256', 'bytes')} for f in e.get('files', [])]
-        bad = adp_kit.validate_doc('entries', dict(raw, **{k: e.get(k) for k in adp_kit.ENVELOPE if k in e}))      # the record as registry-item.json holds it, plus hash, at, by
-        if bad: sys.exit('kit consume: entries/%s · %s · %s' % (name, bad[0]['field'], bad[0]['expected']))
-        hashes, texts = {}, {}
-        for f in e['files']:
-            q = os.path.normpath(f['path'])
-            if os.path.isabs(q) or not q.startswith('kit' + os.sep + name + os.sep): sys.exit('kit consume: %s is not under kit/%s/' % (f['path'], name))
-            d = next((x for x in fdocs.values() if x.get('path') == f['path']), None)
-            if d is None: sys.exit('kit consume: no files/ doc for ' + f['path'])
-            if adp_kit.sha(d['text']) != f['sha256'] or d.get('sha256') != f['sha256'] or len(d['text'].encode('utf-8')) != f['bytes']: sys.exit('kit consume: %s differs from its recorded sha256 or bytes' % f['path'])
-            hashes[f['path']] = f['sha256']; texts[f['path']] = d['text']
-        if adp_kit.item_hash(raw, hashes) != e['hash']: sys.exit('kit consume: entries/%s hash does not match its record and files' % name)
-        plan.append((name, raw, texts))
-    same = {}      # an existing kit/<name>/ with the pack's files byte for byte is a no-op; with any other content it is refused
-    for name, raw, texts in plan:
-        d = os.path.join(site, 'kit', name)
-        if not os.path.isdir(d): same[name] = False; continue
-        def cur(p):
-            try: return open(os.path.join(site, p), encoding='utf-8', newline='').read()
-            except OSError: return None
-        if any(cur(p) != t for p, t in texts.items()): sys.exit('kit consume: %s already exists and its files differ from the pack; nothing written' % os.path.join('kit', name))
-        same[name] = True
-    for name, raw, texts in plan:
-        replaced = same[name]
-        if not replaced:
-            for p, t in texts.items():
-                dst = os.path.join(site, p); os.makedirs(os.path.dirname(dst), exist_ok=True)
-                with open(dst, 'w', encoding='utf-8', newline='') as g: g.write(t)
-            with open(os.path.join(site, 'kit', name, adp_kit.RECORD), 'w', encoding='utf-8') as g: g.write(json.dumps(raw, indent=2, ensure_ascii=False) + '\n')
-        r = adp_kit.check(site, name); out.append({'name': name, 'files': len(texts), 'unchanged': replaced, 'kit_check': r['summary'], 'failing': [i for i in r['items'] if i['state'] == 'failing']})
-    emit({'consumed': out, 'next': ['make site (stamps the hashes into adp.json and the seed)', 'adp.py kit check', 'review the diff, then the pull request']})
-    return 1 if any(o['kit_check']['failing'] for o in out) else 0
-
-
-def kit_tree(sub, names, a):
-    """`kit check [NAME]` on the repository's kit (adp_kit.py): the folders kit/<name>/ with their registry-item.json."""
-    import adp_kit
-    site = os.path.abspath(opt(a, '--site', 'adp/site'))
-    r = adp_kit.check(site, names[0] if names else None)
-    emit(r)
-    return adp_kit.check_exit(r)
-
-
 def kit(a):
     pos = bare(a[1:]); sub = pos[0] if pos else ''
-    if sub == 'check': return kit_tree(sub, pos[1:], a)
-    if sub == 'consume' and len(pos) == 2: return kit_consume(pos[1], a)
-    if sub not in ('list', 'show', 'describe') or (sub != 'list' and len(pos) < 2): sys.exit('usage: adp.py kit list [SITE] [--kind K] [--tag T] | show ID [SITE] | describe ID [SITE] | check [NAME] [--site DIR] | consume PACK [--site DIR]')
-    src = pos[1] if sub == 'list' and len(pos) > 1 else pos[2] if sub != 'list' and len(pos) > 2 else None
-    cat, warn = index_of(src, a) if src else (refuse_old(json.load(open(os.path.join(SITE, 'adp.json')))), None)      # no CATALOG: the catalog the plugin ships, as `new` reads it
+    if sub not in ('list', 'show', 'describe') or (sub != 'list' and len(pos) < 2): sys.exit('usage: adp.py kit list [CATALOG] [--kind K] [--tag T] | show ID [CATALOG] | describe ID [CATALOG]')
+    cat, warn = index_of((pos[1] if sub == 'list' else pos[2] if len(pos) > 2 else '-') if len(pos) > (1 if sub == 'list' else 2) else '-', a)
     if warn: sys.stderr.write('warning: ' + warn + '\n')
-    cat = dict(cat, entries=[rec(e) for e in cat['entries']])
     if sub == 'list':
         for e in cat['entries']:
-            if opt(a, '--kind') and opt(a, '--kind') not in (e['name'].split('.')[0], e['type'].split(':')[-1]): continue
-            if opt(a, '--tag') and opt(a, '--tag') not in e.get('keywords', []): continue
-            emit({'id': e['name'], 'kind': e['name'].split('.')[0], 'title': e.get('title'), 'description': e.get('description'), 'keywords': e.get('keywords', [])})
+            if opt(a, '--kind') and e['id'].split('.')[0] != opt(a, '--kind') and e.get('kind') != opt(a, '--kind'): continue
+            if opt(a, '--tag') and opt(a, '--tag') not in e.get('tags', []): continue
+            emit({'id': e['id'], 'kind': e['id'].split('.')[0], 'name': e.get('name'), 'summary': e.get('summary'), 'tags': e.get('tags', [])})
         return 0
-    e = next((x for x in cat['entries'] if x['name'] == pos[1]), None) or sys.exit(f'no entry {pos[1]} in the catalog')
+    e = next((x for x in cat['entries'] if x['id'] == pos[1]), None) or sys.exit(f'no entry {pos[1]} in the catalog')
+    paths = [f['path'] for f in e['files'] if f.get('role') != 'sample']; sample = [f['path'] for f in e['files'] if f.get('role') == 'sample']
     if sub == 'show':
-        return emit({'id': e['name'], 'title': e.get('title'), 'description': e.get('description'), 'about': e['about'], 'keywords': e.get('keywords', []),
-                     'files': [f['path'] for f in e['files']], 'registryDependencies': e.get('registryDependencies', []), 'exports': e.get('exports', [])})
-    return emit({'id': e['name'], 'needs': e.get('dependencies', []), 'exports': e.get('exports', []),
-                 'registryDependencies': e.get('registryDependencies', []), 'files': [f['path'] for f in e['files']]})
+        return emit({'id': e['id'], 'name': e.get('name'), 'summary': e.get('summary'), 'about': e.get('details') or e.get('about') or '', 'tags': e.get('tags', []),
+                     'files': [f['path'] for f in e['files']], 'requires': e.get('requires', []), 'provides': e.get('provides', [])})
+    return emit({'id': e['id'], 'needs': e.get('globals', []), 'optional': e.get('optional', []), 'provides': e.get('provides', []),
+                 'requires': e.get('requires', []), 'files': paths, 'sample': sample[0] if sample else None})
 
 
 def content_of(d):
@@ -914,15 +552,6 @@ def content_of(d):
     if not os.path.isfile(p): return {}
     m = re.search(r'window\.ADP_CONTENT\s*=\s*(\{.*\})\s*;', open(p, encoding='utf-8').read(), re.S)
     return json.loads(m.group(1)) if m else {}
-
-
-def schema_gate(docs, where, partial=False, seed=False):
-    """The one write gate: every (collection, id, data) validated against its schema/<collection>.schema.json (adp_kit.validate) before a
-    batch is printed or a seed written. A bad doc stops: `file · collection/id · field · rule`. partial (an update patch): `required` is not demanded."""
-    import adp_kit
-    for c, i, data in docs:
-        for f in adp_kit.validate_doc(c, data, partial, i):
-            sys.exit(f"adp: {where(c, i)} \u00b7 {c}/{i} \u00b7 {f['field']} \u00b7 expected {f['expected']}, found {f['found']}")
 
 
 class Batch:
@@ -935,7 +564,6 @@ class Batch:
         e = {'op': op, 'collection': coll, 'doc_id': doc}
         if op != 'delete':
             p = os.path.join(self.out, f"{coll.replace('/', '~')}__{doc}.json")
-            schema_gate([(coll, doc, data)], lambda c, i: p, partial=op == 'update')
             self.bytes += len(json.dumps(data, ensure_ascii=False, indent=1).encode())
             if not self.dry: json.dump(data, open(p, 'w'), ensure_ascii=False, indent=1); e['file_path'] = os.path.abspath(p)
         k = f'{coll}/{doc}'
@@ -1003,13 +631,10 @@ def seed_docs(d, by, version, at, data=None, role='', summary=None):
     """Every doc the seed holds, in order: the --data docs, then parts, content, changes, agents, manifest last. A --data doc in a
     generated collection merges into the generated one (its fields win); one for a doc nothing generates is kept as given."""
     w, empty = seed_writes(d, by, version, at, role, summary)
-    gen = {(c, i) for c, i, _ in w}
-    over = {(c, i): data for c, i, data in (data or []) if c in PROTO and (c, i) in gen}
+    over = {(c, i): data for c, i, data in (data or []) if c in PROTO}
     docs = [(c, i, dict(data, **over.pop((c, i), {}))) for c, i, data in w]
-    extra = [(c, i, data) for c, i, data in (data or []) if not (c in PROTO and (c, i) in gen)]
+    extra = [(c, i, data) for c, i, data in (data or []) if c not in PROTO] + [(c, i, data) for (c, i), data in over.items()]
     docs = extra + docs[:-1] + [docs[-1]]
-    ent = [{'doc': c + '/' + i} for c, i, _ in extra]      # changes/000001 names the page's own docs it wrote (Latest entries reads them)
-    if ent: docs = [(c, i, dict(x, data=ent) if c == 'changes' and i == '000001' else x) for c, i, x in docs]
     return docs, empty
 
 
@@ -1017,42 +642,39 @@ def read_seed(d):
     """The docs a DIR's seed.json and packs hold now: (index, [(collection, id, data)]); ({}, []) without one."""
     p = os.path.join(d, SEED)
     if not os.path.isfile(p): return {}, []
-    f = json.load(open(p, encoding='utf-8')); docs = []
+    f = json.load(open(p, encoding='utf-8')); docs = list(f['docs']) if isinstance(f.get('docs'), list) else []   # adp-seed/1 held them inline
     for pk in f.get('packs') or []:
         q = os.path.join(d, pk)
         if os.path.isfile(q): docs += json.load(open(q, encoding='utf-8')).get('docs') or []
-    return f, [(x['collection'], x['id'], x['data']) + ((True,) if x.get('given') else ()) for x in docs if isinstance(x, dict) and isinstance(x.get('data'), dict)]
+    return f, [(x['collection'], x['id'], x['data']) for x in docs if isinstance(x, dict) and isinstance(x.get('data'), dict)]
 
 
 def seed_given(d, data=None):
     """What the seed carries beyond the generated docs: the extra docs its packs hold now and the overrides its index keeps, with the
     --data docs of this run replacing them by id -> ([(collection, id, data)], index)."""
     old, had = read_seed(d)
-    gen = {(c, i) for c, i, _ in seed_writes(d, 'adp', '1', '')[0]}      # what this DIR generates now
-    extra = {(c, i): x[0] for c, i, *x in had if c not in PROTO or len(x) > 1}      # a packed doc marked `given` (the kit's parts) is kept; a generated one is remade
+    extra = {(c, i): x for c, i, x in had if c not in PROTO}
     over = {(x['collection'], x['id']): x['data'] for x in old.get('overrides') or []}
-    for c, i, x in (data or []): (over if c in PROTO and (c, i) in gen else extra)[(c, i)] = x
+    for c, i, x in (data or []): (over if c in PROTO else extra)[(c, i)] = x
     return [(c, i, x) for (c, i), x in extra.items()] + [(c, i, x) for (c, i), x in over.items()], old
 
 
-def seed_file(d, by=None, version=None, at=None, data=None, summary=None, role=''):
+def seed_file(d, by='adp', version='1', at=None, data=None, summary=None, role=''):
     """Write DIR/seed.json (adp-seed/2, the index) and DIR/seed/pack-NNN.json (the docs, PACK bytes each, manifest/current the last doc):
     the page expands them when its db is empty and an editor opens it. --data docs given before are kept (replaced by id when given
-    again); by and version given here win, None keeps the file's. Unchanged docs keep the files as they are (so `files --since` does
-    not re-send them); returns True when (re)written."""
-    given, old = seed_given(d, data); had = [x[:3] for x in read_seed(d)[1]]; gen = {(c, i) for c, i, _ in seed_writes(d, 'adp', '1', '')[0]}
-    by, version = by or old.get('by', 'adp'), version or old.get('label', '1')     # given wins; a refresh (adp.py files) keeps what the file says
+    again). Unchanged docs keep the files as they are (so `files --since` does not re-send them); returns True when (re)written."""
+    given, old = seed_given(d, data); had = read_seed(d)[1]
+    by, version = old.get('by', by), old.get('version', version)
     role, summary = role or old.get('role', ''), summary or old.get('summary')
     strip = lambda docs: [(c, i, {k: v for k, v in x.items() if k not in ('at', 'last_seen')}) for c, i, x in docs]
     docs, empty = seed_docs(d, by, version, at or old.get('at') or now(), given, role, summary)
     if old.get('schema') == 'adp-seed/2' and strip(had) == strip(docs): return False
     at = at or now(); docs, empty = seed_docs(d, by, version, at, given, role, summary)
-    packs, cur, size = [], [], 0; mark = {(c, i) for c, i, _ in given if c in PROTO and (c, i) not in gen}   # given docs in a generated collection: flagged so a refresh keeps them
+    packs, cur, size = [], [], 0
     for c, i, x in docs:
-        e = {'collection': c, 'id': i, 'data': x, **({'given': True} if (c, i) in mark else {})}
-        n = len(json.dumps(e, ensure_ascii=False).encode())
+        n = len(json.dumps({'collection': c, 'id': i, 'data': x}, ensure_ascii=False).encode())
         if cur and size + n > PACK: packs.append(cur); cur, size = [], 0
-        cur.append(e); size += n
+        cur.append({'collection': c, 'id': i, 'data': x}); size += n
     if cur: packs.append(cur)
     sd = os.path.join(d, SEED_DIR); os.makedirs(sd, exist_ok=True)
     for n in os.listdir(sd):
@@ -1063,13 +685,37 @@ def seed_file(d, by=None, version=None, at=None, data=None, summary=None, role='
         json.dump({'schema': 'adp-seed/2', 'pack': k, 'of': len(packs), 'docs': pk}, open(os.path.join(d, name), 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
     counts = {}
     for c, i, x in docs: counts[c] = counts.get(c, 0) + 1
-    stamp = hashlib.sha256(json.dumps(strip(docs), sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:12]   # changes exactly when the seeded docs do; the page re-seeds when it differs from status/seed.version
-    idx = {'schema': 'adp-seed/2', 'version': stamp, 'label': version, 'by': by, 'at': at, 'docs': len(docs), 'collections': counts, 'packs': names,
-           'overrides': [{'collection': c, 'id': i, 'data': x} for c, i, x in given if c in PROTO and (c, i) in gen]}
+    idx = {'schema': 'adp-seed/2', 'version': version, 'by': by, 'at': at, 'docs': len(docs), 'collections': counts, 'packs': names,
+           'overrides': [{'collection': c, 'id': i, 'data': x} for c, i, x in given if c in PROTO]}
     if role: idx['role'] = role
     if summary: idx['summary'] = summary
     json.dump(idx, open(os.path.join(d, SEED), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return True
+
+
+def seed(a):
+    d = bare(a[1:])[0] if bare(a[1:]) else sys.exit('usage: adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--batches] [--dry-run]')
+    at, dry = opt(a, '--at') or now(), '--dry-run' in a
+    given, old = seed_given(d, data_docs(optall(a, '--data')))
+    by, version = opt(a, '--by') or old.get('by', 'adp'), opt(a, '--version') or old.get('version', '1')
+    role, summary = opt(a, '--role') or old.get('role', ''), opt(a, '--summary') or old.get('summary')
+    docs, empty = seed_docs(d, by, version, at, given, role, summary)
+    if '--batches' in a:
+        b = Batch(opt(a, '--out', d.rstrip('/') + '.adp'), {}, dry)
+        for c, i, x in docs: b.put('set', c, i, x)
+        if dry:
+            n = {c: sum(1 for w in b.w if w['collection'] == c) for c in dict.fromkeys(w['collection'] for w in b.w)}
+            return emit({'collections': n, 'batches': math.ceil(len(b.w) / 50), 'skipped_empty': empty, 'bytes': b.bytes})
+        return b.emit(extra={'skipped_empty': empty} if empty else None)
+    n = {}
+    for c, i, x in docs: n[c] = n.get(c, 0) + 1
+    if dry: return emit({'collections': n, 'docs': len(docs), 'batches': math.ceil(len(docs) / 50), 'skipped_empty': empty,
+                         'bytes': sum(len(json.dumps(x, ensure_ascii=False).encode()) for c, i, x in docs)})
+    written = seed_file(d, by, version, at, data=given, summary=summary, role=role)
+    idx = read_seed(d)[0]
+    return emit({'seed': os.path.join(d, SEED), 'written': written, 'docs': idx['docs'], 'collections': idx['collections'], 'packs': idx['packs'],
+                 'bytes': sum(os.path.getsize(os.path.join(d, p)) for p in idx['packs']), 'skipped_empty': empty,
+                 'next': 'publish DIR (seed.json and seed/ go up with the files) and open the page once as an editor: it expands the packs into its database'})
 
 
 # The core switches: key -> (type, default, enum options). assets/adp.js is the source of truth; the two must agree.
@@ -1078,11 +724,10 @@ CORE = {
     'edit.require-hold': ('bool', False, None), 'parts.locked': ('list', [], None), 'comments.enabled': ('bool', True, None),
     'panel.changes': ('enum', 'everyone', ['everyone', 'editors', 'off']), 'panel.checks': ('enum', 'editors', ['everyone', 'editors', 'off']),
     'playground.enabled': ('bool', True, None), 'look.theme': ('text', '', None), 'look.mode': ('enum', 'auto', ['auto', 'light', 'dark']),
-    'look.density': ('enum', 'comfortable', ['comfortable', 'compact']), 'links.site': ('url', '', None),
+    'look.density': ('enum', 'comfortable', ['comfortable', 'compact']), 'links.catalog': ('url', '', None),
     'links.board': ('url', '', None), 'links.repo': ('url', '', None), 'log.data-changes': ('bool', True, None),
-    'inbox.auto_accept': ('bool', True, None),
 }
-KEY = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z0-9]+(?:[-_][a-z0-9]+)*')
+KEY = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z0-9]+(?:-[a-z0-9]+)*')
 
 
 def read_doc(path):
@@ -1145,8 +790,7 @@ def config_cmd(a):
         b.put('set', 'config', 'current', {'schema': 'adp-config/1', 'at': at, 'by': by, 'values': vals, 'changed': chg}, exists=True)
         if cvalues(doc)['log.data-changes'] is not False:
             b.put('set', 'changes', 'd-' + str(int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)),
-                  {'version': '', 'at': at, 'by': by, 'summary': f'Set {key} = {json.dumps(val)}', 'parts': [], 'threads': [],
-                   'data': [{'doc': 'config/current'}]})
+                  {'version': '', 'at': at, 'by': by, 'summary': f'Set {key} = {json.dumps(val)}', 'parts': [], 'threads': [], 'data': [{'doc': 'config/current'}]})
         return b.emit((), {'key': key, 'value': val, **({} if key in CORE else {'unknown': True})})
     if len(bare(a[1:])) < 1: sys.exit('usage: adp.py config DIR [--doc C.json]  |  adp.py config set KEY VALUE ...')
     v = cvalues(read_doc(opt(a, '--doc')))
@@ -1171,7 +815,7 @@ def record(a):
     pos = bare(a[1:])
     if len(pos) != 2 or not opt(a, '--seq') or not opt(a, '--summary'):
         sys.exit('usage: adp.py record OLD.json DIR --seq N --by NAME --summary S [--version V] [--threads T,..] [--pins P.json]')
-    o = json.load(open(pos[0])); o = manifest_of(o)      # a saved doc may wrap its fields in data
+    o = json.load(open(pos[0])); o = o.get('data', o) if 'parts' not in o else o      # a saved doc may wrap its fields in data
     d = pos[1]; n = manifest_dir(d)
     by, at, version = opt(a, '--by', 'agent'), now(), opt(a, '--version', '')
     seq, summary = opt(a, '--seq').zfill(6), opt(a, '--summary')
@@ -1179,7 +823,6 @@ def record(a):
     pins = json.load(open(opt(a, '--pins'))) if opt(a, '--pins') else {}
     real = lambda m: {k: v for k, v in m.get('parts', {}).items() if not k.startswith(REST)}
     op, np_, moved, cont = real(o), real(n), [], content_of(d)
-    own_to = own_hashes(d)      # each moved part also logs the hash of its own text (children excluded): [from, to], from unknown here
     ch = {p for p in np_ if p not in op or op[p] != np_[p]} | {p for p in op if p not in np_}
     par = {**o.get('parents', {}), **n.get('parents', {})}
     guard(a, ch, {p for p in ch if p in op and not any(par.get(c) == p for c in ch)}, set(op))
@@ -1188,11 +831,11 @@ def record(a):
         if p not in op:
             b.put('set', 'parts', p, {'title': (cont.get(p) or {}).get('title', p), 'parent': n['parents'].get(p, ''), 'hash': h, 'version': version,
                                       'at': at, 'by': by, 'summary': 'added: ' + summary, 'holder': '', 'hold_until': '', 'file': n['part_file'].get(p, '')})
-            moved.append({'id': p, 'from': '', 'to': h, 'own': [None, own_to.get(p)]})
+            moved.append({'id': p, 'from': '', 'to': h})
         elif op[p] != h:
             b.put('update', 'parts', p, {'hash': h, 'version': version, 'at': at, 'by': by, 'summary': summary, 'holder': '', 'hold_until': '',
                                          'file': n['part_file'].get(p, '')})
-            moved.append({'id': p, 'from': op[p], 'to': h, 'own': [None, own_to.get(p)]})
+            moved.append({'id': p, 'from': op[p], 'to': h})
     for p in op:
         if p not in np_: b.put('delete', 'parts', p); moved.append({'id': p, 'from': op[p], 'to': ''})
     b.put('set', 'changes', seq, {'version': version, 'at': at, 'by': by, 'summary': summary, 'parts': moved, 'threads': threads})
@@ -1218,22 +861,7 @@ def req_dump(path):
 
 
 def rstate(d):
-    return 'done' if d.get('state') == 'done' or d.get('status') == 'done' else 'working' if d.get('state') == 'working' else 'ack' if d.get('state') in ('ack', 'seen') else 'queue'
-
-
-READS = {'part': 'the part {id} in the files', 'record': 'records/{id}', 'entry': 'entries/{id}', 'file': 'files/{id}', 'change': 'changes with version {id}', 'page': 'the whole page', 'session': 'presence/{id}'}
-
-
-def reads(sc):
-    """What an agent opens for a request's scope (references/requests.md); an old scope with no kind is a part."""
-    k = sc.get('kind') or ('part' if sc.get('id') else 'page')
-    return READS.get(k, '').format(id=sc.get('id', ''))
-
-
-def other_session(d, by):
-    """A ping scoped to one session (scope {kind: session, id}) belongs to that session only; with no --by every ping is shown."""
-    sc = d.get('scope') or {}
-    return bool(by) and d.get('lane') == 'ping' and sc.get('kind') == 'session' and bool(sc.get('id')) and sc.get('id') != by
+    return 'done' if d.get('status') == 'done' else 'working' if d.get('state') == 'working' else 'ack' if d.get('state') in ('ack', 'seen') else 'queue'
 
 
 def requests_cmd(a):
@@ -1243,24 +871,23 @@ def requests_cmd(a):
     docs, by, at = req_dump(pos[0]), opt(a, '--by', 'agent'), now()
     acts = [x for x in ('--ack', '--progress', '--done') if x in a]
     if not acts:
-        rows = [{'id': k, 'lane': d.get('lane', ''), 'state': rstate(d), 'scope': d.get('scope') or {}, 'reads': reads(d.get('scope') or {}), 'project': d.get('project', ''),
+        rows = [{'id': k, 'lane': d.get('lane', ''), 'state': rstate(d), 'scope': d.get('scope') or {}, 'project': d.get('project', ''),
                  'text': d.get('text', ''), 'quote': d.get('quote', ''), 'by': d.get('by', ''), 'at': d.get('at', ''),
-                 'last_progress': ((d.get('progress') or [{}])[-1] or {}).get('text', ''), 'reopened': bool(d.get('response') or d.get('done_at') or d.get('doneAt'))}
-                for k, (d, _) in docs.items() if d.get('status') != 'done' and not other_session(d, opt(a, '--by'))]
+                 'last_progress': ((d.get('progress') or [{}])[-1] or {}).get('text', ''), 'reopened': bool(d.get('response') or d.get('doneAt'))}
+                for k, (d, _) in docs.items() if d.get('status') != 'done']
         rows.sort(key=lambda r: r['at'])
-        return emit({'open': rows, 'count': len(rows), 'trailer': '· adp request {<rid>} · lane <lane> · scope <kind>:<id>|page'})
+        return emit({'open': rows, 'count': len(rows), 'trailer': '· adp request {<rid>} · lane <lane> · scope part:<id>|page'})
     if len(acts) > 1: sys.exit('one of --ack, --progress, --done')
     act = acts[0]; rid = opt(a, act)
     if not rid or rid.startswith('--'): sys.exit(use)
     if rid not in docs: sys.exit(f'{rid}: not in {pos[0]}')
     d, ver = docs[rid]
-    if other_session(d, opt(a, '--by')): sys.exit(f"{rid}: a ping for session {d['scope']['id']}, not {by}")
     pins = json.load(open(opt(a, '--pins'))) if opt(a, '--pins') else {}
     if ver is not None: pins.setdefault(f'requests/{rid}', ver)
     b = Batch(opt(a, '--out', 'requests.adp'), pins)
     doing = f"{rid} ({d.get('lane', '')})"
     if act == '--ack':
-        patch = {'state': 'ack', 'ack_by': by, 'ack_at': at}
+        patch = {'state': 'ack', 'ackBy': by, 'ackAt': at}
     elif act == '--progress':
         if not opt(a, '--text'): sys.exit('--progress needs --text T')
         patch = {'state': 'working', 'progress': list(d.get('progress') or []) + [{'at': at, 'text': opt(a, '--text')}]}
@@ -1268,18 +895,13 @@ def requests_cmd(a):
         if not opt(a, '--response'): sys.exit('--done needs --response FILE (Markdown)')
         text = open(opt(a, '--response'), encoding='utf-8').read().strip()
         changed = [x for x in (opt(a, '--changed', '') or '').split(',') if x]
-        patch = {'state': 'done', 'status': 'done', 'done_at': at, 'changed': changed, 'version': opt(a, '--version', '')}
+        patch = {'status': 'done', 'doneAt': at, 'changed': changed, 'version': opt(a, '--version', '')}
         if opt(a, '--turns'):                         # a reply reopened it: the answer is the next turn
             n = max([int(k) for k in req_dump(opt(a, '--turns')) if k.isdigit()] or [0]) + 1
             b.put('set', f'requests/{rid}/turns', f'{n:04d}', {'by': 'claude', 'at': at, 'text': text})
         else: patch['response'] = text
         doing = ''
     b.put('update', 'requests', rid, patch)
-    recs = [x for x in patch.get('changed', []) if x.startswith('records/')]
-    if recs:      # records an agent changed: one data change, named by their project (the request's)
-        b.put('set', 'changes', 'd-' + str(int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)),
-              {'version': '', 'at': at, 'by': by, 'summary': f'Request {rid} done', 'parts': [], 'threads': [], 'data': [{'doc': x} for x in recs],
-               **({'project': d['project']} if d.get('project') else {})})
     b.put('set', 'presence', by, {'at': at, 'doing': doing, 'session': by})
     return b.emit((), {'request': rid, 'state': rstate({**d, **patch})})
 
@@ -1388,25 +1010,25 @@ adp_loop.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'pack': pack_cmd, 'unpack': unpack_cmd, 'import': import_cmd, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'site': site_cmd, 'suggest': suggest, 'kit': kit, 'apply': adp_loop.apply_cmd, 'setup': setup_cmd, 'init': init_cmd, 'log': log_cmd}
+    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'log': log_cmd}
     if a and a[0] in cmds: return cmds[a[0]](a)
+    if a[:1] == ['templates']:
+        for t in sorted(os.listdir(TPL)):
+            if os.path.isfile(os.path.join(TPL, t, 'template.json')): m = tmeta(t); print(f"{t:10} {m['summary']}\n{'':10} use when: {m['use_when']}")
+        return 0
     if len(a) >= 2 and a[0] == 'files':
         since = opt(a, '--since'); n = int(opt(a, '--batch', LIMIT)); where = opt(a, '--out', a[1].rstrip('/') + '.adp')
-        if is_live(a[1]) or is_packed(a[1]): sys.exit(live_line(a[1]) if is_live(a[1]) else f'files is the catalog site\'s own publish; {a[1]} is a page: adp.py pack {a[1]}')      # a files publish over a page replaces its loader (BUG-001)
         fresh = os.path.isfile(os.path.join(a[1], SEED)) and seed_file(a[1])    # edits after `new` change the hashes the seed carries
         if not since: return emit(batched(publish_args(a[1]), a[1], n, where))
-        o = json.load(open(since)); o = manifest_of(o)
+        o = json.load(open(since)); o = o.get('data', o) if 'files' not in o else o
         nf = manifest_dir(a[1])['files']; of = o.get('files', {})
         changed = {p for p, h in nf.items() if of.get(p) != h and p != 'index.html'} | ({SEED, *read_seed(a[1])[0].get('packs', [])} if fresh else set())
         out = publish_args(a[1], changed); out['files'].update({p: None for p in of if p not in nf})
         out['page_changed'] = of.get('index.html') != nf.get('index.html')
         if not out['page_changed']: out['note'] = 'index.html is unchanged: publish with url and the changed files, still passing file_path (the tool requires it; the page is re-sent as is)'
         return emit(batched(out, a[1], n, where))
-    if a and a[0] in ('check', 'manifest', 'diff-pages') and any(not os.path.isdir(x) for x in a[1:3]):
-        sys.exit('adp/1 single-file pages are gone: adopt it into adp/2 (references/adopt.md)' if any(os.path.isfile(x) for x in a[1:3])
-                 else f'usage: adp.py {a[0]} ' + ('OLD_DIR NEW_DIR' if a[0] == 'diff-pages' else 'DIR'))
     if len(a) >= 2 and a[0] == 'check':
-        marked = load(a[1])[1]
+        marked = load(a[1])[1] if os.path.isdir(a[1]) else {a[1]: open(a[1], encoding='utf-8').read()}
         allt, bad, ids, rest, size = '\n'.join(marked.values()), [], {}, 0, 0
         for f, text in marked.items():
             parts, b = parse(text); pre = f'{f}: ' if len(marked) > 1 else ''
@@ -1416,7 +1038,7 @@ def main(a):
             if not b: rest += len(norm(own(text, parts, ''))); size += len(norm(text))
         bad += [f'part {p}: no data-part="{p}" in the page' for p in ids
                 if f'data-part="{p}"' not in allt and not p.startswith(('page.style', 'page.script'))]
-        named = set(re.findall(r'data-part="(' + ID + r')"', '\n'.join(t for f, t in marked.items() if not f.startswith('kit/'))))      # a kit entry names parts of the page it is mounted in; only the page's own files must mark theirs
+        named = set(re.findall(r'data-part="(' + ID + r')"', allt))
         bad += [f'data-part="{p}" has no part:{p} markers (a new piece nobody marked)' for p in sorted(named - set(ids))]
         r = rest if not bad else 0
         print(f'{len(ids)} parts' + (f' in {len(marked)} files' if len(marked) > 1 else '') +
@@ -1427,15 +1049,21 @@ def main(a):
         if bare: print(f'  warning: {len(bare)} part roots without data-comment-target: ' + ', '.join(bare[:8]) + (' …' if len(bare) > 8 else ''))
         return 1 if bad else 0
     if len(a) >= 2 and a[0] == 'manifest':
-        print(json.dumps(manifest_dir(a[1]), indent=1)); return 0
+        files = dict(x.split('=', 1) for x in a[a.index('--file') + 1:] if '=' in x) if '--file' in a else {}
+        m = manifest_dir(a[1]) if os.path.isdir(a[1]) else manifest(open(a[1], encoding='utf-8').read(), files)
+        print(json.dumps(m, indent=1)); return 0
     if len(a) == 3 and a[0] == 'diff':
         print(json.dumps(diff(*(json.load(open(x)) for x in a[1:])), indent=1)); return 0
     if len(a) >= 3 and a[0] == 'diff-pages':          # the diff plus what was added/removed in each deepest part
+        files = dict(x.split('=', 1) for x in a[a.index('--file') + 1:] if '=' in x) if '--file' in a else {}
         def side(x):                                    # -> manifest, {part: own text}
-            m, (_, marked) = manifest_dir(x), load(x)
-            pa = {f: parse(t)[0] for f, t in marked.items()}
-            return m, {**{p: own(marked[f], pa[f], p) for p, f in m['part_file'].items() if not p.startswith(REST)},
-                       **{f'{REST}:{f}': own(t, pa[f], REST) for f, t in marked.items()}}
+            if os.path.isdir(x):
+                m, (_, marked) = manifest_dir(x), load(x)
+                pa = {f: parse(t)[0] for f, t in marked.items()}
+                return m, {**{p: own(marked[f], pa[f], p) for p, f in m['part_file'].items() if not p.startswith(REST)},
+                           **{f'{REST}:{f}': own(t, pa[f], REST) for f, t in marked.items()}}
+            t = open(x, encoding='utf-8').read(); pa = parse(t)[0]
+            return manifest(t, files), {**{p: own(t, pa, p) for p in pa}, REST: own(t, pa, REST)}
         (om, ot), (nm, nt) = side(a[1]), side(a[2]); d = diff(om, nm)
         tok = lambda t: [x for x in (norm(y) for y in re.split(r'(?<=>)|(?=<)', t)) if x]
         d['detail'] = {}
