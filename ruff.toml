@@ -1,0 +1,7 @@
+# Lint = pyflakes errors only (unused names, undefined names). The scripts are written in a dense one-line style, so style rules are off.
+target-version = "py39"
+# adp_loop.py is an unmodified copy of the 5Q script: not linted here.
+extend-exclude = ["skill/scripts/adp_loop.py", "skill/catalog", "skill/templates"]
+
+[lint]
+select = ["F"]
