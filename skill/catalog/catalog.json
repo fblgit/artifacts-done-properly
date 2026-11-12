@@ -1141,7 +1141,7 @@
     {
      "board": "this repository",
      "file": "skill/assets/adp.js",
-     "what": "the same bytes; tools/check_runtime.py keeps the two equal"
+     "what": "the same bytes; tools/check_catalog.py keeps the two equal"
     }
    ],
    "changed": [
