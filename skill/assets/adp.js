@@ -1,6 +1,25 @@
-/* adp.js: adp/2 page runtime. What changed panel, content as data, part-id comment anchors, page self-check,
-   and ADP.config (switches in the db doc config/current; see docs/config.md), ADP.user, ADP.db, ADP.ns.
-   Load it before the page's own scripts. The page calls ADP.page({...}) once its views exist. */
+/**
+ * ADP runtime
+ * The adp/2 page runtime. Load it before the page's own scripts, then call ADP.page({view, expected, titles, legacy, all, reveal}) once the views exist.
+ *
+ * It paints content/<part id> docs live, lists changes/ and active decisions/ in the What changed panel, shows proposals in incoming/, anchors comments to [data-part] elements, hashes the page's parts at open and compares them with manifest/current (integrity), and writes checks/latest when the viewer can edit. It also carries ADP.config (switches in the db doc config/current), ADP.user, ADP.db and ADP.ns(name), and expands the seed packs published beside the page on first open.
+ *
+ * @id        runtime.adp
+ * @group     Runtime
+ * @status    stable
+ * @version   2.0.0
+ * @updated   2026-11-12
+ * @summary   The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.
+ * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
+ * @requires  none
+ * @provides  window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP_CHECK, window.ADP_SEED
+ * @config    <meta name="adp:build"> | the build number, before the script
+ * @config    window.ADP_CONTENT | content.js: the baseline copy of the parts
+ * @config    ADP.page(cfg) | {view(), expected(view), titles, legacy, all, reveal(id, key)}
+ * @config    page.header, page.tabs, page.changes | parts the page must render; #wc, #wcN, #wcChanges, #wcDecisions for the panel
+ * @globals   none
+ * @db        reads content, changes, decisions, incoming, manifest/current, config/current; writes checks/latest and status/integrity (editors only), config/current and a changes/d-<time> record when a setting is saved, and the seed docs on first open
+ */
 (function(){
 'use strict';
 const meta = document.querySelector('meta[name="adp:build"]');

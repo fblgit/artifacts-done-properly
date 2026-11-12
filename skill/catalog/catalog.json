@@ -1059,9 +1059,9 @@
    "kind": "component",
    "group": "Runtime",
    "name": "ADP runtime",
-   "summary": "The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors that reopen the record they belong to, and the page self-check. This catalog runs on it.",
+   "summary": "The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.",
    "about": "Load it before the page's own scripts, then call ADP.page({view, expected, titles, legacy, all, reveal}) once the views exist. It paints content/<part id> docs live, lists changes/ and active decisions/, anchors comments to [data-part] elements, and writes checks/latest when the viewer can edit.",
-   "version": "adp/2",
+   "version": "2.0.0",
    "status": "stable",
    "tags": [
     "adp",
@@ -1077,16 +1077,23 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "5d9adf1f581152b994eb0f13e9eb2cadef275c68240219ad35907d50289c396b",
-     "bytes": 11267
+     "sha256": "b7b3e303eaf03d5aa64d559b1c5c21e26bc82e66d7fc0d982086bf191a13a90d",
+     "bytes": 38014
     }
    ],
    "requires": [],
    "globals": [],
    "provides": [
-    "window.ADP.content",
     "window.ADP.page",
-    "window.ADP_CHECK"
+    "window.ADP.content",
+    "window.ADP.config",
+    "window.ADP.user",
+    "window.ADP.ns",
+    "window.ADP.classify",
+    "window.ADP.hash",
+    "window.ADP.build",
+    "window.ADP_CHECK",
+    "window.ADP_SEED"
    ],
    "needs": {
     "config": [
@@ -1111,10 +1118,15 @@
      "reads": [
       "content",
       "changes",
-      "decisions"
+      "decisions",
+      "incoming",
+      "manifest/current",
+      "config/current"
      ],
      "writes": [
-      "checks/latest (editors only)"
+      "checks/latest and status/integrity (editors only)",
+      "config/current and changes/d-<time> when a setting is saved",
+      "seed docs on first open"
      ]
     },
     "tokens": [
@@ -1127,17 +1139,16 @@
    },
    "source": [
     {
-     "board": "eventhub plugin",
-     "file": "skills/artifact-dataplane/assets/adp.js",
-     "what": "sha 5d9adf1f5811, commit f1098e86"
+     "board": "this repository",
+     "file": "skill/assets/adp.js",
+     "what": "the same bytes; tools/check_runtime.py keeps the two equal"
     }
    ],
    "changed": [
-    "Nothing: the file is the skill’s reference runtime byte for byte.",
-    "Since commit f1098e86 reveal passes the anchor’s key, PAGE.reveal(id, key), and a part on screen for another key counts as not shown. Implement reveal(id, key) to open record key, then show part id."
+    "The catalog runs the same runtime as every page the skill makes: adds ADP.config, ADP.user, ADP.ns, ADP.db, integrity and seeding on first open."
    ],
-   "hash": "33f3e61ed01a",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "9150d6c6ae9e",
+   "at": "2026-11-12T00:00:00Z",
    "by": "product-designer"
   },
   {
