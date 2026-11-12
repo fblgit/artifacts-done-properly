@@ -1,30 +1,40 @@
 /* part:page.script.kit.viz.runway */
-/* Kit visualization: expiry runway (Kit.runway)    kit version 0.1.0
-   What it is: a run of months along a gold seam, one lane for each kind, and a bubble where things end: the bubble's size is how many end that month (its area, not its width), its ring and
-   its small mark are the worst state among them, and its number is the count. A last slot, Later, holds what ends past the run. Pick a bubble (click, Enter or Space) and the board hears the
-   ids. Different from viz.timeline, which draws events down a page: this one asks "when does the next lot run out, and of which kind".
-   API:
-     Kit.runway.mount(box, opts) -> {select(ids), update(patch), destroy()}
-       opts   { items, lanes, months: 12, laneHeight: 74, laterAfter: months * 30.44 (days), now: Date | ms, locale, enum: "life", skip, severity, selected, label, host, minWidth: 720,
-                laterLabel: "Later", onPick(ids, info) }
-                items     [{id, lane, daysLeft, state, label}]  lane is a lane key; daysLeft counts from now (0 or less lands in the first month, "Now"); label names the item in the tooltip
-                lanes     [{key, label}]  top to bottom
-                skip      states left off the run (default revoked, ended, replaced, unknown: they do not end later)
-                severity  states from least to worst; the bubble shows the worst present (default ok, soon, urgent, expired); a state not in the list counts as least
-                enum      the Kit.vocab enum the states are read from (default "life", the one viz.seal defines; define your own with Kit.vocab.define)
-                onPick    gets the ids in the bubble and {lane, bin, count, state}
-       select(ids) marks the bubbles that hold those ids; update(patch) redraws with new options.
-       Binning: bin = floor(daysLeft / 30.44); a bubble's radius is 13 + sqrt(count) * 5.5. Month names follow the viewer's locale, with the year under January and under "Now".
-     Kit.runway.bins(items, opts) -> [{lane, bin, ids, state, count}]   the pure part, for a board that draws its own
-   Each bubble is a button (Tab to it; arrows move along and between lanes) with a name that says count, lane, month and the worst state, and a tip (Kit.tooltip) listing the first six labels.
-   Needs from the board:
-     requires kit.vocab (state words, glyphs, tones), kit.tooltip
-     css     kit/viz/runway.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-mono, optional --seam --seam-0..4
-     globals Kit.vocab, Kit.tooltip
-   db collections: none.
-   Lifted from: a network-ops console's expiry runway (twelve months, four lanes, bubbles binned by days left and coloured by the worst state, a Later slot, a wavy gold seam per lane).
-   Changed: months, lane height, lanes and the Later cut are options, the state is the vocab's (a glyph as well as a ring), arrows move between bubbles, and a click reports ids instead of
-   navigating. */
+/**
+ * Expiry runway
+ * A run of months along a wavy gold seam, one lane for each kind, and a bubble where things end: its area follows the count, its ring and small mark are the worst state in it, its number is the count. A last slot (Later) holds what ends past the run. Pick a bubble (click, Enter, Space) and the board hears the ids. Different from viz.timeline, which draws events down a page: this one answers when the next lot runs out and of which kind. Months, lane height, lanes and the Later cut are options; month names follow the viewer's locale with the year under January. Each bubble is a button with a name that says count, lane, month and worst state, a tip listing the first six names, and arrow-key movement along and between lanes.
+ *
+ * API:
+ *   Kit.runway.mount(box, opts) -> {select(ids), update(patch), destroy()}
+ *     opts   { items, lanes, months: 12, laneHeight: 74, laterAfter: months * 30.44 (days), now: Date | ms, locale, enum: "life", skip, severity, selected, label, host, minWidth: 720,
+ *              laterLabel: "Later", onPick(ids, info) }
+ *              items     [{id, lane, daysLeft, state, label}]  lane is a lane key; daysLeft counts from now (0 or less lands in the first month, "Now"); label names the item in the tooltip
+ *              lanes     [{key, label}]  top to bottom
+ *              skip      states left off the run (default revoked, ended, replaced, unknown: they do not end later)
+ *              severity  states from least to worst; the bubble shows the worst present (default ok, soon, urgent, expired); a state not in the list counts as least
+ *              enum      the Kit.vocab enum the states are read from (default "life", the one viz.seal defines; define your own with Kit.vocab.define)
+ *              onPick    gets the ids in the bubble and {lane, bin, count, state}
+ *     select(ids) marks the bubbles that hold those ids; update(patch) redraws with new options.
+ *     Binning: bin = floor(daysLeft / 30.44); a bubble's radius is 13 + sqrt(count) * 5.5. Month names follow the viewer's locale, with the year under January and under "Now".
+ *   Kit.runway.bins(items, opts) -> [{lane, bin, ids, state, count}]   the pure part, for a board that draws its own
+ * Each bubble is a button (Tab to it; arrows move along and between lanes) with a name that says count, lane, month and the worst state, and a tip (Kit.tooltip) listing the first six labels.
+ *
+ * Also load kit/vocab.css.
+ *
+ * @id        viz.runway
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Twelve months along a gold seam, one lane per kind, bubbles sized by how many end that month and coloured by the worst state among them; a Later slot closes the row.
+ * @tags      runway, expiry, months, lanes, bubbles, calendar, forecast, bins
+ * @requires  viz.seal, kit.vocab, kit.tooltip
+ * @provides  Kit.runway.mount, Kit.runway.bins
+ * @config    Kit.runway.mount(box, {items, lanes, months, laneHeight, laterAfter, now, locale, enum, skip, severity, selected, onPick}) | items [{id, lane, daysLeft, state, label}], lanes [{key, label}]; onPick(ids, {lane, bin, count, state})
+ * @config    states | values of the Kit.vocab enum named by opts.enum (default 'life', defined by viz.seal)
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --seam? --seam-0? --seam-1? --seam-2? --seam-3? --seam-4?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

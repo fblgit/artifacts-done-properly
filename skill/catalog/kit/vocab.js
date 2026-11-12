@@ -1,39 +1,43 @@
 /* part:page.script.kit.vocab */
-/* Kit component: state vocabulary and marks (Kit.vocab)    kit version 0.1.0
-   What it is: one table gives every state its word, short word, glyph, tone and motion. Pills, chips, orbs, checkbox tiles, lane heads and a key all read that table, so the same
-   state looks the same everywhere. A state is never colour alone: it always has a word and a glyph. A value the table leaves silent (null) draws nothing; a value the table does not
-   know draws a flagged "unknown" mark, never nothing. Plain DOM, no dependency; the glyphs are this file's own.
-   The table (the one thing later entries call):
-     { "<enum>": { "<value>": { word, short, glyph, tone, motion } | null } }
-       word    the full word ("Waiting for you")        short  the compact word ("wait")
-       glyph   a name from Kit.vocab.glyphs (below)     tone   one of Kit.vocab.tones
-       motion  "none" | "breathe" | "turn" | "nudge"    (all stop under prefers-reduced-motion)
-     null (or a row with no word) is a silent value: nothing is drawn.
-   Tones (the eight fixed meanings; the css maps them to theme tokens): neutral, active, review, attention, info, danger, success, ended.
-   Glyphs: check hourglass cross pulse hand moon ring dot eye pause stop info question reply diamond play
-   API (small and stable):
-     Kit.vocab.define(table, {replace})      merge a table of enums into the vocabulary (replace: true starts over); returns Kit.vocab
-     Kit.vocab.get(enum, value) -> row | null | undefined     row {word, short, glyph, tone, motion, char}; null = silent; undefined = the table does not know it
-     Kit.vocab.values(enum) -> [value]       the values of an enum in table order, silent ones included
-     Kit.vocab.pill(enum, value, {short, glyph:true})   -> Element | null      a word on a tinted pill with its glyph
-     Kit.vocab.chip(enum, value)             -> Element | null      the short word, small, for dense rows
-     Kit.vocab.orb(enum, value, {size:"sm"|"md"|"lg", label})  -> Element | null   a glazed bead with the glyph; a label makes it an image for assistive tech
-     Kit.vocab.tile(enum, value, {style:"box"|"text"})  -> Element | null   a hand-drawn checkbox frame (or a terminal character) over the short word
-     Kit.vocab.head(enum, value, {count})    -> Element | null      a lane head: orb, word and a count
-     Kit.vocab.key(box, {enum, values, mark:"pill"|"chip"|"tile"}) -> {destroy()}   a legend of the values (silent ones are left out and counted in the box's data-silent)
-     Kit.vocab.glyph(name, {size}) -> SVGElement     one glyph; Kit.vocab.glyphs -> [name]; Kit.vocab.registerGlyph({name: "<svg path markup, 24 grid, stroke only>"})
-     Kit.vocab.tones -> [tone];  Kit.vocab.on(fn) -> off   fn runs after define()
-     Every drawing method takes {unknown:"flag"|"skip"} (default "flag"): flag draws a dashed mark that shows the raw value and says "unknown".
-   The tone cascade: every mark sets data-vo-tone; the css turns that into --vo-c (the colour), --vo-soft (a tint) on the element, so any element inside a [data-vo-tone] can
-   read them: border-left: 3px solid var(--vo-c). Put data-vo-tone on a card to tint a whole card by its state.
-   Built-in enum "state" (generic, replaceable): queued running waiting review blocked done failed paused ended quiet(silent).
-   Needs from the board:
-     css     kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --ok --warn --danger --f-ui --f-mono, optional --info --wait (cobalt and peach in Glaze;
-             other themes fall back to --accent and --warn), optional glaze depth tokens (--hi --lo --glyph-drop --on-state)
-     globals none
-   db collections: none.
-   Lifted from: a component family's state pill, source chip and tag over a vocabulary of enum values (word, short, icon, signal; silent values draw nothing), an earlier board's hand-drawn
-   checkbox set and terminal glyphs, and a network-ops console's state orbs with glyph and cascade variables (a person-wait state of its own, a hollow turning ring). */
+/**
+ * State vocabulary and marks
+ * The foundation for anything that shows a state. A table maps {enum: {value: {word, short, glyph, tone, motion}}}; Kit.vocab.pill, chip, orb, tile, head and key draw from it, so the same state looks the same in every card, pill and lane. The eight tones (neutral, active, review, attention, info, danger, success, ended) map to theme tokens, and [data-vo-tone] sets --vo-c and --vo-soft on any element so a whole card can follow its state. A state is never colour alone: it has a word and a glyph, and a person-wait state has its own motion (a slowly turning hand). A value the table leaves null is silent and draws nothing; a value the table does not know draws a dashed unknown mark instead of hiding. Glyphs are the file's own (check, hourglass, cross, pulse, hand, moon, ring, dot, eye, pause, stop, info, question, reply, diamond, play); registerGlyph adds more. A generic built-in enum 'state' (queued, running, waiting, review, blocked, done, failed, paused, ended) works out of the box.
+ *
+ * API (small and stable):
+ *   Kit.vocab.define(table, {replace})      merge a table of enums into the vocabulary (replace: true starts over); returns Kit.vocab
+ *   Kit.vocab.get(enum, value) -> row | null | undefined     row {word, short, glyph, tone, motion, char}; null = silent; undefined = the table does not know it
+ *   Kit.vocab.values(enum) -> [value]       the values of an enum in table order, silent ones included
+ *   Kit.vocab.pill(enum, value, {short, glyph:true})   -> Element | null      a word on a tinted pill with its glyph
+ *   Kit.vocab.chip(enum, value)             -> Element | null      the short word, small, for dense rows
+ *   Kit.vocab.orb(enum, value, {size:"sm"|"md"|"lg", label})  -> Element | null   a glazed bead with the glyph; a label makes it an image for assistive tech
+ *   Kit.vocab.tile(enum, value, {style:"box"|"text"})  -> Element | null   a hand-drawn checkbox frame (or a terminal character) over the short word
+ *   Kit.vocab.head(enum, value, {count})    -> Element | null      a lane head: orb, word and a count
+ *   Kit.vocab.key(box, {enum, values, mark:"pill"|"chip"|"tile"}) -> {destroy()}   a legend of the values (silent ones are left out and counted in the box's data-silent)
+ *   Kit.vocab.glyph(name, {size}) -> SVGElement     one glyph; Kit.vocab.glyphs -> [name]; Kit.vocab.registerGlyph({name: "<svg path markup, 24 grid, stroke only>"})
+ *   Kit.vocab.tones -> [tone];  Kit.vocab.on(fn) -> off   fn runs after define()
+ *   Every drawing method takes {unknown:"flag"|"skip"} (default "flag"): flag draws a dashed mark that shows the raw value and says "unknown".
+ * The tone cascade: every mark sets data-vo-tone; the css turns that into --vo-c (the colour), --vo-soft (a tint) on the element, so any element inside a [data-vo-tone] can
+ * read them: border-left: 3px solid var(--vo-c). Put data-vo-tone on a card to tint a whole card by its state.
+ * Built-in enum "state" (generic, replaceable): queued running waiting review blocked done failed paused ended quiet(silent).
+ *
+ * Optional custom properties: --info --wait (cobalt and peach in Glaze; other themes fall back to --accent and --warn), and the glaze depth tokens --hi --lo --glyph-drop --on-state.
+ *
+ * @id        kit.vocab
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   One table gives every state its word, short word, glyph, tone and motion; pills, chips, orbs, checkbox tiles, lane heads and a key all read it, and a silent value draws nothing.
+ * @tags      state, status, vocabulary, pill, chip, orb, glyph, tone, lane head, legend, checkbox, silent
+ * @requires  kit.tokens
+ * @provides  Kit.vocab.define, Kit.vocab.get, Kit.vocab.pill, Kit.vocab.chip, Kit.vocab.orb, Kit.vocab.tile, Kit.vocab.head, Kit.vocab.key, Kit.vocab.glyph, Kit.vocab.registerGlyph, Kit.vocab.tones
+ * @config    Kit.vocab.define({enum: {value: {word, short, glyph, tone, motion}}}) | the state table; null for a silent value; tone is one of Kit.vocab.tones, glyph one of Kit.vocab.glyphs, motion none | breathe | turn | nudge
+ * @config    Kit.vocab.pill(enum, value, {short, glyph}) / chip / orb(…, {size, label}) / tile(…, {style}) / head(…, {count}) | each returns an Element, or null for a silent value; {unknown: 'skip'} hides unknown values instead of flagging them
+ * @config    Kit.vocab.key(box, {enum, values, mark}) | a legend of the values; silent values are left out and counted in data-silent
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --ok --warn --danger --info? --accent? --wait? --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

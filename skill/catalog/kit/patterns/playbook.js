@@ -1,19 +1,37 @@
 /* part:page.script.kit.patterns.playbook */
-/* Kit pattern: playbook tabs and the pipeline stepper (Kit.playbook)    kit version 0.1.0
-   What it is: two ways to lay out a procedure that people run. A playbook set is tabs of playbooks (deploy, roll back, rotate a key), each a numbered list whose steps end in a copyable command.
-   A pipeline is one row of numbered stages (edit, validate, apply, confirm); one stage is open at a time and the arrow keys walk the row. Both sit on Kit.tabs, so the keys, the
-   roving tabindex and the optional #anchor come for free. Plain DOM; every string is set with textContent.
-   API (small and stable):
-     Kit.playbook.render(box, {playbooks, label, hash, initial}) -> {tabs, copy, destroy()}
-       playbooks  [{id, title, count, steps: [{title, body, cmd, label}]}]   id is a bare token; cmd is the text to copy (one command or several lines)
-       label      the tablist's aria-label (default "Playbooks");  hash false (default here) leaves the page's #anchor alone
-     Kit.playbook.pipeline(box, {steps, label, hash, initial}) -> {tabs, destroy()}
-       steps      [{id, title, sub, kind: "gate" | "risk", heading, body, bullets: [...]}]   kind rings the number and puts the word Gate or Risky in the open panel
-   Needs from the board:
-     css     kit/tabs.css, kit/copy.css, kit/patterns/steps.css, kit/patterns/playbook.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --warn --accent --accent-ink --f-ui --f-mono --f-display, optional --seam
-     globals Kit.tabs (kit/tabs.js), Kit.copy (kit/copy.js)
-   db collections: none.
-   Lifted from: a runbook's playbook tabs with copyable steps and its pipeline stepper with a tab panel (one document). */
+/**
+ * Playbook tabs and pipeline
+ * Two layouts for a procedure people run, both on Kit.tabs: a playbook set (tabs of numbered steps that end in a copyable command block) and a pipeline (a row of numbered stages joined by a line, one open at a time, with Gate and Risky stages marked in words). Arrow keys, Home and End come from Kit.tabs; the copy button falls back to selecting the text where the frame refuses the clipboard.
+ *
+ * What it is: two ways to lay out a procedure that people run. A playbook set is tabs of playbooks (deploy, roll back, rotate a key), each a numbered list whose steps end in a copyable command.
+ *
+ * A pipeline is one row of numbered stages (edit, validate, apply, confirm); one stage is open at a time and the arrow keys walk the row. Both sit on Kit.tabs, so the keys, the
+ * roving tabindex and the optional #anchor come for free. Plain DOM; every string is set with textContent.
+ *
+ * API (small and stable):
+ *   Kit.playbook.render(box, {playbooks, label, hash, initial}) -> {tabs, copy, destroy()}
+ *     playbooks  [{id, title, count, steps: [{title, body, cmd, label}]}]   id is a bare token; cmd is the text to copy (one command or several lines)
+ *     label      the tablist's aria-label (default "Playbooks");  hash false (default here) leaves the page's #anchor alone
+ *   Kit.playbook.pipeline(box, {steps, label, hash, initial}) -> {tabs, destroy()}
+ *     steps      [{id, title, sub, kind: "gate" | "risk", heading, body, bullets: [...]}]   kind rings the number and puts the word Gate or Risky in the open panel
+ *
+ * CSS classes: .kit-playbook .kit-pipe
+ *
+ * @id        pattern.playbook
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Tabs of playbooks, each a numbered list of copyable commands; and a pipeline stepper whose open stage shows its detail.
+ * @tags      playbook, runbook, tabs, commands, copy, pipeline, stepper, procedure
+ * @requires  kit.tabs, kit.copy, pattern.steps
+ * @provides  Kit.playbook.render, Kit.playbook.pipeline
+ * @config    Kit.playbook.render(box, opts) | playbooks [{id, title, count, steps: [{title, body, cmd, label}]}], label, hash (default false), initial
+ * @config    Kit.playbook.pipeline(box, opts) | steps [{id, title, sub, kind: gate|risk, heading, body, bullets}], label, hash, initial
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --warn --accent-ink --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

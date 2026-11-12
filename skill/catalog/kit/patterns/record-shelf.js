@@ -1,23 +1,35 @@
 /* part:page.script.kit.record-shelf */
-/* Kit pattern: record shelf (Kit.recordShelf)    kit version 0.1.0
-   What it is: the ADP records that sit beside an artifact's files, one card each, so a reader can tell at a glance what the database says and go to the view that shows it: the manifest
-   (version, page hash, who recorded it and when), changes/ (versions recorded, the latest summary, data changes since), parts/ (how many, held, stale holds), threads/ (open, being worked
-   on, done), content/ (how many parts keep their copy in the database) and checks/latest (the page's own self-check). Each card names its collection as the db does, gives one figure and one
-   line, and carries a state with a glyph and a word when something needs a person: a stale hold, open comments, a failed check. A card is a button when onOpen is given; the current one is
-   marked. Cards whose records are not passed in say so instead of showing zero.
-   API:
-     Kit.recordShelf.mount(root, opts) -> {update(data), setCurrent(name), destroy()}
-       manifest  manifest/current {version, page_hash, files, parts, at, by}        changes  the changes/ docs (array or {id: doc})     parts  the parts/<id> docs ({id: doc} or array)
-       threads   the threads/ docs {id: {part, status, holder}}        content  the content/ docs {part id: doc} or a list of ids        checks  checks/latest {ok, missing, unmarked, overflow_x, errors, at, width}
-       now       ISO or Date for holds (default: the clock)     timeZone  for dates (default "UTC")     current  the name of the card to mark ("files", "changes", "parts", "threads", "content", "checks")
-       onOpen(name)   makes each card a button that names the view it opens     label  the region's name (default "Records beside the files")
-   Needs from the board:
-     css     kit/patterns/record-shelf.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, optional --f-display --seam --radius
-     kit     kit.tokens
-     globals none
-   db collections: none read here; the board reads manifest/current, changes, parts, threads, content and checks/latest and passes them in.
-   Lifted from: the canonical ArtifactData layout of the artifact-dataplane skill (its collections and their fields) and the What changed panel of the reference page.
-   Changed: one card per collection with a state in words, instead of a list of the latest changes only. */
+/**
+ * Record shelf
+ * Kit.recordShelf.mount(root, {manifest, changes, parts, threads, content, checks, now, current, onOpen}) draws six cards named as the db names them: manifest/current (the version, file and part counts, the page hash in groups of four, who recorded it and when), changes/ (versions recorded, the latest summary, data changes and how many came after the latest publish), parts/ (how many, held, stale holds), threads/ (open, being worked on, done), content/ (how many parts keep their copy in the database) and checks/latest (Sound, or the count of problems with what they are). A state carries a glyph and a word: Passed, All free, Needs a look, a hold ran out, comments waiting. Records the board did not pass in read Not read, never zero. With onOpen each card is a button that says the view it opens and the current one is marked.
+ *
+ * What it is: the ADP records that sit beside an artifact's files, one card each, so a reader can tell at a glance what the database says and go to the view that shows it: the manifest
+ * (version, page hash, who recorded it and when), changes/ (versions recorded, the latest summary, data changes since), parts/ (how many, held, stale holds), threads/ (open, being worked
+ * on, done), content/ (how many parts keep their copy in the database) and checks/latest (the page's own self-check). Each card names its collection as the db does, gives one figure and one
+ * line, and carries a state with a glyph and a word when something needs a person: a stale hold, open comments, a failed check. A card is a button when onOpen is given; the current one is
+ * marked. Cards whose records are not passed in say so instead of showing zero.
+ *
+ * API:
+ *   Kit.recordShelf.mount(root, opts) -> {update(data), setCurrent(name), destroy()}
+ *     manifest  manifest/current {version, page_hash, files, parts, at, by}        changes  the changes/ docs (array or {id: doc})     parts  the parts/<id> docs ({id: doc} or array)
+ *     threads   the threads/ docs {id: {part, status, holder}}        content  the content/ docs {part id: doc} or a list of ids        checks  checks/latest {ok, missing, unmarked, overflow_x, errors, at, width}
+ *     now       ISO or Date for holds (default: the clock)     timeZone  for dates (default "UTC")     current  the name of the card to mark ("files", "changes", "parts", "threads", "content", "checks")
+ *     onOpen(name)   makes each card a button that names the view it opens     label  the region's name (default "Records beside the files")
+ *
+ * @id        pattern.record-shelf
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   One card for each ADP record beside the files (the manifest, changes, parts, threads, content and the self-check), each with its figure, one line and a state in words, opening the view that shows it.
+ * @tags      records, manifest, changes, parts, holds, threads, content, checks, adp/2, overview, navigation
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.recordShelf.mount
+ * @config    Kit.recordShelf.mount(root, opts) | manifest, changes, parts, threads, content, checks (each optional; one not passed reads Not read), now, timeZone, current files | changes | parts | threads | content | checks, onOpen(name), label; returns {update, setCurrent, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --ok --warn --danger --f-ui --f-mono --f-display? --seam? --radius?
+ * @globals   none
+ * @db        reads manifest/current; changes; parts; threads; content; checks/latest / The pattern does not read the db itself: the page passes the docs in.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

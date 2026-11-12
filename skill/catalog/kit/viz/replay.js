@@ -1,18 +1,35 @@
 /* part:page.script.kit.viz.replay */
-/* Kit visualization: replay scrubber (Kit.viz.Replay, Kit.viz.timeline, Kit.viz.cutAt)    kit version 0.1.0
-   What it is: steps through a board's history in creation order. A play/pause button, a range slider (the last position means "now"), the step's
-   label, and a strip of ticks placed to scale on the real time axis, so bursts of work and long gaps show as they happened. The board draws its
-   view with only the records present at that step (cutAt), so any view (the tree, the matrix, a list) can be replayed.
-   Needs from the board:
-     config  Replay({events, step, onStep, interval, kinds, words})
-               events  [{id, t, label, kind}] sorted or not (timeline() sorts by t); t in ms since the epoch
-               step    null for "now", or n: the board after its first n events; onStep(step | null) is called on every change
-               interval ms between steps while playing (default 650); words {now, play, pause, steps}
-             timeline(events) -> sorted copy; cutAt(events, step) -> Set of the ids present at that step (all ids when step is null)
-     css     kit/viz/viz.css; custom properties --panel --ink --ink-2 --ink-3 --rule --rule-2 --accent --f-mono and --c-<pen> for the kinds' tones
-     needs   kit/viz/core.js loaded first
-   db collections: none. The board passes creation stamps it already has (items.created, pages.created in the Journey Whiteboard).
-   Lifted from: Journey Whiteboard app.js (timeline, and the Replay controls inside TreeView). Changed: a component of its own with a to-scale tick strip. */
+/**
+ * Replay scrubber
+ * The replay controls from the Journey Whiteboard's tree, now usable with any view. Play, pause or drag through the steps; the last position means now. The tick strip is drawn to scale, so bursts of work and long gaps show as they happened. cutAt gives the ids present at a step, so the board draws its view with only those.
+ *
+ * Config:
+ * Replay({events, step, onStep, interval, kinds, words})
+ *   events  [{id, t, label, kind}] sorted or not (timeline() sorts by t); t in ms since the epoch
+ *   step    null for "now", or n: the board after its first n events; onStep(step | null) is called on every change
+ *   interval ms between steps while playing (default 650); words {now, play, pause, steps}
+ * timeline(events) -> sorted copy; cutAt(events, step) -> Set of the ids present at that step (all ids when step is null)
+ *
+ * The board passes creation stamps it already has (items.created, pages.created in the Journey Whiteboard).
+ * Tone colours: --c-<pen> for each pen tone used.
+ *
+ * @id        viz.replay
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Step through a board's history in creation order, with ticks placed to scale on the real time axis.
+ * @tags      timeline, replay, history, scrubber, time, slider
+ * @requires  viz.core
+ * @provides  Kit.viz.Replay, Kit.viz.timeline, Kit.viz.cutAt
+ * @config    events | [{id, t, label, kind}]: t in ms
+ * @config    step, onStep | null for now, or n; onStep(step | null)
+ * @config    playing, onPlaying | controlled play state
+ * @config    interval | ms per step (650)
+ * @config    kinds, words | {kind: {label, tone}}, {now, play, pause, steps}
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

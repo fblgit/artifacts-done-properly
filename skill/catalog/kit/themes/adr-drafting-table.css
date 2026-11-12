@@ -1,8 +1,24 @@
 /* part:page.style.kit.theme.adr-drafting-table */
-/* Kit theme: ADR Drafting Table    kit version 0.1.0
-   Vellum by day, cutting mat by night; brass for the hand on the controls.
-   Values are the board's own, unchanged. Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Kalam:wght@400;700&display=swap
-   From: ADR Drafting Table, styles/tokens.css (part page.style.tokens), adp/2 build adp2-1. */
+/**
+ * ADR Drafting Table
+ * The ADR Drafting Table's token blocks (light, dark under the system setting, dark under the page toggle, and the type scale) with the values as the board has them, plus one block that names the same values under the kit contract, so every kit file draws in this palette.
+ *
+ * Values are the board's own, unchanged. Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Kalam:wght@400;700&display=swap
+ *
+ * @id        theme.adr-drafting-table
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Vellum by day, cutting mat by night; brass for the hand on the controls. The palette the owner approved, unchanged.
+ * @tags      palette, tokens, colours, dark mode, brass, vellum, adr
+ * @requires  none
+ * @config    fonts | Archivo, Public Sans and Kalam from Google Fonts (the link is in the file's header and in the json)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss, the aliases and the type scale
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: a drafting table in panes. Top bar (dashboard breadcrumb and record switcher, the Refresher Bar, Claude Code and PING), the shell (records pane · one page at a time · glance or Claude pane), and the Product-Designer Bar pinned under it. Vellum by day, cutting mat by night; brass for the hand on the controls. */
 :root {
   --ground: #e9ece6;

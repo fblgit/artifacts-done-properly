@@ -1,13 +1,29 @@
 /* part:page.style.kit.theme.kanban */
-/* Kit theme: Kanban    kit version 0.1.0
-   Cool slate neutrals, IDE blue, a syntax purple; the dense look, for boards people move cards on.
-   Character: compared with Long page (the other cool grey and blue): Kanban is dense and tool-like. 14px Geist on 1.45, 8px control padding, 5px controls and 8px panels, hairline 1px rules, a lifted shadow only on hover, a dark terminal ground (--code-bg, --code-ink) for code. Long page is the reading one: 15px on 1.6, 14px padding, 10 and 14px corners, soft tints.
-   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
-   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --code-bg and --code-ink (the terminal ground).
-   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
-   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
-   Fonts: https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap
-   From: the hub's Kanban skin (columns, explorer, status bar, terminal ground) and an earlier board's slate-editor skin. */
+/**
+ * Kanban
+ * Kept beside Long page, which is also cool grey with a blue accent. They differ in use. Kanban is for working a board: 14px on 1.45, 8px padding, 5px controls and 8px panels, a purple second colour, a dark terminal ground (--code-bg, --code-ink). Long page is for reading: 15px on 1.6 in a 68ch measure, 14px padding, 10 and 14px corners, a stamp-red second colour. Columns, the explorer and the status bar are layout and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ *
+ * Character: compared with Long page (the other cool grey and blue): Kanban is dense and tool-like. 14px Geist on 1.45, 8px control padding, 5px controls and 8px panels, hairline 1px rules, a lifted shadow only on hover, a dark terminal ground (--code-bg, --code-ink) for code. Long page is the reading one: 15px on 1.6, 14px padding, 10 and 14px corners, soft tints.
+ * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+ * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --code-bg and --code-ink (the terminal ground).
+ * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+ * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+ * Fonts: https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap
+ *
+ * @id        theme.kanban
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   The dense one: cool slate neutrals, an IDE blue with a syntax purple, 14px Geist, tight 5 and 8px corners.
+ * @tags      palette, tokens, colours, dark mode, kanban, dense, slate, ide, blue, geist, compact
+ * @requires  none
+ * @config    fonts | Geist and Geist Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {
   color-scheme: light;

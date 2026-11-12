@@ -1,28 +1,42 @@
 /* part:page.script.kit.answer-queue */
-/* Kit pattern: answer a run of items (Kit.answerQueue)    kit version 0.1.0
-   What it is: a dialog for one item at a time, with tabs (the answer, the details, the history). The item's state leads the dialog as a crown. When you answer, the dialog moves on to the next
-   item that is still waiting on you and says which; when none is left it closes and a toast says everyone is caught up. So a run of decisions never goes back to the list in between. A
-   "Next waiting" button skips ahead without answering. Plain DOM over a native <dialog> (focus is trapped and Escape closes, by the browser); every text is set with textContent.
-   API (small and stable):
-     Kit.answerQueue.mount({items, isWaiting, stateEnum, answeredState, tabs, onAnswer, onDelete, onChange, host, caughtUp, label}) -> queue
-       items          [{id, title, state, note, choices: [{id, label}], choice, reply, fields: [[label, value]], history: [{at, text}], phase}]
-       isWaiting      (item) -> boolean   what counts as waiting on you (default: item.state === "waiting")
-       stateEnum      the Kit.vocab enum of item.state (default "state"); answeredState is the value set on an answered item (default "review"; give one your enum has)
-       tabs           extra or replacement tabs: [{id, label, render(item, panel, queue), when(item)}]; the built-in answer, details and history tabs are used when this is left out
-       onAnswer       (item, {choice, reply}) -> void | Promise   run before the queue moves on; a rejection keeps the dialog on the item and shows the error text in it
-       onDelete       (item) -> void | Promise   when given, the answer tab has a two-step "Delete" button
-       onChange       (items) after an item changes
-       host           the element the dialog and the toast are added to (default document.body); give the element that carries your theme tokens when they are not on :root
-       caughtUp       the toast text when no item waits any more (default "All caught up: nothing else waits on you.")
-     queue.open(id)  queue.close()  queue.next()  queue.waiting() -> [items]  queue.update(items)  queue.dialog -> the <dialog>  queue.destroy()
-     Kit.answerQueue.armed(button, onConfirm, {label, ms}) -> void     makes a button a two-step control: the first click turns it into a "Confirm" button for ms (default 3000), the second runs onConfirm
-     The order the run follows is the order of items, starting after the item just answered and wrapping round.
-   Needs from the board:
-     css     kit/patterns/answer-queue.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --danger --shadow --f-ui --f-display --f-mono, optional --seam
-     kit     kit/tabs.js and kit/tabs.css (the dialog's tabs), kit/vocab.js and kit/vocab.css (the crown's state pill)
-     globals HTMLDialogElement (showModal); without it the dialog opens as a plain box
-   db collections: none (onAnswer is where the page writes).
-   Lifted from: an earlier board's card dialog (the state crown, the answer, record and history tabs, advancing to the next card that waits on you, the all-caught-up toast and the two-step delete). */
+/**
+ * Answer a run of items
+ * Kit.answerQueue.mount({items, onAnswer}) makes a native dialog for one item at a time: a crown with the item's state, id and title, tabs for the answer (choices and a reply), the details and the history. Answering moves the dialog to the next item that is still waiting, says which ('Answered Q-2. Next on your list: Q-3'), and moves focus to its title; after the last it closes and a toast says everyone is caught up. 'Next waiting' skips ahead without answering. A rejected onAnswer keeps you on the item and shows the error in it. Kit.answerQueue.armed(button, onConfirm) is the two-step control for Delete: the first click asks, the second within three seconds does it. Focus is trapped and Escape closes, by the browser; give host the element that carries your theme tokens.
+ *
+ * A dialog for one item at a time, with tabs (the answer, the details, the history). The item's state leads the dialog as a crown. When you answer, the dialog moves on to the next
+ * item that is still waiting on you and says which; when none is left it closes and a toast says everyone is caught up. So a run of decisions never goes back to the list in between. A
+ * "Next waiting" button skips ahead without answering. Plain DOM over a native <dialog> (focus is trapped and Escape closes, by the browser); every text is set with textContent.
+ *
+ * API (small and stable):
+ *   Kit.answerQueue.mount({items, isWaiting, stateEnum, answeredState, tabs, onAnswer, onDelete, onChange, host, caughtUp, label}) -> queue
+ *     items          [{id, title, state, note, choices: [{id, label}], choice, reply, fields: [[label, value]], history: [{at, text}], phase}]
+ *     isWaiting      (item) -> boolean   what counts as waiting on you (default: item.state === "waiting")
+ *     stateEnum      the Kit.vocab enum of item.state (default "state"); answeredState is the value set on an answered item (default "review"; give one your enum has)
+ *     tabs           extra or replacement tabs: [{id, label, render(item, panel, queue), when(item)}]; the built-in answer, details and history tabs are used when this is left out
+ *     onAnswer       (item, {choice, reply}) -> void | Promise   run before the queue moves on; a rejection keeps the dialog on the item and shows the error text in it
+ *     onDelete       (item) -> void | Promise   when given, the answer tab has a two-step "Delete" button
+ *     onChange       (items) after an item changes
+ *     host           the element the dialog and the toast are added to (default document.body); give the element that carries your theme tokens when they are not on :root
+ *     caughtUp       the toast text when no item waits any more (default "All caught up: nothing else waits on you.")
+ *   queue.open(id)  queue.close()  queue.next()  queue.waiting() -> [items]  queue.update(items)  queue.dialog -> the <dialog>  queue.destroy()
+ *   Kit.answerQueue.armed(button, onConfirm, {label, ms}) -> void     makes a button a two-step control: the first click turns it into a "Confirm" button for ms (default 3000), the second runs onConfirm
+ *   The order the run follows is the order of items, starting after the item just answered and wrapping round.
+ *
+ * @id        pattern.answer-queue
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A dialog with tabs for one item; answering opens the next waiting item, or says all caught up.
+ * @tags      dialog, modal, queue, answer, next, caught up, decide, armed, two-step delete, toast
+ * @requires  kit.tokens, kit.tabs, kit.vocab
+ * @provides  Kit.answerQueue.mount, Kit.answerQueue.armed
+ * @config    Kit.answerQueue.mount({items, isWaiting, stateEnum, answeredState, tabs, onAnswer, onDelete, onChange, host, caughtUp, label}) | items [{id, title, state, note, choices: [{id, label}], fields: [[label, value]], history: [{at, text}]}]; returns {open(id), close(), next(), waiting(), update(items), dialog, destroy()}
+ * @config    Kit.tabs | the dialog's tabs use Kit.tabs with hash:false
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --danger --shadow --f-ui --f-display --f-mono --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

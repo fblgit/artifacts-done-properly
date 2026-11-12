@@ -1,26 +1,43 @@
 /* part:page.script.kit.save-status */
-/* Kit component: save status line (Kit.saveStatus)    kit version 0.1.0    extends kit/store.js (a new file; store.js is unchanged)
-   What it is: one line that tells the viewer where their changes are kept: saving, saved with the artifact (the db), saved in this browser only
-   (no db, or the db refused the write), offline (kept in the browser, saved when the connection returns). Behind the line it runs the save
-   itself: every change goes to localStorage at once, then to one db doc after a short pause, one write at a time, and a change made while a write
-   was in flight is written next. A remote update never overwrites changes that have not been written. Plain DOM, no framework.
-   API (small and stable):
-     Kit.saveStatus.create({el, lsKey, doc, db, debounce, words, normalize, onRemote}) -> {persist(data), flush(), get(), connect(db, path), state(), destroy()}
-       el          the element that shows the line (it gets role="status", aria-live="polite" and data-state)
-       lsKey       localStorage key for the browser copy (omit to keep none);  doc  initial data, used when the browser has no copy
-       db, path    a db capability (claude.use("db")) and the doc that holds the data, e.g. "board/state"; or call connect(db, path) once the capability resolves
-                   (changes made before that are kept in the browser and written when it connects)
-       debounce    ms to wait after the last change before writing (default 500)
-       normalize(x) -> data     shapes whatever came from storage (default: identity)
-       onRemote(data)           called when another viewer's write arrives and there is nothing unwritten here
-       words       texts that replace the defaults (keys: loading saving shared local offline refused)
-     data is whatever the board keeps (one JSON-able object); persist(data) is called after each change.
-     state() is one of loading, saving, shared, local, offline, refused. The same word is el.dataset.state, so a board can style it.
-   Needs from the board:
-     css     kit/save-status.css (a dot and the line); custom properties --ink --ink-2 --ok --warn --danger --rule
-     caps    db (optional): one doc at the path. Without it the line says "Saved in this browser only" and the page still works.
-   db collections: reads and writes the doc at path (a board puts all of its small state in one doc, e.g. board/state).
-   Lifted from: a session board's setSave, persist, flush and initState: localStorage first, db after a pause, refusal falls back to the browser. */
+/**
+ * Save status line
+ * Kit.saveStatus.create({el, lsKey, doc, db, path}) shows where the viewer's changes are kept and runs the save behind it. persist(data) writes to localStorage at once, then to one db doc after a pause, one write at a time; a change made while a write is in flight is written next; a remote update never overwrites changes that have not been written. States, in words: loading, saving, saved with this artifact, saved in this browser only, offline (kept in the browser, saved when the connection returns) and refused (the db said no; the browser keeps it). connect(db, path) can be called later, once the capability resolves, and writes whatever was changed before it. An upgrade of kit.store as a new file: store.js is unchanged.
+ *
+ * What it is: one line that tells the viewer where their changes are kept: saving, saved with the artifact (the db), saved in this browser only
+ * (no db, or the db refused the write), offline (kept in the browser, saved when the connection returns). Behind the line it runs the save
+ * itself: every change goes to localStorage at once, then to one db doc after a short pause, one write at a time, and a change made while a write
+ * was in flight is written next. A remote update never overwrites changes that have not been written. Plain DOM, no framework.
+ * API (small and stable):
+ *   Kit.saveStatus.create({el, lsKey, doc, db, debounce, words, normalize, onRemote}) -> {persist(data), flush(), get(), connect(db, path), state(), destroy()}
+ *     el          the element that shows the line (it gets role="status", aria-live="polite" and data-state)
+ *     lsKey       localStorage key for the browser copy (omit to keep none);  doc  initial data, used when the browser has no copy
+ *     db, path    a db capability (claude.use("db")) and the doc that holds the data, e.g. "board/state"; or call connect(db, path) once the capability resolves
+ *                 (changes made before that are kept in the browser and written when it connects)
+ *     debounce    ms to wait after the last change before writing (default 500)
+ *     normalize(x) -> data     shapes whatever came from storage (default: identity)
+ *     onRemote(data)           called when another viewer's write arrives and there is nothing unwritten here
+ *     words       texts that replace the defaults (keys: loading saving shared local offline refused)
+ *   data is whatever the board keeps (one JSON-able object); persist(data) is called after each change.
+ *   state() is one of loading, saving, shared, local, offline, refused. The same word is el.dataset.state, so a board can style it.
+ *
+ * The db capability is optional: one doc at the path. Without it the line says "Saved in this browser only" and the page still works.
+ *
+ * @id        kit.save-status
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   One line that says saved, saving, offline or local only, with the browser fallback, offline queue and refusal handled.
+ * @tags      save, status, persist, autosave, offline, localstorage, fallback, db, debounce
+ * @requires  none
+ * @provides  Kit.saveStatus.create
+ * @config    Kit.saveStatus.create({el, lsKey, doc, db, path, debounce, words, normalize, onRemote}) | el shows the line; lsKey names the browser copy; db and path are the capability and the doc, or call connect(db, path) later
+ * @config    persist(data) | call after each change with the board's whole small state
+ * @config    onRemote(data) | another viewer's write arrived and nothing here is unwritten: repaint from data
+ * @tokens    --ink-2 --ink-3 --ok --warn --ink
+ * @globals   none
+ * @db        reads the doc at path, through onSnapshot / writes the doc at path (set), debounced, one write in flight / A real artifact declares the db capability and keeps its small state in one doc (for example board/state). Without the capability the line says saved in this browser only and the page still works. It extends kit.store (same habit: localStorage first, then the db) but does not call it, so requires is empty.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,26 +1,36 @@
 /* part:page.script.kit.viz.timeline-phased */
-/* Kit visualization: phased time rail and event log (Kit.timelinePhased)    kit version 0.1.0    EXTENDS viz.timeline (timeline.js and timeline.css stay as they are; this is a new file beside them)
-   What it is: two ways to draw events by the clock. The phased rail groups events under numbered phases (each says its state and how many of its events are closed); every event has a clock
-   column (the time in UTC with a Z, the day under it), a dot on the rail and a card with a code, a title, a line of text and who did it. An event that needs a person pings: its dot has a ring
-   that pulses, and the card carries the words "Needs you", so the ping never rides on motion or colour alone. The log draws a time-first table as a plain list: the time in mono, then the
-   cells joined by dots, like a terminal. Plain DOM; every text is set with textContent. The phase order is the sequence, so the phase numbers are real.
-   API:
-     Kit.timelinePhased.mount(box, {phases, timeZone, label, words, stateEnum, onPick}) -> {update(patch), destroy()}
-       phases   [{id, name, state, events}]    state: done | now | next | later (words below)
-                  events [{id, at, title, text, by, state, needsYou}]   at is an ISO time; state is a value of the Kit.vocab enum below (a pill, with its glyph) or leave it out;
-                  an event is closed when its state is done (the phase counts those)
-       stateEnum  the Kit.vocab enum for an event's state (default "state"); without Kit.vocab the state is plain text
-       timeZone   "UTC" (default; written 14:05Z) or an IANA name (written 14:05)
-       words      {done, now, next, later, closed(n, m), ping: "Needs you"}      onPick(event)  makes each card a button
-     Kit.timelinePhased.log(box, {columns, rows, label, timeZone}) -> {destroy()}   rows [[time, cell, cell, ...]]: the first cell is the time as text; the others are joined with dots; columns name them for assistive tech
-     Kit.timelinePhased.clock(iso, timeZone) -> {clock, day, iso}   the pure part
-   Needs from the board:
-     requires kit.vocab (the pill for an event's state; optional), kit/vocab.css
-     css     kit/viz/timeline-phased.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --warn --f-ui --f-mono --f-display, optional --seam
-     globals none (Kit.vocab if present)
-   db collections: none.
-   Lifted from: an earlier board's war-room skin (a vertical rail of tasks by phase with a zulu clock and day column, a siren on what awaits you, and a time-first reference table drawn as an event log).
-   Changed: the phases and the events are data, the clock follows the viewer's chosen zone, the ping has words as well as motion (and stops under prefers-reduced-motion), and the rail stacks under 560px. */
+/**
+ * Phased time rail and event log
+ * Kit.timelinePhased.mount(box, {phases}) draws phases in order (their numbers are the sequence), each with its state in words and how many of its events are closed. An event has a clock column (14:05Z, with the day under it; the zone is an option), a dot on the rail and a card with a code, a title, a state pill (Kit.vocab), a line of text and who did it. An event that needs a person pings: its dot has a ring that pulses (not under prefers-reduced-motion) and its card says "Needs you". Kit.timelinePhased.log draws a time-first table as a plain log: the time in mono, then the other cells joined with dots. viz.timeline is unchanged; this is a new file beside it.
+ *
+ * API:
+ *   Kit.timelinePhased.mount(box, {phases, timeZone, label, words, stateEnum, onPick}) -> {update(patch), destroy()}
+ *     phases   [{id, name, state, events}]    state: done | now | next | later (words below)
+ *                events [{id, at, title, text, by, state, needsYou}]   at is an ISO time; state is a value of the Kit.vocab enum below (a pill, with its glyph) or leave it out;
+ *                an event is closed when its state is done (the phase counts those)
+ *     stateEnum  the Kit.vocab enum for an event's state (default "state"); without Kit.vocab the state is plain text
+ *     timeZone   "UTC" (default; written 14:05Z) or an IANA name (written 14:05)
+ *     words      {done, now, next, later, closed(n, m), ping: "Needs you"}      onPick(event)  makes each card a button
+ *   Kit.timelinePhased.log(box, {columns, rows, label, timeZone}) -> {destroy()}   rows [[time, cell, cell, ...]]: the first cell is the time as text; the others are joined with dots; columns name them for assistive tech
+ *   Kit.timelinePhased.clock(iso, timeZone) -> {clock, day, iso}   the pure part
+ *
+ * Kit.vocab is used when it is present. Root CSS class: .kit-tp.
+ *
+ * @id        viz.timeline-phased
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An upgrade of viz.timeline: events grouped by numbered phase with a UTC clock and day column, a ping on events that need a person, and a time-first table drawn as a log.
+ * @tags      timeline, phases, clock, utc, zulu, ping, needs you, log, event log, rail, incident
+ * @requires  kit.vocab
+ * @provides  Kit.timelinePhased.mount, Kit.timelinePhased.log, Kit.timelinePhased.clock
+ * @config    Kit.timelinePhased.mount(box, opts) | phases [{id, name, state done | now | next | later, events [{id, at, title, text, by, state, needsYou}]}], timeZone, label, words, stateEnum, onPick; returns {update, destroy}
+ * @config    Kit.timelinePhased.log(box, opts) | rows [[time, cell, ...]], columns, label; returns {destroy}
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --warn --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

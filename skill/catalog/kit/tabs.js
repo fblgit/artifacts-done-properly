@@ -1,29 +1,44 @@
 /* part:page.script.kit.tabs */
-/* Kit component: accessible tabs (Kit.tabs)    kit version 0.1.0
-   What it is: an ARIA tab set over markup the page already has. Arrow keys, Home and End move and select (roving tabindex), digits 1 to 9 optionally jump,
-   and each tab can be a plain #anchor deep link (a bare token, the only kind the artifact viewer passes through). Plain DOM, no framework.
-   Markup:
-     <div class="kit-tabs">
-       <div class="kit-tabs-list" role="tablist" aria-label="Record">     (built from opts.tabs when absent)
-         <button role="tab" data-tab="overview">Overview <span class="kit-tab-n">3</span></button> …
-       </div>
-       <section data-tab-panel="overview">…</section> …
-     </div>
-   API (small and stable):
-     Kit.tabs.mount(el, {tabs, label, hash, keys, initial, onChange}) -> {select(id, {focus}), current(), destroy()}
-       tabs     [{id, label, count}]   only when the markup has no tab buttons
-       label    the tablist's aria-label (default "Sections")
-       hash     true (default): the selected id is the page's #anchor, read on load and on hashchange, written with history.replaceState
-                (no scroll jump, no history entry); false leaves location alone (several sets on one page, or a host that owns the hash)
-       keys     true: digits 1 to 9 select a tab while focus is not in a field
-       initial  the id to open when the hash names none (default the first tab)
-       onChange (id, panel) after every selection; el also dispatches "kit-tab" with detail {id}
-   Ids must be bare tokens: letters, digits, . _ ~ - (never settings, sidebar, customize, upgrade, downloads or comment-…, which the viewer keeps).
-   Needs from the board:
-     css     kit/tabs.css; custom properties --panel --sunk --ink --ink-2 --rule --shadow --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: an accessible tab set for records, a tabbed app shell with hash routing and digit keys, and page tabs over a parts registry. */
+/**
+ * Accessible tabs
+ * Kit.tabs.mount(el, {tabs, label, hash, keys, initial, onChange}) wires [data-tab] buttons to [data-tab-panel] sections (or builds the buttons from tabs), with roving tabindex and automatic activation. With hash on (the default) the selected id is the page's #anchor, read on load and on hashchange and written with replaceState; ids are checked against the bare tokens the viewer passes through. A pill well by default; .line is an underline row.
+ *
+ * Markup:
+ *   <div class="kit-tabs">
+ *     <div class="kit-tabs-list" role="tablist" aria-label="Record">     (built from opts.tabs when absent)
+ *       <button role="tab" data-tab="overview">Overview <span class="kit-tab-n">3</span></button> …
+ *     </div>
+ *     <section data-tab-panel="overview">…</section> …
+ *   </div>
+ * API (small and stable):
+ *   Kit.tabs.mount(el, {tabs, label, hash, keys, initial, onChange}) -> {select(id, {focus}), current(), destroy()}
+ *     tabs     [{id, label, count}]   only when the markup has no tab buttons
+ *     label    the tablist's aria-label (default "Sections")
+ *     hash     true (default): the selected id is the page's #anchor, read on load and on hashchange, written with history.replaceState
+ *              (no scroll jump, no history entry); false leaves location alone (several sets on one page, or a host that owns the hash)
+ *     keys     true: digits 1 to 9 select a tab while focus is not in a field
+ *     initial  the id to open when the hash names none (default the first tab)
+ *     onChange (id, panel) after every selection; el also dispatches "kit-tab" with detail {id}
+ * Ids must be bare tokens: letters, digits, . _ ~ - (never settings, sidebar, customize, upgrade, downloads or comment-…, which the viewer keeps).
+ *
+ * Optional custom properties: --seam.
+ *
+ * @id        kit.tabs
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An ARIA tab set over the page's markup: arrow keys, Home and End, optional digit keys, and each tab a plain #anchor deep link.
+ * @tags      tabs, tablist, aria, keyboard, hash, deep link, anchor, record, playbook
+ * @requires  none
+ * @provides  Kit.tabs.mount
+ * @config    Kit.tabs.mount(el, opts) | tabs [{id, label, count}], label, hash (default true), keys (digits 1 to 9), initial, onChange(id, panel)
+ * @config    markup | .kit-tabs > [role=tablist] > button[data-tab] + section[data-tab-panel]
+ * @config    ids | bare tokens: letters, digits, . _ ~ -
+ * @tokens    --panel --sunk --ink --ink-2 --rule --shadow --accent --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

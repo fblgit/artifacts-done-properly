@@ -1,20 +1,31 @@
 /* part:page.script.kit.viz.stepper */
-/* Kit visualization: stepper (Kit.viz.StepTrack, Kit.viz.Stages)    kit version 0.1.0
-   What it is: two ways to show where something is in an ordered process.
-     StepTrack: a compact rail for one request or job (queue, ack, pending, done): passed steps filled, the current one marked and named,
-                a hint per step, and a done state that turns the whole rail to the "ok" colour.
-     Stages:    the numbered stage list of a guided flow, with a tick and a count per stage, the current stage marked (aria-current="step"),
-                each stage a button when the board passes onPick.
-   Needs from the board:
-     config  StepTrack({steps: [id], at: id, labels: {id: text}, hints: {id: text}, busy: bool, meta, label})
-               steps   the ordered step ids; at the current one; labels default to the ids; meta an optional trailing note (text or vnode)
-               busy    true while work runs on the current step: its node pulses (not under prefers-reduced-motion)
-             Stages({steps: [{id, label, count, done}], current: id, onPick(id), compact})
-               done defaults to count > 0; count is shown when it is a number
-     css     kit/viz/viz.css; custom properties --panel --ink --ink-2 --ink-3 --rule --sunk --accent --accent-soft --ok --f-mono
-     needs   kit/viz/core.js loaded first
-   db collections: none (the Claude lane in kit/claude-lane.js reads the request docs and can pass their state here).
-   Lifted from: Journey Whiteboard app.js (REQ_STEPS, REQ_HINT and the rail in ReqLine; GuideSteps). */
+/**
+ * Step track and stages
+ * StepTrack is the rail from the Journey Whiteboard's request line: passed steps filled, the current one marked and named, its hint beside it, and the whole rail green once done. Stages is the guide's stage list with ticks and counts, the current stage marked as the current step.
+ *
+ * Config:
+ * StepTrack({steps: [id], at: id, labels: {id: text}, hints: {id: text}, busy: bool, meta, label})
+ *   steps   the ordered step ids; at the current one; labels default to the ids; meta an optional trailing note (text or vnode)
+ *   busy    true while work runs on the current step: its node pulses (not under prefers-reduced-motion)
+ * Stages({steps: [{id, label, count, done}], current: id, onPick(id), compact})
+ *   done defaults to count > 0; count is shown when it is a number
+ *
+ * The Claude lane in kit/claude-lane.js reads the request docs and can pass their state here.
+ *
+ * @id        viz.stepper
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Where something is in an ordered process: a compact rail for one request, and the numbered stage list of a guided flow.
+ * @tags      stepper, progress, steps, request, queue, stages, wizard, claude lane
+ * @requires  viz.core
+ * @provides  Kit.viz.StepTrack, Kit.viz.Stages
+ * @config    StepTrack | {steps: [id], at: id, labels, hints, busy, meta, label}
+ * @config    Stages | {steps: [{id, label, count, done}], current, onPick(id), compact}
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

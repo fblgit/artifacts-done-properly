@@ -1,25 +1,38 @@
 /* part:page.script.kit.ledger */
-/* Kit pattern: settled ledger (Kit.ledger)    kit version 0.1.0
-   What it is: a dated or numbered ledger of settled items, in groups, with filter chips that show their counts and a row that opens to its detail (outcome, the call that was made, the
-   answer that settled it). Each row is a native details element, so it opens with the keyboard and prints open. A group with no visible row hides; a status line says "Showing 5 of 8".
-   Plain DOM; every text is set with textContent unless a detail body is a Node.
-   API:
-     Kit.ledger.mount(box, {groups, rows, filters, label, expandable, onToggle}) -> {setFilter(id), expandAll(), collapseAll(), update(groups), state(), destroy()}
-       groups    [{id, title, range, rows: [row]}]   or pass rows for one group without a heading
-       row       {id, n, tag: {label, tone}, title, when, mark, detail: [{label, body, tone}], open}
-                   n      the number or reference at the start of the row
-                   tag    a status word with a tone (ok warn danger accent muted)
-                   when   a date or time, shown in mono
-                   mark   a short closing note on the right ("approved 22 Oct"); on a phone it moves under the title
-                   detail blocks under the row: body is a string, an array of strings (a list) or a Node; tone "warn" boxes the block (an answer that needs the reader)
-       filters   [{id, label, test(row) -> boolean}]   an "All" chip comes first; every chip shows how many rows it matches
-       onToggle  (row, open) when a row opens or closes (a board can scroll to the card it links to)
-   Needs from the board:
-     css     kit/patterns/ledger.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: a decisions board (the grouped settled ledger with Fixed / In the plan filters and rows that open to outcome, call and answer), a dated progress table (date, done, verified by)
-   and a work board's push ledger that links to its cards. */
+/**
+ * Settled ledger
+ * Kit.ledger.mount(box, {groups, rows, filters, label, expandable, onToggle}) builds groups of native details rows: a reference number, a tone tag, a date, the title and a closing note in the summary; blocks of detail inside. Filter chips (All first) show how many rows each would keep, a group with no visible row hides and a status line says "Showing 5 of 8 items". A detail block with tone warn is boxed, for the question that waits for the reader. The same rows carry a dated progress list (date, what was done, who checked it) and onToggle lets a board scroll to the card a row links to.
+ *
+ * A dated or numbered ledger of settled items, in groups, with filter chips that show their counts and a row that opens to its detail (outcome, the call that was made, the
+ * answer that settled it). Each row is a native details element, so it opens with the keyboard and prints open. A group with no visible row hides; a status line says "Showing 5 of 8".
+ * Plain DOM; every text is set with textContent unless a detail body is a Node.
+ *
+ * API:
+ *   Kit.ledger.mount(box, {groups, rows, filters, label, expandable, onToggle}) -> {setFilter(id), expandAll(), collapseAll(), update(groups), state(), destroy()}
+ *     groups    [{id, title, range, rows: [row]}]   or pass rows for one group without a heading
+ *     row       {id, n, tag: {label, tone}, title, when, mark, detail: [{label, body, tone}], open}
+ *                 n      the number or reference at the start of the row
+ *                 tag    a status word with a tone (ok warn danger accent muted)
+ *                 when   a date or time, shown in mono
+ *                 mark   a short closing note on the right ("approved 22 Oct"); on a phone it moves under the title
+ *                 detail blocks under the row: body is a string, an array of strings (a list) or a Node; tone "warn" boxes the block (an answer that needs the reader)
+ *     filters   [{id, label, test(row) -> boolean}]   an "All" chip comes first; every chip shows how many rows it matches
+ *     onToggle  (row, open) when a row opens or closes (a board can scroll to the card it links to)
+ *
+ * @id        pattern.ledger
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Grouped, dated ledger of settled items with filter chips that show counts and rows that open to outcome, call and answer.
+ * @tags      ledger, log, decisions, history, filter, details, dated, progress, settled
+ * @requires  none
+ * @provides  Kit.ledger.mount
+ * @config    Kit.ledger.mount(box, opts) | groups [{id, title, range, rows}] or rows, filters [{id, label, test}], label, expandable, onToggle(row, open); row {id, n, tag {label, tone}, title, when, mark, detail [{label, body, tone}], open}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

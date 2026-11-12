@@ -1,8 +1,24 @@
 /* part:page.style.kit.theme.journey-whiteboard */
-/* Kit theme: Journey Whiteboard    kit version 0.1.0
-   A cool workbench: chalk ground, white panels, a blue accent and six pens.
-   Values are the board's own, unchanged. Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap
-   From: Journey Whiteboard, app.css (the :root, prefers-color-scheme and [data-theme] blocks). */
+/**
+ * Journey Whiteboard
+ * The Journey Whiteboard's token blocks as the board has them. The kit files read these names, so this theme needs no aliases.
+ *
+ * Values are the board's own, unchanged. Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap
+ *
+ * @id        theme.journey-whiteboard
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A cool workbench: chalk ground, white panels, a blue accent and six pens. Its names are the kit contract.
+ * @tags      palette, tokens, colours, dark mode, journey, whiteboard
+ * @requires  none
+ * @config    fonts | Familjen Grotesk, IBM Plex Sans, IBM Plex Mono and Kalam from Google Fonts
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: a full-height workbench: top bar, one view at a time (journey, canvas, MoSCoW, pages), a side drawer for the selected item or the Claude chat. */
 :root {
   --bg: #f2f3f0;

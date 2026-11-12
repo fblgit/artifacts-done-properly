@@ -1,30 +1,39 @@
 /* part:page.script.kit.viz.bars */
-/* Kit visualization: bars to scale (Kit.bars)    kit version 0.1.0
-   What it is: five bar forms that share one rule: a length is linear from zero, so the eye can compare it with another. A series is never told apart by colour alone: each one has a
-   pen colour, a fill pattern (solid, diagonal, cross, dots, horizontal) and a word in the legend or the label, and every mark has a tooltip and a keyboard stop.
-     split     one bar cut into parts in proportion to their values, with a key above (value, label, share)
-     score     one bar of equal cells, each cell painted by its level (a verdict per item), with a legend that counts them
-     hbars     one row per item: a track as long as the total, a fill as long as the part carried, the figures at the right, a shared scale with ticks at the foot
-     ladder    an ordered list of options, each with a strength bar on one scale and a line of text
-     columns   vertical columns, one or more series per category, from zero, with gridlines, value labels, a legend and a table view; redraws when its box changes width
-   API (each returns {update(patch), destroy()}; everything is written with textContent):
-     Kit.bars.split(box,   {items: [{id, label, value, tone, note}], unit, total, restLabel, caption, label, host})
-                           total larger than the sum adds a dashed "rest" part; tone is a pen (blue amber violet green red ink) or a meaning (ok warn danger accent muted); default by position
-     Kit.bars.score(box,   {items: [{id, label, level}], levels: [{id, label, tone}], label, host})
-     Kit.bars.hbars(box,   {rows: [{id, label, value, total, note, tone}], unit, max, ticks, decimals, valueWord, totalWord, label, host})
-     Kit.bars.ladder(box,  {items: [{id, label, value, text, tag, tone}], max, unit, label, host})
-     Kit.bars.columns(box, {categories: [{id, label}], series: [{id, label, values, tone}], max, ticks, unit, decimals, yLabel, height, valueLabels, highlight, table, label, caption, host})
-                           highlight: a category id, ringed in --seam and set in bold under its label; max defaults to the next round number above the largest value
-     Kit.bars.swatch(i, tone) -> a legend swatch element;  Kit.bars.niceTicks(max, n) -> [0, …]
-   host is the element the tooltip is appended to: pass the themed element when the board sets its tokens on an element instead of :root.
-   Needs from the board:
-     requires kit.tooltip (Kit.tooltip.attach, kit/tooltip.js and kit/tooltip.css)
-     css     kit/viz/bars.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, the pens --c-blue --c-amber --c-violet --c-green --c-red --c-ink,
-             optional --seam
-     globals Kit.tooltip
-   db collections: none.
-   Lifted from: a disk-usage report (the proportional verdict split bar), a review page (the equal-weight score bar, the carried-against-total family bars and their scale), an options page
-   (the ladder with a strength bar). Changed: the source scaled one mini-bar by a square root; here every length is linear from zero. */
+/**
+ * Bars to scale
+ * Kit.bars draws five bar forms on one rule: a length is linear from zero. split cuts one bar in proportion to its parts, with a key above; score is a row of equal cells painted by level, with a legend that counts them; hbars gives each row a track as long as its total and a fill as long as the part carried, with ticks at the foot; ladder lists options with a strength bar on one scale; columns draws vertical columns, one or more series per category, with gridlines, value labels, a legend and a table view, and redraws when its box changes width. A series is never told apart by colour alone: each has a pen colour, a fill pattern and a word in the key, and every mark has a tooltip (Kit.tooltip) and a keyboard stop.
+ *
+ * API (each returns {update(patch), destroy()}; everything is written with textContent):
+ *   Kit.bars.split(box,   {items: [{id, label, value, tone, note}], unit, total, restLabel, caption, label, host})
+ *                         total larger than the sum adds a dashed "rest" part; tone is a pen (blue amber violet green red ink) or a meaning (ok warn danger accent muted); default by position
+ *   Kit.bars.score(box,   {items: [{id, label, level}], levels: [{id, label, tone}], label, host})
+ *   Kit.bars.hbars(box,   {rows: [{id, label, value, total, note, tone}], unit, max, ticks, decimals, valueWord, totalWord, label, host})
+ *   Kit.bars.ladder(box,  {items: [{id, label, value, text, tag, tone}], max, unit, label, host})
+ *   Kit.bars.columns(box, {categories: [{id, label}], series: [{id, label, values, tone}], max, ticks, unit, decimals, yLabel, height, valueLabels, highlight, table, label, caption, host})
+ *                         highlight: a category id, ringed in --seam and set in bold under its label; max defaults to the next round number above the largest value
+ *   Kit.bars.swatch(i, tone) -> a legend swatch element;  Kit.bars.niceTicks(max, n) -> [0, …]
+ * host is the element the tooltip is appended to: pass the themed element when the board sets its tokens on an element instead of :root.
+ *
+ * @id        viz.bars
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Proportional split bar, equal-weight score bar, carried-against-total bars, an option ladder and grouped columns, every length linear from zero.
+ * @tags      bars, chart, split, proportion, score, columns, ladder, scale, legend, table view, pattern
+ * @requires  kit.tooltip
+ * @provides  Kit.bars.split, Kit.bars.score, Kit.bars.hbars, Kit.bars.ladder, Kit.bars.columns, Kit.bars.swatch, Kit.bars.niceTicks
+ * @config    Kit.bars.split(box, opts) | items [{id, label, value, tone, note}], unit, total, restLabel, caption, label, host
+ * @config    Kit.bars.score(box, opts) | items [{id, label, level}], levels [{id, label, tone}], label, host
+ * @config    Kit.bars.hbars(box, opts) | rows [{id, label, value, total, note, tone}], unit, max, ticks, decimals, valueWord, totalWord, label, host
+ * @config    Kit.bars.ladder(box, opts) | items [{id, label, value, text, tag, tone}], max, unit, label, host
+ * @config    Kit.bars.columns(box, opts) | categories [{id, label}], series [{id, label, values, tone}], max, ticks, unit, decimals, yLabel, height, valueLabels, highlight, table, label, caption, host
+ * @config    host | the element the tooltip is appended to: the themed element when the board sets tokens on an element
+ * @config    requires | kit.tooltip: Kit.tooltip.attach and its css
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --c-ink --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

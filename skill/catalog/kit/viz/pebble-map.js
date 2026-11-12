@@ -1,33 +1,38 @@
 /* part:page.script.kit.viz.pebble-map */
-/* Kit visualization: pebble map (Kit.pebbleMap)    kit version 0.1.0
-   What it is: machines (or services, or sites) drawn as glazed pebbles joined by gold seams. A seam shows how its link is: up (beads of light flow along it), cut (dashed and dimmed, with a
-   cross badge in the middle), connecting (a turning ring in the middle) or idle (a plain seam). A pebble shows its state as a ring, a badge glyph and a word, never colour alone. Three
-   layouts, each with a wide and a tall (phone) drawing that the map picks from its own width:
-     estate  a hub on the left with its holders (two keys, say), and the nodes in two rows to the right, each row chained pebble to pebble
-     fan     one source and its copies: a seam from the source to each target (a primary feeding two standbys)
-     ring    peers on a circle, each joined to the next
-   The seam that ends at a node carries that node's link (node.link). Hover or focus a seam and its words show on the map and in the caption line; the seam is an image with the same words as
-   its name. Differs from viz.topology (clickable diagram with fixed positions): this one lays the nodes out for you and its links have states.
-   API:
-     Kit.pebbleMap.mount(box, opts) -> {setLayout(name), update(patch), destroy()}
-       opts   { layout: "estate", nodes, hub, holders, source, label, compact: "auto" | true | false, compactBelow: 720, flow: true, caption: true, enum: "node", linkEnum: "link", onPick(node), host }
-                nodes    [{id, label, sub, state, glyph, href, link: {state, words}}]  state is a value of the enum (healthy, look, down, checking, waiting, standby, primary: defined here when the
-                         board has not defined "node"); sub defaults to the state's word; glyph defaults to the state's glyph; href makes the pebble a link, onPick a button;
-                         link.state is up | cut | connecting | idle (the "link" enum), link.words the sentence for the seam ("depot: link up, 12 ms")
-                hub      {id, label, sub, state, glyph}  estate: the pebble the seams start from;  fan: not used (use source)
-                holders  [{id, label, sub, state, glyph}]  estate: up to two pebbles joined to the hub
-                source   {id, label, sub, state, glyph}  fan: the pebble the copies start from;  ring: not used
-       update(patch) redraws with the changed options. "compact: auto" switches to the tall drawing under compactBelow px of width, and back.
-     Kit.pebbleMap.states -> {node: [value], link: [value]}   the values this file defines in Kit.vocab
-     Kit.pebbleMap.mid(p0, p1, p2, p3) -> [x, y]   the point half way along a cubic bezier, (P0 + 3 P1 + 3 P2 + P3) / 8, where a seam's badge and words sit
-   Needs from the board:
-     requires kit.vocab (state words, glyphs, tones), kit/vocab.css; kit.glaze-surfaces (the caption line is a .kit-chip with a .kit-orb); theme.glaze-depth gives the porcelain look (flat without it)
-     css     kit/viz/pebble-map.css, kit/glaze-surfaces.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui, optional --seam --seam-0..4 --pebble-hi --rim --pool --shade
-     globals Kit.vocab
-   db collections: none.
-   Lifted from: a network-ops console's estate map (pebbles on gold seams; a node that does not answer is a broken seam; the tunnel on each seam flowing, cut or connecting; seam words on hover and
-   focus; a wide and a tall drawing), its replication map (a primary and its standbys) and its ring of peers. Changed: positions are computed, the node and link states are vocab tables, the
-   words of every seam are also a caption line, and the pebbles are links or buttons by config. */
+/**
+ * Pebble map
+ * Machines (or services, or sites) drawn as glazed pebbles on gold seams, laid out for you. A seam shows how its link is: up (beads of light flow along it), cut (dashed and dimmed, with a cross badge in the middle), connecting (a turning ring in the middle) or idle (a plain seam). A pebble shows its state as a ring, a badge glyph and a word, never colour alone. Three layouts, each with a wide and a tall drawing that the map picks from its own width: estate (a hub with its holders and the nodes in two chained rows), fan (a primary and the copies it feeds) and ring (peers on a circle). Hover or focus a seam and its words show on the map and in a caption line; every seam is an image with the same words as its name. Pebbles are links or buttons by config. Differs from viz.topology: positions are computed and the links have states.
+ *
+ * API:
+ *   Kit.pebbleMap.mount(box, opts) -> {setLayout(name), update(patch), destroy()}
+ *     opts   { layout: "estate", nodes, hub, holders, source, label, compact: "auto" | true | false, compactBelow: 720, flow: true, caption: true, enum: "node", linkEnum: "link", onPick(node), host }
+ *              nodes    [{id, label, sub, state, glyph, href, link: {state, words}}]  state is a value of the enum (healthy, look, down, checking, waiting, standby, primary: defined here when the
+ *                       board has not defined "node"); sub defaults to the state's word; glyph defaults to the state's glyph; href makes the pebble a link, onPick a button;
+ *                       link.state is up | cut | connecting | idle (the "link" enum), link.words the sentence for the seam ("depot: link up, 12 ms")
+ *              hub      {id, label, sub, state, glyph}  estate: the pebble the seams start from;  fan: not used (use source)
+ *              holders  [{id, label, sub, state, glyph}]  estate: up to two pebbles joined to the hub
+ *              source   {id, label, sub, state, glyph}  fan: the pebble the copies start from;  ring: not used
+ *     update(patch) redraws with the changed options. "compact: auto" switches to the tall drawing under compactBelow px of width, and back.
+ *   Kit.pebbleMap.states -> {node: [value], link: [value]}   the values this file defines in Kit.vocab
+ *   Kit.pebbleMap.mid(p0, p1, p2, p3) -> [x, y]   the point half way along a cubic bezier, (P0 + 3 P1 + 3 P2 + P3) / 8, where a seam's badge and words sit
+ *
+ * Also load kit/vocab.css and kit/glaze-surfaces.css.
+ *
+ * @id        viz.pebble-map
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Machines as glazed pebbles joined by gold seams; a seam flows while its link is up, breaks with a badge when it is down and shows a ring while connecting; a wide layout and a phone layout.
+ * @tags      map, network, nodes, links, pebbles, estate, replication, ring, status
+ * @requires  kit.vocab, kit.glaze-surfaces, theme.glaze-depth
+ * @provides  Kit.pebbleMap.mount, Kit.pebbleMap.mid, Kit.pebbleMap.states
+ * @config    Kit.pebbleMap.mount(box, {layout, nodes, hub, holders, source, compact, compactBelow, flow, caption, onPick}) | nodes [{id, label, sub, state, glyph, href, link: {state, words}}]; layout estate | fan | ring; the seam that ends at a node carries that node's link
+ * @config    states | values of the Kit.vocab enums 'node' (healthy, look, down, checking, waiting, standby, primary) and 'link' (up, cut, connecting, idle); defined here unless the board defines its own
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --seam? --seam-0? --seam-1? --seam-2? --seam-3? --seam-4? --pebble-hi? --rim? --pool? --shade? --on-state?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,21 +1,36 @@
 /* part:page.script.kit.count-filters */
-/* Kit pattern: count tiles as filters (Kit.countFilters)    kit version 0.1.0
-   What it is: a row of tiles, each a count with a name ("5 Pushed"), that filter the view when pressed, over a strip of chip groups ("Node", "Repo") and a search box. The tile is a toggle
-   button (aria-pressed); the pressed tile is outlined and carries a check mark, so state does not ride on colour. A chip group is a single choice that a second press clears.
-   The strip can stay under a sticky top bar. The pattern holds only the filter state: it calls onChange and the board filters its own cards, rows or ledger.
-   API:
-     Kit.countFilters.mount(root, {tiles, value, groups, search, sticky, label, onChange}) -> {state(), set({tile, groups, q}), setTiles(tiles), setCount(id, n), destroy()}
-       tiles     [{id, label, count, note, tone}]   note is the small unit under the label ("workstreams"); tone: ok warn danger accent muted gives the tile a dot
-       value     the pressed tile's id (default: the first tile)
-       groups    [{id, label, options: [{value, label}]}]
-       search    {placeholder, label}   omit for no search box
-       sticky    true keeps the strip at the top of the scroll area, below --kit-topbar-h when a top bar sets it
-       onChange  ({tile, groups: {id: value | ""}, q}) after a change; q is the trimmed search text
-   Needs from the board:
-     css     kit/patterns/count-filters.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam, --kit-topbar-h
-     globals none
-   db collections: none.
-   Lifted from: a work-status board (COUNTS, renderCounts, the sticky .strip with node and repo chips and a search box). */
+/**
+ * Count tiles as filters
+ * Kit.countFilters.mount(root, {tiles, value, groups, search, sticky, label, onChange}) renders the tiles as toggle buttons (the pressed one is outlined, filled and shows a check mark), chip groups that clear on a second press and an optional search box. It holds only the filter state and calls onChange({tile, groups, q}); the board filters its own cards. setCount and setTiles update the numbers when the data changes. With sticky it stays below --kit-topbar-h.
+ *
+ * A row of tiles, each a count with a name ("5 Pushed"), that filter the view when pressed, over a strip of chip groups ("Node", "Repo") and a search box. The tile is a toggle
+ * button (aria-pressed); the pressed tile is outlined and carries a check mark, so state does not ride on colour. A chip group is a single choice that a second press clears.
+ * The strip can stay under a sticky top bar. The pattern holds only the filter state: it calls onChange and the board filters its own cards, rows or ledger.
+ *
+ * API:
+ *   Kit.countFilters.mount(root, {tiles, value, groups, search, sticky, label, onChange}) -> {state(), set({tile, groups, q}), setTiles(tiles), setCount(id, n), destroy()}
+ *     tiles     [{id, label, count, note, tone}]   note is the small unit under the label ("workstreams"); tone: ok warn danger accent muted gives the tile a dot
+ *     value     the pressed tile's id (default: the first tile)
+ *     groups    [{id, label, options: [{value, label}]}]
+ *     search    {placeholder, label}   omit for no search box
+ *     sticky    true keeps the strip at the top of the scroll area, below --kit-topbar-h when a top bar sets it
+ *     onChange  ({tile, groups: {id: value | ""}, q}) after a change; q is the trimmed search text
+ *
+ * @id        pattern.count-filters
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Tiles that show a count per status and filter the view when pressed, with chip groups and a search box in a strip that can stay under a sticky bar.
+ * @tags      filter, tiles, counts, status, chips, search, sticky, dashboard, work board
+ * @requires  none
+ * @provides  Kit.countFilters.mount
+ * @config    Kit.countFilters.mount(root, opts) | tiles [{id, label, count, note, tone}], value, groups [{id, label, options [{value, label}]}], search {placeholder, label}, sticky, label, onChange
+ * @config    --kit-topbar-h | optional, written by Kit.topbar: the strip sticks below it
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

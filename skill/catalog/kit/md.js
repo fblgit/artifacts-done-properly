@@ -1,17 +1,31 @@
 /* part:page.script.kit.md */
-/* Kit component: Markdown (Kit.md)    kit version 0.1.0
-   What it is: Markdown to sanitized HTML (marked + DOMPurify) with a plain-text fallback when either library is missing; styles in kit/md.css for a ".md" container.
-   Needs from the board:
-     config  Kit.md.create({forbidTags, forbidAttrs, gfm, externalLinks})
-               forbidTags    tag names DOMPurify strips (default none beyond its own defaults)
-               forbidAttrs   attribute names stripped (default none)
-               gfm           pass gfm to marked (default true; the library default)
-               externalLinks true: every link gets target=_blank rel="noopener noreferrer" (default false)
-     globals window.marked and window.DOMPurify (cdnjs marked@12.0.2, dompurify@3.1.6)
-     css     kit/md.css; custom properties --sunk --rule --ink-2
-   Use: const mdToHtml = Kit.md.create(config); html`<div class="md" dangerouslySetInnerHTML=${{ __html: mdToHtml(text) }}></div>`
-   db collections: none.
-   Lifted from: Journey Whiteboard app.js (mdToHtml). The ADR Drafting Table's core.js version adds forbid lists and external links (now options here, off by default) and renders mermaid fences (not in the kit). */
+/**
+ * Markdown
+ * Kit.md.create(options) returns mdToHtml(text). Options strip extra tags or attributes, turn gfm off, or open every link in a new tab. When either library is missing it returns escaped text, so a page never renders raw HTML from data.
+ *
+ * config  Kit.md.create({forbidTags, forbidAttrs, gfm, externalLinks})
+ *           forbidTags    tag names DOMPurify strips (default none beyond its own defaults)
+ *           forbidAttrs   attribute names stripped (default none)
+ *           gfm           pass gfm to marked (default true; the library default)
+ *           externalLinks true: every link gets target=_blank rel="noopener noreferrer" (default false)
+ * globals window.marked and window.DOMPurify (cdnjs marked@12.0.2, dompurify@3.1.6)
+ * Use: const mdToHtml = Kit.md.create(config); html`<div class="md" dangerouslySetInnerHTML=${{ __html: mdToHtml(text) }}></div>`
+ *
+ * @id        kit.md
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Markdown to sanitized HTML with marked and DOMPurify, a plain-text fallback, and styles for a .md container.
+ * @tags      markdown, md, sanitize, dompurify, marked, rich text
+ * @requires  none
+ * @provides  Kit.md.create
+ * @config    Kit.md.create({forbidTags, forbidAttrs, gfm, externalLinks}) | all optional
+ * @config    container | render into an element with class md
+ * @tokens    --sunk --rule --ink-2
+ * @globals   marked, dompurify
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

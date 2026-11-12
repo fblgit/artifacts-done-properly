@@ -1,23 +1,35 @@
 /* part:page.script.kit.file-map */
-/* Kit pattern: file map (Kit.fileMap)    kit version 0.1.0
-   What it is: every published file of an ADP artifact at once, as a map whose areas are true to scale: each folder is a block and each file a tile, its area its share of the bytes (or of
-   the parts, switched by a toggle). A tile changed after the chosen version is hatched and carries a diamond, a held one a lock, a stale hold an open lock, and open comments a count, so a
-   reader sees where the weight sits and where the work is before opening anything. The largest file and the totals are said in a line of text, for anyone who does not read the map.
-   Tiles are buttons: arrow keys move to the nearest tile in that direction, Home and End to the first and last, Enter or Space selects. The selected tile is ringed by the seam.
-   API:
-     Kit.fileMap.mount(root, opts) -> {select(path), update(data), setSince(version), setMeasure("bytes"|"parts"), destroy()}
-       manifest   {files: {path: hash}, part_file: {id: path}, parents}     sizes  {path: bytes}; a file without a size counts as 0 bytes, and the line says how many have none
-       parts      the parts/<id> docs ({id: doc} or [{id, ...}]) for holder and hold_until     changes  the changes/ docs [{version, at, parts: [{id}]}]
-       threads    the threads/ docs {id: {part, status}}     since  the version after which changes are marked (default: the one before the latest; "" marks every change)
-       measure    "bytes" (default) or "parts" (a file without parts counts as one)     selected  a path     now  ISO or Date for holds     label  the map's name (default "File map")
-       onSelect(path)  called when the reader picks a tile; select() never calls it
-   Needs from the board:
-     css     kit/patterns/file-map.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --warn --danger --f-ui --f-mono, optional --seam --radius
-     kit     kit.tokens
-     globals none
-   db collections: none read here; the board passes manifest/current, parts, changes and threads in.
-   Lifted from: the size view of a disk usage tool (nested rectangles, area by bytes) and the marks of kit/layout/file-browser.js.
-   Changed: areas are drawn with the squarified layout so tiles stay near square; marks are shapes and words as well as colour; the map is keyboard navigable by direction. */
+/**
+ * File map
+ * Kit.fileMap.mount(root, {manifest, sizes, parts, changes, threads, since, measure, selected, onSelect}) draws a squarified map: a block per folder, a tile per file, its area its share of the bytes (or, with the Bytes and Parts toggle, of the parts; a file without parts counts as one). A tile changed after the chosen version is hatched and carries a diamond, a held one a dashed edge and a lock, a stale hold a dotted edge and an open lock, and open comments a count; a legend names each mark. A line of text gives the totals and the largest file with its share, for anyone who does not read the map. Tiles are buttons with a full description as their name: arrow keys move to the nearest tile in that direction, Home and End to the ends, Enter selects, and the selected tile and its folder are ringed by the seam. The map redraws to its width (taller than wide below 520 px). Pair it with layout.file-browser: each one's onSelect calls the other's select().
+ *
+ * Every published file of an ADP artifact at once, as a map whose areas are true to scale: each folder is a block and each file a tile, its area its share of the bytes (or of
+ * the parts, switched by a toggle). A tile changed after the chosen version is hatched and carries a diamond, a held one a lock, a stale hold an open lock, and open comments a count, so a
+ * reader sees where the weight sits and where the work is before opening anything. The largest file and the totals are said in a line of text, for anyone who does not read the map.
+ * Tiles are buttons: arrow keys move to the nearest tile in that direction, Home and End to the first and last, Enter or Space selects. The selected tile is ringed by the seam.
+ *
+ * API:
+ *   Kit.fileMap.mount(root, opts) -> {select(path), update(data), setSince(version), setMeasure("bytes"|"parts"), destroy()}
+ *     manifest   {files: {path: hash}, part_file: {id: path}, parents}     sizes  {path: bytes}; a file without a size counts as 0 bytes, and the line says how many have none
+ *     parts      the parts/<id> docs ({id: doc} or [{id, ...}]) for holder and hold_until     changes  the changes/ docs [{version, at, parts: [{id}]}]
+ *     threads    the threads/ docs {id: {part, status}}     since  the version after which changes are marked (default: the one before the latest; "" marks every change)
+ *     measure    "bytes" (default) or "parts" (a file without parts counts as one)     selected  a path     now  ISO or Date for holds     label  the map's name (default "File map")
+ *     onSelect(path)  called when the reader picks a tile; select() never calls it
+ *
+ * @id        pattern.file-map
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   Every published file at once, its area true to its share of the bytes or the parts, with changed, held and commented files marked, so the weight and the work show before anything is opened.
+ * @tags      files, treemap, map, bytes, size, parts, holds, changed, adp/2, overview
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.fileMap.mount
+ * @config    Kit.fileMap.mount(root, opts) | manifest {files, part_file}, sizes {path: bytes}, parts {id: parts doc}, changes [changes docs], threads {id: threads doc}, since ("" marks every change), measure bytes | parts, selected, now, label, onSelect(path); returns {select, update, setSince, setMeasure, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-soft --warn --danger --f-ui --f-mono --seam? --radius?
+ * @globals   none
+ * @db        reads manifest/current; parts; changes; threads / The pattern does not read the db itself: the page passes the docs in.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

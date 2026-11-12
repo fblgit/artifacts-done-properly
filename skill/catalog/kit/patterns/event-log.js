@@ -1,24 +1,38 @@
 /* part:page.script.kit.event-log */
-/* Kit pattern: event log and activity feed (Kit.eventLog)    kit version 0.1.0
-   What it is: every move on a piece of work, newest first, that stays one short scroll however long it gets. Days fold behind a header with a count and a strip of dots; the newest
-   days open until about 24 moves are in view. A run of the same actor doing the same thing to the same subject folds into one row with a count chip and the span of times. Pressing a
-   row fills a panel beside the list (under it on a narrow screen) with who, when, the subject's other moves, and Newer and Older buttons that step through the log. The panel sticks
-   under a top bar whose height the page puts in --kit-topbar-h. Which days are open is remembered in this browser when you give a key.
-   Every status word, glyph and tone comes from the vocabulary table (kit/vocab.js). This file adds the enum "log-status" only when the page has not defined it; pass your own as
-   statusEnum. A status is always a glyph and a word, never colour alone.
-   API:
-     Kit.eventLog.mount(box, opts) -> {select(id), step(dir), expandAll(), collapseAll(), update(events), selected(), destroy()}
-       events      [{id, at (ISO), by, what, subject, status}]      any order; the log sorts newest first
-       statusEnum  vocabulary enum of the status (default "log-status")       timeZone  for days and clock times (default: the viewer's; the preview passes "UTC")
-       openLimit   how many moves the newest open days may hold at the start (default 24)      fold  false keeps repeated moves as separate rows (default true)
-       remember    a localStorage key for the open days (guarded; the page works without it)       onSelect  (event) after a selection
-       label       the log's name for assistive tech (default "Activity log")
-   Needs from the board:
-     css     kit/patterns/event-log.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, optional --kit-topbar-h --seam
-     globals Kit.vocab, Kit.keepState (their kit files load first)
-   db collections: none; the board hands over the list and calls update() as it grows.
-   Lifted from: an earlier board's timeline (days that fold, the sticky event panel with its step buttons), a component family's delivery feed (repeats folded into one row with a count)
-   and its task history (a move with a version and what it carried). */
+/**
+ * Event log and activity feed
+ * Kit.eventLog.mount(box, {events, timeZone, remember}) sorts events newest first and groups them by day. A day is a button with its date, a count of moves and a strip of dots; the newest days start open until about 24 moves are in view, and Expand all and Collapse all show when there is more than one day. A run of the same actor doing the same thing to the same subject folds into one row with a count chip (fold: false keeps them apart). Pressing a row fills a panel (beside the list from 720px of the log's own width, under it below that) with the status, who, when, how many moves are on the subject, the times of a folded run and the other moves on the subject; Newer and Older step through the log. The panel sticks under --kit-topbar-h. Up and Down arrows move between rows. Which days are open is remembered under your key. A status is a glyph and a word from the vocabulary table; the file adds log-status only if the page has not defined it.
+ *
+ * Every move on a piece of work, newest first, that stays one short scroll however long it gets. Days fold behind a header with a count and a strip of dots; the newest
+ * days open until about 24 moves are in view. A run of the same actor doing the same thing to the same subject folds into one row with a count chip and the span of times. Pressing a
+ * row fills a panel beside the list (under it on a narrow screen) with who, when, the subject's other moves, and Newer and Older buttons that step through the log. The panel sticks
+ * under a top bar whose height the page puts in --kit-topbar-h. Which days are open is remembered in this browser when you give a key.
+ * Every status word, glyph and tone comes from the vocabulary table (kit/vocab.js). This file adds the enum "log-status" only when the page has not defined it; pass your own as
+ * statusEnum. A status is always a glyph and a word, never colour alone.
+ *
+ * API:
+ *   Kit.eventLog.mount(box, opts) -> {select(id), step(dir), expandAll(), collapseAll(), update(events), selected(), destroy()}
+ *     events      [{id, at (ISO), by, what, subject, status}]      any order; the log sorts newest first
+ *     statusEnum  vocabulary enum of the status (default "log-status")       timeZone  for days and clock times (default: the viewer's; the preview passes "UTC")
+ *     openLimit   how many moves the newest open days may hold at the start (default 24)      fold  false keeps repeated moves as separate rows (default true)
+ *     remember    a localStorage key for the open days (guarded; the page works without it)       onSelect  (event) after a selection
+ *     label       the log's name for assistive tech (default "Activity log")
+ *
+ * @id        pattern.event-log
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Every move newest first: days that fold with a count and a dot strip, repeats folded into one row with a count chip, and a sticky panel for the selected move with Newer and Older.
+ * @tags      event log, activity, feed, history, timeline, days, fold, repeat, detail panel, sticky
+ * @requires  kit.tokens, kit.vocab, kit.keep-state
+ * @provides  Kit.eventLog.mount, expandAll, collapseAll
+ * @config    Kit.eventLog.mount(box, opts) | events [{id, at, by, what, subject, status}], statusEnum, timeZone, openLimit, fold, remember, onSelect, label; returns {select, step, expandAll, collapseAll, selected, update, destroy}
+ * @config    --kit-topbar-h | optional custom property: the height of a sticky top bar, so the panel sticks beneath it
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --kit-topbar-h? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

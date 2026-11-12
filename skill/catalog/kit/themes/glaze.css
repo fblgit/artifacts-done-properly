@@ -1,11 +1,27 @@
 /* part:page.style.kit.theme.glaze */
-/* Kit theme: Glaze    kit version 0.1.0
-   Porcelain by day, tenmoku by night, gold seams: moon-white panels on a blue-grey ground, a kiln-dark night, five glazes for meaning.
-   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the gold seam: rules, current-item marks, focus),
-   --gold-leaf (a gradient for one hairline per page), --focus, --info and --wait (cobalt and peach bloom), and a -soft tint for each meaning.
-   Text pairs (--ink, --ink-2, --ok, --warn, --danger, --info, --accent on --panel, --sunk and --bg) are 4.5:1 or more in both themes; --seam is 3:1 or more on --panel.
-   Fonts: https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Kalam:wght@400;700&display=swap
-   From: the Control panel's Glaze skin as two documents carried it (moon-white porcelain and tenmoku tokens; the serif display and rounded body of the second). */
+/**
+ * Glaze
+ * The owner's current direction as kit-contract tokens, so every kit file reads it without aliases. Beyond the contract it adds --seam (the one gold line: current link, selected tab, total row, focus), --gold-leaf, --focus, --info and --wait, and a -soft tint per meaning. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ *
+ * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the gold seam: rules, current-item marks, focus),
+ * --gold-leaf (a gradient for one hairline per page), --focus, --info and --wait (cobalt and peach bloom), and a -soft tint for each meaning.
+ * Text pairs (--ink, --ink-2, --ok, --warn, --danger, --info, --accent on --panel, --sunk and --bg) are 4.5:1 or more in both themes; --seam is 3:1 or more on --panel.
+ * Fonts: https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Kalam:wght@400;700&display=swap
+ *
+ * @id        theme.glaze
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Porcelain by day, tenmoku by night, gold seams: moon-white panels on a blue-grey ground, a kiln-dark night and five glazes for meaning.
+ * @tags      palette, tokens, colours, dark mode, glaze, porcelain, tenmoku, gold, serif, control
+ * @requires  none
+ * @config    fonts | Newsreader, Nunito, JetBrains Mono and Kalam from Google Fonts (the URL is in the json and the css header)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: none; a palette and type for any page. */
 :root {
   color-scheme: light;

@@ -1,28 +1,41 @@
 /* part:page.script.kit.expand-card */
-/* Kit pattern: expandable work card (Kit.expandCard)    kit version 0.1.0
-   What it is: a card per workstream with a title, its outcome line and a status matrix of small cells (one per dimension: committed, pushed, applied, verified), that opens to sections of
-   detail (status by dimension, bullet lists, caveats, tag rows). Every status cell carries a symbol and a word, so the state never rides on colour. The cards are details elements; which
-   ones are open is remembered in localStorage under your key (and reported through onToggle for a board that keeps it in its own store). Cards can be dimmed or highlighted from outside
-   (a timeline event picks the cards it touched) and filtered.
-   Plain DOM; text is set with textContent.
-   API:
-     Kit.expandCard.mount(box, {cards, dims, states, remember, open, onToggle, empty}) -> {highlight(ids), filter(fn), update(cards), openIds(), legend(box), destroy()}
-       cards     [{id, no, title, outcome, cells: {dimKey: {state, note}}, pills: [{label, tone}], sections: [{heading, list | text | dl | tags, tone}]}]
-                   sections: list is string[] (a bulleted list; tone "warn" marks each item with "!"), text is a string, dl is [[label, value]] , tags is [{label, items: string[]}]
-       dims      [{key, label}]   the matrix columns, in order (default four: C Committed, P Pushed, A Applied, V Verified)
-       states    {key: {mark, text, tone}}   the status vocabulary; default yes (Yes), part (Partly), no (No), nv (Not verified), na (Not applicable), rev (Reverted); tones ok warn danger accent muted
-       remember  a localStorage key; omit to keep nothing
-       open      {id: true} the cards open at the start (wins over what was remembered)
-       onToggle  (id, open, openMap) after a card opens or closes
-       empty     the line shown when filter() leaves no card
-     highlight(ids) dims the other cards and outlines the listed ones; highlight() clears. filter(fn) hides cards where fn(card) is false; filter() clears.
-     legend(box) writes the state vocabulary into box as a row of sample cells.
-   Needs from the board:
-     css     kit/patterns/expand-card.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals none
-     capabilities none required; localStorage is used only when remember is set, inside try/catch, and the card works without it
-   db collections: none.
-   Lifted from: a work-status board (renderCards, openCards, .card, .body and the C/P/A/V status matrix with its .cell states). */
+/**
+ * Expandable work card
+ * Kit.expandCard.mount(box, {cards, dims, states, remember, open, onToggle}) builds one details card per workstream: number, title, pills, the outcome line and a matrix with one cell per dimension (letter, symbol, word). The state vocabulary is yes, partly, no, not verified, not applicable and reverted, and each has a symbol, so the state never rides on colour. Sections hold lists, text, label-value rows and tag rows. highlight(ids) dims the others and outlines the listed cards; filter(fn) hides cards; legend(box) writes the vocabulary. Which cards are open is saved to localStorage under your key inside try/catch, and onToggle reports it for a board that keeps it elsewhere.
+ *
+ * A card per workstream with a title, its outcome line and a status matrix of small cells (one per dimension: committed, pushed, applied, verified), that opens to sections of
+ * detail (status by dimension, bullet lists, caveats, tag rows). Every status cell carries a symbol and a word, so the state never rides on colour. The cards are details elements; which
+ * ones are open is remembered in localStorage under your key (and reported through onToggle for a board that keeps it in its own store). Cards can be dimmed or highlighted from outside
+ * (a timeline event picks the cards it touched) and filtered.
+ * Plain DOM; text is set with textContent.
+ *
+ * API:
+ *   Kit.expandCard.mount(box, {cards, dims, states, remember, open, onToggle, empty}) -> {highlight(ids), filter(fn), update(cards), openIds(), legend(box), destroy()}
+ *     cards     [{id, no, title, outcome, cells: {dimKey: {state, note}}, pills: [{label, tone}], sections: [{heading, list | text | dl | tags, tone}]}]
+ *                 sections: list is string[] (a bulleted list; tone "warn" marks each item with "!"), text is a string, dl is [[label, value]] , tags is [{label, items: string[]}]
+ *     dims      [{key, label}]   the matrix columns, in order (default four: C Committed, P Pushed, A Applied, V Verified)
+ *     states    {key: {mark, text, tone}}   the status vocabulary; default yes (Yes), part (Partly), no (No), nv (Not verified), na (Not applicable), rev (Reverted); tones ok warn danger accent muted
+ *     remember  a localStorage key; omit to keep nothing
+ *     open      {id: true} the cards open at the start (wins over what was remembered)
+ *     onToggle  (id, open, openMap) after a card opens or closes
+ *     empty     the line shown when filter() leaves no card
+ *   highlight(ids) dims the other cards and outlines the listed ones; highlight() clears. filter(fn) hides cards where fn(card) is false; filter() clears.
+ *   legend(box) writes the state vocabulary into box as a row of sample cells.
+ *
+ * @id        pattern.expand-card
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A workstream card with a status matrix of symbol-and-word cells and an expanding body; remembers what is open.
+ * @tags      card, status, matrix, workstream, expand, details, legend, highlight, remember
+ * @requires  none
+ * @provides  Kit.expandCard.mount, Kit.expandCard.states
+ * @config    Kit.expandCard.mount(box, opts) | cards [{id, no, title, outcome, cells {dimKey: {state, note}}, pills, sections}], dims [{key, label}], states, remember (localStorage key), open {id: true}, onToggle(id, open, openMap), empty; returns {highlight, filter, update, openIds, legend, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,23 +1,35 @@
 /* part:page.script.kit.explorer-shell */
-/* Kit layout: explorer shell (Kit.explorer)    kit version 0.1.0
-   What it is: a page framed like a code editor. A sidebar lists the page's sections as a file tree (groups, a name, an extension badge for the kind of section); the main area holds
-   a pipeline of phases across its top and then the sections; a status bar along the bottom carries live counts and a note. The file whose section is in view is marked as you scroll, and a click
-   scrolls to its section. Plain DOM; every text is set with textContent. Narrow boxes turn the tree into a row of file chips above the main area.
-   API (small and stable):
-     Kit.explorer.mount(root, {groups, pipeline, sections, status, height, label, treeLabel}) -> {select(id), current(), setStatus(status), setPipeline(pipeline), destroy()}
-       groups    [{label, files: [{id, name, ext}]}]       each file's id is the id of a section; ext is the kind badge (md, csv, sh, log ...)
-       pipeline  {label, stages: [{id, name, state}], words}   state is a value of the Kit.vocab "state" enum (queued, running, done, failed, blocked ...); words {state: "passed"} renames a state
-       sections  [{id, title, render(body) | node}]          the main area, in reading order; render fills the section body
-       status    {items: [{label, count, tone}], note}       tone is a Kit.vocab tone (attention, danger, success ...); a count of 0 is left out
-       height    css length of the whole shell (default "min(36rem, 100dvh)"); give "100dvh" for a full page
-     The tree is a nav; the file in view has aria-current="location". The status bar is a labelled region, not a live one: call setStatus when counts change and announce it yourself if it matters.
-   Made for the Kanban theme (a blue status bar, a dense tool look) and fine under any other.
-   Needs from the board:
-     css     kit/layout/explorer-shell.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --f-ui --f-mono, optional --seam --radius
-     kit     kit/vocab.js and kit/vocab.css (the pipeline's state glyph and word), kit.tokens
-     globals IntersectionObserver (without it the first file stays marked until a click)
-   db collections: none.
-   Lifted from: an earlier board's kanban skin (the file-tree sidebar, the pipeline of phases, the status bar with counts, the section in view marked in the tree). */
+/**
+ * Explorer shell
+ * Kit.explorer.mount(root, {groups, pipeline, sections, status}) frames a page like a code editor: a sidebar tree of the page's sections (groups, file names, an extension badge for the kind), a main area with a pipeline of stages across the top and then the sections, and a status bar underneath with counts and a note. The file whose section is in view is marked as you scroll, and a click scrolls to the section and moves focus to its heading. Stage states come from the vocabulary and always show a glyph and a word. Below about 40rem the tree becomes a row of file chips. Made for the Kanban theme (a blue status bar, a dense tool look) and fine under any other: the preview shows it on the stage's theme and under Kanban.
+ *
+ * API (small and stable):
+ *   Kit.explorer.mount(root, {groups, pipeline, sections, status, height, label, treeLabel}) -> {select(id), current(), setStatus(status), setPipeline(pipeline), destroy()}
+ *     groups    [{label, files: [{id, name, ext}]}]       each file's id is the id of a section; ext is the kind badge (md, csv, sh, log ...)
+ *     pipeline  {label, stages: [{id, name, state}], words}   state is a value of the Kit.vocab "state" enum (queued, running, done, failed, blocked ...); words {state: "passed"} renames a state
+ *     sections  [{id, title, render(body) | node}]          the main area, in reading order; render fills the section body
+ *     status    {items: [{label, count, tone}], note}       tone is a Kit.vocab tone (attention, danger, success ...); a count of 0 is left out
+ *     height    css length of the whole shell (default "min(36rem, 100dvh)"); give "100dvh" for a full page
+ *   The tree is a nav; the file in view has aria-current="location". The status bar is a labelled region, not a live one: call setStatus when counts change and announce it yourself if it matters.
+ * Made for the Kanban theme (a blue status bar, a dense tool look) and fine under any other.
+ *
+ * IntersectionObserver marks the file in view; without it the first file stays marked until a click.
+ *
+ * @id        layout.explorer-shell
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Sections as a file tree with kind badges, a pipeline of phases, and a status bar with live counts.
+ * @tags      explorer, sidebar, file tree, pipeline, status bar, ide, shell, sections, counts
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.explorer.mount
+ * @config    Kit.explorer.mount(root, {groups, pipeline, sections, status, height, label, treeLabel}) | groups [{label, files: [{id, name, ext}]}], pipeline {label, stages: [{id, name, state}], words}, sections [{id, title, render(body)}], status {items: [{label, count, tone}], note}; returns {select(id), current(), setStatus(s), setPipeline(p), destroy()}
+ * @config    theme | made for theme.kanban; reads --radius, --seam and --accent / --accent-ink for the status bar
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --f-ui --f-mono --seam? --radius?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

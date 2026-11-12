@@ -1,21 +1,35 @@
 /* part:page.script.kit.copy */
-/* Kit component: code block with copy (Kit.copy)    kit version 0.1.0
-   What it is: copy to the clipboard from a click, with the fallback the artifact frame needs (some app views refuse navigator.clipboard: the text is then
-   selected, and the button says to press Ctrl+C or Cmd+C), labelled code blocks with a copy button, and a click-to-copy command grid. Plain DOM, no framework.
-   API (small and stable):
-     Kit.copy.text(text, {select}) -> Promise<"copied" | "selected" | "failed">   call it inside the click handler; select is the element whose text to select on refusal
-     Kit.copy.wire(button, getText, {select, label})   one button; getText() returns the string; the button shows Copied / Press Ctrl+C for 1.6 s
-     Kit.copy.mount(root = document) -> {refresh(), destroy()}   enhances, once each:
-       .kit-code > pre               adds the bar (data-label on .kit-code names it) and a Copy button for the pre's text
-       [data-copy]                   a button that copies its data-copy value (e.g. button.kit-cmd in ul.kit-cmds)
-       [data-copy-from="#id"]        a button that copies the text of another element
-     Kit.copy.block({code, label, ink}) -> HTMLElement   a ready .kit-code element (mount wires it once it is in the page)
-   Every result is also announced in one polite live region. No storage, no network.
-   Needs from the board:
-     css     kit/copy.css; custom properties --panel --sunk --ink --ink-2 --rule --ok --accent --f-ui --f-mono, optional --seam
-     globals none (navigator.clipboard when the frame allows it)
-   db collections: none.
-   Lifted from: five documents' copy buttons (the code-block button, the hover copy on a dark block, the selection fallback, the command grid, the answers fallback). */
+/**
+ * Code block with copy
+ * Kit.copy.text(text, {select}) copies inside a click and resolves copied, selected or failed; on refusal it selects the text and the button says to press Ctrl+C or Cmd+C. Kit.copy.mount(root) wires .kit-code blocks, [data-copy] buttons (the command grid) and [data-copy-from] buttons once each; Kit.copy.block({code, label, ink}) makes a block. Results are also announced in one polite live region.
+ *
+ * API (small and stable):
+ *   Kit.copy.text(text, {select}) -> Promise<"copied" | "selected" | "failed">   call it inside the click handler; select is the element whose text to select on refusal
+ *   Kit.copy.wire(button, getText, {select, label})   one button; getText() returns the string; the button shows Copied / Press Ctrl+C for 1.6 s
+ *   Kit.copy.mount(root = document) -> {refresh(), destroy()}   enhances, once each:
+ *     .kit-code > pre               adds the bar (data-label on .kit-code names it) and a Copy button for the pre's text
+ *     [data-copy]                   a button that copies its data-copy value (e.g. button.kit-cmd in ul.kit-cmds)
+ *     [data-copy-from="#id"]        a button that copies the text of another element
+ *   Kit.copy.block({code, label, ink}) -> HTMLElement   a ready .kit-code element (mount wires it once it is in the page)
+ * Every result is also announced in one polite live region. No storage, no network.
+ *
+ * Optional custom properties: --seam.
+ *
+ * @id        kit.copy
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Labelled code blocks with a copy button, a click-to-copy command grid, and the fallback that selects the text where the clipboard is refused.
+ * @tags      copy, clipboard, code, snippet, command, shell, button, fallback
+ * @requires  none
+ * @provides  Kit.copy.text, Kit.copy.wire, Kit.copy.mount, Kit.copy.block
+ * @config    Kit.copy.mount(root) | enhances .kit-code > pre, [data-copy] and [data-copy-from] buttons
+ * @config    Kit.copy.text(text, {select}) | -> copied | selected | failed
+ * @tokens    --panel --sunk --ink --ink-2 --rule --ok --accent --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

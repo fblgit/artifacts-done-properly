@@ -1,25 +1,36 @@
 /* part:page.script.kit.viz.wires */
-/* Kit visualization: swimlane schematic with dependency wires (Kit.wires)    kit version 0.1.0
-   What it is: items drawn as small nodes on a grid of lanes (rows, for example one per owner) by phases (columns), joined by orthogonal wires from each item's dependencies.
-   A wire runs from the right edge of what it waits on to the left edge of the item, with an arrowhead; a dependency that is finished draws its wire in the success colour, and a
-   dependency that sits to the right of its item loops round the item instead. A filter dims what it does not match and never hides it, so the whole shape stays readable.
-   Hovering or focusing a node lights its own wires. Plain DOM and one svg; the wires are measured from the real node boxes and redrawn when the box, the fonts or the theme change.
-   API (small and stable):
-     Kit.wires.mount(box, {lanes, phases, nodes, label, filter, stateEnum, doneStates, onSelect}) -> {update(opts), setFilter(f), destroy()}
-       lanes     [{id, label, sub}]          one row each (sub is a small line under the label, for example a role)
-       phases    [{id, label}]               one column each, left to right
-       nodes     [{id, title, lane, phase, state, after: [id], href}]   state is a value of stateEnum in Kit.vocab; href makes the node a link, otherwise it is a button
-       filter    null | [state values to keep lit] | (node) -> boolean   what is false dims; the node stays, wires to a dimmed node dim with it
-       stateEnum the Kit.vocab enum the states come from (default "state"); a state the table does not know is drawn neutral with its raw word
-       doneStates [state values]             states whose outgoing wires draw as done (default ["done"])
-       onSelect  (node, event)               a node was chosen with a click or Enter
-     Dimmed nodes keep their keyboard stop; each node says its state, its lane and phase and what it waits on in its accessible name.
-   Needs from the board:
-     css     kit/viz/wires.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --f-ui --f-mono, optional --seam
-     kit     kit/vocab.js and kit/vocab.css (the node's state word and tone), kit.tokens
-     globals ResizeObserver (without it the wires redraw on window resize only)
-   db collections: none.
-   Lifted from: an earlier board's blueprint skin (the lanes by phases schematic and the wires between its components). */
+/**
+ * Swimlane schematic with dependency wires
+ * Kit.wires.mount(box, {lanes, phases, nodes}) draws a grid of lanes (rows) by phases (columns) with one node per item and a wire from each dependency to the item that waits on it. Wires leave the right edge of the dependency and arrive at the left edge of the item with an arrowhead; a dependency that is done draws green, and one that sits to the right loops round. A filter (a list of states or a function) dims what it does not match and keeps the shape of the plan. Hover or focus a node to light its wires. Each node is a button (or a link when it has an href) whose accessible name says its state, lane, phase and what it waits on, so the schematic is readable without seeing the wires. The wires are measured from the real boxes and redrawn when the box, the fonts or the theme change. Wide schematics scroll sideways inside their own box.
+ *
+ * API (small and stable):
+ *   Kit.wires.mount(box, {lanes, phases, nodes, label, filter, stateEnum, doneStates, onSelect}) -> {update(opts), setFilter(f), destroy()}
+ *     lanes     [{id, label, sub}]          one row each (sub is a small line under the label, for example a role)
+ *     phases    [{id, label}]               one column each, left to right
+ *     nodes     [{id, title, lane, phase, state, after: [id], href}]   state is a value of stateEnum in Kit.vocab; href makes the node a link, otherwise it is a button
+ *     filter    null | [state values to keep lit] | (node) -> boolean   what is false dims; the node stays, wires to a dimmed node dim with it
+ *     stateEnum the Kit.vocab enum the states come from (default "state"); a state the table does not know is drawn neutral with its raw word
+ *     doneStates [state values]             states whose outgoing wires draw as done (default ["done"])
+ *     onSelect  (node, event)               a node was chosen with a click or Enter
+ *   Dimmed nodes keep their keyboard stop; each node says its state, its lane and phase and what it waits on in its accessible name.
+ *
+ * Uses ResizeObserver; without it the wires redraw on window resize only.
+ *
+ * @id        viz.wires
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Items as nodes on lanes by phases, joined by orthogonal wires drawn from their dependencies; a filter dims, never hides.
+ * @tags      wires, dependencies, swimlane, schematic, lanes, phases, graph, after, filter, dim
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.wires.mount
+ * @config    Kit.wires.mount(box, {lanes, phases, nodes, label, filter, stateEnum, doneStates, onSelect}) | lanes [{id, label, sub}], phases [{id, label}], nodes [{id, title, lane, phase, state, after: [id], href}]; returns {update(opts), setFilter(f), destroy()}
+ * @config    Kit.vocab | node states come from a Kit.vocab enum (default 'state'); load kit/vocab.js and kit/vocab.css first
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --f-ui --f-mono --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

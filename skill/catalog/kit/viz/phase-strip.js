@@ -1,29 +1,36 @@
 /* part:page.script.kit.viz.phase-strip */
-/* Kit visualization: phase strip (Kit.phaseStrip)    kit version 0.1.0
-   What it is: one list of phases drawn in five forms, so a page can pick the one that fits its tone and switch without changing its data.
-     gauge      a card per phase with one segment per unit of work, coloured by the unit's state, and a count with a percentage
-     flow       boxes joined by arrows: a badge, the phase's state, its name, what it comes after and a progress bar
-     itinerary  a route of stops down the page; the current stop says "You are here", with a dot per unit and what ends the phase
-     contents   table-of-contents lines: numeral, name, a dotted leader, the count and the state word
-     tabs       divider tabs with counts, to filter a list below; an "All" tab can lead
-   A phase's state is always a word as well as a colour. Plain DOM; every text is set with textContent.
-   API (small and stable):
-     Kit.phaseStrip.mount(box, {phases, form, current, selected, allLabel, label, unitEnum, onSelect}) -> {setForm(f), update(opts), select(id), destroy()}
-       phases    [{id, name, state, what, exit, after, units: [{title, state}] , done, total}]
-                 state is one of done, doing, next, todo, later (the "phase" enum this file adds to Kit.vocab; yours can replace it);
-                 units give the segments, dots and counts; without units, done and total give the counts alone
-       form      "gauge" | "flow" | "itinerary" | "contents" | "tabs" (default "gauge")
-       current   the id of the phase to mark as the one you are in (default: the first phase that is not done)
-       selected  tabs only: the selected phase id, or "all" (default "all" when allLabel is set)
-       allLabel  tabs only: text of the leading tab that clears the filter (default none)
-       unitEnum  the Kit.vocab enum of a unit's state (default "state")
-       onSelect  (id) after a tab or a stop is chosen (id "all" for the leading tab)
-     Kit.phaseStrip.FORMS -> the five form names;  Kit.phaseStrip.phaseEnum -> "phase"
-   Needs from the board:
-     css     kit/viz/phase-strip.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-soft --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam
-     kit     kit/vocab.js and kit/vocab.css (state words, glyphs and tones), kit.tokens
-   db collections: none.
-   Lifted from: an earlier board's console (segmented gauges), blueprint (process flow), journal (itinerary), manuscript (contents lines with leaders) and notebook (divider tabs) skins. */
+/**
+ * Phase strip
+ * Kit.phaseStrip.mount(box, {phases, form}) draws the same list of phases as a gauge (a card per phase with one segment per unit of work), a flow (boxes joined by arrows with a progress bar), an itinerary (stops down a route, with a 'You are here' stop, a dot per unit and what ends the phase), contents lines (numeral, name, dotted leader, count, state) or divider tabs with counts that filter a list below. setForm switches without redrawing the data. A phase's state is a word and a glyph as well as a colour (the 'phase' enum this file adds to Kit.vocab: done, doing, next, todo, later), and a segment's state also shows by its fill pattern. The first phase that is not done is marked as current unless you name one.
+ *
+ * API (small and stable):
+ *   Kit.phaseStrip.mount(box, {phases, form, current, selected, allLabel, label, unitEnum, onSelect}) -> {setForm(f), update(opts), select(id), destroy()}
+ *     phases    [{id, name, state, what, exit, after, units: [{title, state}] , done, total}]
+ *               state is one of done, doing, next, todo, later (the "phase" enum this file adds to Kit.vocab; yours can replace it);
+ *               units give the segments, dots and counts; without units, done and total give the counts alone
+ *     form      "gauge" | "flow" | "itinerary" | "contents" | "tabs" (default "gauge")
+ *     current   the id of the phase to mark as the one you are in (default: the first phase that is not done)
+ *     selected  tabs only: the selected phase id, or "all" (default "all" when allLabel is set)
+ *     allLabel  tabs only: text of the leading tab that clears the filter (default none)
+ *     unitEnum  the Kit.vocab enum of a unit's state (default "state")
+ *     onSelect  (id) after a tab or a stop is chosen (id "all" for the leading tab)
+ *   Kit.phaseStrip.FORMS -> the five form names;  Kit.phaseStrip.phaseEnum -> "phase"
+ *
+ * @id        viz.phase-strip
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   One phase list in five forms: segmented gauge, flow boxes, itinerary, contents lines and divider tabs.
+ * @tags      phases, progress, gauge, flow, itinerary, contents, tabs, stepper, roadmap
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.phaseStrip.mount, Kit.phaseStrip.FORMS, Kit.phaseStrip.phaseEnum
+ * @config    Kit.phaseStrip.mount(box, {phases, form, current, selected, allLabel, label, unitEnum, onSelect}) | phases [{id, name, state, what, exit, after, units: [{title, state}], done, total, waiting}]; returns {setForm(f), update(opts), select(id), destroy()}
+ * @config    Kit.vocab | the file adds a 'phase' enum to Kit.vocab when none is defined; unit states use the 'state' enum
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-soft --accent-ink --ok --warn --f-ui --f-mono --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

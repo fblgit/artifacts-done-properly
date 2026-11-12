@@ -1,26 +1,43 @@
 /* part:page.script.kit.specimens */
-/* Kit pattern: states specimen sheet (Kit.specimens)    kit version 0.1.0
-   What it is: every state of one component laid out side by side (default, hover, focus, busy, disabled, done, loading, empty, missing), and a switch that repaints
-   the whole sheet in another skin. A reviewer sees all the states at once instead of provoking each one. Plain DOM, no framework.
-   The sheet cannot make a real :hover or :focus, so the component styles its states twice: once as :hover / :focus-visible, once as [data-state="hover"] / [data-state="focus"].
-   Each specimen cell carries data-state="<its state>" and the component reads it.
-   API (small and stable):
-     Kit.specimens.mount(host, {title, skins, skin, groups, replay, label, onSkin}) -> {setSkin(id), skin(), replayMotion(), destroy()}
-       skins   [{id, label, vars: {"--s-bg": "#…", …}}]   a skin is a map of custom properties, applied to the sheet only (the page's own theme is untouched). One skin: no switch.
-       skin    the id to open on (default the first)
-       groups  [{title, layout: "rows" | "grid", cols, items: [{label, caption, state, render(cell, {skin}) | html | node}]}]
-                 rows  a label column beside each specimen;  grid  captioned cells in cols columns (default 3; one column when narrow)
-                 html  is trusted markup you wrote;  render  may return a node to append
-       replay  true adds a "Replay motion" button; it restarts every element marked data-fx (class "fx" removed, reflow, added), so a one-shot animation can be watched again
-       label   the aria-label of the skin switch (default "Skin")
-       onSkin  (id) after the skin changes
-     Helpers in the css: .kit-spec-skel (a skeleton bar), .kit-spec-empty (an empty-state box with a dashed edge), both in the sheet's own colours.
-   The sheet reads --s-bg --s-panel --s-ink --s-ink-2 --s-line --s-radius from the active skin and falls back to the page's --panel --sunk --ink --ink-2 --rule.
-   Needs from the board:
-     css     kit/patterns/specimens.css; custom properties --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: the YouTuner Uplift page (its states sheet for rows, pads and toasts, the loading/empty/missing cells, and the two-skin direction switch). */
+/**
+ * States specimen sheet
+ * Kit.specimens.mount(host, {skins, groups, replay}) lays specimens in label-and-body rows or captioned grids. Because a sheet cannot make a real :hover, each cell carries data-state and the component styles its states twice, once as :hover and once as [data-state="hover"]. A skin is a map of custom properties applied to the sheet only, so the page theme is untouched; the switch repaints every specimen. Replay restarts anything marked data-fx. The css gives a skeleton bar and an empty-state box in the sheet's own colours, and stops all motion under prefers-reduced-motion.
+ *
+ * What it is: every state of one component laid out side by side (default, hover, focus, busy, disabled, done, loading, empty, missing), and a switch that repaints
+ * the whole sheet in another skin. A reviewer sees all the states at once instead of provoking each one. Plain DOM, no framework.
+ * The sheet cannot make a real :hover or :focus, so the component styles its states twice: once as :hover / :focus-visible, once as [data-state="hover"] / [data-state="focus"].
+ *
+ * Each specimen cell carries data-state="<its state>" and the component reads it.
+ *
+ * API (small and stable):
+ *   Kit.specimens.mount(host, {title, skins, skin, groups, replay, label, onSkin}) -> {setSkin(id), skin(), replayMotion(), destroy()}
+ *     skins   [{id, label, vars: {"--s-bg": "#…", …}}]   a skin is a map of custom properties, applied to the sheet only (the page's own theme is untouched). One skin: no switch.
+ *     skin    the id to open on (default the first)
+ *     groups  [{title, layout: "rows" | "grid", cols, items: [{label, caption, state, render(cell, {skin}) | html | node}]}]
+ *               rows  a label column beside each specimen;  grid  captioned cells in cols columns (default 3; one column when narrow)
+ *               html  is trusted markup you wrote;  render  may return a node to append
+ *     replay  true adds a "Replay motion" button; it restarts every element marked data-fx (class "fx" removed, reflow, added), so a one-shot animation can be watched again
+ *     label   the aria-label of the skin switch (default "Skin")
+ *     onSkin  (id) after the skin changes
+ *   Helpers in the css: .kit-spec-skel (a skeleton bar), .kit-spec-empty (an empty-state box with a dashed edge), both in the sheet's own colours.
+ *
+ * The sheet reads --s-bg --s-panel --s-ink --s-ink-2 --s-line --s-radius from the active skin and falls back to the page's --panel --sunk --ink --ink-2 --rule.
+ *
+ * @id        pattern.specimens
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Every state of a component side by side, with loading, empty and missing cells, and a switch that repaints the sheet in another skin.
+ * @tags      specimens, states, hover, focus, skins, loading, empty, review, component sheet
+ * @requires  none
+ * @provides  Kit.specimens.mount
+ * @config    Kit.specimens.mount(host, opts) | title, skins [{id, label, vars}], skin, groups [{title, layout rows|grid, cols, items [{label, caption, state, render | html}]}], replay, label, onSkin
+ * @config    states | the component styles [data-state="hover"] and "focus" as well as :hover and :focus-visible
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display --seam? --s-bg --s-panel --s-ink --s-ink-2 --s-line --s-radius
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

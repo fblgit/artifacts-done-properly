@@ -1,24 +1,35 @@
 /* part:page.script.kit.dial */
-/* Kit component: segmented dial (Kit.dial)    kit version 0.1.0
-   What it is: a segmented control with a thumb that slides to the chosen segment, for "preview as" or "audience": the page repaints for the reader
-   the viewer picks. It is a radio group (arrow keys, Home and End move and choose; Tab enters and leaves once), the thumb stays still when the viewer
-   prefers reduced motion, and the numbers 1 to 9 can pick a segment. Kit.dial.marks does the repainting of inline identifiers: each
-   <span data-kit-id="key">value</span> becomes clear, already held by this reader (dotted underline), redacted (its characters swapped for blocks, so
-   copying it leaks nothing) or held back (boxed), from a verdict function the board writes. Plain DOM, no framework.
-   API (small and stable):
-     Kit.dial.mount(el, {label, options, value, onChange, keys, name}) -> {get(), set(id, {silent}), destroy()}
-       options  [{id, label, hint}]    label is the control's visible name (default "Preview as");  hint is a title on the segment
-       value    the first chosen id (default the first option);  onChange(id, option) runs on every change by the viewer and by set() unless silent
-       keys     true wires the digits 1 to 9 on the document (ignored while typing in a field)
-     Kit.dial.marks(root, {verdict, labels}) -> {paint(dialValue), destroy()}
-       verdict(key, dialValue) -> "clear" | "fine" | "redact" | "held"    key is the span's data-kit-id
-       labels   {clear, fine, redact, held} titles and screen-reader texts (neutral defaults)
-     The marks are a preview for the viewer's eyes, not a security control: the page's source still holds the real values.
-   Needs from the board:
-     css     kit/dial.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui --f-mono; optional --seam
-     caps    none.
-   db collections: none.
-   Lifted from: a share-readiness sheet's audience dial (public, vendor, internal), its thumb and digit keys, and its inline identifier redaction. */
+/**
+ * Segmented dial
+ * Kit.dial.mount(el, {label, options, value, onChange}) is a radio group drawn as a pill with a thumb that slides to the chosen segment. Arrow keys, Home and End move and choose, Tab enters and leaves once, the digits 1 to 9 pick a segment when keys is set, and the thumb stays still when the viewer prefers reduced motion. At phone width the pill fills the row and the segments share it. Kit.dial.marks(root, {verdict}) repaints inline identifiers for the chosen reader: each span[data-kit-id] is shown clear, as already held (dotted underline), redacted (its characters replaced by blocks, so copying leaks nothing) or held back (boxed). It is a preview for the viewer's eyes; the page source still holds the real values.
+ *
+ * API (small and stable):
+ *   Kit.dial.mount(el, {label, options, value, onChange, keys, name}) -> {get(), set(id, {silent}), destroy()}
+ *     options  [{id, label, hint}]    label is the control's visible name (default "Preview as");  hint is a title on the segment
+ *     value    the first chosen id (default the first option);  onChange(id, option) runs on every change by the viewer and by set() unless silent
+ *     keys     true wires the digits 1 to 9 on the document (ignored while typing in a field)
+ *   Kit.dial.marks(root, {verdict, labels}) -> {paint(dialValue), destroy()}
+ *     verdict(key, dialValue) -> "clear" | "fine" | "redact" | "held"    key is the span's data-kit-id
+ *     labels   {clear, fine, redact, held} titles and screen-reader texts (neutral defaults)
+ *   The marks are a preview for the viewer's eyes, not a security control: the page's source still holds the real values.
+ *
+ * Optional custom properties: --seam.
+ *
+ * @id        kit.dial
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Segmented control with a sliding thumb (preview as, audience); arrow keys, digit keys, reduced motion; inline redaction marks.
+ * @tags      dial, segmented, control, audience, preview as, redaction, radio, toggle
+ * @requires  none
+ * @provides  Kit.dial.mount, Kit.dial.marks
+ * @config    Kit.dial.mount(el, {label, options, value, onChange, keys}) | options [{id, label, hint}]; onChange(id, option) on every change; keys wires the digits 1 to 9
+ * @config    Kit.dial.marks(root, {verdict, labels}) | verdict(key, dialValue) -> clear | fine | redact | held, for each span[data-kit-id]; paint(dialValue) repaints
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

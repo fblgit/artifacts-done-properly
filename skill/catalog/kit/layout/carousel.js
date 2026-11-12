@@ -1,22 +1,32 @@
 /* part:page.script.kit.carousel */
-/* Kit layout: carousel strip (Kit.carousel)    kit version 0.1.0
-   What it is: a sideways strip of cards. Snap scrolling; arrow buttons that disable at the ends and disappear when everything fits; edge fades only on the side where more cards wait;
-   mouse drag (touch and trackpad use the browser's own scroll); Left and Right arrow keys on the focused strip; the strip is a labelled region that can be reached with Tab.
-   Plain DOM. With reduced motion the strip jumps instead of gliding.
-   API (small and stable):
-     Kit.carousel.mount(box, {items, render, label, cardWidth, gap, arrows, onVisible}) -> {update(items), scrollTo(i), index(), destroy(), track}
-       items       any array; render(item, i) -> Node | string builds one card (the card gets class kit-car-card; you style its inside)
-       label       accessible name of the strip ("Phases"); default "Cards"
-       cardWidth   css width of one card (default "min(280px, 78%)")     gap  css gap (default "14px")
-       arrows      true (default) shows previous and next buttons
-       onVisible   (firstIndex, lastIndex) after the visible range changes
-     Kit.carousel.bind(root, opts) -> same handle, for hand-written markup: root = div.kit-car > div.kit-car-track > .kit-car-card…; the arrows and fades are added.
-   State attributes on .kit-car: data-start="more" when cards wait on the left, data-end="more" when they wait on the right, data-fit="true" when everything fits (no arrows, no fades).
-   Needs from the board:
-     css     kit/layout/carousel.css; custom properties --bg --panel --ink --ink-2 --rule --accent --f-ui, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: an earlier board's phase and page carousels (scroll-state classes for the fades and arrows), a component family's carousel (ResizeObserver, drag, keys) and a kanban strip's scroll. */
+/**
+ * Carousel strip
+ * Kit.carousel.mount(box, {items, render, label, cardWidth, gap}) draws a strip of cards. The strip is a labelled region you can Tab to and move with Left, Right, Home and End; mouse drag scrolls it (and swallows the click that ends a drag); touch and trackpads use native scroll. The arrow buttons disable at the ends and disappear when every card fits, and a fade shows only on the side where more cards wait (data-start, data-end, data-fit). onVisible reports the first and last visible card. bind() wires hand-written markup. Reduced motion jumps instead of gliding.
+ *
+ * API (small and stable):
+ *   Kit.carousel.mount(box, {items, render, label, cardWidth, gap, arrows, onVisible}) -> {update(items), scrollTo(i), index(), destroy(), track}
+ *     items       any array; render(item, i) -> Node | string builds one card (the card gets class kit-car-card; you style its inside)
+ *     label       accessible name of the strip ("Phases"); default "Cards"
+ *     cardWidth   css width of one card (default "min(280px, 78%)")     gap  css gap (default "14px")
+ *     arrows      true (default) shows previous and next buttons
+ *     onVisible   (firstIndex, lastIndex) after the visible range changes
+ *   Kit.carousel.bind(root, opts) -> same handle, for hand-written markup: root = div.kit-car > div.kit-car-track > .kit-car-card…; the arrows and fades are added.
+ * State attributes on .kit-car: data-start="more" when cards wait on the left, data-end="more" when they wait on the right, data-fit="true" when everything fits (no arrows, no fades).
+ *
+ * @id        layout.carousel
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A sideways strip of cards: snap scrolling, arrow buttons that disable at the ends, edge fades only where more cards wait, mouse drag and arrow keys.
+ * @tags      carousel, strip, scroll, snap, cards, drag, arrows
+ * @requires  kit.tokens
+ * @provides  Kit.carousel.mount, Kit.carousel.bind
+ * @config    Kit.carousel.mount(box, {items, render(item, i), label, cardWidth, gap, arrows, onVisible}) | render returns a Node or a string; the card gets class kit-car-card
+ * @tokens    --bg --panel --ink --rule --accent --shadow? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

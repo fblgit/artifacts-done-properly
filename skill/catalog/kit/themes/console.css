@@ -1,13 +1,29 @@
 /* part:page.style.kit.theme.console */
-/* Kit theme: Console    kit version 0.1.0
-   A green phosphor screen at night, a teletype printout by day; one monospaced voice, square-ish corners and state as a glyph plus a word.
-   Character: all monospace (JetBrains Mono over IBM Plex Mono), 13.5px on 1.6, corners 2 to 4px, dashed rules in the components. At night --scan lays a faint scanline over the ground (--bg-image) and --glow is a text-shadow for the one phosphor accent; in light both are none. Keep --glow off body text.
-   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
-   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --glow (a text-shadow, night only), --scan (the scanline image, night only).
-   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
-   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
-   Fonts: https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap
-   From: the hub's Console skin (tokens, glow, scanline) and an earlier board's terminal skin. */
+/**
+ * Console
+ * JetBrains Mono and IBM Plex Mono, 13.5px on 1.6, corners 2 to 4px. At night the ground carries a scanline (--scan, also --bg-image) and the phosphor accent a glow (--glow, a text-shadow); by day both are none, so a printout is flat. The pulsing heartbeat dot and the 3px bottom-edge buttons are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ *
+ * Character: all monospace (JetBrains Mono over IBM Plex Mono), 13.5px on 1.6, corners 2 to 4px, dashed rules in the components. At night --scan lays a faint scanline over the ground (--bg-image) and --glow is a text-shadow for the one phosphor accent; in light both are none. Keep --glow off body text.
+ * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+ * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --glow (a text-shadow, night only), --scan (the scanline image, night only).
+ * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+ * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+ * Fonts: https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap
+ *
+ * @id        theme.console
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Mission-control telemetry: a green phosphor screen at night with a faint scanline and glow, a teletype printout by day, all monospaced.
+ * @tags      palette, tokens, colours, dark mode, console, terminal, monospace, phosphor, telemetry, scanline, green
+ * @requires  none
+ * @config    fonts | JetBrains Mono and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {
   color-scheme: light;

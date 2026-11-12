@@ -1,18 +1,33 @@
 /* part:page.script.kit.chrome */
-/* Kit component: chrome primitives (Kit.icons, Kit.chrome)    kit version 0.1.0
-   What it is: modal dialog with a field list, toast with an optional action, busy overlay with a progress bar, armed (click twice) button,
-   auto-growing text field, outside-click/Escape hook, kind and status chips, and one inline SVG icon set (canvas tools, close, down, grip, undo, redo, chat).
-   Needs from the board:
-     config  Kit.chrome.create({store, kinds, parts})
-               store  the object returned by Kit.store.create
-               kinds  {kind: {label}}   labels for KindChip (omit for none)
-               parts  {modal: "<part id>"}   when set, the dialog scrim renders data-part and data-comment-target
-     state   S.modal, S.toast, S.busy (slots read and written by the components)
-     css     kit/chrome.css; custom properties --panel --ink --rule --rule-2 --sunk --accent --accent-ink --accent-soft --danger --ink-2 --ink-3 --shadow --f-mono --f-display
-     globals window.htmPreact
-   Modal fields: {id, label, type: text (default) | textarea | checkbox | checklist, value, rows, list, options, disabled}; openModal({title, body, fields, ok, noCancel, danger, onOk(values)}) where onOk may return false to stay open.
-   db collections: none.
-   Lifted from: Journey Whiteboard app.js (Modal, Toast, Busy, ArmedButton, AutoText, useOutside, KindChip, StatusChip, I); identical in shape to the ADR Drafting Table's uishared.js and modals.js (which also restores focus and stacks toasts; not taken, the Journey Whiteboard renders one toast). */
+/**
+ * Chrome primitives
+ * The pieces every board repeats. openModal({title, body, fields, ok, danger, onOk}) renders a form dialog whose onOk may return false to stay open; fields are text, textarea, checkbox or checklist. toast(text, kind, action) shows one message, step(label, total, fn) shows a busy bar while fn reports progress. Kit.icons is the inline SVG set the canvas and boards share.
+ *
+ * What it is: modal dialog with a field list, toast with an optional action, busy overlay with a progress bar, armed (click twice) button,
+ * auto-growing text field, outside-click/Escape hook, kind and status chips, and one inline SVG icon set (canvas tools, close, down, grip, undo, redo, chat).
+ * config  Kit.chrome.create({store, kinds, parts})
+ *           store  the object returned by Kit.store.create
+ *           kinds  {kind: {label}}   labels for KindChip (omit for none)
+ *           parts  {modal: "<part id>"}   when set, the dialog scrim renders data-part and data-comment-target
+ * state   S.modal, S.toast, S.busy (slots read and written by the components)
+ * Modal fields: {id, label, type: text (default) | textarea | checkbox | checklist, value, rows, list, options, disabled}; openModal({title, body, fields, ok, noCancel, danger, onOk(values)}) where onOk may return false to stay open.
+ *
+ * @id        kit.chrome
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.1
+ * @updated   2026-10-24
+ * @summary   Dialog with a field list, toast with an action, busy overlay with progress, click-twice button, auto-growing text field, outside-click hook, chips and one icon set.
+ * @tags      modal, dialog, toast, busy, progress, icons, form, chrome, ui
+ * @requires  kit.store
+ * @provides  Kit.icons, Kit.chrome.create
+ * @config    Kit.chrome.create({store, kinds, parts}) | store from Kit.store.create; kinds {kind: {label}}; parts {modal: part id} puts data-part on the dialog scrim
+ * @config    state slots | S.modal, S.toast, S.busy
+ * @config    openModal(m) | {title, body, fields: [{id, label, type, value, rows, options}], ok, noCancel, danger, onOk(values)}
+ * @tokens    --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-ink --accent-soft --danger --ok --warn --shadow --f-ui --f-mono --f-display
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

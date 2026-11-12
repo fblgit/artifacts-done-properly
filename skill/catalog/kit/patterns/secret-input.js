@@ -1,30 +1,46 @@
 /* part:page.script.kit.secret-input */
-/* Kit pattern: write-only secret field (Kit.secretInput)    kit version 0.1.0
-   What it is: a form for putting a value in without ever showing what is stored. A name field with suggestions; a masked value (one line with an eye toggle, or several lines masked in CSS); a
-   "generate instead" switch that greys the value and lets the board make one; a hint for the shape the name expects, checked as you type ("48 hex characters", "17 of 48"); a note; and a button
-   that says Store, or Replace when the name already exists. When it sends, the field is empty.
-   The rules it keeps: the value is read once into a local, the inputs and the visible state are cleared first, and only then does onSubmit run. The value is never put in a state object, an event
-   detail, a data attribute or a log, and never in storage. The inputs have autocomplete, spellcheck and autocapitalize off. The eye re-masks on send, on clear and when the page is hidden.
-   API (small and stable):
-     Kit.secretInput.mount(root, {names, shapes, exists, generateOnly, multiline, onSubmit, nameRule, labels}) -> {focus(), clear(), setName(name), destroy(), form}
-       names         [string | {name, note}]   suggestions for the name field
-       shapes        [{startsWith, endsWith, equals, what, hex, length: [min, max], multiline}]   the first shape whose name rule matches gives the hint and the check; `hex: 48` wants 48 hex characters
-       exists        (name) -> null | {exists, detail}   what the board knows about the name; exists:true turns Store into Replace and is passed on as `replace`
-       generateOnly  (name) -> boolean   a name whose value is only ever generated: the switch is on and locked
-       multiline     (name) -> boolean   or set `multiline` on a shape
-       onSubmit      ({name, value, note, generate, replace}) -> Promise   value is "" when generate is on. Resolve to report success; reject to show the message. The board decides what a Replace asks for
-                     (the preview asks for a typed word with Kit.confirm)
-       nameRule      (name) -> "" | problem   default: lower-case letters, digits and . _ @ / -, no empty part, no part starting with . or -
-       labels        {store, replace, name, value, generate, note}   the words
-     Kit.secretInput.openDrawer({title, lede, host, opener, modal, focus, ...mountOptions}) -> {drawer, input}   the same form inside Kit.drawer, with Store and Cancel in the foot
-     Kit.secretInput.check(shape, value) -> {ok, got, want}   the pure shape check;  Kit.secretInput.shapeFor(shapes, name) -> shape | null
-   Needs from the board:
-     css     kit/patterns/secret-input.css; custom properties --panel --sunk --ink --ink-2 --rule --accent --danger --ok --f-ui --f-mono, optional --seam, and kit/glaze-surfaces.css (fields, switch, buttons)
-     kit     kit/drawer.js and kit/drawer.css (for openDrawer)
-     globals Kit.drawer (openDrawer only)
-   db collections: none.
-   Lifted from: a network-ops console's deposit drawer (the name field with a list, the masked value with an eye, the generate switch, the shape hints and checks, the multi-line masked key,
-   clearing the value before sending). Changed: shapes are data (no patterns), the board decides what replacing asks for, and the form can sit anywhere. */
+/**
+ * Write-only secret field
+ * Kit.secretInput.mount(root, {onSubmit}) draws a form with a name field (and a list of suggestions), a state line that says whether the name is new or would replace one, a Generate instead switch, a masked value, a note and a button that says Store or Replace. The value is a password input with an eye toggle, or a masked text area for a multi-line key (masked in CSS, with a blur where the browser lacks text-security). Shape hints are data ({endsWith, hex: 48, what}) and are checked as you type without ever showing the value. On submit the value is read into a local, the inputs and the eye are cleared, and only then does onSubmit run; the value is not kept in a state object, an event, an attribute or a log. Autocomplete, spellcheck and autocapitalize are off. Replacing is the board’s to confirm: onSubmit receives replace: true. openDrawer() puts the form in kit.drawer.
+ *
+ * What it is: a form for putting a value in without ever showing what is stored. A name field with suggestions; a masked value (one line with an eye toggle, or several lines masked in CSS); a
+ * "generate instead" switch that greys the value and lets the board make one; a hint for the shape the name expects, checked as you type ("48 hex characters", "17 of 48"); a note; and a button
+ * that says Store, or Replace when the name already exists. When it sends, the field is empty.
+ *
+ * The rules it keeps: the value is read once into a local, the inputs and the visible state are cleared first, and only then does onSubmit run. The value is never put in a state object, an event
+ * detail, a data attribute or a log, and never in storage. The inputs have autocomplete, spellcheck and autocapitalize off. The eye re-masks on send, on clear and when the page is hidden.
+ *
+ * API (small and stable):
+ *   Kit.secretInput.mount(root, {names, shapes, exists, generateOnly, multiline, onSubmit, nameRule, labels}) -> {focus(), clear(), setName(name), destroy(), form}
+ *     names         [string | {name, note}]   suggestions for the name field
+ *     shapes        [{startsWith, endsWith, equals, what, hex, length: [min, max], multiline}]   the first shape whose name rule matches gives the hint and the check; `hex: 48` wants 48 hex characters
+ *     exists        (name) -> null | {exists, detail}   what the board knows about the name; exists:true turns Store into Replace and is passed on as `replace`
+ *     generateOnly  (name) -> boolean   a name whose value is only ever generated: the switch is on and locked
+ *     multiline     (name) -> boolean   or set `multiline` on a shape
+ *     onSubmit      ({name, value, note, generate, replace}) -> Promise   value is "" when generate is on. Resolve to report success; reject to show the message. The board decides what a Replace asks for
+ *                   (the preview asks for a typed word with Kit.confirm)
+ *     nameRule      (name) -> "" | problem   default: lower-case letters, digits and . _ @ / -, no empty part, no part starting with . or -
+ *     labels        {store, replace, name, value, generate, note}   the words
+ *   Kit.secretInput.openDrawer({title, lede, host, opener, modal, focus, ...mountOptions}) -> {drawer, input}   the same form inside Kit.drawer, with Store and Cancel in the foot
+ *   Kit.secretInput.check(shape, value) -> {ok, got, want}   the pure shape check;  Kit.secretInput.shapeFor(shapes, name) -> shape | null
+ *
+ * CSS classes: .kit-si-form
+ *
+ * @id        pattern.secret-input
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A form for putting a value in without ever showing what is stored: masked single or multi-line input with an eye toggle, a generate-instead switch, shape hints and a cleared field after sending.
+ * @tags      secret, password, form, write-only, masked, input, generate, drawer
+ * @requires  kit.drawer, kit.glaze-surfaces
+ * @provides  Kit.secretInput.mount, Kit.secretInput.openDrawer, Kit.secretInput.check, Kit.secretInput.shapeFor
+ * @config    Kit.secretInput.mount(root, {names, shapes, exists, generateOnly, multiline, onSubmit, nameRule, labels}) | onSubmit({name, value, note, generate, replace}) -> Promise; shapes [{startsWith | endsWith | equals, what, hex | length, multiline}]
+ * @config    Kit.secretInput.openDrawer({title, lede, host, opener, focus, ...mountOptions}) | the same form in kit.drawer with Store and Cancel in the foot
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --danger --ok --f-mono --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

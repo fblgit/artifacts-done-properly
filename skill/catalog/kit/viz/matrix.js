@@ -1,20 +1,38 @@
 /* part:page.script.kit.viz.matrix */
-/* Kit visualization: link matrix (Kit.viz.Matrix)    kit version 0.1.0
-   What it is: rows against columns with one toggle per cell, for any "which X covers which Y" relation (moves against problems, options against
-   drivers, tests against requirements). Rows that cover several columns can come first; a footer counts each column's links and names the
-   columns nobody covers; hovering or focusing a cell lights its row and column; arrow keys move between cells; codes stay readable when the
-   table scrolls sideways (sticky first column).
-   Needs from the board:
-     config  Matrix({rows, cols, links, onToggle, onPick, canEdit, title, rowHead, colHead, sort, words})
-               rows  [{id, code, label, tone}]   cols [{id, code, label}]   links {rowId: [colId]}
-               onToggle(rowId, colId, on)  called on a cell click when canEdit; the board writes the link and passes new links back
-               onPick(id)  optional: a row or column header click opens that record
-               sort  "coverage" (rows covering more columns first, stable) or "given"
-               words {covers, none, uncovered, several} column and footer texts
-     css     kit/viz/viz.css; custom properties --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-soft --ok --danger --f-mono --f-display
-     needs   kit/viz/core.js loaded first
-   db collections: none. The board reads and writes the link field (the Journey Whiteboard keeps it as items/<id>.problems).
-   Lifted from: Journey Whiteboard app.js (Coverage). Changed: the problem/solution kinds became rows and cols from config, the link field became links. */
+/**
+ * Link matrix
+ * The Journey Whiteboard's coverage table made general. Rows covering more columns come first; the footer counts each column's links and calls out the columns nobody covers. Hovering or focusing a cell lights its row and column, arrow keys move between cells, and the first column stays put when the table scrolls sideways.
+ *
+ * Config:
+ * Matrix({rows, cols, links, onToggle, onPick, canEdit, title, rowHead, colHead, sort, words})
+ *   rows  [{id, code, label, tone}]   cols [{id, code, label}]   links {rowId: [colId]}
+ *   onToggle(rowId, colId, on)  called on a cell click when canEdit; the board writes the link and passes new links back
+ *   onPick(id)  optional: a row or column header click opens that record
+ *   sort  "coverage" (rows covering more columns first, stable) or "given"
+ *   words {covers, none, uncovered, several} column and footer texts
+ *
+ * The board reads and writes the link field (the Journey Whiteboard keeps it as items/<id>.problems).
+ *
+ * @id        viz.matrix
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Rows against columns with a toggle per cell: which moves solve which problems, which options meet which drivers.
+ * @tags      matrix, coverage, grid, table, links, cross, heatmap
+ * @requires  viz.core
+ * @provides  Kit.viz.Matrix
+ * @config    rows | [{id, code, label, tone}]
+ * @config    cols | [{id, code, label}]
+ * @config    links | {rowId: [colId]}
+ * @config    onToggle | (rowId, colId, on): the board writes the link
+ * @config    onPick | (id): open a record (optional)
+ * @config    canEdit | true lets cells toggle
+ * @config    sort | coverage | given
+ * @config    words | {covers, none, uncovered, several}
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

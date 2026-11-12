@@ -1,27 +1,42 @@
 /* part:page.script.kit.disclosure */
-/* Kit pattern: disclosure cards and reader bar (Kit.disclosure)    kit version 0.1.0
-   What it is: native details cards with a one-line summary (a title, a cadence or date on the right, an optional number) and a reader bar that opens or closes all of them and says how many are
-   open. Three looks share one script: "card" (a task or runbook row), "letter" (the summary says expand or collapse) and "clause" (a numbered article with its norm always visible and the
-   reasoning in a smaller disclosure). The cards are details elements, so they work without script, open with the keyboard and can be opened before printing (printOpen).
-   Plain DOM; text is set with textContent unless a body is a Node.
-   API:
-     Kit.disclosure.render(box, {items, variant, bar, label, printOpen, onToggle}) -> {expandAll(), collapseAll(), openCount(), update(items), destroy()}
-       items     [{id, title, when, num, norm, body, steps, fields, open}]
-                   when    the cadence or date on the right of the summary ("weekly")
-                   num     a number or reference shown before the title (clause: before the norm)
-                   norm    clause only: the sentence that stays visible above the disclosure
-                   body    string | string[] (paragraphs) | Node   the opened content
-                   steps   string[]   an ordered list inside the body
-                   fields  [{label, text}]   labelled lines inside the body (why, prevents, practice)
-       variant   "card" (default) | "letter" | "clause"
-       bar       true (default) shows the reader bar: Expand all, Collapse all and "2 of 5 open"
-       printOpen true (default) opens every card before the browser prints
-     Kit.disclosure.bind(root, {printOpen}) wires the same bar behaviour to hand-written details.kit-dis markup and returns the same handle (no bar is added; use .kit-dis-bar yourself)
-   Needs from the board:
-     css     kit/patterns/disclosure.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display, optional --seam, --kit-topbar-h
-     globals none
-   db collections: none.
-   Lifted from: two runbooks' task cards (summary with a cadence), a policy reader's expand-all bar and clause reasoning disclosures, and a letter archive's expand and collapse cards. */
+/**
+ * Disclosure cards and reader bar
+ * Kit.disclosure.render(box, {items, variant, bar, label, printOpen, onToggle}) builds details cards: a title and a cadence or date on one line, a body of paragraphs, numbered steps and labelled fields. The letter look spells Expand or Collapse at the end of the summary; the clause look keeps the numbered norm visible and folds the reasoning into a smaller disclosure. The sticky reader bar opens or closes everything and says "2 of 5 open". Every card opens before the browser prints. Kit.disclosure.bind(root) wires the same bar to hand-written markup.
+ *
+ * Native details cards with a one-line summary (a title, a cadence or date on the right, an optional number) and a reader bar that opens or closes all of them and says how many are
+ * open. Three looks share one script: "card" (a task or runbook row), "letter" (the summary says expand or collapse) and "clause" (a numbered article with its norm always visible and the
+ * reasoning in a smaller disclosure). The cards are details elements, so they work without script, open with the keyboard and can be opened before printing (printOpen).
+ * Plain DOM; text is set with textContent unless a body is a Node.
+ *
+ * API:
+ *   Kit.disclosure.render(box, {items, variant, bar, label, printOpen, onToggle}) -> {expandAll(), collapseAll(), openCount(), update(items), destroy()}
+ *     items     [{id, title, when, num, norm, body, steps, fields, open}]
+ *                 when    the cadence or date on the right of the summary ("weekly")
+ *                 num     a number or reference shown before the title (clause: before the norm)
+ *                 norm    clause only: the sentence that stays visible above the disclosure
+ *                 body    string | string[] (paragraphs) | Node   the opened content
+ *                 steps   string[]   an ordered list inside the body
+ *                 fields  [{label, text}]   labelled lines inside the body (why, prevents, practice)
+ *     variant   "card" (default) | "letter" | "clause"
+ *     bar       true (default) shows the reader bar: Expand all, Collapse all and "2 of 5 open"
+ *     printOpen true (default) opens every card before the browser prints
+ *   Kit.disclosure.bind(root, {printOpen}) wires the same bar behaviour to hand-written details.kit-dis markup and returns the same handle (no bar is added; use .kit-dis-bar yourself)
+ *
+ * @id        pattern.disclosure
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Native details cards with a summary line (cadence or date) and an expand-all and collapse-all bar; task, letter and numbered-clause looks.
+ * @tags      accordion, details, disclosure, expand all, collapse all, runbook, tasks, cadence, letter, clause, reader
+ * @requires  none
+ * @provides  Kit.disclosure.render, Kit.disclosure.bind
+ * @config    Kit.disclosure.render(box, opts) | items [{id, title, when, num, norm, body, steps, fields, open}], variant card | letter | clause, bar, label, printOpen, onToggle(id, open); returns {expandAll, collapseAll, openCount, update, destroy}
+ * @config    --kit-topbar-h | optional: the reader bar sticks below it
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,24 +1,37 @@
 /* part:page.script.kit.keep-state */
-/* Kit component: keep typing across a re-render (Kit.keepState)    kit version 0.1.0
-   What it is: a live page redraws when its data changes, and a redraw throws away what a person was in the middle of. This saves, before the redraw, the drafts in fields the person has
-   edited, which field has focus with its caret or selection, the scroll position of marked panes, which <details> are open and which marked blocks are shown; and puts them back after.
-   Elements are matched by a key you give them: data-keep="reply-12" (or, failing that, id, then name). An element with no key is left alone and a redraw resets it. Plain DOM.
-   Rules it keeps: a field the person has not edited takes the new value from the redraw (fresh data wins); an edited one keeps the draft (the draft wins) and gets data-kept="true".
-   API (small and stable):
-     Kit.keepState.capture(root) -> snap          read the state of everything under root (root must still hold the old content)
-     Kit.keepState.restore(root, snap) -> {restored, dropped}   put it back on the new content; dropped lists keys the new content no longer has (their drafts stay in snap)
-     Kit.keepState.wrap(root, render, {storageKey}) -> redraw(...args)   redraw(...) is capture, then render(...args), then restore; returns what render returns.
-                          Also redraw.snap() -> the last snapshot, and redraw.clear(key?) to forget a draft (after a send). storageKey keeps drafts in sessionStorage so a reload keeps them too
-                          (every read and write is guarded; without storage it still works).
-   Marks in the markup:
-     data-keep="key"               on an input, textarea, select, details, or a scrolling pane (add data-keep-scroll to restore its scrollTop)
-     data-keep-scroll              the element's scrollTop and scrollLeft are kept
-     data-keep-shown="key"         a block whose hidden attribute is kept (an open reply box); use the key you toggle with
-   Needs from the board:
-     css     none
-     globals none (kit/store.js is not needed)
-   db collections: none.
-   Lifted from: an earlier board's render that restored its open history, reply and reject boxes, and a task page's list that put back half-typed drafts after every refresh. */
+/**
+ * Keep typing across a re-render
+ * Kit.keepState.wrap(root, render) returns a redraw function that captures, renders and restores. It keeps the text of fields the person has edited (a field they did not touch takes the fresh value), which field has focus with its caret or selection, the scroll of marked panes, which details are open and which marked blocks are shown. Elements are matched by data-keep, id or name. An edited field gets data-kept; a draft whose field has gone from the new content stays in the snapshot. storageKey optionally keeps drafts in sessionStorage across a reload, guarded for when storage is blocked.
+ *
+ * What it is: a live page redraws when its data changes, and a redraw throws away what a person was in the middle of. This saves, before the redraw, the drafts in fields the person has
+ * edited, which field has focus with its caret or selection, the scroll position of marked panes, which <details> are open and which marked blocks are shown; and puts them back after.
+ * Elements are matched by a key you give them: data-keep="reply-12" (or, failing that, id, then name). An element with no key is left alone and a redraw resets it. Plain DOM.
+ * Rules it keeps: a field the person has not edited takes the new value from the redraw (fresh data wins); an edited one keeps the draft (the draft wins) and gets data-kept="true".
+ * API (small and stable):
+ *   Kit.keepState.capture(root) -> snap          read the state of everything under root (root must still hold the old content)
+ *   Kit.keepState.restore(root, snap) -> {restored, dropped}   put it back on the new content; dropped lists keys the new content no longer has (their drafts stay in snap)
+ *   Kit.keepState.wrap(root, render, {storageKey}) -> redraw(...args)   redraw(...) is capture, then render(...args), then restore; returns what render returns.
+ *                        Also redraw.snap() -> the last snapshot, and redraw.clear(key?) to forget a draft (after a send). storageKey keeps drafts in sessionStorage so a reload keeps them too
+ *                        (every read and write is guarded; without storage it still works).
+ * Marks in the markup:
+ *   data-keep="key"               on an input, textarea, select, details, or a scrolling pane (add data-keep-scroll to restore its scrollTop)
+ *   data-keep-scroll              the element's scrollTop and scrollLeft are kept
+ *   data-keep-shown="key"         a block whose hidden attribute is kept (an open reply box); use the key you toggle with
+ *
+ * @id        kit.keep-state
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Save drafts, focus, selection and open sections before a live page redraws, and put them back after.
+ * @tags      redraw, re-render, draft, focus, caret, state, live
+ * @requires  none
+ * @provides  Kit.keepState.capture, Kit.keepState.restore, Kit.keepState.wrap
+ * @config    Kit.keepState.wrap(root, render, {storageKey}) | redraw(...args) calls render(...args) between a capture and a restore; redraw.snap() and redraw.clear(key) manage the drafts
+ * @config    markup | data-keep='key' on fields, details and scroll panes (with data-keep-scroll); data-keep-shown='key' on blocks whose hidden state is kept
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

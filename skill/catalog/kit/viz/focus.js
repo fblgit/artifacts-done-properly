@@ -1,18 +1,33 @@
 /* part:page.script.kit.viz.focus */
-/* Kit visualization: record focus (Kit.viz.Focus, Kit.viz.MiniCard)    kit version 0.1.0
-   What it is: the side pane for one node of a lineage tree. What it hangs under (each parent as a small card; a pill parent shows the record
-   it belongs to and the path taken), the record itself (kind, status, bucket, title, body), and what hangs under it, grouped by kind with counts.
-   A pill node (a path of a question) shows its question, whether it was chosen, and the other paths. Every card is a button that refocuses.
-   Needs from the board:
-     config  Focus({id, nodes, kinds, statuses, onPick, words, extra})
-               id      the focused node id; nodes the same list the Tree takes (parents[], shape, state, body)
-               onPick(id) refocus; words {under, below, nothing, paths, chosen, notTaken, open}; extra an optional vnode drawn under the record
-             MiniCard({n, kinds, note, onClick})
-     css     kit/viz/viz.css; custom properties --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --ok --f-mono --f-display and --c-<pen> for tones
-     needs   kit/viz/core.js loaded first
-   db collections: none.
-   Lifted from: Journey Whiteboard app.js (MoveFocus pane: MovePreview, MiniCard, TreeIntro layout). Changed: no board actions inside (open panel, propose
-   a move, alternatives stay board code, passed in through extra); children are grouped by whatever kinds the nodes carry. */
+/**
+ * Record focus
+ * The Journey Whiteboard's move preview without the board's actions. Parents show as small cards (a path parent shows its question and the path taken), then the record, then its children grouped by kind with counts. A path node shows its question, whether it was chosen, and the other paths. Every card refocuses the pane.
+ *
+ * Config:
+ * Focus({id, nodes, kinds, statuses, onPick, words, extra})
+ *   id      the focused node id; nodes the same list the Tree takes (parents[], shape, state, body)
+ *   onPick(id) refocus; words {under, below, nothing, paths, chosen, notTaken, open}; extra an optional vnode drawn under the record
+ * MiniCard({n, kinds, note, onClick})
+ *
+ * Tone colours: --c-<pen> for each pen tone used.
+ *
+ * @id        viz.focus
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   The side pane for one node of a tree: what it hangs under, the record itself, and what hangs under it, grouped by kind.
+ * @tags      inspector, detail, side pane, preview, focus, record card
+ * @requires  viz.core
+ * @provides  Kit.viz.Focus, Kit.viz.MiniCard
+ * @config    id | the focused node id
+ * @config    nodes | the same list the Tree takes
+ * @config    onPick | (id): refocus
+ * @config    extra | a vnode under the record for the board's own actions
+ * @config    words | {under, below, nothing, paths, chosen, notTaken, open, top}
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

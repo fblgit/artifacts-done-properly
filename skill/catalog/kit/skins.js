@@ -1,29 +1,43 @@
 /* part:page.script.kit.skins */
-/* Kit component: skin switch (Kit.skins)    kit version 0.1.0    EXTENDS layout.topbar (Kit.theme there switches light, dark and system for one look; this file is a new file beside it and does not edit it)
-   What it is: several whole-page looks (skins) in one page, and a light, dark or system choice that is separate from the skin. The choice is applied the moment the script runs, so put it in the head
-   before the stylesheets and nothing flashes; it is kept for this viewer (localStorage, every access guarded), followed by the page's other tabs (the storage event), and announced to the page with a
-   "kit:skin" event. A skin is a stylesheet (a link that is switched off unless chosen) or a set of tokens (light and dark maps, written into one scoped style element); either works with the kit's
-   own theme files, which scope their tokens on :root and [data-theme]. The selector it draws hides the skin row while only one skin is registered.
-   Attributes: data-skin="<name>" on the target, and data-theme="light" | "dark" (absent for system, so prefers-color-scheme decides, as the kit's themes expect).
-   API:
-     Kit.skins.init({skins, skin, mode, modes, key, target, persist}) -> handle      call once, as early as you can
-       skins    [{name, label, href, tokens: {light, dark}, json}]   href: a stylesheet file; tokens: {"--name": "value"} maps (the shape Kit.tokens.themeCss takes); json: a theme json file
-                (kit/themes/<name>.json) fetched once, its light and dark maps used as tokens (the skin applies when it arrives; give href or tokens instead where a flash matters)
-       skin     the default skin name (default the first)       mode  the default mode: "system" (default) | "light" | "dark"       modes  the offered modes (default all three)
-       key      storage prefix (default "kit-skins"; the keys are <key>:skin and <key>:mode)       persist  false keeps the choice in memory only
-       target   the element that carries the attributes (default the document element). A target that is not the document element gets its own scoped tokens and a link-free skin, for a framed preview.
-     handle   {skin(), mode(), resolved(), set(name), setMode(mode), list(), render(el), on(fn) -> off, pairViews(board, map) -> off, destroy()}
-       render(el)    draws the skin row and the mode row as two groups of buttons (aria-pressed) into el; they follow the choice from anywhere
-       on(fn)        fn({skin, mode, resolved, source}) after every change; source is "set", "storage" or "init". The same detail goes with the "kit:skin" event on the document.
-       pairViews     board is what Kit.views.mount returns (kit/view-registry.js); map is {skinName: {blockId: viewName}}. When the skin changes each listed block is switched to its view
-                     (board.choose), so a skin can bring its own view of the data. Blocks that do not offer the view are left alone.
-   Needs from the board:
-     requires layout.topbar (Kit.theme is the sibling for one look; not called), kit.tokens, kit.view-registry (only for pairViews)
-     css     kit/skins.css (the selector); the skin stylesheets or token maps you register
-     globals none
-   db collections: none.
-   Lifted from: a network-ops console's skin engine (attributes set at once, one skin link left enabled, light and dark apart from the skin, the storage event, the change event, the selector that hides the skin row for one skin).
-   Changed: system is a mode of its own (the console defaulted to light), a skin can be tokens as well as a link, the target can be one element, the event is kit:skin, and pairViews ties a skin to the view registry. */
+/**
+ * Skin switch
+ * Kit.skins.init({skins, skin, mode}) sets data-skin and data-theme on the page the moment it runs (put it in the head before the stylesheets and nothing flashes), keeps the choice in localStorage (every access guarded), follows the storage event so a second tab changes with the first, and dispatches a kit:skin event on the document with {skin, mode, resolved, source}. A skin is a stylesheet (a link that is switched off unless chosen) or a set of tokens, light and dark. System is a mode of its own, so the viewer's setting decides until they choose. handle.render(el) draws a skin row (hidden while only one skin is registered) and a light, dark or system row. handle.pairViews(board, map) ties a skin to the view registry: when the skin changes, each listed block is switched to its view. Kit.theme in layout.topbar still switches one look; this is a new file beside it.
+ *
+ * What it is: several whole-page looks (skins) in one page, and a light, dark or system choice that is separate from the skin. The choice is applied the moment the script runs, so put it in the head
+ * before the stylesheets and nothing flashes; it is kept for this viewer (localStorage, every access guarded), followed by the page's other tabs (the storage event), and announced to the page with a
+ * "kit:skin" event. A skin is a stylesheet (a link that is switched off unless chosen) or a set of tokens (light and dark maps, written into one scoped style element); either works with the kit's
+ * own theme files, which scope their tokens on :root and [data-theme]. The selector it draws hides the skin row while only one skin is registered.
+ * Attributes: data-skin="<name>" on the target, and data-theme="light" | "dark" (absent for system, so prefers-color-scheme decides, as the kit's themes expect).
+ * API:
+ *   Kit.skins.init({skins, skin, mode, modes, key, target, persist}) -> handle      call once, as early as you can
+ *     skins    [{name, label, href, tokens: {light, dark}, json}]   href: a stylesheet file; tokens: {"--name": "value"} maps (the shape Kit.tokens.themeCss takes); json: a theme json file
+ *              (kit/themes/<name>.json) fetched once, its light and dark maps used as tokens (the skin applies when it arrives; give href or tokens instead where a flash matters)
+ *     skin     the default skin name (default the first)       mode  the default mode: "system" (default) | "light" | "dark"       modes  the offered modes (default all three)
+ *     key      storage prefix (default "kit-skins"; the keys are <key>:skin and <key>:mode)       persist  false keeps the choice in memory only
+ *     target   the element that carries the attributes (default the document element). A target that is not the document element gets its own scoped tokens and a link-free skin, for a framed preview.
+ *   handle   {skin(), mode(), resolved(), set(name), setMode(mode), list(), render(el), on(fn) -> off, pairViews(board, map) -> off, destroy()}
+ *     render(el)    draws the skin row and the mode row as two groups of buttons (aria-pressed) into el; they follow the choice from anywhere
+ *     on(fn)        fn({skin, mode, resolved, source}) after every change; source is "set", "storage" or "init". The same detail goes with the "kit:skin" event on the document.
+ *     pairViews     board is what Kit.views.mount returns (kit/view-registry.js); map is {skinName: {blockId: viewName}}. When the skin changes each listed block is switched to its view
+ *                   (board.choose), so a skin can bring its own view of the data. Blocks that do not offer the view are left alone.
+ * requires layout.topbar (Kit.theme is the sibling for one look; not called), kit.tokens, kit.view-registry (only for pairViews)
+ *
+ * @id        kit.skins
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An upgrade of layout.topbar: several whole-page skins in one page, applied before first paint, kept per viewer, followed across tabs and announced by an event; light and dark are separate from the skin.
+ * @tags      skin, theme switch, dark mode, no flash, storage event, persist, light dark system, selector, view registry
+ * @requires  layout.topbar, kit.tokens, kit.view-registry
+ * @provides  Kit.skins.init, handle.render, handle.pairViews
+ * @config    Kit.skins.init(opts) | skins [{name, label, href | tokens {light, dark} | json}], skin, mode system | light | dark, modes, key, target, persist; returns {skin, mode, resolved, set, setMode, list, render, on, pairViews, destroy}
+ * @config    kit:skin | a CustomEvent on the document, detail {skin, mode, resolved, source}
+ * @config    theme css | skin stylesheets that scope their tokens on :root and [data-theme] work as they are (one link is enabled); token maps are scoped by the file
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

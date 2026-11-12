@@ -1,21 +1,30 @@
 /* part:page.script.kit.viz.compare */
-/* Kit visualization: before and after (Kit.compare)    kit version 0.1.0
-   What it is: two ways to show a change.
-     stage   two states of one thing on one stage, with three views: Before, After, and Wipe, where a divider you drag (or move with the arrow keys) uncovers one over the other. The states are
-             real DOM you pass in, so they keep their text, focus and theme. Each view says its own name on the stage, so it does not rely on colour or on remembering which side is which.
-     cards   a set of mechanism cards: for each one a Before block (dashed) and an After block (solid), joined by an arrow, with the words "Before" and "After" in each.
-   API: Kit.compare.stage(box, {before, after, labels, mode, wipe, title, caption, label}) -> {setMode(m), setWipe(pct), update(patch), destroy()}
-          before, after  a Node, or a function returning a Node (called again on update)
-          labels         {before: "Before", after: "After"}
-          mode           "after" (default) | "before" | "wipe";  wipe is the divider position in per cent (default 50)
-        Kit.compare.cards(box, {items, beforeLabel, afterLabel, label}) -> {destroy()}
-          items          [{title, before: {label, text}, after: {label, text}, note}]   label is a short heading inside the block (optional)
-   Needs from the board:
-     css     kit/viz/compare.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --ok --danger --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: a design page's before/after/wipe stage (two renderings, a segmented control and a range overlay), a review page's before and after mechanism cards, and a before/after
-   comparison drawing. Changed: the stage holds live DOM instead of an image and a rendering; the divider is a real range input, so it works from the keyboard and with a screen reader. */
+/**
+ * Before/after compare
+ * Kit.compare.stage puts two states of one thing on one stage with three views: Before, After, and Wipe, where a divider uncovers one over the other. You pass the two states as DOM nodes, so they keep their text, focus and theme. Each view names itself on the stage, so it does not rely on colour. The divider is a real range input, which works from the keyboard (arrow keys, Home, End) and with a screen reader. Kit.compare.cards draws mechanism cards, each with a dashed Before block and a solid After block joined by an arrow, with the words Before and After in each.
+ *
+ * API: Kit.compare.stage(box, {before, after, labels, mode, wipe, title, caption, label}) -> {setMode(m), setWipe(pct), update(patch), destroy()}
+ *        before, after  a Node, or a function returning a Node (called again on update)
+ *        labels         {before: "Before", after: "After"}
+ *        mode           "after" (default) | "before" | "wipe";  wipe is the divider position in per cent (default 50)
+ *      Kit.compare.cards(box, {items, beforeLabel, afterLabel, label}) -> {destroy()}
+ *        items          [{title, before: {label, text}, after: {label, text}, note}]   label is a short heading inside the block (optional)
+ *
+ * @id        viz.compare
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A before, after and wipe stage over live DOM, and before/after mechanism cards.
+ * @tags      compare, before, after, wipe, diff, cards, mechanism, stage
+ * @requires  none
+ * @provides  Kit.compare.stage, Kit.compare.cards
+ * @config    Kit.compare.stage(box, opts) | before and after (a Node or a function returning one), labels {before, after}, mode: before | after | wipe, wipe 0 to 100, title, caption, label
+ * @config    Kit.compare.cards(box, opts) | items [{title, before {label, text}, after {label, text}, note}], beforeLabel, afterLabel, label
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --accent-soft --ok --danger --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

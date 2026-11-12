@@ -1,18 +1,35 @@
 /* part:page.script.kit.viz.core */
-/* Kit visualization: chips, tallies and figures (Kit.viz core)    kit version 0.1.0
-   What it is: the small marks every board view uses. Chip (a coloured label from an enum), Tally (counts per step in one strip, zero counts faint),
-   Figures (a row of big numbers with their labels), and the helpers the other viz files share (clip, tone classes, kind and status lookups).
-   Needs from the board:
-     config  Chip({label, code, tone, title})                           tone: a pen name (ink red green amber blue violet) or a meaning (ok warn danger accent muted)
-             KindChip({kind, code, kinds})   kinds {kind: {label, tone}}
-             StatusChip({status, statuses})  statuses {status: tone}
-             Tally({items: [{id, label, count, tone}], onClick, label})  onClick(id) optional: each count becomes a button
-             Figures({items: [{value, label, tone}]})
-     css     kit/viz/viz.css; custom properties --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-soft --ok --warn --danger
-             --f-ui --f-mono --f-display, and --c-<pen> for each pen tone used (Journey Whiteboard names; the ADR theme in this catalog maps its own)
-     globals window.htmPreact (htm + preact standalone)
-   db collections: none.
-   Lifted from: Journey Whiteboard app.js (KindChip, StatusChip, EstChip, QueueStrip counts, the stats strip and pv-stats figures). */
+/**
+ * Chips, tallies and figures
+ * Chip turns an enum value into a coloured label; the colour comes from a tone (a pen or a meaning) that each theme defines. Tally shows counts per step with zero counts faint, the way the Journey Whiteboard's queue strip does. Figures is the row of big numbers with labels. This file also carries the helpers the other visualizations share, so load it first.
+ *
+ * Config:
+ * Chip({label, code, tone, title})                           tone: a pen name (ink red green amber blue violet) or a meaning (ok warn danger accent muted)
+ * KindChip({kind, code, kinds})   kinds {kind: {label, tone}}
+ * StatusChip({status, statuses})  statuses {status: tone}
+ * Tally({items: [{id, label, count, tone}], onClick, label})  onClick(id) optional: each count becomes a button
+ * Figures({items: [{value, label, tone}]})
+ *
+ * Tone colours: --c-<pen> for each pen tone used.
+ *
+ * @id        viz.core
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   The small marks every board view uses: kind and status chips, a tally strip of counts per step, a row of big figures.
+ * @tags      chip, badge, status, tally, counts, stats, figures, kpi
+ * @requires  none
+ * @provides  Kit.viz.Chip, Kit.viz.KindChip, Kit.viz.StatusChip, Kit.viz.Tally, Kit.viz.Figures, Kit.viz.mount, Kit.viz.util
+ * @config    Chip | {label, code, tone, title}: tone is a pen (ink red green amber blue violet) or a meaning (ok warn danger accent muted)
+ * @config    KindChip | {kind, code, kinds}: kinds {kind: {label, tone}}
+ * @config    StatusChip | {status, statuses}: statuses {status: tone}
+ * @config    Tally | {items: [{id, label, count, tone}], onClick(id)}
+ * @config    Figures | {items: [{value, label, tone}]}
+ * @tokens    --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-soft --ok --warn --danger --f-ui --f-mono --f-display --c-ink --c-red --c-green --c-amber --c-blue --c-violet
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

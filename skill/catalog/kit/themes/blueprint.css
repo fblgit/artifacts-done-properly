@@ -1,13 +1,29 @@
 /* part:page.style.kit.theme.blueprint */
-/* Kit theme: Blueprint    kit version 0.1.0
-   Whiteprint paper by day, cyanotype by night: a framed sheet on drafting grid, square corners, blue frame lines and hold amber.
-   Character: a 16px minor and 80px major drafting grid as --bg-image (the ground only), 2px corners, 1.5px frame lines (--outline), Space Mono labels in spaced capitals, shadows that are hard offsets, not blurs.
-   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
-   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
-   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
-   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
-   Fonts: https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap
-   From: the hub's Blueprint skin (its tokens and sheet grid) and an earlier board's blueprint skin (whiteprint and cyanotype). */
+/**
+ * Blueprint
+ * Space Grotesk and Space Mono. The sheet is drawn, not shaded: 1.5px blue frame lines (--outline), shadows as hard offsets, labels in spaced capitals. The drafting grid (16px minor, 80px major) is --bg-image and belongs on the ground only. Hold amber is the seam. Title blocks, numbered ring heads and the hatched hold block are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ *
+ * Character: a 16px minor and 80px major drafting grid as --bg-image (the ground only), 2px corners, 1.5px frame lines (--outline), Space Mono labels in spaced capitals, shadows that are hard offsets, not blurs.
+ * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+ * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
+ * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+ * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+ * Fonts: https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap
+ *
+ * @id        theme.blueprint
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Engineering sheet: whiteprint paper by day, cyanotype navy by night, 2px corners, a drafting grid under the sheet and spaced mono spec labels.
+ * @tags      palette, tokens, colours, dark mode, blueprint, engineering, grid, drawing, cyanotype, square, mono
+ * @requires  none
+ * @config    fonts | Space Grotesk and Space Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {
   color-scheme: light;

@@ -1,26 +1,39 @@
 /* part:page.script.kit.gate */
-/* Kit pattern: approval gate (Kit.gate)    kit version 0.1.0
-   What it is: a request to allow an action, shown so the person can decide without opening anything else. It says who asks and for which action, how risky it is and whether it can be
-   undone, shows a preview of the change (lines that start with + or - read as a diff, with the mark in the line, not only a colour), and offers Approve, or Reject with a reason the
-   asker will read, or Withdraw once a verdict is in. A gate can be locked (the work already started), and can carry a refusal (what was refused, for which field, what is allowed now).
-   Four dressings of the same gate, switched by the look option or setLook(): plain (a card), console (a terminal header over a monospaced preview), ticket (a perforated edge with a
-   tear-off stub that names the risk) and two-key (the buttons read Arm and Abort and sit as two keys). The dressing is only css; the words, the order and the keyboard path do not change.
-   Risk and verdict words come from the vocabulary table (kit/vocab.js). This file adds the enums "gate-risk" and "gate-verdict" only when the page has not defined them.
-   A rejection needs a reason; an empty one is refused with a line that says so. A draft reason survives a redraw (kit.keep-state).
-   API:
-     Kit.gate.mount(box, opts) -> {update(gates), setLook(look), verdicts(), destroy()}
-       gates      [{id, action, by, tool, risk: "low"|"medium"|"high", reversible, preview, verdict: null | {state: "approved"|"rejected", by, at, reason}, locked: false | "why", refusal: {code, field, allowed: [text], message}}]
-       look       "plain" (default) | "console" | "ticket" | "two-key"        me  the name that reads as "you" (default "You")
-       canWrite   false shows the verdict only, with no buttons (default true)
-       onVerdict  (id, {state: "approved"|"rejected"|"withdrawn", reason}) => Promise|void; a rejected promise puts the gate back and says it was not saved
-       timeZone   for the clock text (default: the viewer's)      now  ISO string or Date stamped on a verdict (default: the clock)
-   Needs from the board:
-     css     kit/patterns/gate.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono,
-             optional --log-bg --log-ink --seam
-     globals Kit.vocab, Kit.keepState (their kit files load first)
-   db collections: none required; onVerdict is where a board writes the verdict (for example to its tasks collection).
-   Lifted from: an earlier board's approval gate and its console, war-room and journal dressings (arm and abort, two-key launch, ticket with a tear-off stub), a component family's permission
-   prompt card (who asked, which tool, the input as the tool would get it) and its refusal callout (code, field, what is allowed now, message). */
+/**
+ * Approval gate
+ * Kit.gate.mount(box, {gates, look, onVerdict}) draws a card per request: who asks, the action and the tool, a risk pill (low, medium, high) and an Irreversible mark when the change cannot be undone, a preview in which lines starting with + or - read as a diff with the mark in a gutter (not only a colour), the verdict so far and its buttons. Reject opens a reason box that the asker reads; an empty reason is refused with a line that says so, and a draft survives a redraw (kit.keep-state). A verdict can be withdrawn. A locked gate has no buttons and says why. A gate can carry a refusal (what was refused, for which field, what is allowed now). Four looks dress the same gate: plain, console (terminal header, monospaced preview), ticket (perforated edge and a tear-off stub that names the risk) and two-key (the buttons read Arm and Abort); only css changes, never the words or the keyboard path. onVerdict receives {state, reason}; a rejected promise puts the gate back. Risk and verdict words come from the vocabulary table.
+ *
+ * A request to allow an action, shown so the person can decide without opening anything else. It says who asks and for which action, how risky it is and whether it can be
+ * undone, shows a preview of the change (lines that start with + or - read as a diff, with the mark in the line, not only a colour), and offers Approve, or Reject with a reason the
+ * asker will read, or Withdraw once a verdict is in. A gate can be locked (the work already started), and can carry a refusal (what was refused, for which field, what is allowed now).
+ * Four dressings of the same gate, switched by the look option or setLook(): plain (a card), console (a terminal header over a monospaced preview), ticket (a perforated edge with a
+ * tear-off stub that names the risk) and two-key (the buttons read Arm and Abort and sit as two keys). The dressing is only css; the words, the order and the keyboard path do not change.
+ * Risk and verdict words come from the vocabulary table (kit/vocab.js). This file adds the enums "gate-risk" and "gate-verdict" only when the page has not defined them.
+ * A rejection needs a reason; an empty one is refused with a line that says so. A draft reason survives a redraw (kit.keep-state).
+ *
+ * API:
+ *   Kit.gate.mount(box, opts) -> {update(gates), setLook(look), verdicts(), destroy()}
+ *     gates      [{id, action, by, tool, risk: "low"|"medium"|"high", reversible, preview, verdict: null | {state: "approved"|"rejected", by, at, reason}, locked: false | "why", refusal: {code, field, allowed: [text], message}}]
+ *     look       "plain" (default) | "console" | "ticket" | "two-key"        me  the name that reads as "you" (default "You")
+ *     canWrite   false shows the verdict only, with no buttons (default true)
+ *     onVerdict  (id, {state: "approved"|"rejected"|"withdrawn", reason}) => Promise|void; a rejected promise puts the gate back and says it was not saved
+ *     timeZone   for the clock text (default: the viewer's)      now  ISO string or Date stamped on a verdict (default: the clock)
+ *
+ * @id        pattern.gate
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A request to allow an action: who asks and for what, its risk and reversibility, a preview of the change, then Approve, Reject with a reason the asker reads, or Withdraw.
+ * @tags      approval, gate, permission, sign-off, risk, diff, reject, reason, ticket, console
+ * @requires  kit.tokens, kit.vocab, kit.keep-state
+ * @provides  Kit.gate.mount, Kit.gate.looks
+ * @config    Kit.gate.mount(box, opts) | gates [{id, action, by, tool, risk, reversible, preview, verdict {state, by, at, reason} | null, locked, refusal {code, field, allowed, message}}], look plain | console | ticket | two-key, me, canWrite, onVerdict(id, {state, reason}), now, timeZone; returns {update, setLook, verdicts, destroy}
+ * @config    onVerdict | optional: where a board writes the verdict (for example to its tasks collection); the pattern keeps the verdict in memory either way
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --ok --danger --warn --accent-ink? --log-bg? --log-ink?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

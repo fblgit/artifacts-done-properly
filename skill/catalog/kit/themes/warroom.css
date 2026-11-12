@@ -1,13 +1,29 @@
 /* part:page.style.kit.theme.warroom */
-/* Kit theme: War room    kit version 0.1.0
-   Warm grey paper or near-black, square, uppercase condensed headings, one signal red.
-   Character: every corner square (--radius and --radius-lg are 0), 1.5px --outline on panels and chips, Barlow Condensed headings in capitals (--head-case: uppercase) over Inter text and spaced-capital mono labels, shadows as a flat 3px foot. Spend --accent on one thing at a time. --stripe is the hazard stripe for a single hazard edge; --seam is the deepened amber so it can be a mark (the pure hazard yellow is in --stripe only at night, where it passes).
-   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
-   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --stripe (the hazard stripe), --code-bg and --code-ink.
-   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
-   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
-   Fonts: https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap
-   From: the hub's War room skin (hazard stripes, uppercase mono kickers, 1.5px outlines, terminal ground) and an earlier board's incident-room skin. The siren, stamps and launch panel are component styling and are not in the theme. */
+/**
+ * War room
+ * Barlow Condensed headings in capitals (--head-case), Inter text, JetBrains Mono labels. Every corner is square and every panel has a 1.5px outline. Spend --accent on one thing at a time. --stripe is the hazard stripe for one edge; the seam is a deepened amber so it can be a mark. Review was green like success in the skin; here --wait is a plum. Hazard stripes on a component, the siren and stamps are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ *
+ * Character: every corner square (--radius and --radius-lg are 0), 1.5px --outline on panels and chips, Barlow Condensed headings in capitals (--head-case: uppercase) over Inter text and spaced-capital mono labels, shadows as a flat 3px foot. Spend --accent on one thing at a time. --stripe is the hazard stripe for a single hazard edge; --seam is the deepened amber so it can be a mark (the pure hazard yellow is in --stripe only at night, where it passes).
+ * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+ * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --stripe (the hazard stripe), --code-bg and --code-ink.
+ * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+ * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+ * Fonts: https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap
+ *
+ * @id        theme.warroom
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Incident room: warm grey paper or near-black, square corners, uppercase condensed headings, one signal red spent on one thing at a time.
+ * @tags      palette, tokens, colours, dark mode, warroom, incident, square, uppercase, red, condensed, high contrast
+ * @requires  none
+ * @config    fonts | Barlow Condensed, Inter and JetBrains Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {
   color-scheme: light;

@@ -1,24 +1,31 @@
 /* part:page.script.kit.viz.dotgrid */
-/* Kit visualization: one-mark-per-item grid (Kit.dotgrid)    kit version 0.1.0
-   What it is: a dense grid with one mark per item (a file, a record, a request), so a count is something you can see. Items with no category are small neutral dots. An item in a category is
-   a full-size mark in that category's pen colour AND its own shape (circle, diamond, square, triangle, ring), so the category survives without colour. Under the grid a list of the
-   categories, each a button with its shape, its word and its count: hovering or focusing one lights its marks and dims the rest; pressing it holds the light.
-   Two looks: "full" shows every category all the time; "lens" shows them only in a soft circle that follows the pointer (a way to scan a large grid), and the list and the counts still say
-   everything, so the lens never hides information from a keyboard user. Marks in a category are focusable and have a tooltip; the neutral ones have a tooltip on hover only.
-   API: Kit.dotgrid.mount(box, {items, categories, mode, size, gap, noun, label, onPick, host, lensRadius}) -> {highlight(id | null), setMode(m), update(patch), destroy()}
-     items       [{id, label, cats: [category ids]}]   the first category sets the mark's colour and shape
-     categories  [{id, label, tone, note}]   tone is a pen (blue amber violet green red) or a meaning (ok warn danger accent); default by position
-     mode        "full" (default) | "lens"
-     size, gap   px of a mark's cell (default 12) and the space between cells (default 4)
-     noun        "file": used in the summary and the tooltips ("12 of 400 files are in a category")
-     onPick      (itemId) when set, a press on a flagged mark calls it
-   Needs from the board:
-     requires kit.tooltip (Kit.tooltip.attach)
-     css     kit/viz/dotgrid.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, the pens --c-blue --c-amber --c-violet --c-green --c-red, optional --seam
-     globals Kit.tooltip
-   db collections: none.
-   Lifted from: a secret-scan report (one dot per file, a lens that follows the pointer, a detector table whose rows light their dots). Changed: shapes as well as colours, a category list that
-   works from the keyboard, and "full" as the default so the page is complete without a pointer. */
+/**
+ * One-mark-per-item grid
+ * Kit.dotgrid.mount draws one mark per item so a count is something you can see. An item with no category is a small neutral dot; an item in a category is a full-size mark in the category's pen colour and its own shape (circle, diamond, square, triangle, ring), so the category survives without colour. A list of the categories sits under the grid, each a button with its shape, word and count: hovering or focusing one lights its marks and dims the rest, pressing it holds the light. In lens mode the categories show only inside a soft circle that follows the pointer, and the list still says everything. Marks in a category are focusable and have a tooltip.
+ *
+ * API: Kit.dotgrid.mount(box, {items, categories, mode, size, gap, noun, label, onPick, host, lensRadius}) -> {highlight(id | null), setMode(m), update(patch), destroy()}
+ *   items       [{id, label, cats: [category ids]}]   the first category sets the mark's colour and shape
+ *   categories  [{id, label, tone, note}]   tone is a pen (blue amber violet green red) or a meaning (ok warn danger accent); default by position
+ *   mode        "full" (default) | "lens"
+ *   size, gap   px of a mark's cell (default 12) and the space between cells (default 4)
+ *   noun        "file": used in the summary and the tooltips ("12 of 400 files are in a category")
+ *   onPick      (itemId) when set, a press on a flagged mark calls it
+ *
+ * @id        viz.dotgrid
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A dense grid with one mark per item, a category list that lights its marks, and an optional pointer lens.
+ * @tags      grid, dots, scan, lens, categories, shapes, count, highlight, files
+ * @requires  kit.tooltip
+ * @provides  Kit.dotgrid.mount
+ * @config    Kit.dotgrid.mount(box, opts) | items [{id, label, cats}], categories [{id, label, tone, note}], mode: full | lens, size, gap, noun, label, onPick, host, lensRadius
+ * @config    requires | kit.tooltip
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

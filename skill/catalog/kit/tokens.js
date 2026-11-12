@@ -1,15 +1,28 @@
 /* part:page.script.kit.tokens */
-/* Kit component: tokens (Kit.tokens)    kit version 0.1.2
-   What it is: the theme contract between the kit and a board. The kit css files read named custom properties and never define a palette; the board defines them
-   (light on :root, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]).
-   This file helps with that: themeCss() writes those three blocks from two maps (so a board can keep its palette as data), contract() lists the properties each kit
-   file consumes, check() reports the ones the page does not define, read() resolves properties for code that paints (canvas, svg) and drops its cache when the theme changes.
-   Which names a shared palette should use is an open question (the names here are the Journey Whiteboard's); nothing in the kit renames a board's tokens.
-   Needs from the board:
-     config  none to load; Kit.tokens.themeCss({light, dark}) takes {"--name": "value"} maps; Kit.tokens.check(["chrome","canvas",...]) names the kit parts in use
-     css     the board's own tokens.css (or the output of themeCss)
-   db collections: none.
-   Lifted from: Journey Whiteboard app.css (the :root, prefers-color-scheme and [data-theme] blocks); the ADR Drafting Table's styles/tokens.css and canvas.js pal() are the second user. */
+/**
+ * Theme tokens contract
+ * Kit css never defines a palette; the board does. Kit.tokens.contract(part) lists the names a kit file reads, check(parts) reports the ones the page leaves undefined, themeCss({light, dark}) writes :root, the guarded prefers-color-scheme block and :root[data-theme="dark"], and read(names) resolves properties for code that paints (canvas, svg), dropping its cache when the theme changes. The names are the Journey Whiteboard’s; a shared vocabulary is an open question for the owner.
+ *
+ * What it is: the theme contract between the kit and a board. The kit css files read named custom properties and never define a palette; the board defines them
+ * (light on :root, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]).
+ * This file helps with that: themeCss() writes those three blocks from two maps (so a board can keep its palette as data), contract() lists the properties each kit
+ * file consumes, check() reports the ones the page does not define, read() resolves properties for code that paints (canvas, svg) and drops its cache when the theme changes.
+ * Which names a shared palette should use is an open question (the names here are the Journey Whiteboard's); nothing in the kit renames a board's tokens.
+ *
+ * @id        kit.tokens
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.1
+ * @updated   2026-10-24
+ * @summary   The contract between kit css and a board’s palette: which custom properties each kit file reads, a check for missing ones, and the three theme blocks written from two maps.
+ * @tags      tokens, theme, palette, custom properties, dark mode, contract, css
+ * @requires  none
+ * @provides  Kit.tokens.contract, Kit.tokens.check, Kit.tokens.themeCss, Kit.tokens.read, Kit.tokens.onTheme
+ * @config    themeCss({light, dark}) | {"--name": "value"} maps
+ * @config    check([part, …]) | the kit parts in use: chrome, claude-lane, canvas, md
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

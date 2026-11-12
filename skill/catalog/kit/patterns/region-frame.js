@@ -1,20 +1,36 @@
 /* part:page.script.kit.region-frame */
-/* Kit pattern: region frame (Kit.region)    kit version 0.1.0
-   What it is: the anatomy that opens any region of a page, in four small pieces that share one look. header: an accent lead-in, an icon chip, an optional number, an eyebrow, a title and
-   a lede. label: a section label with a count. panel: a block led by an accent label. empty: a designed empty state (an icon, what is missing, what to do, an action).
-   Plain DOM; every text is set with textContent. A region is a section element named by its title, so assistive tech lists it.
-   API (small and stable):
-     Kit.region.header({title, lede, eyebrow, num, icon, level, id}) -> Element           level 1..4 (default 2) is the heading level; num is shown only when you pass it (it must be a real order)
-     Kit.region.label(text, {count, level}) -> Element                                    a small section label; count renders as a figure beside it (0 is shown, null is not)
-     Kit.region.panel({label, count, body, icon}) -> Element                              body: Node | string | Node[]; the label leads the panel in the accent colour
-     Kit.region.empty({icon, title, text, action}) -> Element                             action {label, onClick}; omit it for a plain empty state
-     Kit.region.section({header, body, id}) -> Element                                    a <section aria-labelledby> holding header(...) and the body, for the common case
-     icon: a Node, an svg string, or an icon name (looked up in Kit.iconset when it is loaded, otherwise ignored)
-   Needs from the board:
-     css     kit/patterns/region-frame.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-soft --accent-ink --f-ui --f-display --f-mono, optional --seam --gold-leaf
-     globals none required; Kit.iconset (kit/icons.js) only when you pass an icon by name
-   db collections: none.
-   Lifted from: a component family's pane header, section label, info panel and empty state. */
+/**
+ * Region frame
+ * Four small pieces with one look. Kit.region.header({title, lede, eyebrow, num, icon, level}) opens a region; label(text, {count}) heads a block; panel({label, count, body}) is a block led by an accent label; empty({icon, title, text, action}) says what is missing and what to do. section({header, body}) joins a header to a body as a named section. A number shows only when you pass one, since it should encode a real order. Icons are a Node, an svg string or a Kit.iconset name.
+ *
+ * What it is: the anatomy that opens any region of a page, in four small pieces that share one look. header: an accent lead-in, an icon chip, an optional number, an eyebrow, a title and
+ * a lede. label: a section label with a count. panel: a block led by an accent label. empty: a designed empty state (an icon, what is missing, what to do, an action).
+ *
+ * Plain DOM; every text is set with textContent. A region is a section element named by its title, so assistive tech lists it.
+ *
+ * API (small and stable):
+ *   Kit.region.header({title, lede, eyebrow, num, icon, level, id}) -> Element           level 1..4 (default 2) is the heading level; num is shown only when you pass it (it must be a real order)
+ *   Kit.region.label(text, {count, level}) -> Element                                    a small section label; count renders as a figure beside it (0 is shown, null is not)
+ *   Kit.region.panel({label, count, body, icon}) -> Element                              body: Node | string | Node[]; the label leads the panel in the accent colour
+ *   Kit.region.empty({icon, title, text, action}) -> Element                             action {label, onClick}; omit it for a plain empty state
+ *   Kit.region.section({header, body, id}) -> Element                                    a <section aria-labelledby> holding header(...) and the body, for the common case
+ *   icon: a Node, an svg string, or an icon name (looked up in Kit.iconset when it is loaded, otherwise ignored)
+ *
+ * @id        pattern.region-frame
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   The anatomy that opens any region: an accent lead-in, icon chip, number, eyebrow, title and lede; a section label with a count; a panel led by an accent label; and a designed empty state.
+ * @tags      header, section, region, panel, empty state, label, eyebrow, lede
+ * @requires  kit.tokens
+ * @provides  Kit.region.header, Kit.region.label, Kit.region.panel, Kit.region.empty, Kit.region.section
+ * @config    Kit.region.section({header: {title, lede, eyebrow, num, icon}, body}) | body takes a Node, a string or an array
+ * @config    Kit.icons | optional: an icon given by name is looked up in Kit.iconset when kit/icons.js is loaded
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-soft --accent-ink --f-ui --f-display --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

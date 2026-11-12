@@ -1,23 +1,37 @@
 /* part:page.script.kit.presence */
-/* Kit pattern: session presence, ping and nudge (Kit.presence)    kit version 0.1.0
-   What it is: one line that says whether a Claude Code session is watching this artifact (watching, busy with what, or nobody), when one was last seen, and a Ping button that
-   proves it: the session answers pong, the line says how fast, and a count shows the wait meanwhile. When nobody watches, or a ping gets no answer, the nudge says what to do:
-   start a Claude Code session and tell it "watch the artifact <link>", with a Copy button (and the text selectable when the clipboard refuses). Requests still queue meanwhile,
-   and the nudge says so. The state is a bead, a word and a sentence, never colour alone; the ping's start and end are announced. The compact form (for a panel header) keeps the
-   line and hides the nudge behind "How to start one". Below 40rem the Ping button drops under the line.
-   API:
-     Kit.presence.mount(box, opts) -> {update(presence), ping(), destroy()}
-       engine        a Kit.assist engine: follows engine.presence() and pings with engine.ping(); without it, pass presence and onPing
-       presence      {watching, busy, sessions: [{session, at, doing}]}       onPing() -> Promise<"pong"|"timeout">  (static form)
-       artifactUrl   the artifact's claude.ai link, written into the nudge (default: the words "this artifact's link")
-       compact       true: the line only, the nudge behind a button        canPing  false hides Ping (default true)
-       ask           true says that Ask now still works without a session    queued  false drops the line that requests wait in the queue (with an engine: shown only while sending is available)   now  ISO or Date (default the clock)
-       words         {watching, busy, away, ping, pinging, pong, timeout, nudgeTitle, nudge, queued, askStill, copy, copied, how}
-   Needs from the board:
-     css     kit/patterns/presence.css, kit/vocab.css; --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --warn --f-ui --f-mono, optional --seam
-     globals Kit.vocab (enum "assist-presence" added when the page has not defined it)
-   db collections: none here; the engine reads presence/<session> and sends the ping request.
-   Lifted from: a drafting board's session line, Ping button and panel (checking, waiting, pong, slow, timeout) and its nudge with the copyable "watch the artifact" line. */
+/**
+ * Session presence
+ * Kit.presence.mount(box, {engine, artifactUrl}) reads engine.presence() and draws one line: a bead, a word (a session is watching, a session is working, no session is watching) and a sentence (which session, when it was last seen, what it is doing). Ping calls engine.ping(); while it waits a count shows the seconds, and the result says the session answered in 1.1 s or that no answer came (the engine waits 90 seconds). When nobody watches or a ping times out, the nudge says to open Claude Code and tell it watch the artifact <link>, with a Copy button; when the clipboard refuses, the line is selected so it can be copied by hand. It says requests wait in the queue only while sending is available, and that Ask now needs no session when the page can ask. compact: true keeps the line for a panel header and puts the nudge behind How to start one. Without an engine, pass presence and onPing. The state is never colour alone; the ping's start and end are announced. At 390 px the buttons drop under the line.
+ *
+ * What it is: one line that says whether a Claude Code session is watching this artifact (watching, busy with what, or nobody), when one was last seen, and a Ping button that
+ * proves it: the session answers pong, the line says how fast, and a count shows the wait meanwhile. When nobody watches, or a ping gets no answer, the nudge says what to do:
+ * start a Claude Code session and tell it "watch the artifact <link>", with a Copy button (and the text selectable when the clipboard refuses). Requests still queue meanwhile,
+ * and the nudge says so. The state is a bead, a word and a sentence, never colour alone; the ping's start and end are announced. The compact form (for a panel header) keeps the
+ * line and hides the nudge behind "How to start one". Below 40rem the Ping button drops under the line.
+ *
+ * API:
+ *   Kit.presence.mount(box, opts) -> {update(presence), ping(), destroy()}
+ *     engine        a Kit.assist engine: follows engine.presence() and pings with engine.ping(); without it, pass presence and onPing
+ *     presence      {watching, busy, sessions: [{session, at, doing}]}       onPing() -> Promise<"pong"|"timeout">  (static form)
+ *     artifactUrl   the artifact's claude.ai link, written into the nudge (default: the words "this artifact's link")
+ *     compact       true: the line only, the nudge behind a button        canPing  false hides Ping (default true)
+ *     ask           true says that Ask now still works without a session    queued  false drops the line that requests wait in the queue (with an engine: shown only while sending is available)   now  ISO or Date (default the clock)
+ *     words         {watching, busy, away, ping, pinging, pong, timeout, nudgeTitle, nudge, queued, askStill, copy, copied, how}
+ *
+ * @id        pattern.presence
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   Whether a Claude Code session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.
+ * @tags      presence, session, claude code, ping, nudge, watching, online, assist
+ * @requires  kit.tokens, kit.vocab, kit.dom
+ * @provides  Kit.presence.mount
+ * @config    Kit.presence.mount(box, opts) | engine (live) or presence {watching, busy, sessions [{session, at, doing}]} and onPing() -> 'pong' | 'timeout'; artifactUrl, compact, canPing, ask, queued, now, words; returns {update, ping, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --warn --f-ui --f-mono --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

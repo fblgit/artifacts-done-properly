@@ -1,26 +1,38 @@
 /* part:page.script.kit.record-dialog */
-/* Kit component: record dialog with tabs (Kit.recordDialog)    kit version 0.1.0    EXTENDS kit.chrome (a new file; chrome.js and chrome.css stay as they are)
-   What it is: the dialog that opens one record. A crown along the top edge in the record's state colour, a tinted one-row header (crumbs on the left, the record's id and the close button on the
-   right, then the title and a row of tags), underline tabs for its sections, and a body that scrolls on its own. A section can use .kit-rd-cols for a two-column layout from 900px (the answer tab:
-   the question on one side, the form on the other). Escape and a press on the scrim close it, Tab stays inside, and focus goes back to what opened it.
-   kit.chrome's openModal stays the small form dialog (Preact, a store); this one is plain DOM for a record with sections, and shares nothing with it but the look of the scrim.
-   API:
-     Kit.recordDialog.open({title, id, crumbs, tags, tone, tabs, selected, actions, label, host, opener, onClose, onTab}) -> {close(), select(tabId), el, panel(tabId), setTone(tone), isOpen()}
-       title    the record's name (an h2)        id    the record's code, in mono, top right
-       crumbs   [{label, onClick}]               the last one is the current page; one with onClick is a button
-       tags     [{label, tone}]                  tone is a Kit.vocab tone (neutral active review attention info danger success ended); the label is the state in words
-       tone     the crown's tone (a Kit.vocab tone); default the first tag's tone, else the accent
-       tabs     [{id, label, count, render(panelEl) | node}]   ids are bare tokens (letters, digits, . _ ~ -); the page's #anchor is left alone
-       selected the tab to open (default the first)      actions  Node[] shown at the right of the tag row
-       host     element to open in (default document.body); a positioned element makes the dialog fill it instead of the viewport
-     Escape closes; the handle's close() restores focus to opener (default: the element focused at open).
-   Needs from the board:
-     requires kit.tabs (kit/tabs.js, tabs.css), kit.vocab (kit/vocab.css, for the tone colours; without it the crown is the accent)
-     css     kit/record-dialog.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --shadow --f-ui --f-display --f-mono, optional --scrim --seam
-     globals Kit.tabs
-   db collections: none.
-   Lifted from: a component family's modal (accent crown, tinted header with crumbs, id and close, a 30px title, tags) and its underline tabs; the focus trap and the restore are its own.
-   Changed: the crown takes the record's state colour, the tabs are Kit.tabs with the roving tabindex and panels, and the colour never carries the state alone (the tags say it in words). */
+/**
+ * Record dialog with tabs and a state crown
+ * Kit.recordDialog.open({title, id, crumbs, tags, tone, tabs}) opens a plain-DOM dialog over a record. A crown runs along the top edge in the record's tone (a Kit.vocab tone), the header is tinted from it and fades into the panel, and the tags say the state in words as well as colour. The sections are Kit.tabs (underline tabs, roving tabindex, no change to the page's #anchor); each tab's body scrolls on its own, and .kit-rd-cols gives a two-column layout from 900px for the answer tab. Escape and a press on the scrim close it, Tab stays inside and focus returns to what opened it. kit.chrome's openModal stays the small form dialog; this is a new file beside it.
+ *
+ * What it is: the dialog that opens one record. A crown along the top edge in the record's state colour, a tinted one-row header (crumbs on the left, the record's id and the close button on the
+ * right, then the title and a row of tags), underline tabs for its sections, and a body that scrolls on its own. A section can use .kit-rd-cols for a two-column layout from 900px (the answer tab:
+ * the question on one side, the form on the other). Escape and a press on the scrim close it, Tab stays inside, and focus goes back to what opened it.
+ * kit.chrome's openModal stays the small form dialog (Preact, a store); this one is plain DOM for a record with sections, and shares nothing with it but the look of the scrim.
+ * API:
+ *   Kit.recordDialog.open({title, id, crumbs, tags, tone, tabs, selected, actions, label, host, opener, onClose, onTab}) -> {close(), select(tabId), el, panel(tabId), setTone(tone), isOpen()}
+ *     title    the record's name (an h2)        id    the record's code, in mono, top right
+ *     crumbs   [{label, onClick}]               the last one is the current page; one with onClick is a button
+ *     tags     [{label, tone}]                  tone is a Kit.vocab tone (neutral active review attention info danger success ended); the label is the state in words
+ *     tone     the crown's tone (a Kit.vocab tone); default the first tag's tone, else the accent
+ *     tabs     [{id, label, count, render(panelEl) | node}]   ids are bare tokens (letters, digits, . _ ~ -); the page's #anchor is left alone
+ *     selected the tab to open (default the first)      actions  Node[] shown at the right of the tag row
+ *     host     element to open in (default document.body); a positioned element makes the dialog fill it instead of the viewport
+ *   Escape closes; the handle's close() restores focus to opener (default: the element focused at open).
+ *
+ * @id        kit.record-dialog
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An upgrade of kit.chrome: a dialog for one record with a crown in its state colour, a tinted header (crumbs, id, close, title, tags), underline tabs and a two-column answer tab from 900px.
+ * @tags      dialog, modal, tabs, record, crown, header, crumbs, detail, answer
+ * @requires  kit.tokens, kit.tabs, kit.vocab
+ * @provides  Kit.recordDialog.open
+ * @config    Kit.recordDialog.open(opts) | title, id, crumbs [{label, onClick}], tags [{label, tone}], tone, tabs [{id, label, count, render(panel) | node}], selected, actions, label, host, opener, onClose, onTab; returns {close, select, panel, setTone, isOpen, el}
+ * @config    Kit.tabs and Kit.vocab | load kit/tabs.js, kit/tabs.css, kit/vocab.css first; without the vocabulary css the crown is the accent
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --shadow --scrim? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

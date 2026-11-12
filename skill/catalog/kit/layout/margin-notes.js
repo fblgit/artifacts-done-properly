@@ -1,23 +1,34 @@
 /* part:page.script.kit.margin-notes */
-/* Kit layout: clause with margin notes (Kit.marginNotes)    kit version 0.1.0
-   What it is: a document laid out as numbered sections and clauses (1.1, 1.2, 2.1 ...). Each clause reads in the column; beside it, in the margin, sit its state, owner, the answer given
-   and who has acknowledged it. A clause that waits on someone has a change bar. A clause's history is kept as numbered footnotes under it. On a narrow box the margin drops under the
-   clause as a ruled note. Plain DOM; every text is set with textContent.
-   API (small and stable):
-     Kit.marginNotes.mount(box, {sections, label, stateEnum, words, bar}) -> {update(opts), destroy()}
-       sections  [{id, title, intro, clauses: [{id, title, text, state, owner, answer, ack, history}]}]
-                 answer  {label, text, at}     what was decided, with a label such as "Option b" and when
-                 ack     {by, at}              who read and accepted it
-                 history [{at, text}]          revisions, oldest first; they number as footnotes across the whole document
-       stateEnum the Kit.vocab enum the states come from (default "state"); words {state: "Settled"} replaces a state's word in the margin only
-       bar       the tones that get a change bar (default ["attention", "review", "danger"])
-     Numbers are made from position (section number, then clause number); give a clause a number of its own with clause.no.
-   Made for the Manuscript theme (small caps labels, --measure, red pen for what is open) and fine under any other: it reads --label-caps, --label-case, --measure, --radius and --seam when the theme has them.
-   Needs from the board:
-     css     kit/layout/margin-notes.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --f-ui --f-display --f-mono, optional --seam --measure --label-caps --label-case --radius
-     kit     kit/vocab.js and kit/vocab.css (state word, glyph and tone), kit.tokens
-   db collections: none.
-   Lifted from: an earlier board's manuscript skin (numbered clauses, the margin aside for state, owner, answer and acknowledgement, history as footnotes, change bars). */
+/**
+ * Clause with margin notes
+ * Kit.marginNotes.mount(box, {sections}) lays a document out as numbered sections and clauses (1.1, 1.2, 2.1). Each clause reads in the column; beside it sit its state (a glyph and a word), owner, the answer given and who read it. A clause that waits on someone has a change bar; a clause with history carries a footnote number and a 'Revision history' disclosure that lists the entries. The footnotes number across the whole document. The box answers its own width: below about 40rem the margin drops under the clause as a ruled note. Made for the Manuscript theme, whose small caps, 36rem measure and red pen it reads (--label-caps, --measure, --seam), and fine under any other: the preview shows it on the stage's theme and under Manuscript.
+ *
+ * API (small and stable):
+ *   Kit.marginNotes.mount(box, {sections, label, stateEnum, words, bar}) -> {update(opts), destroy()}
+ *     sections  [{id, title, intro, clauses: [{id, title, text, state, owner, answer, ack, history}]}]
+ *               answer  {label, text, at}     what was decided, with a label such as "Option b" and when
+ *               ack     {by, at}              who read and accepted it
+ *               history [{at, text}]          revisions, oldest first; they number as footnotes across the whole document
+ *     stateEnum the Kit.vocab enum the states come from (default "state"); words {state: "Settled"} replaces a state's word in the margin only
+ *     bar       the tones that get a change bar (default ["attention", "review", "danger"])
+ *   Numbers are made from position (section number, then clause number); give a clause a number of its own with clause.no.
+ * Made for the Manuscript theme (small caps labels, --measure, red pen for what is open) and fine under any other: it reads --label-caps, --label-case, --measure, --radius and --seam when the theme has them.
+ *
+ * @id        layout.margin-notes
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Numbered clauses with an aside in the margin for state, owner, answer and acknowledgement; history as footnotes.
+ * @tags      clause, margin, aside, footnote, numbered, document, spec, history, change bar, manuscript
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.marginNotes.mount
+ * @config    Kit.marginNotes.mount(box, {sections, label, stateEnum, words, bar}) | sections [{id, title, intro, clauses: [{id, title, text, state, owner, answer: {label, text, at}, ack: {by, at}, history: [{at, text}]}]}]; returns {update(opts), destroy()}
+ * @config    theme | optional tokens from theme.manuscript: --label-caps, --label-case, --measure, --seam; each has a fallback
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --f-ui --f-display --f-mono --seam? --measure? --label-caps?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

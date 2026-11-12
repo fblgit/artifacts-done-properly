@@ -1,30 +1,41 @@
 /* part:page.script.kit.app-shell */
-/* Kit layout: app shell with a page registry (Kit.shell)    kit version 0.1.0
-   What it is: the frame of a multi-page app. A floating pill holds the app's name and one icon tab per page; the current page's tab (and any tab you hover or focus) opens to show its name. Pages register
-   themselves with show and hide hooks, so a page starts its timers and loads its data when it opens and stops them when it closes. Pages show one at a time. The page is chosen by the address
-   (a bare #token) or by a click; the last page is remembered per viewer; a link to an element inside a page opens that page and scrolls there. Plain DOM; every text is set with textContent.
-   API (small and stable):
-     Kit.shell.mount(root, {brand, label, storageKey, defaultPage, hash, height, actions}) -> shell
-       brand       text beside the first icon (a short app name)
-       label       accessible name of the pill (default "Pages")
-       storageKey  localStorage key that remembers the last page (default none; every read and write is guarded)
-       defaultPage the page to open when nothing else names one (default the first added)
-       hash        true (default): the page is the address's #token, read on load and on hashchange; false: no address is read or written (a framed preview, or a host that owns the hash);
-                   with false, a click on any <a href="#x"> inside the shell still opens page x, or the page that holds the element with id x
-       height      css length: the shell becomes a framed area of that height with its own scroll, the pill inside it (default none: the pill is fixed to the screen and the page scrolls)
-       actions     [{id, label, icon, onClick}]   icon buttons at the pill's end (for example a look or settings button)
-     shell.add({id, title, icon, el, onShow, onHide})   registers a page: id is a bare token (letters, digits, . _ ~ -), icon a name from Kit.shell.icons or an svg string, el the page's root element
-     shell.show(id, anchorId?) -> boolean               opens a page, and scrolls to the element with anchorId inside it when given; false for an unknown page
-     shell.current() -> id | null     shell.pages() -> [{id, title}]     shell.popover(button, panel) -> {open(yes), toggle(), destroy()}     shell.destroy()
-     onShow runs when a page opens (not when it is already open), onHide when another page takes its place or the shell is destroyed.
-     Kit.shell.icons -> {home, list, layers, grid, gear, look}: svg strings you can pass as icon.
-   In an artifact the address bar does not follow the hash (the viewer only reads a plain #anchor when the page loads), so a shell inside an artifact keeps its own page in memory and gives each page a
-   link of the artifact's address plus #token; pass hash:false when the artifact's address belongs to something else.
-   Needs from the board:
-     css     kit/layout/app-shell.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --shadow --f-ui --f-display, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: a network-ops console's app shell (the floating nav pill with icon tabs whose label opens on the current page, the page registry with show and hide hooks, hash routing, the look popover). */
+/**
+ * App shell with page registry
+ * Kit.shell.mount(root, {brand}) builds a floating pill with the app's name and one icon tab per page, then shell.add({id, title, icon, el, onShow, onHide}) registers each page. The open page's tab (and a hovered or focused one) opens to show its name; under 640px only icons show. onShow runs when a page opens, so it can start a timer or load data; onHide runs when another page takes over, so it can stop. Pages are chosen by the address's #token (bare tokens only, which is all an artifact viewer passes on), by a click, or by shell.show(id, anchorId); a link to an element inside a page opens that page and scrolls to it. The last page is remembered per viewer when a storageKey is given. shell.popover(button, panel) hangs a panel (for a look or settings control) under the pill. In an artifact the address bar does not follow the hash, so pass hash:false when the address belongs to something else; the shell then keeps its own page and still handles in-shell links. Safe-area padding is on the pill and the page.
+ *
+ * API (small and stable):
+ *   Kit.shell.mount(root, {brand, label, storageKey, defaultPage, hash, height, actions}) -> shell
+ *     brand       text beside the first icon (a short app name)
+ *     label       accessible name of the pill (default "Pages")
+ *     storageKey  localStorage key that remembers the last page (default none; every read and write is guarded)
+ *     defaultPage the page to open when nothing else names one (default the first added)
+ *     hash        true (default): the page is the address's #token, read on load and on hashchange; false: no address is read or written (a framed preview, or a host that owns the hash);
+ *                 with false, a click on any <a href="#x"> inside the shell still opens page x, or the page that holds the element with id x
+ *     height      css length: the shell becomes a framed area of that height with its own scroll, the pill inside it (default none: the pill is fixed to the screen and the page scrolls)
+ *     actions     [{id, label, icon, onClick}]   icon buttons at the pill's end (for example a look or settings button)
+ *   shell.add({id, title, icon, el, onShow, onHide})   registers a page: id is a bare token (letters, digits, . _ ~ -), icon a name from Kit.shell.icons or an svg string, el the page's root element
+ *   shell.show(id, anchorId?) -> boolean               opens a page, and scrolls to the element with anchorId inside it when given; false for an unknown page
+ *   shell.current() -> id | null     shell.pages() -> [{id, title}]     shell.popover(button, panel) -> {open(yes), toggle(), destroy()}     shell.destroy()
+ *   onShow runs when a page opens (not when it is already open), onHide when another page takes its place or the shell is destroyed.
+ *   Kit.shell.icons -> {home, list, layers, grid, gear, look}: svg strings you can pass as icon.
+ * In an artifact the address bar does not follow the hash (the viewer only reads a plain #anchor when the page loads), so a shell inside an artifact keeps its own page in memory and gives each page a
+ * link of the artifact's address plus #token; pass hash:false when the artifact's address belongs to something else.
+ *
+ * @id        layout.app-shell
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A floating nav pill whose icon tabs open their label on the current page; pages register themselves with show and hide hooks; hash routing; a link to something inside a page opens that page.
+ * @tags      shell, navigation, pages, routing, hash, tabs, pill, lifecycle, onshow, app
+ * @requires  kit.tokens
+ * @provides  Kit.shell.mount, Kit.shell.icons, shell.add, shell.show, shell.popover
+ * @config    Kit.shell.mount(root, {brand, label, storageKey, defaultPage, hash, height, actions}) | returns a shell with add(page), show(id, anchorId), current(), pages(), popover(button, panel), destroy()
+ * @config    shell.add({id, title, icon, el, onShow, onHide}) | id is a bare token; icon is a name from Kit.shell.icons or an svg string; el is the page's root element
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --f-ui --f-display --shadow? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

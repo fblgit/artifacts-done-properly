@@ -1,35 +1,49 @@
 /* part:page.script.kit.facet-batch */
-/* Kit pattern: facets with a batch bar (Kit.facetBatch)    kit version 0.1.0    an upgrade of pattern.count-filters (kit/patterns/count-filters.js is unchanged; this file adds to it)
-   What it is: the count tiles of count-filters grown into a way to work through a list. Chips whose count says what pressing them gives: each count is worked out with every filter on except its own
-   group, a chip with nothing behind it is disabled (unless it is pressed), and a facet takes more than one chip. Digit keys switch the first facet. A search box that keeps its caret, a group-by with
-   ordered buckets (expiry bands, say), a sort, rows you can select (Shift extends the range), and a bar that acts on the selection: "3 selected", Select all shown, the actions, Clear. Another view
-   can push in a "show only these" set, and a bar says so and lets go of it. The list shows rows with a Kit.seal mini ring when the record has a time left.
-   API (small and stable):
-     Kit.facetBatch.mount(root, cfg) -> fb
-       cfg    records            [{id, title, sub, state, left, life, ...your fields}]       id  field name or function (default "id")
-              facets             [{key, label, field, multi, tiles, allLabel, options: [{value, label, tone, lte, gte, test}]}]
-                                   an option matches a record when record[field] equals its value (or an array holds it), or when record[field] is <= lte and >= gte, or test(record) is true.
-                                   tiles: true draws the facet as big count tiles with digit keycaps (the first facet is tiles by default; multi false; allLabel adds an "All" tile)
-              search             {placeholder, label, fields: [name]} or {text(record)}      omit for no search box
-              groups, group      [{key, label, field | by(record), bands: [{label, lte}], order: [label], none}] and the key shown first. bands: the first band whose lte holds, in order; the last may have no lte
-              sorts, sort        [{key, label, field, dir: "asc" | "desc", cmp(a, b)}] and the key used first; a missing value sorts last
-              row                (record, {selected}) -> Node   replaces the default row
-              actions            [{key, label, icon, danger}]   the batch bar's buttons
-              stateEnum          Kit.vocab enum of record.state (default "state")       digitKeys  false turns the digit keys off       label  the region's name
-              onAction           ({action, ids}) -> false to cancel. The same is sent as a cancelable "kit-fb-action" CustomEvent on root; the board does the work and then calls update()
-     fb.state() -> {f, q, group, sort, only, selected}      fb.set({f: {key: [values]}, q, group, sort})     fb.focus(ids, label) / fb.clearFocus()   the "show only these" set
-     fb.select(ids) / fb.selection() / fb.clearSelection()  fb.shown() -> [records] in the order drawn      fb.update(records)       fb.destroy()
-     Kit.facetBatch.matches(cfg, st, record, skipFacetKey) -> boolean   the pure filter; st = {f: {key: Set}, q, only: Set | null}
-     Kit.facetBatch.grouped(cfg, list, groupKey, sortKey) -> [{key, items}]   the pure grouping and ordering
-   Needs from the board:
-     css     kit/patterns/facet-batch.css, kit/patterns/count-filters.css (tiles, chips, the strip); custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger
-             --f-ui --f-mono, optional --seam --rim --pool
-     kit     kit/viz/seal.js and seal.css (the mini ring), kit/vocab.js and vocab.css (the state chip), kit/glaze-surfaces.css (buttons, select, segmented control, empty state)
-     globals Kit.seal, Kit.vocab
-   db collections: none.
-   Lifted from: a network-ops console's certificate inventory (chips with live counts that skip their own group, group-by with ordered expiry bands, sort, selectable rows with a batch bar, the "show only
-   these" bar, the search box that keeps its caret) and an earlier board's digit keys with keycap chips. Changed: facets, groups and sorts are data, the filter and the grouping are pure and exported, and a
-   batch action is a cancelable event instead of a call. */
+/**
+ * Upgrade: facets with a batch bar
+ * An upgrade of pattern.count-filters as new files; count-filters.js and .css are unchanged and still load (the tiles and chips borrow their look). Kit.facetBatch.mount(root, cfg) draws facets from data: the first facet as big count tiles with digit keycaps (press 1 to 9 to switch, 0 to clear), the others as chips. Each chip’s count is worked out with every filter on except its own group, a chip with nothing behind it is disabled unless it is pressed, and a facet takes more than one chip. A search box keeps its caret because it is never redrawn. Group-by makes ordered buckets (expiry bands, say) and a sort orders each. Rows are selectable (Shift extends the range) and a bar at the foot says "3 selected" with Select all shown, the actions and Clear; an action is a cancelable kit-fb-action event the board handles. focus(ids, label) lets another view push in a "show only these" set, with a bar that says so. The default row shows a Kit.seal mini ring and the state pill. matches() and grouped() are pure and exported for tests.
+ *
+ * The count tiles of count-filters grown into a way to work through a list. Chips whose count says what pressing them gives: each count is worked out with every filter on except its own
+ * group, a chip with nothing behind it is disabled (unless it is pressed), and a facet takes more than one chip. Digit keys switch the first facet. A search box that keeps its caret, a group-by with
+ * ordered buckets (expiry bands, say), a sort, rows you can select (Shift extends the range), and a bar that acts on the selection: "3 selected", Select all shown, the actions, Clear. Another view
+ * can push in a "show only these" set, and a bar says so and lets go of it. The list shows rows with a Kit.seal mini ring when the record has a time left.
+ *
+ * API (small and stable):
+ *   Kit.facetBatch.mount(root, cfg) -> fb
+ *     cfg    records            [{id, title, sub, state, left, life, ...your fields}]       id  field name or function (default "id")
+ *            facets             [{key, label, field, multi, tiles, allLabel, options: [{value, label, tone, lte, gte, test}]}]
+ *                                 an option matches a record when record[field] equals its value (or an array holds it), or when record[field] is <= lte and >= gte, or test(record) is true.
+ *                                 tiles: true draws the facet as big count tiles with digit keycaps (the first facet is tiles by default; multi false; allLabel adds an "All" tile)
+ *            search             {placeholder, label, fields: [name]} or {text(record)}      omit for no search box
+ *            groups, group      [{key, label, field | by(record), bands: [{label, lte}], order: [label], none}] and the key shown first. bands: the first band whose lte holds, in order; the last may have no lte
+ *            sorts, sort        [{key, label, field, dir: "asc" | "desc", cmp(a, b)}] and the key used first; a missing value sorts last
+ *            row                (record, {selected}) -> Node   replaces the default row
+ *            actions            [{key, label, icon, danger}]   the batch bar's buttons
+ *            stateEnum          Kit.vocab enum of record.state (default "state")       digitKeys  false turns the digit keys off       label  the region's name
+ *            onAction           ({action, ids}) -> false to cancel. The same is sent as a cancelable "kit-fb-action" CustomEvent on root; the board does the work and then calls update()
+ *   fb.state() -> {f, q, group, sort, only, selected}      fb.set({f: {key: [values]}, q, group, sort})     fb.focus(ids, label) / fb.clearFocus()   the "show only these" set
+ *   fb.select(ids) / fb.selection() / fb.clearSelection()  fb.shown() -> [records] in the order drawn      fb.update(records)       fb.destroy()
+ *   Kit.facetBatch.matches(cfg, st, record, skipFacetKey) -> boolean   the pure filter; st = {f: {key: Set}, q, only: Set | null}
+ *   Kit.facetBatch.grouped(cfg, list, groupKey, sortKey) -> [{key, items}]   the pure grouping and ordering
+ *
+ * CSS classes: .kit-fb .kit-fb-bar
+ *
+ * @id        pattern.facet-batch
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Count chips whose counts say what pressing them gives, digit keys that switch the filter, a group-by and sort bar, selectable rows and a bar that acts on the selection.
+ * @tags      facets, filter, counts, batch, selection, group by, sort, keyboard, upgrade
+ * @requires  pattern.count-filters, viz.seal, kit.vocab, kit.glaze-surfaces
+ * @provides  Kit.facetBatch.mount, Kit.facetBatch.matches, Kit.facetBatch.grouped
+ * @config    Kit.facetBatch.mount(root, {records, facets, search, groups, group, sorts, sort, row, actions, stateEnum, digitKeys, onAction}) | facets [{key, label, field, tiles, allLabel, options: [{value, label, tone, lte, gte, test}]}]; groups [{key, label, field | by, bands, order, none}]; sorts [{key, label, field, dir | cmp}]
+ * @config    extends | pattern.count-filters: a new file; count-filters.js and .css load first and stay as they are
+ * @config    Kit.seal, Kit.vocab | the default row draws Kit.seal.mini and a state pill; pass row() to draw your own
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --bg --ink-3 --rule-2 --accent-ink --ok --warn --danger --f-mono --shadow? --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

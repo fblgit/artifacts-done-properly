@@ -27,8 +27,8 @@
     {
      "path": "kit/viz/core.js",
      "role": "script",
-     "sha256": "3cff4a9e2bd2089c2e63544b3062bcffbc85acb32581e1763d199a2cda60624b",
-     "bytes": 3890
+     "sha256": "848c05020ff9fbf6ac83102dc4d72306d9e9d6d17b8bf595011703323d48f585",
+     "bytes": 4511
     },
     {
      "path": "kit/viz/viz.css",
@@ -126,7 +126,7 @@
     "Figures is a definition list (label, value) with tabular numbers.",
     "Small text reads --ink-2 instead of --ink-3 and nothing is set below 11px, so labels, codes and counts pass WCAG AA in both boards’ themes (the Journey Whiteboard’s --ink-3 is 3.3:1 on its panel)."
    ],
-   "hash": "ca881a76a56e",
+   "hash": "63b41b1fcb6a",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -153,8 +153,8 @@
     {
      "path": "kit/viz/stepper.js",
      "role": "script",
-     "sha256": "2923abaca20af1cc156b61fb6f02fc7b56a9932c3315ac5290597c781074243f",
-     "bytes": 3604
+     "sha256": "01b9ed1da17fccd03cb54858abfb8e587d50347d5485feb12986581d27de582d",
+     "bytes": 3586
     },
     {
      "path": "kit/samples/viz-stepper.json",
@@ -219,7 +219,7 @@
     "The current node is a dot on the rail, and it pulses only while busy and only without reduced motion.",
     "Stages work without click handlers (plain list) or with them (buttons)."
    ],
-   "hash": "c5cbcebe70b7",
+   "hash": "917f23cb008b",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -245,8 +245,8 @@
     {
      "path": "kit/viz/matrix.js",
      "role": "script",
-     "sha256": "69389cc5117a114aa62ae683ee230983cb9c8f4ad2bfcfc2a42fb476281cfd97",
-     "bytes": 5556
+     "sha256": "dbcb509534ba265e7b14267025fa4d6040af3815379cb00f65658aa017318502",
+     "bytes": 5715
     },
     {
      "path": "kit/samples/viz-matrix.json",
@@ -339,7 +339,7 @@
     "Columns without a link are red in the header and the footer, and the header line counts them.",
     "Each cell has a spoken label: S1 covers P3, and the problem's title."
    ],
-   "hash": "616b62e5dd1d",
+   "hash": "2c90abeb338d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -366,8 +366,8 @@
     {
      "path": "kit/viz/tree.js",
      "role": "script",
-     "sha256": "a7b243226ed301c557c1c6bcb42c27867a127f2be4a5c2888ee7616743d2d2f7",
-     "bytes": 13076
+     "sha256": "193eda84594a4ac9b67bc27ffc549a8027c60d35d8ea7ea12237159c94971e6b",
+     "bytes": 13154
     },
     {
      "path": "kit/samples/viz-tree.json",
@@ -473,7 +473,7 @@
     "Selecting a node scrolls it into view, smoothly only without reduced motion.",
     "Fold state lives in the tree instead of the board's localStorage."
    ],
-   "hash": "703d6ef01089",
+   "hash": "3c7c9522fa47",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -498,8 +498,8 @@
     {
      "path": "kit/viz/replay.js",
      "role": "script",
-     "sha256": "0520bf210858d9b49318185a1a783734181d47c32947d0e77c913e1307b10fed",
-     "bytes": 4192
+     "sha256": "41ba3fc1cabe51b78264ba5496c3edf073086b6f485c876d8f2d3c235d43d6ba",
+     "bytes": 4378
     },
     {
      "path": "kit/samples/viz-replay.json",
@@ -576,7 +576,7 @@
     "A to-scale tick strip with the first and last dates under the slider.",
     "The step label is a polite live region; the slider reports the step as text."
    ],
-   "hash": "121b053daec0",
+   "hash": "bb6c24ff3fa7",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -602,8 +602,8 @@
     {
      "path": "kit/viz/impact.js",
      "role": "script",
-     "sha256": "2a8d204a69e5baf8c2c6e2a3cb3205f370fb32aa26047f28e833cf5783788ea6",
-     "bytes": 6584
+     "sha256": "d7b764f1f59731f877a6bb2aeb624e03ca259980b90202a2a9d98f732ae20167",
+     "bytes": 6445
     },
     {
      "path": "kit/samples/viz-impact.json",
@@ -680,7 +680,7 @@
     "Removed records and removed links are reported, not only additions.",
     "Gains and losses carry a side stripe as well as the sign, and a hidden word for screen readers."
    ],
-   "hash": "ecf9ce4834e6",
+   "hash": "1ce978d3219d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -705,8 +705,8 @@
     {
      "path": "kit/viz/focus.js",
      "role": "script",
-     "sha256": "d0fbe8997de66dadaaa3ca3c6743031a0cef54086d0463d75a7f98a951a195c1",
-     "bytes": 5838
+     "sha256": "5e43f5b1ecd1823bb52a06d2b78c86785cfd8511834e85c9a045c6f626343aa5",
+     "bytes": 5883
     }
    ],
    "requires": [
@@ -777,7 +777,7 @@
     "Board actions (open panel, propose a move, alternatives) moved out; the board passes them in as extra.",
     "Children are grouped by whatever kinds the nodes carry, five shown per group with a count of the rest."
    ],
-   "hash": "7c6f6a3fc7b3",
+   "hash": "ce8e62ebb7b7",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -803,8 +803,8 @@
     {
      "path": "kit/viz/buckets.js",
      "role": "script",
-     "sha256": "9a7a3fa4fdf0bf95adae3feed1f4d34e37ae8d52754ac717cf6168375d7427eb",
-     "bytes": 8047
+     "sha256": "50fd7e09f3c06851576bd3f4da94ab2f3bcc1fc3606ac2caba8c84bdbc1167f9",
+     "bytes": 8081
     },
     {
      "path": "kit/samples/viz-buckets.json",
@@ -886,7 +886,7 @@
     "Each Move to menu has its own label; the drop line ignores the dragged card's own slot.",
     "The drag stays inside its own board when two boards share a page."
    ],
-   "hash": "8aedaa682331",
+   "hash": "3af3915fc303",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -912,8 +912,8 @@
     {
      "path": "kit/themes/adr-drafting-table.css",
      "role": "style",
-     "sha256": "97671be342588a1e3f8546b5b5079f2e823a3293fd20363e346c63176ce50db3",
-     "bytes": 5274
+     "sha256": "8ee4d715d7eae98ac3329edc33ed87bb87c15e6a23a48c43d7a2536c5cc194e6",
+     "bytes": 5975
     },
     {
      "path": "kit/themes/adr-drafting-table.json",
@@ -969,7 +969,7 @@
    "changed": [
     "Nothing in the palette. Added the alias block onto the kit names (--panel is --sheet, --ok is --st-accepted, the pens map oxblood, pine, slate, brass and plum)."
    ],
-   "hash": "6bc7795ffe04",
+   "hash": "2b1edd787508",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -994,8 +994,8 @@
     {
      "path": "kit/themes/journey-whiteboard.css",
      "role": "style",
-     "sha256": "83b5ddaf8345e91d4a7a9e3cc4b0716fcfa4abcfc61b4435a349ba7a51cde877",
-     "bytes": 3495
+     "sha256": "759dd4be401c57486eb8ff05e5c724f0584a6a83244207e1407e41064cafe777",
+     "bytes": 3980
     },
     {
      "path": "kit/themes/journey-whiteboard.json",
@@ -1050,7 +1050,7 @@
    "changed": [
     "Nothing in the palette."
    ],
-   "hash": "c3d236b6d56b",
+   "hash": "c0adb677ed2b",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1161,8 +1161,8 @@
     {
      "path": "kit/templates/adp2-shell.html.txt",
      "role": "template",
-     "sha256": "20b7a47d88c6b77d3f73d851be300339270757b9753a1ee72a09e8a0f5112d92",
-     "bytes": 2885
+     "sha256": "e8ed7d7c81891d61e728a0a617ac3a1e4bddf19e34d06ecf31774a98e43246bc",
+     "bytes": 3897
     }
    ],
    "requires": [
@@ -1209,7 +1209,7 @@
    "changed": [
     "Published as .html.txt: as .html it would be a second page of this catalog, and HTML files cannot be copied between artifacts server-side."
    ],
-   "hash": "5d7634e0c624",
+   "hash": "ef5dc50aa63f",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1236,8 +1236,8 @@
     {
      "path": "kit/guides/artifact-dataplane.md",
      "role": "doc",
-     "sha256": "94decc700024ccc24ad21478e12e798d04414118da97478e6e66892f600f9ca0",
-     "bytes": 13978
+     "sha256": "cd262e07e5e6b916e6c611a4f3e91da3c38a74f0d8ee47092519891c1c550d31",
+     "bytes": 14692
     }
    ],
    "requires": [],
@@ -1270,7 +1270,7 @@
     "Copied byte for byte from SKILL.md at commit f1098e86 (before: c2f889b8). That commit adds reveal(id, key) for keyed anchors and records the page’s own data by doc under changes/<seq>.data.",
     "Reduced to the standard itself: project and activity history, one-project references and unbuilt ideas removed; status marks replaced by one section on what has been tested."
    ],
-   "hash": "a80f38834cfc",
+   "hash": "d0e386c107b1",
    "at": "2026-11-13T00:00:00Z",
    "by": "product-designer"
   },
@@ -1295,8 +1295,8 @@
     {
      "path": "kit/guides/component-inventory.md",
      "role": "doc",
-     "sha256": "dcfabcae9ed7ddd97c315740d07e6c92143e54325908231985e2f9d91331396e",
-     "bytes": 15752
+     "sha256": "0b8182e40eeb66cf94f930c1bec6e8cfe5b7350dfd8a3aa9c96c11f47ead4b4f",
+     "bytes": 16340
     }
    ],
    "requires": [],
@@ -1324,7 +1324,7 @@
     }
    ],
    "changed": [],
-   "hash": "e2e304caabd8",
+   "hash": "293790f6ca20",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1357,8 +1357,8 @@
     {
      "path": "kit/store.js",
      "role": "script",
-     "sha256": "ee2e16328f457464e45a2981395e2d9a36e77fe61f487c781969accef50011ba",
-     "bytes": 7912
+     "sha256": "9a96b63d5864609e5ecffc6c13a10b84fcab9389f7c447d725e0910019dc903a",
+     "bytes": 8984
     },
     {
      "path": "kit/samples/store.json",
@@ -1413,7 +1413,7 @@
      "what": "the same shapes with another path"
     }
    ],
-   "hash": "066cb689072e",
+   "hash": "06b8ce1ec9db",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1443,8 +1443,8 @@
     {
      "path": "kit/tokens.js",
      "role": "script",
-     "sha256": "b8c6ab555e25654b4be5f5a8d4655ff7e89018417e4bd780c7199bc6a819280e",
-     "bytes": 4583
+     "sha256": "0b758a6ee16952c53c07f047fc140de1e04f35512dd7727e21c8142b47b3a5df",
+     "bytes": 5285
     },
     {
      "path": "kit/samples/tokens.json",
@@ -1500,7 +1500,7 @@
      "what": "the second user"
     }
    ],
-   "hash": "f9e1bb6f433b",
+   "hash": "f4a11f915123",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1535,8 +1535,8 @@
     {
      "path": "kit/chrome.js",
      "role": "script",
-     "sha256": "348336545c4a1bcac79434f96104d7cc7da91ddd66014129e645771b9d401ea5",
-     "bytes": 12524
+     "sha256": "f37b85da93e6fcdc1f95ca19ba11b4ff7e1d6ad573d005a10010070b3e146229",
+     "bytes": 13275
     },
     {
      "path": "kit/chrome.css",
@@ -1615,7 +1615,7 @@
      "what": "the same shapes (focus restore and stacked toasts not taken)"
     }
    ],
-   "hash": "7d253506f7b6",
+   "hash": "b6555aad44fe",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1645,8 +1645,8 @@
     {
      "path": "kit/md.js",
      "role": "script",
-     "sha256": "a2b51e87de6bcb8379d02b5514cd0206fba974078b3c5e9dd9d201ab79f1d880",
-     "bytes": 2196
+     "sha256": "65f6a461cde714ff83b05b8b3a84079774a3e5222ed66ddb476bfb151794bb6c",
+     "bytes": 2479
     },
     {
      "path": "kit/md.css",
@@ -1704,7 +1704,7 @@
      "what": "forbid lists and external links (mermaid fences not taken)"
     }
    ],
-   "hash": "c9e0d9f2544e",
+   "hash": "d12d87a7fcbf",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1739,8 +1739,8 @@
     {
      "path": "kit/claude-lane.js",
      "role": "script",
-     "sha256": "49cb51dd7cc0eddc9a9a849450a15f5f53c9859c8fd529280c44d9ef820473ba",
-     "bytes": 10145
+     "sha256": "baf42d0fdca358fd353e8bfb739936774faa8c442af6757aa2b838473155c5a0",
+     "bytes": 11338
     },
     {
      "path": "kit/claude-lane.css",
@@ -1822,7 +1822,7 @@
      "what": "the same lane with ping and refresh states, which stay board code"
     }
    ],
-   "hash": "654e9931880d",
+   "hash": "2c4d174e8d36",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1859,8 +1859,8 @@
     {
      "path": "kit/canvas.js",
      "role": "script",
-     "sha256": "52accdb9b44a413bdb60968e5d501d6992148c62267689475bc24f84f1b2e118",
-     "bytes": 46052
+     "sha256": "9bfccb587de532734ddd4e09abe01201d9c4f0d967c1237fd9f92a243fc6c07a",
+     "bytes": 47124
     },
     {
      "path": "kit/canvas.css",
@@ -1946,7 +1946,7 @@
      "what": "canvas geometry, history, CanvasView, Board, Editor"
     }
    ],
-   "hash": "208301751577",
+   "hash": "40e12182878e",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1975,8 +1975,8 @@
     {
      "path": "kit/themes/glaze.css",
      "role": "style",
-     "sha256": "80b48d93afc9eb0ac5e589b7bd10b5dd9b9a909208c80c9bb4b876ae67e73799",
-     "bytes": 5035
+     "sha256": "a5fe579067eb8aa29ba351ec60415a5e58c64a14cb76fc2b040d3afb12092cd1",
+     "bytes": 5700
     },
     {
      "path": "kit/themes/glaze.json",
@@ -2030,7 +2030,7 @@
     "Text tokens deepened where a glaze colour was a fill (ok, warn) so each reads at 4.5:1 as text; the fills stay as -soft tints.",
     "The seam is darkened to 4:1 on porcelain so the current-item mark carries as a mark."
    ],
-   "hash": "a50d4dc6c1cf",
+   "hash": "0ba7115e190d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2060,8 +2060,8 @@
     {
      "path": "kit/layout/doc-shell.js",
      "role": "script",
-     "sha256": "34cd22169b5d038fc7cc7d4e82f7391530bd520d7747aba13a7815fcebde2eb4",
-     "bytes": 7782
+     "sha256": "99d6d28362723465e1b40af7148714d0697a3eb955946847a7912a1ce06681b5",
+     "bytes": 8402
     },
     {
      "path": "kit/layout/doc-shell.css",
@@ -2130,7 +2130,7 @@
     "The spy reads scroll position, not an observer, so a short last section still lights up.",
     "The phone collapse is by the shell's width, not the viewport's."
    ],
-   "hash": "b1b60c518e05",
+   "hash": "2dddd8fa3516",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2159,8 +2159,8 @@
     {
      "path": "kit/layout/topbar.js",
      "role": "script",
-     "sha256": "42fc4c6ad4b5c6447fd699f37d91d407966e495a4ef0abdf3db5baca708cace1",
-     "bytes": 9983
+     "sha256": "a81e289c7fe74eb0e40fb716d4690d619cef7769c38bd65fe661613bc39c7d17",
+     "bytes": 10775
     },
     {
      "path": "kit/layout/topbar.css",
@@ -2230,7 +2230,7 @@
     "Three states instead of two, so a viewer can go back to following the OS.",
     "The section links mark the one in view and scroll it into reach on a phone."
    ],
-   "hash": "e3bfcbfb46a4",
+   "hash": "73f6c8092e12",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2258,8 +2258,8 @@
     {
      "path": "kit/mermaid.js",
      "role": "script",
-     "sha256": "9a232f1c479d09e60ac7011d81539416dbe357a82f4d54549b4b36f978738158",
-     "bytes": 9737
+     "sha256": "b3810c7cd24e7a483a1805a5763e45d163b54a3093d02ec6adb4e6a2fb8eb8da",
+     "bytes": 10695
     },
     {
      "path": "kit/mermaid.css",
@@ -2333,7 +2333,7 @@
    "changed": [
     "Judged from the draft: kept, but on its own class (.kit-mmd) with a per-diagram directive instead of re-theming the platform's pre.mermaid, which would race the platform's own redraw."
    ],
-   "hash": "1b01ee0f6bab",
+   "hash": "4572156b6d36",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2361,8 +2361,8 @@
     {
      "path": "kit/tabs.js",
      "role": "script",
-     "sha256": "442b1de14f330c81a1a7d90895d9ab66b89beca771f6a505a067bb945c26d836",
-     "bytes": 6518
+     "sha256": "e1c55d49642666660970659e13079e86eb4121d4ed86992980d8bf7c32e0566c",
+     "bytes": 7154
     },
     {
      "path": "kit/tabs.css",
@@ -2430,7 +2430,7 @@
     }
    ],
    "changed": [],
-   "hash": "c551ef8b436a",
+   "hash": "14b80278cdeb",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2457,8 +2457,8 @@
     {
      "path": "kit/copy.js",
      "role": "script",
-     "sha256": "e13a00a2cf12c8859b0d363fdfe1f22f47337b6558aa78d8fd087da34986b4c5",
-     "bytes": 6540
+     "sha256": "da5d3c46e62c24e0d0047f7e49fa1454dd82481800cbb53f25fc877bd11b9ac7",
+     "bytes": 6960
     },
     {
      "path": "kit/copy.css",
@@ -2525,7 +2525,7 @@
     "The copy button is always shown, not only on hover, so touch and keyboard reach it.",
     "Needs nothing from kit.chrome: the plan's requirement was dropped because copy.css styles its own button."
    ],
-   "hash": "8284fbcdd684",
+   "hash": "83c60368dfa8",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2556,8 +2556,8 @@
     {
      "path": "kit/callout.css",
      "role": "style",
-     "sha256": "b3264ba4cac5aeb5f088396664d36bc7b3605cb555245bba692ac061adcccc05",
-     "bytes": 3790
+     "sha256": "af45606cde99a4f89422bf43351c9e937e70f7b15a5135acfe9cfc8d8b20d745",
+     "bytes": 4657
     },
     {
      "path": "kit/samples/callout.json",
@@ -2617,7 +2617,7 @@
     "New file kit/callout.css beside kit/chrome.css; chrome.css is unchanged.",
     "No coloured side rail: the tone is a glaze orb and a word."
    ],
-   "hash": "2ae442cf31a1",
+   "hash": "da370e7ffd96",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2646,8 +2646,8 @@
     {
      "path": "kit/table.js",
      "role": "script",
-     "sha256": "408ae023d5b6fcd15a0adc70cf06a4e496516361bf78e8140a4fcf0beafa553f",
-     "bytes": 5846
+     "sha256": "336adadefd8e40e909d7358bbd13377d1c32627d6d3206b1d7a31a95f9d6820c",
+     "bytes": 6579
     },
     {
      "path": "kit/table.css",
@@ -2713,7 +2713,7 @@
    "changed": [
     "The sticky head needs the frame to scroll vertically (.tall or tall: true); inside a frame that only scrolls sideways a sticky head cannot stick to the page."
    ],
-   "hash": "a6f0008b26dd",
+   "hash": "d5553fa8150b",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2742,8 +2742,8 @@
     {
      "path": "kit/patterns/filter-table.js",
      "role": "script",
-     "sha256": "2c86bef2f7d26237dd551954a1bc853bcc4583df5b12d154bd0dc898c0e5b368",
-     "bytes": 10770
+     "sha256": "416f45bc6be3cd51af6a4086210e2ca31cbf97346fcc929c51c329205186b2de",
+     "bytes": 11740
     },
     {
      "path": "kit/patterns/filter-table.css",
@@ -2816,7 +2816,7 @@
     "Heads are buttons with aria-sort, and a status line announces the result of every change.",
     "A group key keeps the categorised variant: label rows, and a group with no rows left disappears."
    ],
-   "hash": "372891ee4b0b",
+   "hash": "a3b18403e67f",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2844,8 +2844,8 @@
     {
      "path": "kit/patterns/count-filters.js",
      "role": "script",
-     "sha256": "f93ac7c7fceee1d84589d29fc61fbca8ffb33ec7b6189cce31356256821379b6",
-     "bytes": 5327
+     "sha256": "f489bb87136d1dfa82150c5effec35e1bf4f4df2a8b8ba6e9b71b21c24b43ed9",
+     "bytes": 6228
     },
     {
      "path": "kit/patterns/count-filters.css",
@@ -2913,7 +2913,7 @@
     "The pressed tile carries a check mark as well as its outline, so state does not depend on colour.",
     "The tiles fill the width and wrap (three across at phone width) instead of a fixed six-column grid."
    ],
-   "hash": "864c6e7cb402",
+   "hash": "19b43d8820f5",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -2941,8 +2941,8 @@
     {
      "path": "kit/patterns/ledger.js",
      "role": "script",
-     "sha256": "c5e93db5a5085e2a0b800b2ddfdc0bbdd6d6f96134b41795ce7fd3f8eee0e17f",
-     "bytes": 6868
+     "sha256": "dc3c86fbcc6ba2580fe355f0721ab565dba6adadaa385db86d4a80ca05ce5b81",
+     "bytes": 7708
     },
     {
      "path": "kit/patterns/ledger.css",
@@ -3007,7 +3007,7 @@
     "The closing note moves under the title on a phone instead of being hidden.",
     "Open all and Close all act on the rows the filter shows."
    ],
-   "hash": "b24d1a7ccd64",
+   "hash": "f011786eef44",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3036,8 +3036,8 @@
     {
      "path": "kit/patterns/master-detail.js",
      "role": "script",
-     "sha256": "05839ebc20288efd27b90f2e65dc61b8456a73a74309ad4a0bcde7d7c382be27",
-     "bytes": 8188
+     "sha256": "539ed9ba37617cb1599ef501cbb5a04c20278cc165e4e0f6f608c9e20a928e31",
+     "bytes": 9105
     },
     {
      "path": "kit/patterns/master-detail.css",
@@ -3102,7 +3102,7 @@
     "The phone switch follows the component's width (ResizeObserver), not the viewport's.",
     "The filters and the search stay visible when the list collapses to a select."
    ],
-   "hash": "d877b72ae9d2",
+   "hash": "a8a9bb007d17",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3129,8 +3129,8 @@
     {
      "path": "kit/palette.js",
      "role": "script",
-     "sha256": "21bfaf8098c675f9664d89ecc6bba30327ea3a1d681d8e50c50e13cabb9edbd4",
-     "bytes": 8461
+     "sha256": "5eff3f5c2d0615f9764996c22ac1a5971a9f16afc3b6f2fbf71371bc650ecbdc",
+     "bytes": 8911
     },
     {
      "path": "kit/palette.css",
@@ -3192,7 +3192,7 @@
     "Tab is held in the input, focus returns to the opener, and Escape closes without leaving the page.",
     "Results rank by tier and then by the given order; the source filtered by substring only."
    ],
-   "hash": "cc34c58a238d",
+   "hash": "118133ac0e96",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3219,8 +3219,8 @@
     {
      "path": "kit/tooltip.js",
      "role": "script",
-     "sha256": "0e96f13c8096ccc65f540cee26b7f30ba6aa7d00320a48869712118324fe0519",
-     "bytes": 7449
+     "sha256": "2102d745433bbe35e0b1ee2b37898a9e6c05e260a731eb19d8ab073b88b8d10b",
+     "bytes": 8586
     },
     {
      "path": "kit/tooltip.css",
@@ -3284,7 +3284,7 @@
     "It takes a host element, so a board that themes an element and not :root still gets its tokens.",
     "Content can be rows of label and value, not only a string of HTML; nothing is parsed as markup."
    ],
-   "hash": "d469e0ae1a6d",
+   "hash": "cd158320dda9",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3314,8 +3314,8 @@
     {
      "path": "kit/patterns/disclosure.js",
      "role": "script",
-     "sha256": "07bc4b00482e0fc476800f8a7bc2d7b0568f645a5a2fc3aae4673497bc2e4428",
-     "bytes": 6974
+     "sha256": "e4164ef64b1eebc6a6a705018bf0cf657e42a1cc56ceb693b09cd563226d97b7",
+     "bytes": 7980
     },
     {
      "path": "kit/patterns/disclosure.css",
@@ -3384,7 +3384,7 @@
     "The bar reports how many cards are open, in a status line.",
     "The expand-before-print hook is kept; the print dialog itself is not available inside an artifact."
    ],
-   "hash": "8d911127a4c0",
+   "hash": "8811105e9481",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3412,8 +3412,8 @@
     {
      "path": "kit/patterns/expand-card.js",
      "role": "script",
-     "sha256": "75f1f63f6e4b2f849cdb1597a081477904deb16b175c90d18aa9ad3107da128d",
-     "bytes": 8058
+     "sha256": "64956908ae13c55c8a426606f753dc0e2fb9e9519ab8321a8c809fc63a8b71f2",
+     "bytes": 9060
     },
     {
      "path": "kit/patterns/expand-card.css",
@@ -3478,7 +3478,7 @@
     "The dimensions are data (dims), not the fixed four of the source.",
     "The open set is optional and survives a blocked localStorage."
    ],
-   "hash": "5ff6f6cf25a9",
+   "hash": "9840a2724597",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3508,8 +3508,8 @@
     {
      "path": "kit/viz/bars.js",
      "role": "script",
-     "sha256": "c1620d75a447a61d65d5d527588165f5c6d3ba8e5f344dd1d2827cdd9d40f9b8",
-     "bytes": 18610
+     "sha256": "41ccf25609fe9992f3eb58827c7ad507be2962228435d0580fdb487388e1ac68",
+     "bytes": 19204
     },
     {
      "path": "kit/viz/bars.css",
@@ -3622,7 +3622,7 @@
     "Series carry a fill pattern and a word as well as a colour; segments and cells have tooltips and keyboard stops.",
     "Columns are new: grouped series, gridlines at round ticks, a highlighted category and a table view."
    ],
-   "hash": "bf8077e76ddd",
+   "hash": "decf5adc884b",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3651,8 +3651,8 @@
     {
      "path": "kit/viz/shelf.js",
      "role": "script",
-     "sha256": "0e352d24fb451f274bd028fb62cce4c18e5425c0782e62966725edc706bf4e77",
-     "bytes": 6566
+     "sha256": "9ddfb87e8e92ab73d37376a82dc502662f1c8e52fd3cf5760a1b011e82199626",
+     "bytes": 6790
     },
     {
      "path": "kit/viz/shelf.css",
@@ -3727,7 +3727,7 @@
     "Names, devices and sizes are config; the chips carry a mark (check, bang, cross) as well as a tone.",
     "Segments are keyboard stops with a tooltip; the legend and a scale note sit under the shelf."
    ],
-   "hash": "cf73e2959aec",
+   "hash": "c3939cf7c887",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3754,8 +3754,8 @@
     {
      "path": "kit/viz/topology.js",
      "role": "script",
-     "sha256": "87fef8b8f9cdd77e0b8efa663d7e65ec46919d00f60e164d857d3da53480acb3",
-     "bytes": 9314
+     "sha256": "5520b689d4b1ff211d9e7a7888d78161c54eaa267ec89e8bebfd1e7346c85ce1",
+     "bytes": 9272
     },
     {
      "path": "kit/viz/topology.css",
@@ -3826,7 +3826,7 @@
     "Positions, names and text are config and the detail panel is a callback; the source hard-coded one network.",
     "Nodes get a state mark, a pick adds a dot as well as a fill, and the figure scrolls inside its frame instead of shrinking its text."
    ],
-   "hash": "1f307b2bd914",
+   "hash": "ea3f7c7a8c1c",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3853,8 +3853,8 @@
     {
      "path": "kit/viz/flow.js",
      "role": "script",
-     "sha256": "56d15154eed1eccdc9c64719670addcc5c5c5edf90bc152113a14c92c37ed04a",
-     "bytes": 4391
+     "sha256": "d5a4c0c75b3bfaa4c75419fd72e48970ce34c472d36b46d9d85d2fc6c196f545",
+     "bytes": 4461
     },
     {
      "path": "kit/viz/flow.css",
@@ -3921,7 +3921,7 @@
     "Node kinds and blocked links read without colour: outlines, a word and a cross.",
     "Folds to one column by container width, not window width."
    ],
-   "hash": "a54da04fc09c",
+   "hash": "acf1068a74cc",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -3948,8 +3948,8 @@
     {
      "path": "kit/viz/timeline.js",
      "role": "script",
-     "sha256": "b45aea643a61aedc9e30da85f356c25c96106088b7c42c683e9e92f3a7018144",
-     "bytes": 7124
+     "sha256": "e1400277b30e2fab33d3087d6ef6040787dff0fa603e5b99db49c07ec2541eba",
+     "bytes": 7322
     },
     {
      "path": "kit/viz/timeline.css",
@@ -4035,7 +4035,7 @@
     "Status is a glyph and a word as well as a colour; the light follows keyboard focus as well as the pointer.",
     "The marked row of the dated table became a labelled divider; the table itself is Kit.table."
    ],
-   "hash": "82c2fe9b4d8e",
+   "hash": "8218b7544c4d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4063,8 +4063,8 @@
     {
      "path": "kit/viz/dotgrid.js",
      "role": "script",
-     "sha256": "451a96ac7ade2ec437522d8e3c6d088927f8ce94da12c3fe215b1d0f6bc49a04",
-     "bytes": 8143
+     "sha256": "61bb847981dd56ee1743a53522d1a5998cd663325fb42ebe6728574edf5dd151",
+     "bytes": 8016
     },
     {
      "path": "kit/viz/dotgrid.css",
@@ -4139,7 +4139,7 @@
     "Categories have shapes as well as colours, and the category list works from the keyboard.",
     "The default look shows every category, so the page is complete without a pointer; the lens is optional."
    ],
-   "hash": "8ac0c7d21862",
+   "hash": "a3b68723eda4",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4167,8 +4167,8 @@
     {
      "path": "kit/viz/sparkline.js",
      "role": "script",
-     "sha256": "b6fcf7552580cda70d753403d5870936bd057803f1f5f612596c374e83714230",
-     "bytes": 13991
+     "sha256": "ed3613b62c235620a635d193b796552efb0179d0bffdb9847b1c671e202ddecd",
+     "bytes": 13984
     },
     {
      "path": "kit/viz/sparkline.css",
@@ -4258,7 +4258,7 @@
     "The sweep animation is dropped; the line states its range in words; the waveform is a real slider with a keyboard.",
     "Marked windows are hatched and labelled, not only coloured."
    ],
-   "hash": "96280af88837",
+   "hash": "2ceeaea404c1",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4285,8 +4285,8 @@
     {
      "path": "kit/viz/compare.js",
      "role": "script",
-     "sha256": "d91151f17848836d605bed489119a602262e992dbf251595fa450d847d4c7701",
-     "bytes": 6182
+     "sha256": "204040670101e7353b94ced19d43a8b7af5e723d96ed5dc82aad09cc0e1ff6e6",
+     "bytes": 6365
     },
     {
      "path": "kit/viz/compare.css",
@@ -4366,7 +4366,7 @@
     "The stage holds live DOM instead of a screenshot and a rendering, and the divider is a range input.",
     "The before/after comparison drawing is covered by two stages or by Kit.topology; it was one static SVG."
    ],
-   "hash": "d29e6d7bc4d0",
+   "hash": "287e288003cf",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4393,8 +4393,8 @@
     {
      "path": "kit/viz/slider-chart.js",
      "role": "script",
-     "sha256": "8781a281c0b03b2636a24471106cdeb9436cd97a62264827dcf9e69db75cef44",
-     "bytes": 4741
+     "sha256": "eca60a406bcc113f7fce7e8a7f3169095fd9e9db3275edea53a32b68ab1094d9",
+     "bytes": 4951
     },
     {
      "path": "kit/viz/slider-chart.css",
@@ -4467,7 +4467,7 @@
     "The model is a callback so the shell serves any what-if.",
     "The scale can be pinned; the chart is the shared Kit.bars.columns instead of hand-built SVG; estimates are labelled as estimates."
    ],
-   "hash": "d57179a40b2c",
+   "hash": "0b80fd04fba2",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4494,8 +4494,8 @@
     {
      "path": "kit/patterns/steps.js",
      "role": "script",
-     "sha256": "2df2b2b8f8d51ab61b3848812e9c93aa6ef05be826723627e4f3c553359d4ece",
-     "bytes": 7538
+     "sha256": "b2f87c15622cc99aa9d0739cca8064706da16f28f5fa971c21b99e1c6cabf5e9",
+     "bytes": 8601
     },
     {
      "path": "kit/patterns/steps.css",
@@ -4570,7 +4570,7 @@
     "Done steps are struck through with the checkbox as the signal; their text keeps full contrast.",
     "Phase progress is announced in a polite live region."
    ],
-   "hash": "247e6c3ed496",
+   "hash": "e1395ac44fb0",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4597,8 +4597,8 @@
     {
      "path": "kit/patterns/playbook.js",
      "role": "script",
-     "sha256": "26504c8c03faa16bf0dda1e5fb96d645768106c9e6dc4f28df6ff6a60fe1e4c6",
-     "bytes": 4774
+     "sha256": "6e29173f856991aa321d6fa89a91099598c688782c36c7b8393ec06f11c1839f",
+     "bytes": 5600
     },
     {
      "path": "kit/patterns/playbook.css",
@@ -4674,7 +4674,7 @@
     "The pipeline's stages scroll sideways on their own at phone width; the connector line stays with each stage.",
     "Gate and Risky are said in a flag at the top of the open stage, not only drawn."
    ],
-   "hash": "a90addbd1607",
+   "hash": "e7c3a8d7e620",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4702,8 +4702,8 @@
     {
      "path": "kit/patterns/findings.js",
      "role": "script",
-     "sha256": "6701413e2164310d128dabc910ab9a2c3811395ff22c22e331ad709a2c73d75e",
-     "bytes": 5374
+     "sha256": "3f7de17b4025fa9978f7722f321a95992d4722a00f39e35c09d5413515d523a1",
+     "bytes": 6247
     },
     {
      "path": "kit/patterns/findings.css",
@@ -4778,7 +4778,7 @@
     "Five levels with one glyph each (triangle, circle with bang, square, circle with i, circle with tick).",
     "Medium takes --info and falls back to --accent in a theme that lacks it."
    ],
-   "hash": "37479ba947d5",
+   "hash": "512e686377da",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4807,8 +4807,8 @@
     {
      "path": "kit/patterns/figures.js",
      "role": "script",
-     "sha256": "af26ac3c992d51e407204946597286ed3bda544cb9ff505fd94f7157383058c1",
-     "bytes": 5225
+     "sha256": "7601887621c86b2564fc3d741e0cf180c23c833033d419192dc4b0e5fe3bb8dd",
+     "bytes": 6166
     },
     {
      "path": "kit/patterns/figures.css",
@@ -4885,7 +4885,7 @@
     "A state tile reads as a word first (Ready, Slow, Short) with a dot that repeats it.",
     "The key figure is marked with a seam above it and a tint, not by a second accent colour."
    ],
-   "hash": "e0637786e1b1",
+   "hash": "b4f3f14f5aff",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -4912,8 +4912,8 @@
     {
      "path": "kit/patterns/options.css",
      "role": "style",
-     "sha256": "135d352196673aada16b709fbe90bb38d2b12643a13ce9091b6d436250ae9557",
-     "bytes": 4372
+     "sha256": "7c8c8908e93ab011460a6194b320db77c71627c91ea930395fe77b068d3fa6c3",
+     "bytes": 5530
     },
     {
      "path": "kit/samples/options.json",
@@ -4988,7 +4988,7 @@
     "The picked card is outlined all round and labelled, not marked by a coloured edge.",
     "Pros and cons lead with + and a real minus sign and carry a hidden Pro or Con word for screen readers in the preview markup."
    ],
-   "hash": "f38a6b070fe5",
+   "hash": "266936dd35e7",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5017,8 +5017,8 @@
     {
      "path": "kit/patterns/verdict.css",
      "role": "style",
-     "sha256": "6f6c8045a3851b8dc69e0058a0605d7ba827674bb65146397810adee9bff613c",
-     "bytes": 4290
+     "sha256": "8ab6a26c780d01bde1a99281693787f09e0ad10cfa8855da89b9b2bf5bec5779",
+     "bytes": 5339
     },
     {
      "path": "kit/samples/verdict.json",
@@ -5088,7 +5088,7 @@
     "The status banner has no coloured left edge; the badge carries a dot and a word.",
     "The masthead sentence reserves two lines of height, so swapping it does not move the page."
    ],
-   "hash": "716654d1bfae",
+   "hash": "50dceae01aa5",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5116,8 +5116,8 @@
     {
      "path": "kit/patterns/scenarios.js",
      "role": "script",
-     "sha256": "7f29fa8c11a49d88748eb0a2a0164d9046af7c0fbbd6f98e96753c9f7aa6a3f8",
-     "bytes": 4149
+     "sha256": "89ecabbb3920b9735fb58554e74af20a134f36e91fabdfcd82058d955025a381",
+     "bytes": 4938
     },
     {
      "path": "kit/patterns/scenarios.css",
@@ -5188,7 +5188,7 @@
     "The open-check list the plan also named is not a separate renderer: a ledger cell with the verdict 'to test' covers it.",
     "The verdict dot changes shape by tone (circle, diamond, square, dashed ring), so it does not rely on colour."
    ],
-   "hash": "9dc643512f5f",
+   "hash": "6455b46a6f0b",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5216,8 +5216,8 @@
     {
      "path": "kit/patterns/blueprint.css",
      "role": "style",
-     "sha256": "b2c9e771ee909d55ade29e8764e56b02b9dcb78cad619f8b890ec5c89baf14d8",
-     "bytes": 3714
+     "sha256": "b8daa0b61331486b06c623abb553f05777a7c4a4fd86ac56270ec7f988e42aa9",
+     "bytes": 4682
     },
     {
      "path": "kit/samples/blueprint.json",
@@ -5281,7 +5281,7 @@
     "The feeling is a word first; the dot (red, amber, green) only repeats it.",
     "The pain and opportunity notes carry their own labels, so they read without colour."
    ],
-   "hash": "4a0682b5e442",
+   "hash": "efcbce4f6749",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5309,8 +5309,8 @@
     {
      "path": "kit/patterns/questions.js",
      "role": "script",
-     "sha256": "705f98910f786d4a6df5b335e2bc31dba3eadee1d1d4728d00a973a07871167e",
-     "bytes": 13064
+     "sha256": "1e91ca2348b6fc0fc8e76905858fb6f5d7e5e20d44de3c1b7f033fac267d7e55",
+     "bytes": 14612
     },
     {
      "path": "kit/patterns/questions.css",
@@ -5396,7 +5396,7 @@
     "Card state is a word on the card, not only a coloured edge.",
     "The save target is a db object or a save function, so a page with no db still works and copies its answers."
    ],
-   "hash": "492f1324ecda",
+   "hash": "c057d9eb4065",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5424,8 +5424,8 @@
     {
      "path": "kit/patterns/decisions.js",
      "role": "script",
-     "sha256": "fd08fb1a41133f04415967570c674e9e20f6d0712ee54757dfa728c8ec38dc32",
-     "bytes": 11524
+     "sha256": "dd37ad45e2a02388733c525e753c1e4f7339f62d6fa27ae003ad9ae2d215e3c2",
+     "bytes": 13180
     },
     {
      "path": "kit/patterns/decisions.css",
@@ -5514,7 +5514,7 @@
     "The decision list and the records are data passed in; nothing about a particular proposal is carried.",
     "The plan listed kit.claude-lane as required; the file does not call it, the board's afterRecord hook does, so requires is empty."
    ],
-   "hash": "2d27c0d9fcb4",
+   "hash": "a3bd0636e948",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5542,8 +5542,8 @@
     {
      "path": "kit/patterns/next-steps.js",
      "role": "script",
-     "sha256": "6aa8c6ae7b99d226f7fd226e3a590fd895abd7fd6143789f9b1f98fb7c889174",
-     "bytes": 11615
+     "sha256": "af92a904c32f3769bfeac00515317e8be5e681f38db72b16fcf698b8d7533d0f",
+     "bytes": 12689
     },
     {
      "path": "kit/patterns/next-steps.css",
@@ -5629,7 +5629,7 @@
     "Done and Pick are labelled checkboxes and a finished step is struck through, so the state is not colour alone.",
     "Persistence moved out: the component reports its state and kit.save-status keeps it."
    ],
-   "hash": "4f40b4f303da",
+   "hash": "b35bb5781d22",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5658,8 +5658,8 @@
     {
      "path": "kit/save-status.js",
      "role": "script",
-     "sha256": "aa891799fe3de266eb6fe58680c69a36cc790723ee8ad49d9603231fbeab3964",
-     "bytes": 6763
+     "sha256": "7d0c26aa122751d810586b8293fda96d4c6ebfa38e1c91b23103a9d54bbf57b2",
+     "bytes": 8318
     },
     {
      "path": "kit/save-status.css",
@@ -5729,7 +5729,7 @@
     "Adds the offline state and the write of changes made before the db connects, which the source did not have.",
     "A dot ahead of the words repeats the state by shape (round, square, hollow); the words carry it."
    ],
-   "hash": "fe75edc36d24",
+   "hash": "fb0995377371",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5756,8 +5756,8 @@
     {
      "path": "kit/dial.js",
      "role": "script",
-     "sha256": "72a1c64f83c43cc8f2acef5c9940bdfa0458a93b8eea566302a0e4e6e1e2d15f",
-     "bytes": 6602
+     "sha256": "707cf5da2bffaabe9cc3eb8631aae1743183db14ca3356b378c920cb2b4196fc",
+     "bytes": 7147
     },
     {
      "path": "kit/dial.css",
@@ -5826,7 +5826,7 @@
     "Each mark differs in shape (dotted underline, bar, box), not only colour.",
     "The plan listed kit.chrome as required; the dial does not use it (its seg class is replaced by kit-dial), so requires is empty."
    ],
-   "hash": "89412c86504d",
+   "hash": "a6b2c6bd3035",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5853,8 +5853,8 @@
     {
      "path": "kit/code-gate.js",
      "role": "script",
-     "sha256": "4ba656588a2f8991edd0cb6ced2cbf43a0367fce3213a008e2cae3ea39b27e6f",
-     "bytes": 5775
+     "sha256": "d3917926bb3a6dcf7d50841a6e8697adefbe773eac3edb89134ce984f89f7ea2",
+     "bytes": 6236
     },
     {
      "path": "kit/code-gate.css",
@@ -5916,7 +5916,7 @@
     "Kept after review: it is a general countdown card for any time-boxed code. The source's code was a hash of a fixed phrase, so the generator is now a named stand-in and the real code is a function the board supplies.",
     "The card is built from tokens (an inverted --ink card), not the source's amber palette."
    ],
-   "hash": "5fabc734eacf",
+   "hash": "90cc281c0ddb",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -5944,8 +5944,8 @@
     {
      "path": "kit/patterns/sandbox.js",
      "role": "script",
-     "sha256": "b85b2c4c1d06639255935d64fbc4c0e7a19ad2f254359409862dbd62ddeac67b",
-     "bytes": 9595
+     "sha256": "ce7e11db9e3efe23d3849e176ac79fcd1e51786e88fa91f2378446319d86ae36",
+     "bytes": 11021
     },
     {
      "path": "kit/patterns/sandbox.css",
@@ -6028,7 +6028,7 @@
     "The probe table adds the time each check took, and a hit is shown with a filled square and the word Found, not colour alone.",
     "The plan listed viz.core as required; nothing here calls it, so requires is empty."
    ],
-   "hash": "749b8673420d",
+   "hash": "57d07f3e014e",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6057,8 +6057,8 @@
     {
      "path": "kit/templates/doc.html.txt",
      "role": "template",
-     "sha256": "f10010cffaa62537f9d182f6aff8c995dd7a89e28d8eb6592a78fa8dc469f216",
-     "bytes": 6611
+     "sha256": "cd30407eeb3f7b7e3d2f0584b2ee805776a8f64f96ee2c289fed6bb62eadfd71",
+     "bytes": 7930
     },
     {
      "path": "kit/templates/doc.css",
@@ -6133,7 +6133,7 @@
     "The numbers are a CSS counter on the shell, not typed into headings.",
     "The guide block is the callout and the options table is the data table: nothing is restyled a second time."
    ],
-   "hash": "fce22da27192",
+   "hash": "d1acc2a2c52d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6159,8 +6159,8 @@
     {
      "path": "kit/templates/record.html.txt",
      "role": "template",
-     "sha256": "c9081c6ea5128a655a001fdeb40d2ffd13059b3e5b6f1de7e45a7545a4df34a1",
-     "bytes": 5466
+     "sha256": "32e0137e8c75d08214cdb3aaf733c683f93503f2e305a177ae6d4f70edec27d8",
+     "bytes": 6680
     },
     {
      "path": "kit/templates/record.css",
@@ -6235,7 +6235,7 @@
     "Drafted in the plan; kept after reading the source. Not carried: the report text, any drive or host names, the scan figures.",
     "requires kit.callout as well as kit.tabs and kit.table; the plan's viz.core was not needed."
    ],
-   "hash": "1c78c9c89cce",
+   "hash": "e094852a74c4",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6262,8 +6262,8 @@
     {
      "path": "kit/patterns/prototype.js",
      "role": "script",
-     "sha256": "16f2d70c27d2c70dce466e7c52baf5ebf0e51017e9b5caeba6bfde6567e7a554",
-     "bytes": 10293
+     "sha256": "ff9febbbe9424d4fcdbc85e125b05b46ffb631a9f1fc9de55953009eb9f27668",
+     "bytes": 11727
     },
     {
      "path": "kit/patterns/prototype.css",
@@ -6345,7 +6345,7 @@
     "Markers are --ink on --panel with a --seam ring, not a fixed amber, so they read on any mock-up in both themes.",
     "Clicks on the mock-up go to the stage (it is inert); the source let its buttons take focus and lose the keys."
    ],
-   "hash": "3f24a1d78423",
+   "hash": "7a60747a1919",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6373,8 +6373,8 @@
     {
      "path": "kit/patterns/specimens.js",
      "role": "script",
-     "sha256": "05b8fae8326556f67eb30db78952ad6cbec2eb64010b1834b95bf68983a14f4c",
-     "bytes": 6082
+     "sha256": "8c1f1ce996ba343b9402062ed83a392fdbaf897691d52106687507c92d306233",
+     "bytes": 7175
     },
     {
      "path": "kit/patterns/specimens.css",
@@ -6439,7 +6439,7 @@
     "Skins are data (custom properties on the sheet), not two stylesheets, so a board can add a third.",
     "Does not name any rows, pads or tracks: the specimens are whatever the board renders."
    ],
-   "hash": "44dbd2754e0f",
+   "hash": "73c14d00d892",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6468,8 +6468,8 @@
     {
      "path": "kit/viz/wheel.js",
      "role": "script",
-     "sha256": "f05463384e4165b0bbf6d2a9d59a655d5ac87013aa83acac307a4b374d504082",
-     "bytes": 10065
+     "sha256": "00c083e0d6a7fa84c1a002f83c0fbcd583c1143f4f52c790c747f0df50177449",
+     "bytes": 9971
     },
     {
      "path": "kit/samples/wheel.json",
@@ -6539,7 +6539,7 @@
     "Fills are mixes of the key's hue into --panel, not fixed fills with a fixed ink, so labels pass 4.5:1 on porcelain and on tenmoku.",
     "Keys are buttons with roving focus and arrow keys when onPick is given."
    ],
-   "hash": "d8486e288b99",
+   "hash": "19266d81f7c5",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6566,8 +6566,8 @@
     {
      "path": "kit/layout/viewer3d.js",
      "role": "script",
-     "sha256": "ece52039f473d37e12381f52780fa5e3db6dae5780c1306a10836d65c5066292",
-     "bytes": 16151
+     "sha256": "39ef6cfc19b48f1c85446c44f9ecd61c8bfd7f025f967eb43db01bfc828717bf",
+     "bytes": 16731
     },
     {
      "path": "kit/layout/viewer3d.css",
@@ -6638,7 +6638,7 @@
     "Readouts carry a mark and a hidden word as well as a colour.",
     "Orbit controls are the kit's own (the source imported OrbitControls through an import map); the keyboard and corner buttons work without a mouse."
    ],
-   "hash": "fa1ad15cd27d",
+   "hash": "37ab734b2e80",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6663,8 +6663,8 @@
     {
      "path": "kit/icons.js",
      "role": "script",
-     "sha256": "906edff200a91b7e470610f608572e9387c1d3274b26b480dba985556ead4045",
-     "bytes": 8154
+     "sha256": "732f810ecd725691b17984aaa34d4c8936a219b34da5aeef1f9054ec01d91e52",
+     "bytes": 9089
     }
    ],
    "requires": [
@@ -6714,7 +6714,7 @@
     "Upgrade of kit.chrome by a new file: chrome.js is unchanged.",
     "Names are spelled out (download, keyboard, close, chevron, volume, external); the source's video-site mark is not carried."
    ],
-   "hash": "89fe9c1f106c",
+   "hash": "fc0444a877b9",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6745,8 +6745,8 @@
     {
      "path": "kit/vocab.js",
      "role": "script",
-     "sha256": "86fd91402f4a29aa06d6f50d350d059c4dc55f9978f085dcb2c1b4b6ed52437f",
-     "bytes": 12610
+     "sha256": "6bc6b472ac49e590358bbef55d98fa3973d6c67948533a131893b73d6af60518",
+     "bytes": 13250
     },
     {
      "path": "kit/vocab.css",
@@ -6843,7 +6843,7 @@
     "Text on every mark is --ink on a tint of the tone, so contrast holds in any kit theme; the tone colour draws the glyph and the border.",
     "An unknown value is flagged, never dropped; only a null row is silent."
    ],
-   "hash": "4b23155e0dcb",
+   "hash": "72c6157c0bdf",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6870,8 +6870,8 @@
     {
      "path": "kit/themes/glaze-depth.css",
      "role": "style",
-     "sha256": "923d55b58d10e2c888d82fc91a4cddfa1eb7e366926551e42231812e431a3148",
-     "bytes": 5266
+     "sha256": "9c12e086c76db91d4baffdad3835d3f7562477d1ed5fb16da0297c602103221d",
+     "bytes": 5991
     },
     {
      "path": "kit/themes/glaze-depth.json",
@@ -6932,7 +6932,7 @@
     "Dark follows the system, as Glaze does; the source pinned light as its default.",
     "The source's names were mapped onto the kit's (--s1 is --panel, --ink2 is --ink-2, --bad is --danger, the hardware key's green is --identity)."
    ],
-   "hash": "7a79300b32a8",
+   "hash": "c962351d3430",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6969,8 +6969,8 @@
     {
      "path": "kit/glaze-surfaces.js",
      "role": "script",
-     "sha256": "4f87d52b5e9396229e496111200e90ff5b8eb5b8187473e2fc29220ded53c19d",
-     "bytes": 6292
+     "sha256": "e9ec560d16d9e113778b78254770adf5c778e5b952eea97082ecb9a2fdf0e348",
+     "bytes": 7495
     },
     {
      "path": "kit/samples/glaze-surfaces.json",
@@ -7049,7 +7049,7 @@
     "Re-prefixed to kit-, scoped by the kit's token contract instead of a skin attribute; every depth token has a fallback built from the contract tokens.",
     "The chip text is the -ink of its meaning on the -soft tint (not the bead), so it reads at 4.5:1."
    ],
-   "hash": "f841d7763248",
+   "hash": "7f0ba1ae7cec",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7075,8 +7075,8 @@
     {
      "path": "kit/type-roles.css",
      "role": "style",
-     "sha256": "2baed42ec1431649eba48e5f7c69d74dc8bf118343154ec0d4158e9fe9b6f5d9",
-     "bytes": 5614
+     "sha256": "b68f1b0856745c5c6d349c23cfa5c8bad6c5965540b51163cb2084acb6ff2e47",
+     "bytes": 6833
     },
     {
      "path": "kit/samples/type-roles.json",
@@ -7133,7 +7133,7 @@
    "changed": [
     "Rebuilt on the catalog's three families; the nine named families of the source are gone, and the role names no longer name faces."
    ],
-   "hash": "d3dd1cf8e510",
+   "hash": "c8f535bea608",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7158,8 +7158,8 @@
     {
      "path": "kit/drawer.js",
      "role": "script",
-     "sha256": "1cd2297098f6be30e2dbf4d1c7aeab22205ec809ce3a5b367c1909eee32afb19",
-     "bytes": 6735
+     "sha256": "9efbcb1dbe5bf23b48f045d74a1983ac54995f743bf5680cb2096256e4fbf1d1",
+     "bytes": 7192
     },
     {
      "path": "kit/drawer.css",
@@ -7227,7 +7227,7 @@
    "changed": [
     "One API for both modes the sources had (beside the page, and modal with a scrim); a bottom sheet at phone width instead of dropping below the page."
    ],
-   "hash": "dc3b4c650283",
+   "hash": "a0ff06f2d6bf",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7253,8 +7253,8 @@
     {
      "path": "kit/layout/carousel.js",
      "role": "script",
-     "sha256": "d99f73dea30ed7c630f247b26623d16c84e6604a983fed9f67580a7a804479a7",
-     "bytes": 7826
+     "sha256": "4634a61ffaf8f1252536b5f6a2020ff5d7fcc70de25c2f9c34da130b9d1edc8e",
+     "bytes": 8246
     },
     {
      "path": "kit/layout/carousel.css",
@@ -7327,7 +7327,7 @@
    "changed": [
     "One strip for phases, pages and columns; fades and arrows follow measured scroll state, so neither appears when it would do nothing."
    ],
-   "hash": "4616ce033854",
+   "hash": "632d785674eb",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7354,8 +7354,8 @@
     {
      "path": "kit/patterns/region-frame.js",
      "role": "script",
-     "sha256": "a560ea678ca47d3473fc5015c49ab6a970b4921516bf564549155650be8ba6f4",
-     "bytes": 5345
+     "sha256": "8211baafde1cb619ef2f2ed2ac082f8667f8308336c8c2c006ef240493c529ad",
+     "bytes": 6300
     },
     {
      "path": "kit/patterns/region-frame.css",
@@ -7431,7 +7431,7 @@
    "changed": [
     "The four pieces share one stylesheet, and the empty state is the piece the catalog lacked."
    ],
-   "hash": "03f622b47db5",
+   "hash": "91701b3c682d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7457,8 +7457,8 @@
     {
      "path": "kit/keep-state.js",
      "role": "script",
-     "sha256": "3350dae497c07d66f7a476e30650d1c40778ec877f2bdad1865c4f37bf3dda8e",
-     "bytes": 6962
+     "sha256": "939a26b3fbbf51b7a90bdea81d833ebd9ded0e291037d7ababf6a6272b956ef0",
+     "bytes": 8009
     },
     {
      "path": "kit/samples/keep-state.json",
@@ -7512,7 +7512,7 @@
    "changed": [
     "Rebuilt as a generic helper keyed by data-keep rather than the source's per-board sets; it needs no store."
    ],
-   "hash": "476bf572a1a4",
+   "hash": "641b22dfeab7",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7542,8 +7542,8 @@
     {
      "path": "kit/themes/blueprint.css",
      "role": "style",
-     "sha256": "f29c2c00636ab7f1461a7921b8539bf584a66e86c42aff539765ca6c0f1017ec",
-     "bytes": 6481
+     "sha256": "3307b3e9e67ee2803d3cde9259b65867757b552b2f44c9901391f661cb067531",
+     "bytes": 7317
     },
     {
      "path": "kit/themes/blueprint.json",
@@ -7597,7 +7597,7 @@
     "Whiteprint and cyanotype merged into one theme with both modes.",
     "The skin's faint tone (2.6:1 by design) is lifted to 4.5:1 as --ink-3; the grid lines moved to --bg-image."
    ],
-   "hash": "8098adfed55d",
+   "hash": "66eaafa3031f",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7627,8 +7627,8 @@
     {
      "path": "kit/themes/console.css",
      "role": "style",
-     "sha256": "6ab047970f1be7025d009d39a1293ae3eddb79a97fd02349a5b7f4a81bbb27d9",
-     "bytes": 6411
+     "sha256": "2a8b625d1c983f173f36a61c198a8c312ba3708a54d95657027c823b0f207430",
+     "bytes": 7236
     },
     {
      "path": "kit/themes/console.json",
@@ -7682,7 +7682,7 @@
     "The terminal skin merged in as the same night palette.",
     "Faint tone lifted to 4.5:1 as --ink-3; glow and scanline are tokens that are none by day."
    ],
-   "hash": "d6a699250dfd",
+   "hash": "b068cf992596",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7712,8 +7712,8 @@
     {
      "path": "kit/themes/journal.css",
      "role": "style",
-     "sha256": "51154d8bb76273cf1d830b86c3774ca9cae9475f263391945c31f7726e5f3e06",
-     "bytes": 5964
+     "sha256": "37318991007b3b69f6983fa7934a62676139960c74145e5642ebed8914934d36",
+     "bytes": 6757
     },
     {
      "path": "kit/themes/journal.json",
@@ -7767,7 +7767,7 @@
     "The travel-magazine skin merged in.",
     "Faint tone and the ochre info tone darkened or lightened to 4.5:1."
    ],
-   "hash": "d0c52b02b46a",
+   "hash": "eaa4ad050022",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7797,8 +7797,8 @@
     {
      "path": "kit/themes/kanban.css",
      "role": "style",
-     "sha256": "f1b789ecd58aa7da244f9ea09cacb3666bdb9c43fc831a01d090f70991349ed1",
-     "bytes": 5943
+     "sha256": "79d078ebc23f765df10fac6749a0e5ea51f7c17f6c0c94ab78d26a0b65a00589",
+     "bytes": 6824
     },
     {
      "path": "kit/themes/kanban.json",
@@ -7852,7 +7852,7 @@
     "The slate-editor skin merged in.",
     "Faint tone lifted to 4.5:1 as --ink-3. Closest to Long page; the density tokens (--text-size, --leading, --pad, --radius) carry the difference."
    ],
-   "hash": "2b2eb8b6d100",
+   "hash": "4ed73b510c64",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7882,8 +7882,8 @@
     {
      "path": "kit/themes/longpage.css",
      "role": "style",
-     "sha256": "24077a6a63eb0cf43172ecc9eae64cb95768109a7ae4b39db7edbbe76eac59d8",
-     "bytes": 5837
+     "sha256": "de3d5ddac7c8fab57b7f920e80e3eed286897f30519c0b4773ebacdf1d836e0b",
+     "bytes": 6831
     },
     {
      "path": "kit/themes/longpage.json",
@@ -7936,7 +7936,7 @@
    "changed": [
     "Faint tone lifted to 4.5:1 as --ink-3; ok, warn and the idea tone deepened a step. Closest to Kanban; the reading measure and the stamp red are the difference."
    ],
-   "hash": "b85e5182c288",
+   "hash": "35917b6a60fb",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7966,8 +7966,8 @@
     {
      "path": "kit/themes/manuscript.css",
      "role": "style",
-     "sha256": "70e3ba10e0b44a89242fd8e68be58f80696eb69ec118fe68d6ccf99b88b81916",
-     "bytes": 6058
+     "sha256": "6de65240613fd6c9b48d44b7efa000b87c8c348371c645aa7c7f262b1ef976cf",
+     "bytes": 6996
     },
     {
      "path": "kit/themes/manuscript.json",
@@ -8021,7 +8021,7 @@
     "The spec-document skin merged in.",
     "Review tone changed to plum (was blue like info); faint tone nudged to 4.5:1."
    ],
-   "hash": "3742cc5e0a9e",
+   "hash": "d2db19b67db3",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8051,8 +8051,8 @@
     {
      "path": "kit/themes/notebook.css",
      "role": "style",
-     "sha256": "2f3afb44c3b9f4691797acabd697b444d3e1a602375ca04b1bcbd087dfcdbf77",
-     "bytes": 6267
+     "sha256": "ea959356d62e5e552477ae465a2e5e988e7d2cb5ce7f29afe8591196ad546739",
+     "bytes": 7091
     },
     {
      "path": "kit/themes/notebook.json",
@@ -8106,7 +8106,7 @@
     "The notebook skin merged in.",
     "Status text tones deepened to 4.5:1 on the pastel stickers; --rule softened from the ink outline, which moved to --outline."
    ],
-   "hash": "72e040088725",
+   "hash": "70b80165acc8",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8136,8 +8136,8 @@
     {
      "path": "kit/themes/warroom.css",
      "role": "style",
-     "sha256": "d0fde8d86ef2b289e351eb79617951efdd6681ba07c9e89d7404869c7da1c198",
-     "bytes": 6388
+     "sha256": "f46d1f33390c9dd9ea589cd1ab78f420c31b8a6bd34403020d2ffd3a5ee66480",
+     "bytes": 7247
     },
     {
      "path": "kit/themes/warroom.json",
@@ -8191,7 +8191,7 @@
     "The incident-room skin merged in.",
     "Seam deepened from the hazard yellow; review tone changed to plum (was green like success)."
    ],
-   "hash": "533447bb0153",
+   "hash": "74eb5b5230a8",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8221,8 +8221,8 @@
     {
      "path": "kit/themes/classic.css",
      "role": "style",
-     "sha256": "ba63c6390c7165d7452969eadd471657fa7ea02ef4fb255008a4c05c48eef3a2",
-     "bytes": 6516
+     "sha256": "e1efbee02ed3c2ac94794424f1d2a2f857610f9fa44f5f3e6906555b6aa2b246",
+     "bytes": 7289
     },
     {
      "path": "kit/themes/classic.json",
@@ -8275,7 +8275,7 @@
    "changed": [
     "Status colours deepened to 4.5:1 as text in light; the soft tints are derived."
    ],
-   "hash": "b61ad272d0b0",
+   "hash": "cc81cae01981",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8305,8 +8305,8 @@
     {
      "path": "kit/viz/trust-tree.js",
      "role": "script",
-     "sha256": "ca3a7fd07fac8ff78db76f21747d397333116fdcff1bafda6f185c98be510517",
-     "bytes": 38778
+     "sha256": "41163f9b3348ca7218d3ee3a6a3e855adc964b62cac0d3e60caf32a65b8da9d3",
+     "bytes": 39295
     },
     {
      "path": "kit/viz/trust-tree.css",
@@ -8409,7 +8409,7 @@
     "The layout is computed from the data (fans of seven, 44 units apart, rows growing the drawing); the detail drawer is the host's (onOpen and handle.detailEl).",
     "States are the vocab's, kinds are shapes, and the labels sit in their own layer so a lit tree keeps its text at full contrast."
    ],
-   "hash": "2c5e8170bfac",
+   "hash": "5554a9319d8c",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8437,8 +8437,8 @@
     {
      "path": "kit/viz/seal.js",
      "role": "script",
-     "sha256": "98e87f624d3aa7d9f16e3f32f1a64a3f2c7ab649b52d02a57ef3a52cad3a6623",
-     "bytes": 13308
+     "sha256": "9c3db537c19f0c24bcbd0abbdb8546c2542ce7e4c06c0182f5443fe6b80f4d2d",
+     "bytes": 14000
     },
     {
      "path": "kit/viz/seal.css",
@@ -8521,7 +8521,7 @@
     "The crackle is generated from the item's id and grows with age instead of only fading in; the ring is the tone colour (3:1 on the panel).",
     "Reduced motion removes the stagger and the scale; touch and narrow screens show the actions in a row."
    ],
-   "hash": "78a9ca1d6fa8",
+   "hash": "6e8ffa873479",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8548,8 +8548,8 @@
     {
      "path": "kit/viz/capability-wheel.js",
      "role": "script",
-     "sha256": "6e89459112c3e160d2a7435c1073000dfb469803739cdfad4f8d17c1156349dc",
-     "bytes": 7692
+     "sha256": "bf79e8731141fb7c734671f0da103efbd9d0b389c8a56b6f208442d19982b2a8",
+     "bytes": 8094
     },
     {
      "path": "kit/viz/capability-wheel.css",
@@ -8624,7 +8624,7 @@
     "The count is any number from 3 to 12 (angles from n), the abilities and the lit set are config.",
     "An unlit bead is a different shape (dashed, no tick) rather than a paler one; the card prints the same list as text."
    ],
-   "hash": "8e61fd29a260",
+   "hash": "e4e0d2d211a3",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8652,8 +8652,8 @@
     {
      "path": "kit/viz/dial-meter.js",
      "role": "script",
-     "sha256": "0de6b31a87c51d057a6c1e3360e4395c49d72f0c9a7f8f7118595aaef2613a24",
-     "bytes": 11230
+     "sha256": "115144e1e001af911dc8bf79fbd3d08200c3406e09b2205f261a83f43801c852",
+     "bytes": 11743
     },
     {
      "path": "kit/viz/dial-meter.css",
@@ -8728,7 +8728,7 @@
     "The number, unit, caption and actions are config; the draining ring is a component with its own clock and a spoken form of the time left.",
     "Tones are the vocab's; the number is never coloured by the tone, only the arc is."
    ],
-   "hash": "de303f368d35",
+   "hash": "ce1cdf9f63d0",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8755,8 +8755,8 @@
     {
      "path": "kit/viz/runway.js",
      "role": "script",
-     "sha256": "eaad1a3ce4ced8b6a7c257f0b4d84bdc6fad27e6be54adf28ba75e4af55299ce",
-     "bytes": 10655
+     "sha256": "42ab91ab37918cba8d5b82c48c2b242eccfd487ac1ac881e96c86034a1a9aa5b",
+     "bytes": 11149
     },
     {
      "path": "kit/viz/runway.css",
@@ -8831,7 +8831,7 @@
     "Months, lane height, lanes and the Later cut are options; the states and their words are the vocab's.",
     "A bubble carries a glyph as well as a ring colour, arrows move between bubbles, and a click reports ids instead of navigating."
    ],
-   "hash": "475e34dd10bf",
+   "hash": "b473673843bf",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8859,8 +8859,8 @@
     {
      "path": "kit/viz/bubbles.js",
      "role": "script",
-     "sha256": "ba3bf1255f677fdf5e293d140d13afd9eae797e3d75cfd3f1e7cddf214c66103",
-     "bytes": 17053
+     "sha256": "5b8a6376f19b79a507b9caac0effa9cfa414248ede8ff258c5dc2baa0bb597a0",
+     "bytes": 17145
     },
     {
      "path": "kit/viz/bubbles.css",
@@ -8935,7 +8935,7 @@
     "Groups, state words, the scale and its ticks are config; the axis names its scale and places its ticks with the same function as the bubbles.",
     "The state is a glyph as well as a ring colour; a filtered-out record dims and leaves the tab order but stays on the page."
    ],
-   "hash": "5f48e6a26eb7",
+   "hash": "dbf8766ed378",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8963,8 +8963,8 @@
     {
      "path": "kit/viz/pebble-map.js",
      "role": "script",
-     "sha256": "1456344b79179ec5de0d92b2bdb15b445fd04e62ef9e5d47e0ff7fff7134f3bc",
-     "bytes": 18527
+     "sha256": "d85cb5df2ba85190bb235a5a57ac66e4c88496a6421328ae9923c5189b5bc364",
+     "bytes": 18559
     },
     {
      "path": "kit/viz/pebble-map.css",
@@ -9046,7 +9046,7 @@
     "Positions are computed from the node count; the node and link states are vocab tables; the words of every seam are also a caption line.",
     "Pebbles are links or buttons by config, and seams are keyboard-reachable images."
    ],
-   "hash": "f06ab2e07759",
+   "hash": "223ae7213959",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9074,8 +9074,8 @@
     {
      "path": "kit/patterns/confirm-sheet.js",
      "role": "script",
-     "sha256": "aaa7ffa53c17daf00319527843848c7bf22e3b957c71b918bc5f7fdd0189e0bf",
-     "bytes": 25805
+     "sha256": "f75a1ae6199c81dae8897d2c073617fc3ebf85e2438f3b58390eae6207f9c7be",
+     "bytes": 27505
     },
     {
      "path": "kit/patterns/confirm-sheet.css",
@@ -9162,7 +9162,7 @@
     "The sheet can sit inside a host element, so a board can show it in a frame; the hand-off target is a selector.",
     "The PIN is cleared once read and returned only when the spec asks for it."
    ],
-   "hash": "b4032603e0f3",
+   "hash": "84ea87fefd52",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9189,8 +9189,8 @@
     {
      "path": "kit/patterns/job-tray.js",
      "role": "script",
-     "sha256": "f0b5c2d2e848acf1d8e06ef67c9777f9f5074bedff000b7767f3e126102de635",
-     "bytes": 21090
+     "sha256": "f8a171cd2cf237841a53b38cf0397123b043aa230a2db0cebb1ee3f305b23844",
+     "bytes": 22537
     },
     {
      "path": "kit/patterns/job-tray.css",
@@ -9273,7 +9273,7 @@
     "Log lines carry a tone instead of being coloured by reading their text.",
     "Beads and tones come from the vocabulary."
    ],
-   "hash": "709c923a24a8",
+   "hash": "ce4f77d9a17a",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9299,8 +9299,8 @@
     {
      "path": "kit/patterns/attention-list.js",
      "role": "script",
-     "sha256": "4facc25ed91da8b4a3c56f750af27dbbce74fcb47cd8706ee8800f3b7524fae6",
-     "bytes": 7300
+     "sha256": "f3262556b8e97b2e08bebcd007779bf93a0c5e05eebf47d6d89b52f4b1beb02d",
+     "bytes": 8335
     },
     {
      "path": "kit/patterns/attention-list.css",
@@ -9378,7 +9378,7 @@
     "The default sentence is generic and a board passes its own.",
     "Focus is restored by item id instead of by the button’s label."
    ],
-   "hash": "db4820290daa",
+   "hash": "54c455790764",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9404,8 +9404,8 @@
     {
      "path": "kit/patterns/timed-reveal.js",
      "role": "script",
-     "sha256": "7eb1d5064d6278dc4dafb20a31f0801c8c7038b5ebec1416a5bc2fd8369fd1f0",
-     "bytes": 10049
+     "sha256": "aa585d5d4bca4775ef383d734794ebdc0e793cf014e76f53f25557f626fb8652",
+     "bytes": 11023
     },
     {
      "path": "kit/patterns/timed-reveal.css",
@@ -9482,7 +9482,7 @@
     "Hidden pages and theme changes hide the values as well as the timer.",
     "The time left can be read out on request."
    ],
-   "hash": "5ad42429cde3",
+   "hash": "ceb2cae01a35",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9509,8 +9509,8 @@
     {
      "path": "kit/patterns/secret-input.js",
      "role": "script",
-     "sha256": "f51f7c77692452acbfadcd27dae657a473e17184cb626ae0b35331ed18c2f14b",
-     "bytes": 15231
+     "sha256": "53961dec919bd9e984b0f0473abf60901c1c3d79de4c2e24ebcab928a9eb5fa0",
+     "bytes": 16549
     },
     {
      "path": "kit/patterns/secret-input.css",
@@ -9590,7 +9590,7 @@
     "What replacing asks for is the board’s; the form only says replace: true.",
     "The form can sit anywhere; the drawer is a convenience."
    ],
-   "hash": "ac50605058c6",
+   "hash": "a490265e27ff",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9617,8 +9617,8 @@
     {
      "path": "kit/patterns/capability-picker.js",
      "role": "script",
-     "sha256": "877447c844f62194c766570a57032509e9ebc77267ed34100c100b6fa352c97b",
-     "bytes": 9794
+     "sha256": "3ab5ca016ef198b12cda12ca853d193bf058031d12f9e5b4ad1f37f45b2f565e",
+     "bytes": 10358
     },
     {
      "path": "kit/patterns/capability-picker.css",
@@ -9696,7 +9696,7 @@
     "An included capability is shown and locked instead of being silently on.",
     "Exclusive groups are an option."
    ],
-   "hash": "9ac670cfcc52",
+   "hash": "295898dd8fd2",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9723,8 +9723,8 @@
     {
      "path": "kit/patterns/row-actions.js",
      "role": "script",
-     "sha256": "23752e7cc65a7878d4e9afaefdd4220204c7f5c2bf4eef0cf0d35ffce7070c73",
-     "bytes": 10945
+     "sha256": "cd2297a6da0606eababaada4f2413300678860cc65001d83abb6d7eb6481877e",
+     "bytes": 11956
     },
     {
      "path": "kit/patterns/row-actions.css",
@@ -9808,7 +9808,7 @@
     "One menu is open at a time across the page, and the menu flips upward at the page edge.",
     "Pills are always shown on touch and under 480px."
    ],
-   "hash": "1859f2618591",
+   "hash": "7d0e5f41f941",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9836,8 +9836,8 @@
     {
      "path": "kit/patterns/facet-batch.js",
      "role": "script",
-     "sha256": "5d3b116359218b41b8ffe8742b412669d14d7763a7e5d24dc3819547ac67449a",
-     "bytes": 21263
+     "sha256": "5a0cccace30e061bff6d526532911b5bc742d4a9e70d900ddab46abc28a088b4",
+     "bytes": 22524
     },
     {
      "path": "kit/patterns/facet-batch.css",
@@ -9930,7 +9930,7 @@
     "A multi-select facet and chips that disable when nothing is behind them."
    ],
    "extends": "pattern.count-filters",
-   "hash": "31630f4819c8",
+   "hash": "94926831cac0",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -9959,8 +9959,8 @@
     {
      "path": "kit/patterns/roster-wall.js",
      "role": "script",
-     "sha256": "99aea3d23ed2a875dcd77d00480a9cbb579292c8af018daf68a0f28fc471a752",
-     "bytes": 15935
+     "sha256": "184b5ff5628b0563d7d6d6a4da90dceaec00394f87e647756357c90df51797cb",
+     "bytes": 17409
     },
     {
      "path": "kit/patterns/roster-wall.css",
@@ -10051,7 +10051,7 @@
     "Last seen says Live or Stale in words, and a claim says Held, Expired or Released, so none of it rides on colour.",
     "Merged the wall, the roster's tasks and send line (now a drawer) and the two tables into one pattern with three views."
    ],
-   "hash": "9c763290c4e6",
+   "hash": "4580d15f4144",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10079,8 +10079,8 @@
     {
      "path": "kit/viz/lease-graph.js",
      "role": "script",
-     "sha256": "82041a2e283f976b93cb3aad5b6bcdd7161709162d5f7d09b2b25a26a2739d55",
-     "bytes": 9128
+     "sha256": "a64ec0f65988ca2f8e2824115d787eed2cfd0ac6ffa966f81e800670a6b2cc1b",
+     "bytes": 9261
     },
     {
      "path": "kit/viz/lease-graph.css",
@@ -10151,7 +10151,7 @@
     "An expired lease is computed from the clock and said in words.",
     "Kept as a nested list; no edge drawing, since the list is the whole meaning."
    ],
-   "hash": "8cf8dedf4511",
+   "hash": "c5422d603188",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10180,8 +10180,8 @@
     {
      "path": "kit/patterns/event-log.js",
      "role": "script",
-     "sha256": "8b24ea5f6b2fb677c8c17aa65c9fc37eee85c96b3d752dda95596179dc443625",
-     "bytes": 12920
+     "sha256": "db61108bd7a29191c1d7d7a3953b0df321a7e2678e3bbd2a199a9fbbfb1eab63",
+     "bytes": 14238
     },
     {
      "path": "kit/patterns/event-log.css",
@@ -10267,7 +10267,7 @@
     "Added folding of repeats, which the earlier timeline did not have.",
     "Did not call viz.timeline or kit.icons: the glyphs are the vocabulary's."
    ],
-   "hash": "bc7d80ec8bd3",
+   "hash": "6c7409925591",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10294,8 +10294,8 @@
     {
      "path": "kit/patterns/card-history.js",
      "role": "script",
-     "sha256": "8a15908aee53210b88f145153d8d74135565bb4bfd1c7a876e983aefb47efb70",
-     "bytes": 9064
+     "sha256": "2b87a59bdcb12c8e901c9bbb4fa07c02c7b6ec55a5fe87de747620c9d7056f3e",
+     "bytes": 10118
     },
     {
      "path": "kit/patterns/card-history.css",
@@ -10361,7 +10361,7 @@
     "A node is a glyph, a word and a date; the track keeps no colour-only meaning.",
     "Did not call kit.icons: avatars are initials and states are vocabulary rows."
    ],
-   "hash": "205a216d9cda",
+   "hash": "0bdd38dce0ac",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10391,8 +10391,8 @@
     {
      "path": "kit/patterns/report-cards.js",
      "role": "script",
-     "sha256": "6ce585466f92f21e957a51e4de39ee54e4d2a228cf3a615109717032c63d9c26",
-     "bytes": 13902
+     "sha256": "34c9bd5f755e90f22126614ae78688a6a18dfc716b0f5e703a6dd6c635038ff6",
+     "bytes": 15365
     },
     {
      "path": "kit/patterns/report-cards.css",
@@ -10470,7 +10470,7 @@
     "Task, sha and branch fields became subject, ref and ref2, with page-set labels.",
     "Test counts are drawn proportional to the numbers and each is also written as a number and a word."
    ],
-   "hash": "4bcb16d4277e",
+   "hash": "8e51df97f228",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10499,8 +10499,8 @@
     {
      "path": "kit/patterns/gate.js",
      "role": "script",
-     "sha256": "ce11374c9e5a467159274339b908d3a8b212bae1af1628ef53adf6daca0f85ef",
-     "bytes": 11976
+     "sha256": "abae61605c446e9dc2d2f9756bb6470e216ac02e60f21d79c1690a0783064178",
+     "bytes": 13363
     },
     {
      "path": "kit/patterns/gate.css",
@@ -10589,7 +10589,7 @@
     "The preview diff carries its + and - marks in a gutter so it never rides on colour.",
     "Rejecting requires a reason; the source allowed an empty one."
    ],
-   "hash": "1fac2757ffe7",
+   "hash": "34fff81f17aa",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10618,8 +10618,8 @@
     {
      "path": "kit/patterns/work-card.js",
      "role": "script",
-     "sha256": "23ec503bcfcd7339957d48cd2a7170ba375399b02d34cbf19b2d24be85cac58c",
-     "bytes": 9394
+     "sha256": "0c5d134019c3a1780d29db394cf85fd0d0b8ac5ccd4f4f88d540455f11144656",
+     "bytes": 10922
     },
     {
      "path": "kit/patterns/work-card.css",
@@ -10703,7 +10703,7 @@
     "Stale is computed from two versions and said in words with both numbers.",
     "Did not call pattern.expand-card; the two overlap only in being cards."
    ],
-   "hash": "3624e8190899",
+   "hash": "adadd0e25797",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10732,8 +10732,8 @@
     {
      "path": "kit/patterns/status-columns.js",
      "role": "script",
-     "sha256": "dafbfcc5e6ffcb7ddfde01ac81024509eafc48f454aed9ac9e45ad67627cd981",
-     "bytes": 14554
+     "sha256": "d1fd74e845c5dca70a3cac0ccc0cff8be6658392fb6107d49062bb4bccc25425",
+     "bytes": 15786
     },
     {
      "path": "kit/patterns/status-columns.css",
@@ -10810,7 +10810,7 @@
     "A move asks for a reason first and offers a Move menu so it works without dragging.",
     "The glimpse is one floating element placed from the card's rectangle, so a scrolling board never clips it."
    ],
-   "hash": "743e2644b886",
+   "hash": "7cd74deae00d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10839,8 +10839,8 @@
     {
      "path": "kit/viz/wires.js",
      "role": "script",
-     "sha256": "0131c05840a57b1c094f02b37f1e938d9a3b0ebd49d4866fc11164035669f94c",
-     "bytes": 8518
+     "sha256": "069f7d3a3f4efa565427ea82077a4702e0ecd7291c418d64d32dffbdc23dcaf4",
+     "bytes": 9159
     },
     {
      "path": "kit/viz/wires.css",
@@ -10913,7 +10913,7 @@
     "Generalised from one skin's task list to any items with lanes, phases and dependencies; the state word and tone come from the vocabulary instead of a task status.",
     "Added the wire highlight on hover and focus, and a fixed accessible name per node so the dependencies are not only a drawing."
    ],
-   "hash": "e7a703de88b5",
+   "hash": "03406b5f09e5",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -10941,8 +10941,8 @@
     {
      "path": "kit/viz/phase-strip.js",
      "role": "script",
-     "sha256": "f4dcd31b6d14fc68d2a8f9f323b3fdf37a87933fe62675b80b9fb06c991b3ca3",
-     "bytes": 10405
+     "sha256": "b528de4320d59972308d9c13f62116637885e6ad765691a1b962f8b9aed677ba",
+     "bytes": 10763
     },
     {
      "path": "kit/viz/phase-strip.css",
@@ -11040,7 +11040,7 @@
     "Five skins' phase strips became one component with five forms; the data is one list, so a page can offer a choice of form.",
     "State is shown as glyph and word in every form, where the sources used colour and a word only in some."
    ],
-   "hash": "e804ce15d6f9",
+   "hash": "1c1354ca1121",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11069,8 +11069,8 @@
     {
      "path": "kit/layout/stack.js",
      "role": "script",
-     "sha256": "86e4c3dc3db9376bf5940f173210bd786a6892fff8808251d726abad1595d4d3",
-     "bytes": 9297
+     "sha256": "fae1c9b7f0626c695789eaa615667cbf7dcf940c1de7b693397c41ce33c5212a",
+     "bytes": 9826
     },
     {
      "path": "kit/layout/stack.css",
@@ -11141,7 +11141,7 @@
     "The wheel hijack that held a section at its detent is dropped: it fights the viewer's own scrolling. The fall back to normal flow on phones and with reduced motion is added.",
     "The progress bar is a progressbar with a value text, and moving to a section moves focus to its heading."
    ],
-   "hash": "fcdcbce0d0e9",
+   "hash": "2103f9ad9b53",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11170,8 +11170,8 @@
     {
      "path": "kit/layout/margin-notes.js",
      "role": "script",
-     "sha256": "b0332a6069973fc735bf058e8c30f292e7f38cfb23ce23e5f20e53dee318a540",
-     "bytes": 6111
+     "sha256": "453e104ef18d0f1d4d66dc9ade88b630512c79e6eeb69b43b45af14d027d8638",
+     "bytes": 6842
     },
     {
      "path": "kit/layout/margin-notes.css",
@@ -11247,7 +11247,7 @@
     "Taken out of one skin: the clause is plain data, and the state words can be replaced (Settled, Awaiting you) without touching the vocabulary.",
     "The margin and column answer their own width with a container query, so it works in a narrow pane as well as a page."
    ],
-   "hash": "3f8f5eeb3d8c",
+   "hash": "b666ed9f4809",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11275,8 +11275,8 @@
     {
      "path": "kit/layout/explorer-shell.js",
      "role": "script",
-     "sha256": "2d8a5ded03eaf0d9899f61ec053bbb7b4ebb0fd06fe70e80f60a94b471b1d432",
-     "bytes": 7507
+     "sha256": "1aaa7a04acfa3939a8b57b373a0f51f032c7ca1c904bc59fc429eedb254d39d8",
+     "bytes": 8237
     },
     {
      "path": "kit/layout/explorer-shell.css",
@@ -11352,7 +11352,7 @@
     "The tree, the pipeline and the status bar are one component over plain data; the source drew them from a board's state.",
     "The tree is a nav with aria-current on the file in view, and the status bar's counts name their meaning in words."
    ],
-   "hash": "d19bddbc2dcf",
+   "hash": "632bbaf6c01d",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11381,8 +11381,8 @@
     {
      "path": "kit/layout/app-shell.js",
      "role": "script",
-     "sha256": "b060033fcde70dba51b69522ab5c9161b3c92fb6d9857724e252737d2940320e",
-     "bytes": 10748
+     "sha256": "e2d8f173e916971114c7689e87ec94cfcfae5326c02b66193b0afa711a1fee64",
+     "bytes": 11759
     },
     {
      "path": "kit/layout/app-shell.css",
@@ -11457,7 +11457,7 @@
     "The console's sprite icons became inline svg strings, and its skin switcher became a generic popover you fill yourself.",
     "Added a framed mode and hash:false so the shell runs inside a preview or a host that owns the address."
    ],
-   "hash": "fb1073969916",
+   "hash": "19b682a1df69",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11486,8 +11486,8 @@
     {
      "path": "kit/patterns/answer-queue.js",
      "role": "script",
-     "sha256": "45b605a05adaf4c4cb7c9d8b9f34f50393bad74e643221dcb1b64c54e417880d",
-     "bytes": 12397
+     "sha256": "61d2320324c6cc65b9f3d54f130d4f2d8e10ee7a1be1a66e3817d5682452f9e5",
+     "bytes": 13463
     },
     {
      "path": "kit/patterns/answer-queue.css",
@@ -11567,7 +11567,7 @@
     "The board's own card fields became a small item shape with choices, fields and history; the answer tab and the tab list can be replaced.",
     "Uses a native dialog and Kit.tabs instead of hand-written overlay and tab code, so focus trapping, Escape and arrow keys come from the browser and the kit."
    ],
-   "hash": "ff841bc24fb7",
+   "hash": "4da0398d116c",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11597,8 +11597,8 @@
     {
      "path": "kit/view-registry.js",
      "role": "script",
-     "sha256": "24bf186b91149f6d28a7f849736f0a2bf717b673c30b56301e409fd52fe02995",
-     "bytes": 15820
+     "sha256": "c530206350d61ef6ee421110f134e8532eb4f4c08459187f60c46426356996f1",
+     "bytes": 17815
     },
     {
      "path": "kit/view-registry.css",
@@ -11698,7 +11698,7 @@
     "Rebuilt without the hub: no protobuf kinds, gateway or skin loader. Kinds and their row shapes are declared by the page, and the refusal codes are plain names.",
     "The switcher and the validator are exposed (alternatives, on, validate, describe) so a separate switcher or layout editor can read the same registry."
    ],
-   "hash": "c19ed4362f0a",
+   "hash": "c928472f1b91",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11727,8 +11727,8 @@
     {
      "path": "kit/patterns/steps-owners.js",
      "role": "script",
-     "sha256": "67525a0ff48d5687ee47ddd14d708d79615ca85d1f02bc0f3d80b2412b383b3e",
-     "bytes": 5768
+     "sha256": "ff136766db4fd5b44c6150df605ca39631f0b5f95f815b0a594554c4733fdbf8",
+     "bytes": 6759
     },
     {
      "path": "kit/patterns/steps-owners.css",
@@ -11800,7 +11800,7 @@
     "The three owner tones are also three shapes; Now and Passed are words.",
     "No hub type: owners, states and the fact are plain data."
    ],
-   "hash": "e5c4a08f1fac",
+   "hash": "8f4d72d24817",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11829,8 +11829,8 @@
     {
      "path": "kit/record-dialog.js",
      "role": "script",
-     "sha256": "611b8c4ec1be966b8d706a7d6db16ee9c070cde57a6293369a44fe9007b51b0b",
-     "bytes": 7313
+     "sha256": "c6045bc374b49c7d6095169370afd690bda58c10fd0a36d4b68f9aae8c914ec6",
+     "bytes": 8194
     },
     {
      "path": "kit/record-dialog.css",
@@ -11911,7 +11911,7 @@
     "The crown follows the record's state tone; the tags carry the state in words.",
     "Plain DOM and Kit.tabs instead of Preact and a store."
    ],
-   "hash": "b0d11b360c54",
+   "hash": "e722c1fe5191",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -11938,8 +11938,8 @@
     {
      "path": "kit/callout-refusal.js",
      "role": "script",
-     "sha256": "a3d3f33fe41ad89d4011d0a8de8bd8693b8b7c5ede03a64e009bf4c2b293dd8a",
-     "bytes": 2765
+     "sha256": "d2d19c8b1d0539539c494a2a2895539e6507ff60e15ebfa4d609ccf98bfc663a",
+     "bytes": 3387
     },
     {
      "path": "kit/callout-refusal.css",
@@ -12006,7 +12006,7 @@
     "Extends kit.callout as new files; callout.css is unchanged.",
     "The code is words the caller passes, not a hub enum."
    ],
-   "hash": "d06baab77110",
+   "hash": "6776647eb220",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -12035,8 +12035,8 @@
     {
      "path": "kit/patterns/decisions-ack.js",
      "role": "script",
-     "sha256": "f0cb809b7fe726aac0963921a21427de3b006a84764cc619adabf662e2131806",
-     "bytes": 6790
+     "sha256": "cfd67e2a8d51884cb18af93777af34643daa67be934573f092cfad9c8b8f3381",
+     "bytes": 7701
     },
     {
      "path": "kit/patterns/decisions-ack.css",
@@ -12121,7 +12121,7 @@
     "Reader, time and words are text in every look; nothing animates.",
     "The look is an option you can change at run time."
    ],
-   "hash": "3e25d0ba7439",
+   "hash": "8eeee9687bbc",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -12151,8 +12151,8 @@
     {
      "path": "kit/patterns/disclosure-reader.js",
      "role": "script",
-     "sha256": "ec1409912ce604e224b328030515d0f162ff66f40095650d8d8bc588d29ca636",
-     "bytes": 9121
+     "sha256": "fc46fc94cf93c56c8e864322a4ab1a41fc136f889e6b9d6f22440cac269a4fdd",
+     "bytes": 9999
     },
     {
      "path": "kit/patterns/disclosure-reader.css",
@@ -12229,7 +12229,7 @@
     "Extends pattern.disclosure as new files; disclosure.js and disclosure.css are unchanged.",
     "The tiles count what the page has; the index never changes the page's address unless asked."
    ],
-   "hash": "b5810d46cbc0",
+   "hash": "ae5d3a726957",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -12260,8 +12260,8 @@
     {
      "path": "kit/viz/timeline-phased.js",
      "role": "script",
-     "sha256": "cf48232b49b26f1e37d9584bec5dace20d99d747fd8fd0cc9a54922377c2de31",
-     "bytes": 6899
+     "sha256": "45faa0e7e420010c3064733b7f1bdbd5392f8892846771711a4c35a6d6b2f871",
+     "bytes": 7023
     },
     {
      "path": "kit/viz/timeline-phased.css",
@@ -12340,7 +12340,7 @@
     "The ping has words as well as motion and stops under reduced motion.",
     "Phases and events are data; the clock follows the chosen zone."
    ],
-   "hash": "dac1c5948576",
+   "hash": "36f9aef3fc15",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -12369,8 +12369,8 @@
     {
      "path": "kit/skins.js",
      "role": "script",
-     "sha256": "d6c998e6657a0bd638359a3af77fd8af3e877bdcb29a1b1db15458b4faf09bbf",
-     "bytes": 10007
+     "sha256": "56bc28e9cdd2181e835a96930781fb76cd925e34b6938a2b8298fd497ca03deb",
+     "bytes": 11296
     },
     {
      "path": "kit/skins.css",
@@ -12450,7 +12450,7 @@
     "A skin can be tokens as well as a link; the target can be one element.",
     "pairViews ties a skin to kit.view-registry."
    ],
-   "hash": "4987ccddee28",
+   "hash": "7f9b1cca3dbd",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -12481,8 +12481,8 @@
     {
      "path": "kit/templates/expiry-board.html.txt",
      "role": "template",
-     "sha256": "ec7aed9aee14b0a608f357c1e0d39bbfd5a2c30c611e0fde7fa1a183eddd0971",
-     "bytes": 5682
+     "sha256": "7fce2761a44b39ea8429e9e8fc7469306637038bee60d9b9f0e305b5cc882b82",
+     "bytes": 7720
     },
     {
      "path": "kit/templates/expiry-board.css",
@@ -12587,7 +12587,7 @@
     "The store is 20 lines inside the template script instead of kit.store, which needs Preact.",
     "Actions leave as an event; no view acts."
    ],
-   "hash": "cee490300dea",
+   "hash": "60cb18134253",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -12611,8 +12611,8 @@
     {
      "path": "kit/dom.js",
      "role": "script",
-     "sha256": "54efa8c920de8b19b46b76a5aaeb6de83aad573b0fad5c4292a0301334d63b5c",
-     "bytes": 1277
+     "sha256": "24d7caa6825bb68a1fe15d4639509ae0489e65781a11cdb0b1e3533767ff3dd8",
+     "bytes": 1690
     }
    ],
    "requires": [],
@@ -12629,7 +12629,7 @@
     }
    ],
    "changed": [],
-   "hash": "fb3aac9e9355",
+   "hash": "fd4f4576d555",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.dom.el(tag, cls, txt) makes an HTML element with an optional class name and text; Kit.dom.sv(tag, attrs, cls, txt) makes an SVG element with attributes, an optional class and text. Kit scripts that draw take this entry as a requirement instead of carrying their own copy; load kit/dom.js before them. It draws nothing, needs no tokens and no db, and takes no setup.",
@@ -12666,8 +12666,8 @@
     {
      "path": "kit/patterns/settings.js",
      "role": "script",
-     "sha256": "220554029b219b952c613172c296298d3584d556ad8f81094e0e1227084d9579",
-     "bytes": 16941
+     "sha256": "22ec5146598d358db31cb380d1b5e19a6ffd077823684ff8810eda4365d21559",
+     "bytes": 20141
     },
     {
      "path": "kit/patterns/settings.css",
@@ -12711,7 +12711,7 @@
     }
    ],
    "changed": [],
-   "hash": "c1604a08fafa",
+   "hash": "db50eb63e664",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.settings.mount(root, {config, user, groups, labels, onChange, download}) draws the registry of ADP.config (or any object with all, get, set, reset and on) as one panel per group, its heading in the display face with a count, and one row per switch divided by hairlines. A summary line opens the page: how many settings, how many differ from their defaults, and whether editing is open or paused and by whom. Each row has its label and key (edit.locked in the mono face), the help, and a meta line: the layer that enforces it with a page or database glyph (Enforced by the page, Enforced by the database rule, from level), Changed by who and when, and, when the value differs from its default, the default itself beside a gold diamond on the label, so the word says it and not the colour. Controls by type: a switch for bool (a button with role switch and the word On or Off), a row of segments for an enum of up to four short options (native radios, so arrow keys move) and a select for longer ones, an input for text and url (url in the mono face) that saves on change or Enter, a textarea with one item per line and an item count for list, and a datetime-local input kept as an ISO string for datetime. A row saves at once through config.set and says Saved with a check, or the rejection with a cross, in its own status line; Undo restores the previous value for ten seconds. Without user.canEdit every control is disabled and the summary says so. While edit.locked is on, the other rows refuse a change from the keyboard as well as the runtime's dimming, and say why; the edit.locked switch and the until and reason fields carry data-adp-unlock instead of data-adp-edit, so a freeze can be lifted from this page. The footer has Export config.json (the values that differ from their defaults, to opts.download or an object-URL link) and Reset all to defaults (off while nothing differs; a second press within five seconds confirms, no confirm dialog). Rows redraw when config.on('*') fires and leave a field alone while it has focus. It does not edit the registry, show the db rules or list namespaces. The layout follows its container, not the window: under about 34rem the control drops under the label and nothing scrolls sideways; every control is a button, a labelled input, a select, a textarea or a radio, with a visible focus ring.",
@@ -12785,8 +12785,8 @@
     {
      "path": "kit/patterns/inbox.js",
      "role": "script",
-     "sha256": "fd12c235de285362314e9ca2381392ec1e5bbf064808efb0bf919b388080afc3",
-     "bytes": 23796
+     "sha256": "8654fce0427744332fd5998d79eece299897e9deb7c02b3657f7456a3f88802b",
+     "bytes": 26199
     },
     {
      "path": "kit/patterns/inbox.css",
@@ -12830,7 +12830,7 @@
     }
    ],
    "changed": [],
-   "hash": "1c740ef3e1af",
+   "hash": "f8577380ee3e",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.inbox.mount(root, {db, user, artifact, config, url}) lists incoming/<pid> proposals whose status is new, merged or held, newest first, and classifies every new one on open with ADP.classify (base: the live record with the proposal's from-hashes; live: manifest/current; incoming: its to-hashes), recording merged or held with the classes and a changes/d-<ms> data change. A proposal whose base version is no longer live is classified against the live record, not refused. Per proposal: the summary, who, when and the status (merged reads 'merged, not yet published'); each part opens to a line diff of its live html against the proposed html; each held item shows the base, live and proposed hashes and both versions, and editors pick Keep live or Take the proposal, which is written on the proposal as a decision. The files it will publish are listed with their ifMatch. Apply is off until every held item is picked; presses within the debounce window fold into one artifact.publish files-form call with an ifMatch per file; after {shas} it writes manifest/current (the new hashes, the next seq and the version), parts/<id>, content/<id>, changes/<seq> with from and to hashes, and sets the proposal applied. On a conflict it names the files that moved (expected and actual sha), records the conflict and leaves the proposal held. Decline asks for a reason inline and records it. The presence line says who is watching when a presence/* doc is fresher than assist.presence-minutes, else offers the handoff 'watch the artifact <url>' with the open request ids and a copy button. Without the artifact capability the inbox is read-only and says why; without a db it says so; nothing is published on load.",
@@ -12904,8 +12904,8 @@
     {
      "path": "kit/patterns/integrity.js",
      "role": "script",
-     "sha256": "7efca4378c84a9f3d9b7d466bab66d89f02f310dac1325a873f820e7c2337329",
-     "bytes": 18022
+     "sha256": "f19f7d9a55fae31bf21831fdc169cf7541156a4c80f7b0dc412f7ed6e3ac08f7",
+     "bytes": 20201
     },
     {
      "path": "kit/patterns/integrity.css",
@@ -12945,7 +12945,7 @@
     }
    ],
    "changed": [],
-   "hash": "eab2862ce1f9",
+   "hash": "bd2ee130fff1",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.integrity.mount(root, {manifest, parts, changes, checks, config, now, fetchFile}) reads what the board hands it and opens with a verdict: an orb and the word in the display face (Sound, Needs a record, Changed files, Stale holds or Broken, chosen by severity) and one sentence with the counts, the panel tinted by the verdict's tone. When fetchFile is given, Run the check sits beside the verdict with a progress bar: it fetches each live file, hashes it with crypto.subtle and announces its progress through a status line. Below, the four checks share one panel, strung on a seam like a checklist, each with an orb, its title, a pill and a one-line verdict. Files lists every path in manifest/current as an aligned row: the recorded hash, the live one (or not checked), and a state that reads matches, changed (a publish nobody recorded) or missing. Changes compares the last publish in changes/ with the manifest version and counts the data changes since. Holds lists parts with a holder as active or stale, with who and until when. Self-check shows checks/latest: the missing and unmarked parts, overflow and errors, and frozen with a glyph when the page is locked. It writes nothing. Hashes show their first 12 characters, carry the whole one in a title and copy when pressed. Every state has a glyph and a word, never colour alone. The layout follows its container: under about 44rem the file rows stack with a label on each hash and paths wrap anywhere; every control is a button reachable by keyboard.",
@@ -13016,8 +13016,8 @@
     {
      "path": "kit/viz/version-compare.js",
      "role": "script",
-     "sha256": "2ef5b8c63259e66ad0fa7351b33d5d607f6f4302496789cd18196f58e98d394d",
-     "bytes": 17535
+     "sha256": "1a78417e0a766f0382e7405de1dd4a1695ca18f3871d34786bd9b981c547bb93",
+     "bytes": 18450
     },
     {
      "path": "kit/viz/version-compare.css",
@@ -13056,7 +13056,7 @@
     }
    ],
    "changed": [],
-   "hash": "8cfcd656ab7a",
+   "hash": "5853da95f9c6",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.versionCompare.mount(root, {changes, manifests, content, from, to, onPart}) draws two selects (from and to version, each option naming the version, date, author and summary; the two latest by default). Under them a version line puts every version on a track in order (spaced evenly, not to a time scale): the chosen span is drawn heavy, the two ends are rings, and data changes are small diamonds between the versions they fall between. A tally follows (added, removed, changed and data changes, each a count with its mark and word); the same sentence goes to a role=status line for screen readers. Then one panel with four lists. A changed part shows its id, the first eight characters of its from and to hash, and every change between the two versions that touched it, with who and when. When manifests are given for both versions the comparison comes from them, the way adp.py diff does, and a note says so (and says when the change docs disagree); otherwise the change docs between the versions are walked. When the text of a part is known in both versions, a Show text disclosure draws a line diff with a + or - in a gutter and the words added and removed for screen readers, never colour alone. Data changes between the versions are listed last with their summaries and the docs they touched. It reads nothing itself: the board passes the records it read, and update(data) redraws. It does not write. The layout follows its container: under about 34rem the selects stack and the version line drops its dates; the diff scrolls inside its own box; every control is a select, a summary or a button, with a visible focus ring.",
@@ -13122,8 +13122,8 @@
     {
      "path": "kit/patterns/playground.js",
      "role": "script",
-     "sha256": "753e403e402555641625869aa73c93eee158e5ddd107131f9b080676de21a89d",
-     "bytes": 16591
+     "sha256": "58f4b3aee7c49d51583dbad856dedaa500912e0a4449e72df1496d9d74aa7e70",
+     "bytes": 18969
     },
     {
      "path": "kit/patterns/playground.css",
@@ -13171,7 +13171,7 @@
     "One component for the whole catalog; the workbench template is built for one entry.",
     "The stage takes its theme from the theme json, so the page's own theme is untouched."
    ],
-   "hash": "aa613f3d5416",
+   "hash": "a2c27d9e96e1",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.playground.mount(root, {catalog, base, themes, entry}) opens with a head: a filter box and a select of every entry grouped by kind, then the chosen entry's name in the display face with its summary and what it loads first. It loads the entry's requires first (no entry twice), then its styles, then its scripts, fetches the first sample and calls the Kit.<name>.mount named in provides on an isolated stage. An entry with no mount says so. A stage bar holds the theme select (the first theme is chosen at the start; Page tokens uses the page's own tokens and mode, and turns the mode segments off) and mode (light, dark, auto) and width (390 px, 768 px, full) as segments of native radios. The stage sits on a dotted bench with its width, theme and mode written above it. Theme, mode and width change the stage only, never the page: the kit's theme css only applies on :root, so the stage copies the custom properties from the theme's json instead, light then dark. The sample has its own panel with its path: Apply re-reads it (a JSON error is shown with its line and column, never thrown) and uses update(data) on the mounted instance when it has one, else mounts again; Reset sample puts the published one back. An error thrown by a mount is shown in a line, not thrown. When the page's playground.enabled switch is off, or enabled is false, it renders one line that says how to turn it on and nothing else. It writes nothing. The layout follows its container: the sample panel sits beside the bench from about 62rem and under it below that; at 390 px the controls stack and the stage scrolls inside its own frame. Every control is a labelled select, input, radio, textarea or button, reached by Tab in reading order.",
@@ -13242,8 +13242,8 @@
     {
      "path": "kit/patterns/namespaces.js",
      "role": "script",
-     "sha256": "bfc35eb354d8bad5ff10df8917e00daea23c620bfcb571ce797b96be2316469a",
-     "bytes": 12299
+     "sha256": "1ef3b237a0a032bdf00b6e035206c5116c1138698396464caa196b41ff4971ca",
+     "bytes": 14352
     },
     {
      "path": "kit/patterns/namespaces.css",
@@ -13283,7 +13283,7 @@
     }
    ],
    "changed": [],
-   "hash": "9d3cb5b6adc2",
+   "hash": "0b799d52bf8f",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.namespaces.mount(root) reads the page's db rules (the adp:db-rules meta tag), the parts.locked switch and ADP.user, and draws two sections. Who can write where has one row per rule, longest path first: the path (the root reads everything else, a {self} segment reads each viewer's own subtree), a sentence such as Everyone reads; admins and up write, and a ladder over the four levels of the db capability, lowest first (viewers, people who can interact, admins, the owner), cut into runs that read read and write (solid, with a pen), read only (tinted, with an eye) or no access (an outline with a dash), each spanning the levels it covers, under one row of level heads. At the row's end it says You write or You read: an editor (user.canEdit) counts as interact, so writes interact-level paths such as ns/shared and ns/users/{self}; a viewer writes nothing; admin and owner paths are never marked as yours, and a footnote says so. Locked parts shows each prefix with a lock, how many parts it covers and those part ids with their titles (whole-segment match), then the parts left open, counted, with their ids in a disclosure. It writes nothing: the rules change by republish and the locks on the settings page. A change of parts.locked is announced through role=status. The layout follows its container: under about 44rem each rule stacks (path, sentence, ladder, you) and the level heads shorten, with no sideways scroll; the only keyboard stop is the open-parts disclosure.",
@@ -13348,8 +13348,8 @@
     {
      "path": "kit/layout/file-browser.js",
      "role": "script",
-     "sha256": "0107c5382c72dd5af1a3230df66a62661b6581b62201af7f2a5ecf0527389b36",
-     "bytes": 38964
+     "sha256": "e706ee0e3e20d8a4c0cdb8142ea3f988964139b621b8b74b8f9a40033cc6d23f",
+     "bytes": 39974
     },
     {
      "path": "kit/layout/file-browser.css",
@@ -13406,7 +13406,7 @@
    "related": [
     "pattern.file-map"
    ],
-   "hash": "4359f713c535",
+   "hash": "31c902accc2f",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.fileBrowser.mount(root, {manifest, sizes, parts, changes, manifests, threads, content, since, selected, views, onSelect, onOpen, onCompare, onPart, onView, onSince}) draws two panes. The tree follows the WAI tree pattern: folders open and close, Up and Down walk it, Left and Right close, open and climb, Home and End jump, a letter jumps to the next name. Each file shows its kind, its part count and three marks with a glyph and a word: changed after the chosen version, held by an agent (or a stale hold once hold_until has passed), and open comments. A seam traces the selected file's folders. The sheet gives the path, the file hash in groups of four with Copy, its size and last change, a scale of every version with the ones that touched the file filled and the ones after the chosen version ringed, the page's actions (Open file, Compare the last step, related views), then two tabs. Parts lists the file's parts as an outline, parents before children, and the text outside the parts (_rest:<path>); each opens to its summary, full hash, last change, holder, open comments and whether its copy lives in content/. History lists every version that touched the file, newest first, with each part added, changed or removed and its hashes, and a Compare for that step; a file with no parts gets its history from the version manifests when they are passed. The toolbar finds by path, part id or title, picks the version after which changes are marked, and narrows to Changed, Held or Commented files with their counts. Below 46rem the panes take turns: the tree, then the sheet with an All files button back. It reads and writes nothing in the db: the page passes the docs in and calls update().",
@@ -13484,8 +13484,8 @@
     {
      "path": "kit/patterns/file-map.js",
      "role": "script",
-     "sha256": "e401c1d35db3e4ffb5cbd97f500cafc31f3ea0b487acdd9c3ac5a5fce09cb476",
-     "bytes": 15499
+     "sha256": "c9a27b83e0ef1b80fcbf8632a5512f777541725701d7cd46cbee5e20bbf2fa91",
+     "bytes": 16825
     },
     {
      "path": "kit/patterns/file-map.css",
@@ -13538,7 +13538,7 @@
    "related": [
     "layout.file-browser"
    ],
-   "hash": "489b15e668ad",
+   "hash": "c8da317129e3",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.fileMap.mount(root, {manifest, sizes, parts, changes, threads, since, measure, selected, onSelect}) draws a squarified map: a block per folder, a tile per file, its area its share of the bytes (or, with the Bytes and Parts toggle, of the parts; a file without parts counts as one). A tile changed after the chosen version is hatched and carries a diamond, a held one a dashed edge and a lock, a stale hold a dotted edge and an open lock, and open comments a count; a legend names each mark. A line of text gives the totals and the largest file with its share, for anyone who does not read the map. Tiles are buttons with a full description as their name: arrow keys move to the nearest tile in that direction, Home and End to the ends, Enter selects, and the selected tile and its folder are ringed by the seam. The map redraws to its width (taller than wide below 520 px). Pair it with layout.file-browser: each one's onSelect calls the other's select().",
@@ -13603,8 +13603,8 @@
     {
      "path": "kit/patterns/record-shelf.js",
      "role": "script",
-     "sha256": "263e7a3ca9e1c52d9de7e6b3f96160cac3682dd4a9b3dfe0c2c1d88b2f90e926",
-     "bytes": 10516
+     "sha256": "aede96ba36208b25d9093b2f0830b30d4d44d943fcb4fcf9863f3312feb4d9c9",
+     "bytes": 11739
     },
     {
      "path": "kit/patterns/record-shelf.css",
@@ -13651,7 +13651,7 @@
     "One card per collection with a state in words, not only the latest changes.",
     "A collection not read says so instead of showing zero."
    ],
-   "hash": "3a18a533a747",
+   "hash": "e15460297fda",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.recordShelf.mount(root, {manifest, changes, parts, threads, content, checks, now, current, onOpen}) draws six cards named as the db names them: manifest/current (the version, file and part counts, the page hash in groups of four, who recorded it and when), changes/ (versions recorded, the latest summary, data changes and how many came after the latest publish), parts/ (how many, held, stale holds), threads/ (open, being worked on, done), content/ (how many parts keep their copy in the database) and checks/latest (Sound, or the count of problems with what they are). A state carries a glyph and a word: Passed, All free, Needs a look, a hold ran out, comments waiting. Records the board did not pass in read Not read, never zero. With onOpen each card is a button that says the view it opens and the current one is marked.",
@@ -13717,8 +13717,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "1b4d5e16aeac761c808c4d6425bc492285bec2f24b36c037ba4a97e4f2375c54",
-     "bytes": 29484
+     "sha256": "2fdbfe85400716d0ea947b85e6a2e4d36cb6203efb1f9c1a2b67cb1180b3ba6a",
+     "bytes": 32479
     },
     {
      "path": "kit/samples/assist.json",
@@ -13775,7 +13775,7 @@
     "pattern.answer-queue",
     "pattern.questions"
    ],
-   "hash": "60f87f3082d2",
+   "hash": "52fba827c386",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session moves the request through ack, working (with progress lines) and done (response, changed parts, version), and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns its id, title, hash and a 600-character quote (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.",
@@ -13865,8 +13865,8 @@
     {
      "path": "kit/patterns/block-picker.js",
      "role": "script",
-     "sha256": "03430727517026b8c3b2949ed335abed3d3df1da4c822231bb42d0983e616355",
-     "bytes": 10727
+     "sha256": "fe9ecf1337e10e420a51a5b21583d96d3157344b8d6caccbaccb7a54f906440a",
+     "bytes": 12789
     },
     {
      "path": "kit/patterns/block-picker.css",
@@ -13917,7 +13917,7 @@
     "A bar with Previous, Next, Pick and Cancel so the picker works without a pointer and on a touch screen.",
     "The pick carries the block's text and hash, not only its anchor."
    ],
-   "hash": "a6104289cb5e",
+   "hash": "506e1541a04e",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.blockPicker.open({titles, hashOf, quoteMax, root}) dims the page around one [data-part] block at a time with a ring and a tag that names it (the page's title for the part, else its heading, else its id; a repeated item adds its key), and puts a small bar at the bottom of the screen with the name, its place (3 of 9), Pick this block, Previous, Next and Cancel. Hover moves the ring and a click picks; on a touch screen the first tap moves the ring and Pick this block confirms. From the keyboard the arrows move, Home and End jump, Enter picks and Esc leaves; focus stays in the bar while it is open and goes back where it was after. Each move is announced. The promise resolves {id, label, hash, quote, el} (the quote is the block's text, whitespace collapsed, at most 600 characters) or null. Blocks inside [data-uncommentable] or [data-assist-ui] are never offered, so the panel cannot pick itself. The assist engine's pick() opens it when it is loaded and binds the shortcut itself; on a page without the engine, bind({shortcut: 'Mod+Shift+K', onPick}) adds the key (ignored while typing). At 390 px the bar spans the screen above the safe area and its buttons go full width. It reads nothing and writes nothing.",
@@ -13974,8 +13974,8 @@
     {
      "path": "kit/patterns/request-card.js",
      "role": "script",
-     "sha256": "a86a1f18082b51f18bb7655a20a8e271fd84974a266876c35e3c978c44e04124",
-     "bytes": 14220
+     "sha256": "606e9084f6d814893768b479fe9a86beaf174df0554f5faba3a5272712554dfa",
+     "bytes": 16115
     },
     {
      "path": "kit/patterns/request-card.css",
@@ -14032,7 +14032,7 @@
     "pattern.answer-queue",
     "pattern.questions"
    ],
-   "hash": "c7098bb9fd9d",
+   "hash": "ee8359526437",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.requestCard.mount(box, {engine, rid}) follows one request through the assist engine (engine.thread and engine.reply); mount(box, {request, thread, onReply}) draws the same card from data. The header says what kind of request it is (question, task, fix, design note) with a glyph, which block it is about (a button that shows the block when onReveal is given) and when it was sent. The track is four stations on one seam: queued, seen, working, done; passed segments fill in the seam colour, the current station has its bead and its word in bold, and the word sits under every bead, so the state never rides on colour. A request queued for more than three minutes says it is still queued and that nothing failed. Below: the conversation in order (the person's words, Claude's answer in Markdown when kit.md and its libraries are loaded, plain paragraphs otherwise, then every reply), the block as it was sent, the session's progress lines with their times (open while it works), and the blocks it changed. Once Claude has answered, a reply box appears; Ctrl or Cmd + Enter sends, the reply reopens the request, and a draft survives a redraw. When sending is not available to the viewer it says so instead. Changes of state are announced. At 390 px the header wraps and the track keeps its four stations.",
@@ -14090,8 +14090,8 @@
     {
      "path": "kit/patterns/presence.js",
      "role": "script",
-     "sha256": "73d4283014ab3f3596c0eec6efae4ef0af7f06a00d588b36d6df24d6091cf7f5",
-     "bytes": 9531
+     "sha256": "a85f5c13ea7f7973b4f37ba7c93d1195139da0193de35681137b72e0c4c99666",
+     "bytes": 10848
     },
     {
      "path": "kit/patterns/presence.css",
@@ -14139,7 +14139,7 @@
     "One view with a compact form for a panel header.",
     "The nudge says requests queue only when they can; the source always said so."
    ],
-   "hash": "bd9daf8e62e5",
+   "hash": "f354f5e1b2cd",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.presence.mount(box, {engine, artifactUrl}) reads engine.presence() and draws one line: a bead, a word (a session is watching, a session is working, no session is watching) and a sentence (which session, when it was last seen, what it is doing). Ping calls engine.ping(); while it waits a count shows the seconds, and the result says the session answered in 1.1 s or that no answer came (the engine waits 90 seconds). When nobody watches or a ping times out, the nudge says to open Claude Code and tell it watch the artifact <link>, with a Copy button; when the clipboard refuses, the line is selected so it can be copied by hand. It says requests wait in the queue only while sending is available, and that Ask now needs no session when the page can ask. compact: true keeps the line for a panel header and puts the nudge behind How to start one. Without an engine, pass presence and onPing. The state is never colour alone; the ping's start and end are announced. At 390 px the buttons drop under the line.",
@@ -14197,8 +14197,8 @@
     {
      "path": "kit/patterns/assist-panel.js",
      "role": "script",
-     "sha256": "245cb1d0506cb44ec4717de9cceccdc1995f0f1d8e36011529601c398274735e",
-     "bytes": 18309
+     "sha256": "b672f04101da003a02b84a0ff2e27141e5dab7038a7ae94771ec4a1e5ea8ddd4",
+     "bytes": 20328
     },
     {
      "path": "kit/patterns/assist-panel.css",
@@ -14260,7 +14260,7 @@
     "pattern.answer-queue",
     "pattern.questions"
    ],
-   "hash": "0459da75ebee",
+   "hash": "9aa2432821f8",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.assistPanel.mount(box, {engine, titles, onReveal, artifactUrl}) builds over the assist engine only. At the top, the presence line (compact). The composer: what kind of request, as radio buttons with one line on what each does (Ask now answers here and changes nothing; Task, Fix and Design note go to a Claude Code session), which block it is about (Pick a block or the shortcut, then the block's name, id and quoted text with Change and Clear; without a block it is about the whole page), the words, and Send, whose label says where it goes. Ctrl or Cmd + Enter sends. When a way is not available the composer says why in words (only editors can send, no session is listening, sending is off, Ask now is not available) and keeps the draft, which also survives a reload; with neither way, Copy for Claude puts the block and the words on the clipboard. The feed shows the requests as request cards, newest first (all, or open only), so an answer stays in view when it lands, or the conversation, where Claude's answer streams in as it is written, earlier conversations can be continued, and a question can be sent on to a session as a task. Start the engine with onPick: p => panel.setScope(p, true) so the shortcut fills the composer. Everything is reachable from the keyboard in reading order, and sends, answers and errors are announced. At 390 px the kinds sit two by two and the buttons go full width.",

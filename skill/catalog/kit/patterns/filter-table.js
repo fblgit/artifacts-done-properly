@@ -1,27 +1,41 @@
 /* part:page.script.kit.filter-table */
-/* Kit pattern: filter, search and sort table (Kit.filterTable)    kit version 0.1.0
-   What it is: a table with a row of status chips that show their counts, a search box and sortable column heads. The chips are toggle buttons (aria-pressed), the heads are buttons
-   (aria-sort on the th), and a status line says "8 of 20 rows" after every change. Optional group rows keep a categorised table (a category, then its rows) and drop a group with no rows left.
-   Plain DOM; every cell is set with textContent unless a column's cell() returns a Node.
-   API:
-     Kit.filterTable.mount(box, {columns, rows, filter, search, sort, group, total, empty, label, caption, tall, onChange}) -> {update(rows), set({filter, q, sort}), state(), destroy()}
-       columns   [{key, label, num, unit, decimals, fmt(v, row), cell(row) -> string | Node, sort: false | fn(row) -> value, status, bar, cls}]
-                 num right-aligns and formats; status shows the filter option's chip (dot, word, tone) for that row; bar adds a thin bar under the number, linear from 0 to the column's largest value
-       filter    {key | by(row), label, all: "All", value: "all", options: [{value, label, tone}]}   tone: ok warn danger accent muted
-                 each chip's count follows the search, so a chip says how many rows it would show
-       search    {keys: [column keys], placeholder, label}   all words must appear in the keys' text
-       sort      {key, dir: "asc" | "desc"}   a click on a head sorts by it (numbers start descending, text ascending), another click reverses
-       group     key | fn(row) => label   adds a label row above each group, in first-seen order after sorting
-       total     {key, unit, decimals}   adds the sum of that column to the status line: "8 of 20 rows, 143.2 G"
-       empty     the line shown when nothing matches (say how to widen the filter)
-       tall      true caps the frame at 70vh so the head sticks while rows scroll
-       onChange  ({filter, q, sort, rows}) after a change
-   Needs from the board:
-     requires kit.table (its css and Kit.table.fmt)
-     css     kit/patterns/filter-table.css and kit/table.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals Kit.table
-   db collections: none.
-   Lifted from: a disk-usage report (verdict chips, search, sortable size with a bar), a network-flow list (direction segments and a text filter), and three review tables with recommendation chips. */
+/**
+ * Filter, search and sort table
+ * Kit.filterTable.mount(box, {columns, rows, filter, search, sort, group, total, empty, label, caption, tall, onChange}) builds the toolbar and the table with textContent only. The chips are toggle buttons whose counts follow the search; the heads are buttons with aria-sort and an arrow; a status line (role status) says "8 of 20 rows, 143 g" after each change. A status column shows the chip's word and tone, a bar column draws a thin linear bar from zero. It reuses the data table's frame and css, so the sticky head and the scroll frame behave the same.
+ *
+ * A table with a row of status chips that show their counts, a search box and sortable column heads. The chips are toggle buttons (aria-pressed), the heads are buttons
+ * (aria-sort on the th), and a status line says "8 of 20 rows" after every change. Optional group rows keep a categorised table (a category, then its rows) and drop a group with no rows left.
+ * Plain DOM; every cell is set with textContent unless a column's cell() returns a Node.
+ *
+ * API:
+ *   Kit.filterTable.mount(box, {columns, rows, filter, search, sort, group, total, empty, label, caption, tall, onChange}) -> {update(rows), set({filter, q, sort}), state(), destroy()}
+ *     columns   [{key, label, num, unit, decimals, fmt(v, row), cell(row) -> string | Node, sort: false | fn(row) -> value, status, bar, cls}]
+ *               num right-aligns and formats; status shows the filter option's chip (dot, word, tone) for that row; bar adds a thin bar under the number, linear from 0 to the column's largest value
+ *     filter    {key | by(row), label, all: "All", value: "all", options: [{value, label, tone}]}   tone: ok warn danger accent muted
+ *               each chip's count follows the search, so a chip says how many rows it would show
+ *     search    {keys: [column keys], placeholder, label}   all words must appear in the keys' text
+ *     sort      {key, dir: "asc" | "desc"}   a click on a head sorts by it (numbers start descending, text ascending), another click reverses
+ *     group     key | fn(row) => label   adds a label row above each group, in first-seen order after sorting
+ *     total     {key, unit, decimals}   adds the sum of that column to the status line: "8 of 20 rows, 143.2 G"
+ *     empty     the line shown when nothing matches (say how to widen the filter)
+ *     tall      true caps the frame at 70vh so the head sticks while rows scroll
+ *     onChange  ({filter, q, sort, rows}) after a change
+ *
+ * @id        pattern.filter-table
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Status chips with counts, a search box and sortable column heads over a table; optional group rows and a total in the status line.
+ * @tags      table, filter, search, sort, chips, counts, status, list, data, verdict
+ * @requires  kit.table
+ * @provides  Kit.filterTable.mount
+ * @config    Kit.filterTable.mount(box, opts) | columns [{key, label, num, unit, decimals, fmt, cell, sort, status, bar}], rows, filter {key | by, label, all, value, options [{value, label, tone}]}, search {keys, placeholder, label}, sort {key, dir}, group, total {key, unit, decimals}, empty, label, caption, tall, onChange
+ * @config    requires | kit.table: its css (the frame and table styles) and Kit.table.fmt
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono --accent-soft
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

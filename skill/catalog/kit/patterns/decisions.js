@@ -1,25 +1,42 @@
 /* part:page.script.kit.decisions */
-/* Kit component: owner decision cards (Kit.decisions)    kit version 0.1.0
-   What it is: the decisions an owner owes, one card each: the question, why it blocks something, a button per option and a "Something else" line.
-   One tap records the answer, the card then shows the answer with its date and a Change answer button, and a status line says where Claude is with it
-   (waiting, has it, working, answered). Plain DOM, no framework. For a register of many decisions use kit.table; for questions with notes and a bar, pattern.questions.
-   API (small and stable):
-     Kit.decisions.mount(root, opts) -> {setRecords(map), records(), destroy()}
-       decisions   [{id, order, question, why, options: [{key, label}], allowOther}]    allowOther defaults to true
-       records     {decisionId: {question, order, answer, label, answeredBy, answeredAt, claude: {step, text}}}   what is already recorded
-       collection  db collection the records are written to (default "decisions"); one doc per decision, id = decision id
-       db          the object Kit.db.create returns (uses db.put); or save(id, doc) -> Promise, which wins when both are given
-       who         the viewer's id, stored as answeredBy;  canWrite  false shows "Waiting on the owner" instead of buttons (default true when a save target exists)
-       afterRecord(decision, doc, cardEl)   hook after a save: where a board sends the answer to Claude, e.g. Kit.claudeLane's lane.sendRequest(text, cardEl, decision.id)
-       claude(decision, record) -> {step, text} | null   where Claude is with it; default reads record.claude. step is queue, ack, pending or done.
-       headingLevel  2-6 (default 3);  words  texts that replace the defaults
-     setRecords(map) is for the board's live subscription: it replaces the records and redraws the cards that are not being edited.
-   Doc written: {question, order, answer, label, answeredBy, answeredAt}. The Claude session writes {claude: {step, text}} on the same doc, or the board reads it from its request docs.
-   Needs from the board:
-     css     kit/patterns/decisions.css; custom properties --panel --bg --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono --f-display; optional --seam
-     caps    db (writes the collection above); the comments capability (sendToClaude) when afterRecord forwards the answer to Claude. Without them the cards still draw and record in memory.
-   db collections: writes <collection>/<decision id>; the board reads the same collection (onSnapshot) and calls setRecords.
-   Lifted from: a proposal page's three owner decisions (record, change, something else, focus kept across redraws) and a register's status pills (open, sent, done). */
+/**
+ * Owner decision cards
+ * Kit.decisions.mount(root, {decisions, records, db}) draws one card per decision: the question, why it blocks something, a button per option and a "Something else" line. One tap records the answer to the db; the card then shows the answer with its date and a Change answer button. A status line under a recorded card says where Claude is with it: waiting for Claude to pick it up, has it, working on it, answered, with four pips and the words. The board forwards the answer to Claude from afterRecord (for example with kit.claude-lane) and Claude's progress arrives on the same doc. Focus returns to the right control after every redraw. A read-only viewer sees the recorded answers and "Not decided yet" in place of buttons.
+ *
+ * The decisions an owner owes, one card each: the question, why it blocks something, a button per option and a "Something else" line.
+ * One tap records the answer, the card then shows the answer with its date and a Change answer button, and a status line says where Claude is with it
+ * (waiting, has it, working, answered). Plain DOM, no framework. For a register of many decisions use kit.table; for questions with notes and a bar, pattern.questions.
+ *
+ * API (small and stable):
+ *   Kit.decisions.mount(root, opts) -> {setRecords(map), records(), destroy()}
+ *     decisions   [{id, order, question, why, options: [{key, label}], allowOther}]    allowOther defaults to true
+ *     records     {decisionId: {question, order, answer, label, answeredBy, answeredAt, claude: {step, text}}}   what is already recorded
+ *     collection  db collection the records are written to (default "decisions"); one doc per decision, id = decision id
+ *     db          the object Kit.db.create returns (uses db.put); or save(id, doc) -> Promise, which wins when both are given
+ *     who         the viewer's id, stored as answeredBy;  canWrite  false shows "Waiting on the owner" instead of buttons (default true when a save target exists)
+ *     afterRecord(decision, doc, cardEl)   hook after a save: where a board sends the answer to Claude, e.g. Kit.claudeLane's lane.sendRequest(text, cardEl, decision.id)
+ *     claude(decision, record) -> {step, text} | null   where Claude is with it; default reads record.claude. step is queue, ack, pending or done.
+ *     headingLevel  2-6 (default 3);  words  texts that replace the defaults
+ *   setRecords(map) is for the board's live subscription: it replaces the records and redraws the cards that are not being edited.
+ * Doc written: {question, order, answer, label, answeredBy, answeredAt}. The Claude session writes {claude: {step, text}} on the same doc, or the board reads it from its request docs.
+ *
+ * @id        pattern.decisions
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Decision cards where one tap records the owner's answer and a status line shows where Claude is with it.
+ * @tags      decisions, owner, record, answer, buttons, claude, status, ask claude, db
+ * @requires  none
+ * @provides  Kit.decisions.mount
+ * @config    Kit.decisions.mount(root, {decisions, records, collection, db | save, who, canWrite}) | decisions [{id, order, question, why, options [{key, label}], allowOther}]; records is what is already recorded
+ * @config    afterRecord(decision, doc, cardEl) | where the board sends the answer to Claude; with kit.claude-lane that is lane.sendRequest(text, cardEl, decision.id)
+ * @config    claude(decision, record) | optional: returns {step, text} for the status line; the default reads record.claude. step is queue, ack, pending or done
+ * @config    setRecords(map) | from the board's live subscription to the collection
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono --f-display
+ * @globals   none
+ * @db        reads decisions (or the configured collection), through the board's own snapshot, handed to setRecords / writes decisions/<decision id>: {question, order, answer, label, answeredBy, answeredAt} / A real artifact declares the db capability, and the comments capability (ask Claude) when afterRecord forwards the answer. The Claude session writes {claude: {step, text}} on the same doc. kit.claude-lane is the optional way to forward and track the request; this file does not call it, so it is not required.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

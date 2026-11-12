@@ -1,11 +1,31 @@
 /* part:page.style.kit.patterns.verdict */
-/* Kit css: verdict, status banner and masthead    kit version 0.1.0    CSS only
-   Verdict box:   <aside class="kit-verdict" data-tone="ok|warn|danger"> <p class="kit-verdict-k">Verdict</p> <p class="kit-verdict-w">Safe to ship</p> <ul><li>The reason.</li></ul> </aside>
-                  the word is the verdict in plain language; the tone only repeats it.
-   Status banner: <div class="kit-status" data-tone="ok|warn|danger|info" role="status"> <span class="kit-status-badge">Ready</span> <p>The line it stands on.</p> <p class="kit-status-meta"><span>Checked 14:20</span><span>3 of 3 gates</span></p> </div>
-   Masthead:      <header class="kit-mast"> <p class="kit-mast-stamp">Draft for review</p> <h1>Title</h1> <p class="kit-mast-dek">Subtitle.</p> <p class="kit-mast-verdict" aria-live="polite">One sentence that states the claim.</p> <p class="kit-mast-meta"><span>Author</span><span>Date</span></p> </header>
-                  .kit-mast-verdict.swap fades the sentence out (toggle it around a text change; reduced motion skips the fade).
-   Needs from the board: --panel --sunk --ink --ink-2 --rule --ok --warn --danger --accent --accent-ink --f-ui --f-mono --f-display; optional --info, --seam */
+/**
+ * Verdict and status banner
+ * CSS only. The verdict box states the answer in a word (Safe to ship, Do not fire) and lists the reasons; the tone only repeats it. The status banner is a badge, one line and a meta row. The masthead is a stamp, the title, a dek and one sentence that states the claim; toggle .swap around a text change to fade it. All three keep their meaning in words, so they hold without colour.
+ *
+ * Verdict box:   <aside class="kit-verdict" data-tone="ok|warn|danger"> <p class="kit-verdict-k">Verdict</p> <p class="kit-verdict-w">Safe to ship</p> <ul><li>The reason.</li></ul> </aside>
+ *                the word is the verdict in plain language; the tone only repeats it.
+ *
+ * Status banner: <div class="kit-status" data-tone="ok|warn|danger|info" role="status"> <span class="kit-status-badge">Ready</span> <p>The line it stands on.</p> <p class="kit-status-meta"><span>Checked 14:20</span><span>3 of 3 gates</span></p> </div>
+ *
+ * Masthead:      <header class="kit-mast"> <p class="kit-mast-stamp">Draft for review</p> <h1>Title</h1> <p class="kit-mast-dek">Subtitle.</p> <p class="kit-mast-verdict" aria-live="polite">One sentence that states the claim.</p> <p class="kit-mast-meta"><span>Author</span><span>Date</span></p> </header>
+ *                .kit-mast-verdict.swap fades the sentence out (toggle it around a text change; reduced motion skips the fade).
+ *
+ * @id        pattern.verdict
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An assessment verdict box, a status banner with a badge and a masthead with a stamp and a swappable claim sentence.
+ * @tags      verdict, status, banner, badge, masthead, stamp, assessment, claim, ready, blocked
+ * @requires  none
+ * @config    markup | aside.kit-verdict[data-tone] > p.kit-verdict-k + p.kit-verdict-w + ul
+ * @config    markup | div.kit-status[data-tone][role=status] > span.kit-status-badge + p + p.kit-status-meta
+ * @config    markup | header.kit-mast > p.kit-mast-stamp + h1 + p.kit-mast-dek + p.kit-mast-verdict + p.kit-mast-meta
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --ok --warn --danger --info? --shadow
+ * @globals   none
+ * @db        none
+ */
 .kit-verdict { --tone: var(--ink-2); display: grid; gap: 8px; padding: 16px 20px; border-radius: 14px; background: color-mix(in srgb, var(--tone) 7%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--panel)); color: var(--ink); font: 15px/1.55 var(--f-ui); min-width: 0; }
 .kit-verdict[data-tone="ok"], .kit-status[data-tone="ok"] { --tone: var(--ok); }
 .kit-verdict[data-tone="warn"], .kit-status[data-tone="warn"] { --tone: var(--warn); }

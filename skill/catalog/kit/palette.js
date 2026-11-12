@@ -1,22 +1,34 @@
 /* part:page.script.kit.palette */
-/* Kit component: command palette (Kit.palette)    kit version 0.1.0
-   What it is: a keyboard-opened search over the page's sections and records. Ctrl+K or Cmd+K opens it (or palette.open()), typing narrows the list, the arrow keys move,
-   Enter picks, Escape closes and focus goes back to where it was. It is a modal combobox: the input owns a listbox, the active option is announced through aria-activedescendant,
-   and a live line says how many results there are. Plain DOM, no dependency.
-   API:
-     Kit.palette.create({items, host, label, placeholder, hotkey, limit, emptyText, onPick, onOpen, onClose}) -> {open(), close(), isOpen(), update(items), destroy()}
-       items       [{id, group, label, hint, keys, target}]   group is the small label before each result ("section", "record"); keys is extra search text;
-                   target is an element id: the default onPick scrolls to it and moves focus there
-       host        the element the palette is appended to (default document.body); pass the themed ancestor when the board sets its tokens on an element instead of :root
-       hotkey      true (default): Ctrl/Cmd+K toggles it; false leaves opening to open()
-       limit       results shown (default 12); with an empty query the first ones in the order given
-       onPick      (item) => void   runs after the palette has closed; default scrolls to item.target
-     Ranking is a sort by tiers, then the order given: label starts with the query, label contains it, every word is in the label, a match only in group or keys.
-   Needs from the board:
-     css     kit/palette.css; custom properties --panel --ink --ink-2 --rule --rule-2 --sunk --accent --accent-ink --shadow --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: a runbook's command palette (.pal, openPal, runPal and its INDEX); made a combobox with announced results, a focus trap and a restored focus. */
+/**
+ * Command palette
+ * Kit.palette.create({items, host, label, placeholder, hotkey, limit, emptyText, onPick}) returns {open, close, isOpen, update, destroy}. It is a modal combobox: the input owns a listbox, the active option is announced through aria-activedescendant and a live line gives the result count. Results rank by tiers (label starts with the query, label contains it, every word in the label, a match only in group or keys) and then by the order given. Focus is trapped in the input and goes back to where it was on close. Pass host when the board sets its tokens on an element instead of :root.
+ *
+ * API:
+ *   Kit.palette.create({items, host, label, placeholder, hotkey, limit, emptyText, onPick, onOpen, onClose}) -> {open(), close(), isOpen(), update(items), destroy()}
+ *     items       [{id, group, label, hint, keys, target}]   group is the small label before each result ("section", "record"); keys is extra search text;
+ *                 target is an element id: the default onPick scrolls to it and moves focus there
+ *     host        the element the palette is appended to (default document.body); pass the themed ancestor when the board sets its tokens on an element instead of :root
+ *     hotkey      true (default): Ctrl/Cmd+K toggles it; false leaves opening to open()
+ *     limit       results shown (default 12); with an empty query the first ones in the order given
+ *     onPick      (item) => void   runs after the palette has closed; default scrolls to item.target
+ *   Ranking is a sort by tiers, then the order given: label starts with the query, label contains it, every word is in the label, a match only in group or keys.
+ *
+ * Optional custom properties: --seam.
+ *
+ * @id        kit.palette
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A keyboard-opened search over a page's sections and records: Ctrl+K, arrow keys, Enter, Escape.
+ * @tags      search, command palette, keyboard, navigation, combobox, ctrl k, modal, jump
+ * @requires  none
+ * @provides  Kit.palette.create
+ * @config    Kit.palette.create(opts) | items [{id, group, label, hint, keys, target}], host, label, placeholder, hotkey, limit, emptyText, onPick(item), onOpen, onClose
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --shadow --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

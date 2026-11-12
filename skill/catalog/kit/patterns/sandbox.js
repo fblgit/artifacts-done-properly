@@ -1,26 +1,44 @@
 /* part:page.script.kit.sandbox */
-/* Kit component: live check sandbox (Kit.sandbox)    kit version 0.1.0
-   What it is: two small test benches that share one look. detect() is a text box that runs a list of detectors on every keystroke and lists each one
-   with what it found, so a person can paste a line and see which rules would fire; example buttons fill the box. probe() runs a list of async checks
-   side by side, each with a timeout, and fills a result table (Works, Failed, No answer) with the detail and the milliseconds each took. Nothing leaves
-   the page: detectors are functions, and a probe does only what the board's run() does. Plain DOM, no framework.
-   API (small and stable):
-     Kit.sandbox.detect(root, opts) -> {run(), setText(text), destroy()}
-       detectors  [{id, label, test(text) -> null | {match, note}}]    Kit.sandbox.regexDetector makes one from a pattern string
-       examples   [{id, label, text}]    buttons that fill the box;  text  the first content;  label  the box's accessible name;  note  a line under the box
-       maxMatch   characters of a match to show (default 48);  onRun(hits)  hook after each run, hits is [{id, label, match, note}]
-     Kit.sandbox.probe(root, opts) -> {run(), results(), destroy()}
-       probes     [{id, what, target, run(target) -> Promise<string>}]    the string is the detail on success; a rejection's message is the detail on failure
-       timeout    ms before a probe counts as No answer (default 6000);  autorun  run once on mount (default true);  onDone(results)  hook with {id: {status, detail, ms}}
-       words      texts that replace the defaults
-     Kit.sandbox.regexDetector({id, label, pattern, flags, group, minEntropy, needDigit}) -> detector    group is the capture group to report (default 0);
-       minEntropy and needDigit make a hit only when the reported text has that many bits of Shannon entropy per character, or a digit
-     Kit.sandbox.entropy(text) -> bits per character
-   Needs from the board:
-     css     kit/patterns/sandbox.css; custom properties --panel --bg --sunk --ink --ink-2 --ink-3 --rule --accent --ok --warn --danger --f-ui --f-mono; optional --seam
-     caps    none. A probe that reports to Claude writes onDone(results) to the board's db (a "runs" collection, one doc per run); that write is the board's.
-   db collections: none of its own.
-   Lifted from: a share-readiness sheet's live detector box (paste a line, see which rules fire), and a network probe page's test table with timeouts and results. */
+/**
+ * Live check sandbox
+ * Two benches with one look. Kit.sandbox.detect(root, {detectors, examples}) is a text box that runs every detector on each keystroke and lists each with what it found, so a person can paste a line and see which rules would fire; example buttons fill the box; the summary line is announced politely. Kit.sandbox.regexDetector builds a detector from a pattern string, with a capture group, a minimum Shannon entropy and a digit requirement; Kit.sandbox.entropy is the helper. Kit.sandbox.probe(root, {probes}) runs async checks side by side, each with a timeout, and fills a table with Works, Failed or No answer, the detail and the milliseconds, then calls onDone(results) so a board can write the run to its db. Nothing leaves the page unless a probe's run() sends it.
+ *
+ * What it is: two small test benches that share one look. detect() is a text box that runs a list of detectors on every keystroke and lists each one
+ * with what it found, so a person can paste a line and see which rules would fire; example buttons fill the box. probe() runs a list of async checks
+ * side by side, each with a timeout, and fills a result table (Works, Failed, No answer) with the detail and the milliseconds each took. Nothing leaves
+ * the page: detectors are functions, and a probe does only what the board's run() does. Plain DOM, no framework.
+ *
+ * API (small and stable):
+ *   Kit.sandbox.detect(root, opts) -> {run(), setText(text), destroy()}
+ *     detectors  [{id, label, test(text) -> null | {match, note}}]    Kit.sandbox.regexDetector makes one from a pattern string
+ *     examples   [{id, label, text}]    buttons that fill the box;  text  the first content;  label  the box's accessible name;  note  a line under the box
+ *     maxMatch   characters of a match to show (default 48);  onRun(hits)  hook after each run, hits is [{id, label, match, note}]
+ *   Kit.sandbox.probe(root, opts) -> {run(), results(), destroy()}
+ *     probes     [{id, what, target, run(target) -> Promise<string>}]    the string is the detail on success; a rejection's message is the detail on failure
+ *     timeout    ms before a probe counts as No answer (default 6000);  autorun  run once on mount (default true);  onDone(results)  hook with {id: {status, detail, ms}}
+ *     words      texts that replace the defaults
+ *   Kit.sandbox.regexDetector({id, label, pattern, flags, group, minEntropy, needDigit}) -> detector    group is the capture group to report (default 0);
+ *     minEntropy and needDigit make a hit only when the reported text has that many bits of Shannon entropy per character, or a digit
+ *   Kit.sandbox.entropy(text) -> bits per character
+ *
+ * caps none. A probe that reports to Claude writes onDone(results) to the board's db (a "runs" collection, one doc per run); that write is the board's.
+ *
+ * @id        pattern.sandbox
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A text box that runs detectors live and lists hits; a probe table that runs async checks with timeouts and timings.
+ * @tags      sandbox, detector, test, probe, table, timeout, entropy, live, check
+ * @requires  none
+ * @provides  Kit.sandbox.detect, Kit.sandbox.probe, Kit.sandbox.regexDetector, Kit.sandbox.entropy
+ * @config    Kit.sandbox.detect(root, {detectors, examples, text, label, note, maxMatch, onRun}) | detectors [{id, label, test(text) -> null | {match, note}}]
+ * @config    Kit.sandbox.probe(root, {probes, timeout, autorun, onDone}) | probes [{id, what, target, run(target) -> Promise<string>}]; onDone(results) with {id: {status, detail, ms}}
+ * @config    Kit.sandbox.regexDetector({id, label, pattern, flags, group, minEntropy, needDigit}) | makes a detector from a pattern string
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

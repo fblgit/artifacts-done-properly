@@ -2,6 +2,21 @@
 name: artifact-dataplane
 description: The standard for a claude.ai Artifact that more than one agent or session works on, that takes comments over many versions, or that should be composable and data-first. Covers stable part ids, per-part content hashes, comment anchors that are part ids, copy as db docs, the adp/2 multi-file layout, and one ArtifactData layout (manifest, parts, changes, decisions, threads, agents, content, checks) with a version-pinned read, hold, publish, record protocol. Use it before building, editing, publishing or answering comments on such an artifact.
 ---
+<!--
+Artifact dataplane (ADP)
+The standard for an artifact more than one agent works on: part ids, per-part hashes, comment anchors that are part ids, the ArtifactData layout, the read, hold, publish, record protocol, and the adp/2 layout. Read it before building, editing or publishing such an artifact. This catalog follows it.
+
+@id        guide.artifact-dataplane
+@group     Guides
+@status    stable
+@version   0.1.1
+@updated   2026-11-13
+@summary   The standard every shared artifact follows: part ids, hashes, the db layout, the read, hold, publish, record protocol, and the adp/2 layout.
+@tags      adp, standard, protocol, guide, db, hashes, parts, adp/2
+@requires  none
+@globals   none
+@db        none
+-->
 
 # Artifact dataplane (adp/1, adp/2)
 

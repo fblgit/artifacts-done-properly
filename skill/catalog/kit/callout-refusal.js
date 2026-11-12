@@ -1,17 +1,33 @@
 /* part:page.script.kit.callout-refusal */
-/* Kit component: refusal callout builder (Kit.refusal)    kit version 0.1.0    EXTENDS kit.callout (a new file beside callout.css)
-   What it is: a callout for an action the system refused: the word for the code, the field that was refused, what is allowed now, and the system's own message. Plain DOM; every text is set
-   with textContent. The code's words come from the caller (never from a table of this file), so a board uses its own wording.
-   API:
-     Kit.refusal.make({code, tone, field, allowed, message, label, none}) -> Element (aside.kit-callout.kit-refusal, role="alert")
-       code     the words for what happened ("Not while a review is open")
-       tone     "warn" (default) | "danger" | "pending"
-       field    the field or input that was refused, shown in mono
-       allowed  [string]   what would be accepted now; an empty list shows `none`
-       message  the system's own sentence          label  the kicker word (default "Refused")        none  the word for an empty allowed list (default "Nothing is allowed right now")
-   Needs from the board: kit/callout.css, kit/callout-refusal.css and the tokens callout.css reads.
-   db collections: none.
-   Lifted from: a component family's refusal callout (the code by its vocabulary, the field, the allowed values, the message). Changed: the code is text the caller passes, not a hub enum, and the tone is the kit's. */
+/**
+ * Refusal callout
+ * Kit.refusal.make({code, tone, field, allowed, message}) returns a callout (role alert) whose kicker says Refused and names the code in words, with the refused field in mono, a short "Allowed now" list of what would be accepted instead, and the system's message under it. With nothing allowed it says so in words. The words of the code come from the caller, so a board uses its own. The tone is warn, danger or pending. It is kit.callout with a new file; callout.css is unchanged and loads first.
+ *
+ * API:
+ *   Kit.refusal.make({code, tone, field, allowed, message, label, none}) -> Element (aside.kit-callout.kit-refusal, role="alert")
+ *     code     the words for what happened ("Not while a review is open")
+ *     tone     "warn" (default) | "danger" | "pending"
+ *     field    the field or input that was refused, shown in mono
+ *     allowed  [string]   what would be accepted now; an empty list shows `none`
+ *     message  the system's own sentence          label  the kicker word (default "Refused")        none  the word for an empty allowed list (default "Nothing is allowed right now")
+ *
+ * Plain DOM; every text is set with textContent.
+ *
+ * @id        kit.callout-refusal
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An upgrade of kit.callout: an error that names the code, the field refused, what is allowed now and the system's own message.
+ * @tags      refusal, error, callout, allowed, validation, denied, alert
+ * @requires  kit.callout
+ * @provides  Kit.refusal.make
+ * @config    Kit.refusal.make(opts) | code, tone warn | danger | pending, field, allowed [string], message, label, none; returns the aside element
+ * @config    markup | aside.kit-callout.kit-refusal[data-tone] > p.kit-callout-k (b.kit-refusal-code, code.kit-refusal-field) + dl.kit-refusal-dl + p.kit-refusal-msg
+ * @tokens    --panel --ink --ink-2 --rule --accent --warn --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

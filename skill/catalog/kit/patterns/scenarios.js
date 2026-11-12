@@ -1,19 +1,36 @@
 /* part:page.script.kit.patterns.scenarios */
-/* Kit pattern: scenario matrix (Kit.scenarios)    kit version 0.1.0
-   What it is: what happens in each scenario under each configuration, with a verdict word per cell and a response column. The same table also holds a happy-path and error-path ledger: the
-   columns are yours (3 voters / 5 voters, or Happy path / Error path), and a cell with no text is just a verdict ("to test"). Built on Kit.table, so it scrolls sideways inside its own frame.
-   Plain DOM; every string is set with textContent.
-   API (small and stable):
-     Kit.scenarios.render(box, {columns, rows, scenarioLabel, responseLabel, caption, note, label, legend}) -> {update(rows), table}
-       columns        [{id, label}]                         one per configuration (or per path)
-       row            {name, flag, cells: {<column id>: {verdict, tone, text}}, response, pick}   tone ok | warn | danger | muted; flag is a small tag on the row's name; pick (true, or a word for a tag) highlights the row
-       scenarioLabel  header of the first column (default "Scenario");  responseLabel  header of the last, or null for no response column (default "Response")
-       legend         [{verdict, tone, means}] adds a line under the table that spells the verdict words out
-   Needs from the board:
-     css     kit/table.css, kit/patterns/scenarios.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent-soft --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals Kit.table (kit/table.js)
-   db collections: none.
-   Lifted from: four documents' tables (a failure matrix by cluster size, a scenario by configuration verdict table, a happy and error path ledger, a reality table). Draft status in the plan: judged from the source and kept. */
+/**
+ * Scenario matrix
+ * A table where rows are scenarios (an element burns out, the power is cut) and columns are configurations (one kiln, two kilns) or paths (happy, error). Each cell opens with a verdict as a dot and a word, then a sentence; the last column says what to do. The first column is a row header that stays in view while the table scrolls sideways inside its frame. A cell with only a verdict ('to test') makes it a ledger. Built on Kit.table.
+ *
+ * What it is: what happens in each scenario under each configuration, with a verdict word per cell and a response column. The same table also holds a happy-path and error-path ledger: the
+ * columns are yours (3 voters / 5 voters, or Happy path / Error path), and a cell with no text is just a verdict ("to test"). Built on Kit.table, so it scrolls sideways inside its own frame.
+ *
+ * Plain DOM; every string is set with textContent.
+ *
+ * API (small and stable):
+ *   Kit.scenarios.render(box, {columns, rows, scenarioLabel, responseLabel, caption, note, label, legend}) -> {update(rows), table}
+ *     columns        [{id, label}]                         one per configuration (or per path)
+ *     row            {name, flag, cells: {<column id>: {verdict, tone, text}}, response, pick}   tone ok | warn | danger | muted; flag is a small tag on the row's name; pick (true, or a word for a tag) highlights the row
+ *     scenarioLabel  header of the first column (default "Scenario");  responseLabel  header of the last, or null for no response column (default "Response")
+ *     legend         [{verdict, tone, means}] adds a line under the table that spells the verdict words out
+ *
+ * CSS classes: .kit-sv .kit-scen
+ *
+ * @id        pattern.scenarios
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   What happens in each scenario under each configuration, with a verdict word per cell and a response column; also a happy-path and error-path ledger.
+ * @tags      scenarios, failure modes, matrix, verdict, ledger, happy path, error path, runbook, resilience
+ * @requires  kit.table
+ * @provides  Kit.scenarios.render
+ * @config    Kit.scenarios.render(box, opts) | columns [{id, label}], rows [{name, flag, cells: {<id>: {verdict, tone, text}}, response, pick}], scenarioLabel, responseLabel (null for none), caption, note, label, legend
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --accent-soft --ok --warn --danger --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };
