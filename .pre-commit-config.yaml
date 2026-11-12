@@ -25,3 +25,8 @@ repos:
         language: system
         pass_filenames: false
         files: ^(skill/catalog/|tools/check_catalog\.py)
+      - id: catalog-headers
+        name: catalog entry headers (docs/catalog-header.md)
+        entry: python3 tools/check_headers.py
+        language: system
+        files: ^skill/catalog/.*\.(js|css|md|txt)$      # a main file without a valid header blocks the commit
