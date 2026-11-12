@@ -4,6 +4,8 @@
   adp.py setup [--scope user|project|local] [--dry-run] [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
   adp.py init [DIR]                                 DIR/.adp/config.json for project onboarding; also registers the project (name, path) in ~/.adp/projects/
   adp.py projects                                   the registered projects: name, scope, path
+  --project NAME|PATH                               optional, never a default: the project root instead of cwd (a directory, or the name of a registered project; unknown: exit 1);
+                                                    `log` reads its .adp/log.jsonl, every command logs there when it has an .adp/, `init` without DIR and `setup --scope project|local` use it
   adp.py log [-n N]                                 the last N lines of log.jsonl (every command appends one; project .adp/ else ~/.adp/)
   adp.py check    PAGE|DIR                          markers balance, ids valid and unique, each part has data-part="<id>"
   adp.py manifest PAGE|DIR [--file NAME=PATH ...]   manifest JSON on stdout (schema, page_hash, parts, files, parents)
@@ -12,7 +14,8 @@
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
-  adp.py new TEMPLATE DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]
+  adp.py new (TEMPLATE | --tier minimal|default|full) DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]
+                                                    --tier instead of TEMPLATE: minimal = starter, default = default, full = not available yet (the published catalog, later)
                                                     a ready adp/2 artifact in DIR (seed.json and seed/ included; --data as in seed), plus ONE publish object: with a fetched catalog index
                                                     (saved, or --catalog) its `files` already carry the taken kit entries, --theme and --layout.
                                                     --content: views from a content file (`## Lead` text; `## View: <label> (id: <id>)`;
@@ -411,9 +414,17 @@ def taken(src, ids, a):
     return out, code
 
 
+TIERS = {'minimal': 'starter', 'default': 'default', 'full': None}
+
+
 def new(a):
-    pos = bare(a[1:])
-    if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]')
+    pos = bare(a[1:]); tier = opt(a, '--tier')
+    if '--tier' in a:
+        if tier not in TIERS or len(pos) != 1: sys.exit('usage: adp.py new --tier minimal|default|full DIR (not together with TEMPLATE)')
+        if tier == 'full': sys.exit('tier full is not available yet')
+        if not os.path.isfile(os.path.join(TPL, TIERS[tier], 'template.json')): sys.exit(f"tier {tier}: template '{TIERS[tier]}' not found")
+        pos = [TIERS[tier]] + pos
+    if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE|--tier T DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]')
     name, d = pos
     if os.path.exists(d) and os.listdir(d): sys.exit(f'{d} exists and is not empty')
     meta = tmeta(name); title = opt(a, '--title', 'Untitled artifact'); slug = opt(a, '--slug') or slugify(title)
@@ -924,8 +935,23 @@ def redact(a):
     return out
 
 
+PROJECT = None      # the resolved --project root, set by the entry point
+
+
+def resolve_project(x):
+    """--project X: an existing directory, else the name (or registry folder name) of a registered project; absolute path or exit 1."""
+    if os.path.isdir(x): return os.path.abspath(x)
+    root = os.path.join(ADP_HOME, 'projects')
+    for n in sorted(os.listdir(root)) if os.path.isdir(root) else []:
+        try: c = json.load(open(os.path.join(root, n, 'config.json')))
+        except (OSError, ValueError): continue
+        if x in (c.get('name'), n) and os.path.isdir(c.get('path', '')): return os.path.abspath(c['path'])
+    sys.exit(f'project not found: {x} (adp.py projects lists them)')
+
+
 def log_path():
-    """log.jsonl in the nearest .adp/ from cwd upward, else ADP_HOME."""
+    """log.jsonl in the .adp/ of --project when it has one, else the nearest .adp/ from cwd upward, else ADP_HOME."""
+    if PROJECT and os.path.isdir(os.path.join(PROJECT, '.adp')): return os.path.join(PROJECT, '.adp', 'log.jsonl')
     d = os.path.abspath(os.getcwd())
     while True:
         if os.path.isdir(os.path.join(d, '.adp')): return os.path.join(d, '.adp', 'log.jsonl')
@@ -945,7 +971,7 @@ def log_line(a, code, ms):
 
 
 def log_cmd(a):
-    n = int(opt(a, '-n', 20)); p = log_path()
+    n = int(opt(a, '-n', 20)); p = os.path.join(PROJECT, '.adp', 'log.jsonl') if PROJECT else log_path()
     if os.path.isfile(p): sys.stdout.write(''.join(open(p).readlines()[-n:] if n > 0 else []))
     return 0
 
@@ -985,7 +1011,7 @@ def projects_cmd(a):
 
 
 def init_cmd(a):
-    d = os.path.abspath((bare(a[1:]) or ['.'])[0]); p = os.path.join(d, '.adp', 'config.json')
+    d = os.path.abspath((bare(a[1:]) or [PROJECT or '.'])[0]); p = os.path.join(d, '.adp', 'config.json')
     reg = register_project(d, 'project')
     if os.path.isfile(p): print(f'{p} exists; registered in {reg}'); return 0
     os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -1010,7 +1036,7 @@ def ref_version(skill_md):
 def setup_cmd(a):
     scope = opt(a, '--scope', 'user'); dry, yes = '--dry-run' in a, '--yes' in a
     if scope not in ('user', 'project', 'local'): sys.exit('setup: --scope user|project|local')
-    cwd, home = os.getcwd(), os.path.expanduser('~')
+    cwd, home = PROJECT if PROJECT and scope != 'user' else os.getcwd(), os.path.expanduser('~')
     refs = os.path.join(HERE, 'refs'); names = sorted(n for n in os.listdir(refs) if os.path.isdir(os.path.join(refs, n))) if os.path.isdir(refs) else []
     skills = os.path.join(home if scope == 'user' else cwd, '.claude', 'skills')
     cfg = os.path.join(ADP_HOME if scope == 'user' else os.path.join(cwd, '.adp'), 'config.json')
@@ -1117,7 +1143,12 @@ if __name__ == '__main__':
     import time
     argv, t0, code = sys.argv[1:], time.monotonic(), 1
     try:
-        code = main(argv)
+        run = argv
+        if '--project' in argv:
+            i = argv.index('--project')
+            if i + 1 >= len(argv): sys.exit('--project needs a NAME or PATH')
+            PROJECT = resolve_project(argv[i + 1]); run = argv[:i] + argv[i + 2:]
+        code = main(run)
         code = 0 if code is None else code
     except SystemExit as e:
         code = 0 if e.code is None else e.code if isinstance(e.code, int) else 1
