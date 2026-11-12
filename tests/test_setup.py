@@ -170,3 +170,36 @@ class ProjectsTests(Base):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class SetupSafetyTests(Base):
+    def skill_dir(self):
+        return os.path.join(self.cwd, '.claude', 'skills')
+
+    def test_modified_folder_is_left_untouched_and_reported(self):
+        self.assertEqual(self.run_adp('setup', '--scope', 'project').returncode, 0)
+        mine = os.path.join(self.skill_dir(), 'adp-new', 'SKILL.md')
+        open(mine, 'w').write('my edit')
+        r = self.run_adp('setup', '--scope', 'project')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(open(mine).read(), 'my edit')
+        self.assertIn('modified ' + os.path.dirname(mine), r.stdout)
+        self.assertNotIn('adp-edit', ''.join(l for l in r.stdout.split('\n') if l.startswith('modified')))
+
+    def test_extra_file_counts_as_modified(self):
+        self.run_adp('setup', '--scope', 'project')
+        extra = os.path.join(self.skill_dir(), 'adp-edit', 'note.txt'); open(extra, 'w').write('n')
+        r = self.run_adp('setup', '--scope', 'project')
+        self.assertIn('modified ' + os.path.dirname(extra), r.stdout)
+        self.assertTrue(os.path.isfile(extra))
+
+    def test_identical_folder_is_not_reported(self):
+        self.run_adp('setup', '--scope', 'project')
+        r = self.run_adp('setup', '--scope', 'project')
+        self.assertNotIn('modified', r.stdout)
+
+    def test_dry_run_appends_no_log_line(self):
+        os.makedirs(os.path.join(self.cwd, '.adp'))
+        r = self.run_adp('setup', '--scope', 'project', '--dry-run')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertFalse(os.path.exists(os.path.join(self.cwd, '.adp', 'log.jsonl')))
