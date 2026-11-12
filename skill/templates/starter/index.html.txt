@@ -2,6 +2,27 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="adp:build" content="1">
 <meta name="adp:db-rules" content='[{"path":"","read":"view","write":"admin"},{"path":"ns/shared","read":"view","write":"interact"},{"path":"ns/users/{self}","read":"view","write":"interact"},{"path":"status","read":"view","write":"interact"}]'>
+<!--
+READ THIS FIRST. It sits at the top so that a trimmed or cropped read of this file still shows it.
+
+THIS PAGE IS AN ADP ARTIFACT (Artifacts Done Properly). ADP is about building rich, reusable artifacts at a lower cost: more quality for fewer tokens.
+  There is a catalog of ready components: themes, layouts, patterns, charts, a canvas, whole page templates. They are already written, already tested, and every one can be reused and modified.
+  TAKE what this page needs from the catalog by reference. Do not write it again: a taken component costs a few tokens, a written one costs thousands and is not tested.
+  MODIFY by layering: put the change in this page's own styles or script, or fix the entry in the catalog and take it again. Do not edit a taken file in place.
+  DO NOT FORGET what is good. When this page builds something worth keeping (a component, a view, a theme), tell the owner: it can become a catalog entry, so the next artifact starts from it. It is a second life for good work.
+
+CATALOG: {{catalog}}
+
+WHERE TO START
+  1. Read the catalog's catalog.json (id, name, summary, tags, requires). Search it; do not open every entry.
+  2. Pick the entry and what it requires. python3 adp.py take <catalog url> ID ... prints the files map for the Artifact publish: one reference per file, {"artifact": "<catalog url>", "path": "kit/..."}. The server copies the file.
+  3. Templates are .html.txt text: copy the shell into your own index.html. Scripts, styles and data are taken as they are.
+
+THIS PAGE
+  Layout: a thin index.html, adp.js (the runtime), content.js (the copy as data), parts/ and styles/. Every piece is a part with a stable id, marked in the source and with data-part; comments and the What changed panel point at part ids.
+  Before every publish: python3 adp.py check <dir> must say ok.
+  How ADP works: the catalog entry guide.artifact-dataplane (kit/guides/artifact-dataplane.md).
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
