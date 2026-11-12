@@ -29,7 +29,7 @@ class Legend(Cmd):
         with open(os.path.join(TPL, 'starter', 'index.html.txt'), encoding='utf-8') as f:
             text = legend_of(f.read())
         for needle in ('Artifacts Done Properly', 'lower cost', 'reusable', 'modified', 'TAKE', 'MODIFY', 'DO NOT FORGET', 'second life',
-                       'catalog.json', 'ADP take', 'ADP check', 'scripts/adp.py', '{{catalog}}'):
+                       'SUBSCRIBE', 'ArtifactComments', 'presence/<your-name>', 'catalog.json', 'ADP take', 'ADP check', 'scripts/adp.py', '{{catalog}}'):
             self.assertIn(needle, text)
         self.assertNotIn('python3 adp.py', text)       # adp.py is not in the page's folder: it is called through the skill's scripts/
         self.assertNotIn('--', text[4:-3])       # a double hyphen inside would end the comment early

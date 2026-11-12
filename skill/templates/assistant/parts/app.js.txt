@@ -11,9 +11,10 @@ const VIEWS = {
   /* part:home */
   home: {
     label: 'Home',
-    parts: ['home', 'home.welcome', 'home.next', 'home.about'],
+    parts: ['home', 'home.welcome', 'home.examples', 'home.next', 'home.about'],
     html: () => `<section class="view" data-part="home" data-comment-target aria-label="Home">
       <!-- part:home.welcome --><div class="card hero" data-part="home.welcome" data-comment-target></div><!-- /part:home.welcome -->
+      <!-- part:home.examples --><div class="card" data-part="home.examples" data-comment-target></div><!-- /part:home.examples -->
       <div class="grid">
         <!-- part:home.next --><div class="card" data-part="home.next" data-comment-target></div><!-- /part:home.next -->
         <!-- part:home.about --><div class="card" data-part="home.about" data-comment-target></div><!-- /part:home.about -->
@@ -57,7 +58,7 @@ const VIEWS = {
 const TITLES = {'page.header': 'Header', 'page.lead': 'Lead', 'page.tabs': 'Views', 'page.changes': 'What changed', 'page.assist': 'Work with Claude',
   requests: 'Requests', 'requests.intro': 'Requests intro', 'requests.list': 'Request list',
   canvas: 'Canvas', 'canvas.intro': 'Canvas intro', 'canvas.board': 'Canvas board',
-  home: 'Home', 'home.welcome': 'Welcome', 'home.next': 'Next steps', 'home.about': 'How this page works',
+  home: 'Home', 'home.welcome': 'Welcome', 'home.examples': 'Examples', 'home.next': 'Next steps', 'home.about': 'How this page works',
   settings: 'Settings', 'settings.intro': 'Settings intro', 'settings.switches': 'Switches', 'settings.inbox': 'Incoming', 'settings.namespaces': 'Namespaces'};
 const COPY = new Set(Object.keys(window.ADP_CONTENT || {}));   // parts whose inner HTML is copy
 
@@ -66,6 +67,8 @@ if (window.ADP && ADP.config) {
   ADP.config.define('page', {
     'show-about': {type: 'bool', default: true, label: 'Show "How this page works"',
       help: 'Shows or hides the "How this page works" card on Home. Replace it with a switch of your own.'},
+    language: {type: 'text', default: 'English', label: 'Language',
+      help: 'The language of the page\'s text. Ask Claude to translate the page (the Translate example on Home) and it sets this to the language it used.'},
   });
   ADP.config.on('page.show-about', on => { const c = document.querySelector('[data-part="home.about"]'); if (c) c.hidden = !on; });
 }
@@ -135,6 +138,62 @@ function mountRequests(){
   const off = list.on(paint); paint(list.get());
   mounted.push({destroy(){ off(); cards.forEach(c => c.m.destroy()); }});
 }
+/* The Home examples: each is a ready request. The button sends it to Claude through the assist engine (engine.send), so the person sees how a request is made, followed and answered.
+   A prompt names what is wanted and tells Claude to check the catalog first; keep each under about 600 characters, the comment that wakes the session has a 4 KiB limit. */
+const CATALOG_RULE = ' Check the catalog first and take what already exists; build only what is missing, and tell me if it deserves a catalog entry.';
+const EXAMPLES = [
+  {id: 'kanban', title: 'A drag and drop board', text: 'Add a Board view: columns To do, Doing and Done with cards I can drag between them and add, edit and delete, saved in the page database so everyone sees the same board.' + CATALOG_RULE},
+  {id: 'calendar', title: 'A calendar', text: 'Add a Calendar view: a month grid where I can add, move and delete events by dragging, saved in the page database, readable on a phone.' + CATALOG_RULE},
+  {id: 'drafting', title: 'A drafting board', text: 'Add a Drafting view: a page to write a draft in sections, reorder the sections by dragging, and keep every saved version so I can go back.' + CATALOG_RULE},
+  {id: 'canvas', title: 'A canvas for my topic', text: 'In the Canvas tab, add a ready-made canvas for planning a trip: a board with sticky notes for days, places and bookings, so it opens with something to move around instead of empty.' + CATALOG_RULE},
+  {id: 'mindmap', title: 'A mind map to start from', text: 'In the Canvas tab, make the Mind map open with a map of my project in place of the sample: ask me for its name and three main branches first.' + CATALOG_RULE},
+  {id: 'rearrange', title: 'Rearrange something', text: 'Reorder the tabs and the cards on Home so the most used come first, and tell me what you moved and why. Change nothing else.'},
+  {id: 'change', title: 'Change something', text: 'Change the look of this page to a calmer one, with larger text and more space, and keep every part and its id. Show me what changed.' + CATALOG_RULE},
+  {id: 'adopt', title: 'Adopt something', text: 'Show me three catalog components that would suit this page, say what each does, and add the one I choose by taking it from the catalog.'},
+];
+const LANGUAGES = [['🇪🇸', 'Spanish'], ['🇫🇷', 'French'], ['🇩🇪', 'German'], ['🇧🇷', 'Portuguese'], ['🇮🇹', 'Italian'], ['🇨🇳', 'Chinese'], ['🇯🇵', 'Japanese'], ['🇰🇷', 'Korean'], ['🇸🇦', 'Arabic'], ['🇮🇳', 'Hindi']];
+const translateText = lang => 'Translate this whole page into ' + lang + ': every visible text, including the copy of each part, the tabs, the settings and the buttons. Keep every part id and every class, change no behaviour, then set the Language setting (page.language) to ' + lang + '. Reply with what you translated.';
+function mountExamples(){
+  const box = $('[data-part="home.examples"]');
+  if (!box) return;
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  box.innerHTML = '<h3>Try it: ask Claude</h3><p class="muted ex-lead">Each button sends the request written under it, as it is, to Claude. Follow it on <b>Requests</b>, then reply to it there.</p>'
+    + '<ul class="ex-list">' + EXAMPLES.map(x => `<li class="ex-item"><div><b>${esc(x.title)}</b><p class="muted">${esc(x.text)}</p></div><button type="button" class="btn primary" data-ex="${x.id}">Send</button></li>`).join('') + '</ul>'
+    + '<h4>Translate this page</h4><p class="muted ex-lead">Pick a language: Claude translates the page and records it in the Language setting.</p>'
+    + '<table class="ex-langs"><tbody>' + LANGUAGES.map(l => `<tr><td aria-hidden="true">${l[0]}</td><th scope="row">${esc(l[1])}</th><td><button type="button" class="btn" data-lang="${esc(l[1])}">Translate</button></td></tr>`).join('') + '</tbody></table>'
+    + '<p class="ex-note muted" role="status" aria-live="polite"></p>';
+  const note = box.querySelector('.ex-note'), btns = () => box.querySelectorAll('button[data-ex], button[data-lang]');
+  const gate = () => { const c = engine ? engine.can() : null, ok = !!c && c.send === 'available'; btns().forEach(b => { b.disabled = !ok; });
+    note.textContent = ok ? '' : !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to Claude is not possible here right now.'; };
+  ready.then(gate);
+  const t = setInterval(() => { if (!box.isConnected) clearInterval(t); else gate(); }, 30000);
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button[data-ex], button[data-lang]');
+    if (!b || b.disabled || !engine) return;
+    const ex = b.dataset.ex ? EXAMPLES.find(x => x.id === b.dataset.ex) : null, text = ex ? ex.text : translateText(b.dataset.lang);
+    b.disabled = true;
+    engine.send({lane: 'task', scope: null, text}).then(() => { note.textContent = 'Sent. Follow it on Requests.'; show('requests'); },
+      err => { note.textContent = (err && err.message) || 'It could not be sent.'; }).finally(() => { b.disabled = false; });
+  });
+  mounted.push({destroy(){ clearInterval(t); }});
+}
+/* The Mind map mode: Kit.mindmap (catalog) with its data in one doc, ns/shared/mindmaps/main. The component keeps no data of its own: it
+   hands the whole next map to onChange, and this writes it; a change made elsewhere arrives through the snapshot and is drawn with update(). */
+function mountMind(host){
+  const Kit = window.Kit || {};
+  if (!Kit.mindmap) { host.innerHTML = '<p class="muted canvas-note">The mind map kit is not installed.</p>'; return {destroy(){}}; }
+  if (!window.ADP || !ADP.db) { host.innerHTML = '<p class="muted canvas-note">A database is needed to keep the mind map, and there is none here.</p>'; return {destroy(){}}; }
+  const ref = ADP.ns('shared').doc('mindmaps/main'), seed = () => ({nodes: [{id: 'n1', text: document.title || 'My map', parent: null, order: 0}]});
+  let dead = false, off = null, mm = null, writing = Promise.resolve(), can = true;
+  Promise.resolve(claudeUse('user')).then(u => { try { return u && u.can ? u.can('data.write') : null; } catch (e) { return null; } }).then(w => {
+    if (dead) return;
+    can = w !== false;
+    mm = Kit.mindmap.mount(host, {data: seed(), readOnly: !can, label: 'Mind map',
+      onChange: next => { writing = writing.then(() => ref.set(next)).catch(() => { const n = document.createElement('p'); n.className = 'muted canvas-note'; n.setAttribute('role', 'alert'); n.textContent = 'The change could not be saved.'; host.prepend(n); setTimeout(() => n.remove(), 4000); }); }});
+    off = ref.onSnapshot(snap => { if (dead || !mm) return; if (snap.exists) mm.update(snap.data()); });
+  });
+  return {destroy(){ dead = true; if (off) off(); if (mm) mm.destroy(); }};
+}
 /* The Canvas view. Its modes are CANVAS_MODES: one entry each, {id, label, mount(host) -> {destroy()}}; a second entry adds a mode switch above the board.
    Nothing here talks to the db until the view is first opened. The paint mode is kit.canvas (catalog) wired as the catalog's preview wires it, on ns/shared/{name}. */
 let paintKit = null;
@@ -174,7 +233,7 @@ function mountPaint(host){
     if (window.htmPreact) window.htmPreact.render(null, host);
   }};
 }
-const CANVAS_MODES = [{id: 'paint', label: 'Paint', mount: mountPaint}];
+const CANVAS_MODES = [{id: 'paint', label: 'Paint', mount: mountPaint}, {id: 'mindmap', label: 'Mind map', mount: mountMind}];
 function mountCanvas(){
   const host = $('[data-part="canvas.board"]');
   if (!host) return;
@@ -210,7 +269,7 @@ function show(v){
   if (v === 'settings') mountSettings();
   else if (v === 'requests') { ready.then(mountRequests); }
   else if (v === 'canvas') mountCanvas();
-  else if (window.ADP && ADP.config) { const c = $('[data-part="home.about"]'); if (c) c.hidden = !ADP.config.get('page.show-about'); }
+  else { mountExamples(); if (window.ADP && ADP.config) { const c = $('[data-part="home.about"]'); if (c) c.hidden = !ADP.config.get('page.show-about'); } }
   if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
 }
 $('#tabs').innerHTML = Object.entries(VIEWS).filter(([k, x]) => !x.hidden).map(([k, x]) => `<button type="button" class="tab" data-view="${k}">${x.label}</button>`).join('');

@@ -34,6 +34,7 @@
   "pattern.assist-panel",
   "kit.store",
   "kit.chrome",
-  "kit.canvas"
+  "kit.canvas",
+  "pattern.mindmap"
  ]
 }
