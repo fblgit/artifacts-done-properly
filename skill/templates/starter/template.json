@@ -2,7 +2,7 @@
  "name": "starter",
  "summary": "A blank adp/2 artifact that opens on a welcome view: shell, runtime, copy as data, one view, What changed panel.",
  "use_when": "Any new artifact that will be revised, commented on or worked on by more than one agent.",
- "design": "The scaffold's look is a placeholder that exists so `check` passes on an empty page: never ship it as the page's design, and never let two pages built from it look the same. Keep the token names, the three theme blocks, the part markers and the selectors adp.js and the settings pattern rely on (.wc*, .gear, .settings-view). Take a theme (theme.*) and the layout.*, pattern.* and viz.* entries this content needs from the catalog by reference; write the rest of styles/page.css and the views for this content, with a short script that emits them from the content rather than by typing.",
+ "design": "The scaffold's look is the catalog page's shell (a specimen book: proofing-paper greys, carmine accent, Bricolage Grotesque, Atkinson Hyperlegible Next, IBM Plex Mono). It is where a page starts, not its design: never let two pages built from it look the same. Keep the token names, the three theme blocks, the part markers and the selectors adp.js and the settings pattern rely on (.wc*, .gear, .settings-view). Take a theme (theme.*) and the layout.*, pattern.* and viz.* entries this content needs from the catalog by reference; write the rest of styles/page.css and the views for this content, with a short script that emits them from the content rather than by typing.",
  "capabilities": {
   "db": {
    "rules": [
