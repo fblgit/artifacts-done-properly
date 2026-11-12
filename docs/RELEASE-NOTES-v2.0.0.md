@@ -32,6 +32,6 @@ First public release of Artifacts Done Properly (ADP): a Claude skill for claude
 
 - `--tier full` is not available yet (`adp.py new --tier full` says so); the full tier is meant to be the published catalog, later.
 - No catalog entry-add command: adding an entry means editing files under `catalog/kit/` and `catalog.json` by hand (stated in `adp-catalog`).
-- All 138 catalog entries still carry the legacy header; `tools/check_headers.py --report` counts none in the format of `docs/catalog-header.md`.
+- 137 of 138 catalog entries carry a header in the format of `docs/catalog-header.md`; `runtime.adp` follows with the runtime swap. `catalog.json` is still the full index, not yet generated from the headers.
 - The catalog page loads marked, DOMPurify and htm/preact from public CDNs, and fonts from Google Fonts.
 - No license file in this draft: the owner must add one before publishing.
