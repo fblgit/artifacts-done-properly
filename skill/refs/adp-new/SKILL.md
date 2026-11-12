@@ -9,21 +9,23 @@ metadata:
 
 Start on adp/2, not a single index.html: a one-file page cannot give per-file hashes, content as data or part-id comment anchors.
 
-`ADP` below means `python3 -I <adp skill folder>/scripts/adp.py` (the folder of the `adp` skill). `ADP templates` lists the templates `new` can start from: `starter` and `assistant`.
+`ADP` below means `python3 -I <adp skill folder>/scripts/adp.py` (the folder of the `adp` skill). `ADP templates` lists the templates `new` can start from: `starter`, `assistant` and `default`.
 
 ## 1. Choose a tier
 
-| Tier | Command | Status |
+| Start | Command | What you get |
 |---|---|---|
-| basic | `ADP new starter DIR`: blank page, welcome view, settings view, placeholder look | available |
-| recommended | `ADP new assistant DIR --theme theme.glaze --catalog CATALOG`: the starter plus Claude pane, requests, presence, with the `glaze` theme taken from the catalog | available |
+| minimal | `ADP new --tier minimal DIR` (the same as `ADP new starter DIR`) | blank page, welcome view, settings view, the catalog page's look as the starting look |
+| assistant | `ADP new assistant DIR --theme theme.glaze --catalog CATALOG` | the starter plus Claude pane, requests, presence, with the `glaze` theme taken from the catalog |
+| default | `ADP new --tier default DIR` | the assistant plus every theme, the canvas, 3D and the most useful common kits |
+| full | `ADP new --tier full DIR` | not available yet: it exits with that message |
 
-Default to recommended when people and Claude use the page together. Ask the user only if the purpose is unclear. `--theme` and `--layout` take a catalog entry ID in full (`theme.glaze`, `layout.topbar`), not a short name; `ADP kit list CATALOG --kind theme` shows the themes. CATALOG is the catalog url (its fetched index), `-` for the saved catalog, or `skill/catalog/catalog.json`; see `adp-catalog`. A local catalog.json is a build, not the live catalog, and prints a warning: do not publish from it.
+Default to the assistant when people and Claude use the page together. Ask the user only if the purpose is unclear. `--theme` and `--layout` take a catalog entry ID in full (`theme.glaze`, `layout.topbar`), not a short name; `ADP kit list CATALOG --kind theme` shows the themes. CATALOG is the catalog url (its fetched index), `-` for the saved catalog, or `skill/catalog/catalog.json`; see `adp-catalog`. A local catalog.json is a build, not the live catalog, and prints a warning: do not publish from it.
 
 ## 2. Create the project
 
 1. Run `ADP new assistant DIR --title "<name>" --by <your session name> --theme theme.glaze --catalog CATALOG` (`--slug`, `--content FILE`, `--data FILE|DIR` are optional). It writes the page into DIR (`index.html`, `content.js`, `parts/`, `styles/`; the template's `.txt` suffix is dropped) plus `seed.json` and `seed/`, and prints ONE publish object (`files` already carries the taken kit entries), the `take` list, a `design` note and the ordered `next` steps. Follow `next`.
-2. Replace the placeholder look and copy: write `styles/page.css` and the views for the user's content (`design` says what to keep: the token names, the part markers, the selectors `adp.js` relies on). A placeholder look must not ship. `--content FILE` builds the views from a content file.
+2. Change the look and copy for the user's content: write `styles/page.css` and the views (`design` says what to keep: the token names, the part markers, the selectors `adp.js` relies on). The starting look is the catalog page's shell; two pages must not ship looking the same. `--content FILE` builds the views from a content file.
 3. `ADP check DIR` must pass: markers balance, ids valid and unique, every part has `data-part`.
 
 ## 3. Publish
