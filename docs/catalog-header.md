@@ -16,7 +16,7 @@ Other files of the entry (a stylesheet beside its script, samples) have no heade
 - `.js` and `.css`: the first `/** ... */` block. Leading `*` on each line is ignored.
 - anything else (`.txt` templates, `.md`): the first `<!-- ... -->` block.
 
-Inside it, the first line is the entry name, the lines after it up to the first tag are the `about` paragraph, and the tags follow. A tag line starts with `@name`; a line that does not start with `@` continues the tag above it.
+Inside it, the first line is the entry name and the first paragraph after it is the `about` text. Further paragraphs before the first tag are notes (the API reference worth keeping next to the code); they are not read into the catalog. The tags follow. A tag line starts with `@name`; a line that does not start with `@` continues the tag above it.
 
 ```
 /**
@@ -53,9 +53,9 @@ Inside it, the first line is the entry name, the lines after it up to the first 
 | `@summary` | always | one sentence, at most 260 characters |
 | `@tags` | always | comma list, lowercase, no repeats |
 | `@requires` | always | `none` or a comma list of entry ids |
-| `@provides` | in a `.js` main file | `none` or a comma list of dotted names (`Kit.table.render`) |
+| `@provides` | in a `.js` main file | `none` or a comma list of dotted JS names (`Kit.table.render`); methods of what it returns and CSS classes belong in the notes |
 | `@config` | optional, repeats | `signature | what it takes`: what the page passes in |
-| `@tokens` | when the entry has a style file | `none` or custom properties, comma or space separated |
+| `@tokens` | when the entry has a style file | `none` or custom properties, comma or space separated; a trailing `?` marks an optional one (`--seam?`) |
 | `@globals` | always | `none` or CDN scripts the page must load: `htm-preact`, `marked`, `dompurify` |
 | `@db` | always | `none`, or the collections read and written, in words |
 

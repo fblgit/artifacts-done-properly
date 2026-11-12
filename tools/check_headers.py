@@ -25,7 +25,7 @@ ID = re.compile(r'[a-z0-9][a-z0-9-]*\.[a-z0-9][a-z0-9.-]*')
 SEMVER = re.compile(r'\d+\.\d+\.\d+')
 DATE = re.compile(r'\d{4}-\d{2}-\d{2}')
 MEMBER = re.compile(r'[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*')
-TOKEN = re.compile(r'--[A-Za-z0-9_<>-]+')
+TOKEN = re.compile(r'--[A-Za-z0-9_<>-]+\??')       # a trailing ? marks an optional property
 SUMMARY_MAX = 260
 
 
@@ -49,8 +49,9 @@ def comment_of(text, path):
 
 
 def parse(comment):
-    """(title, about, tags): tags is a list of (name, value); a line that does not start with @ continues the tag above it."""
-    title, about, tags, cur = '', [], [], None
+    """(title, about, tags): the first line is the title, the first paragraph after it the about text (later paragraphs before the tags are
+    notes and not read); tags is a list of (name, value), a line that does not start with @ continues the tag above it."""
+    title, about, tags, cur, done = '', [], [], None, False
     for raw in comment.split('\n'):
         line = re.sub(r'^\s*\*? ?', '', raw).rstrip()
         m = re.match(r'@([A-Za-z]+)\s*(.*)$', line)
@@ -60,11 +61,12 @@ def parse(comment):
         elif cur is not None:
             if line.strip():
                 cur[1] = (cur[1] + ' ' + line.strip()).strip()
-        elif line.strip():
-            if not title:
-                title = line.strip()
-            else:
-                about.append(line.strip())
+        elif not line.strip():
+            done = done or bool(about)
+        elif not title:
+            title = line.strip()
+        elif not done:
+            about.append(line.strip())
     return title, ' '.join(about), [(n, v) for n, v in tags]
 
 
@@ -127,7 +129,7 @@ def validate(path, comment, entry, ids):
     if val.get('tokens') and val['tokens'] != 'none':
         bad = [t for t in split(val['tokens'], spaces=True) if not TOKEN.fullmatch(t)]
         if bad:
-            out.append(('tokens', f'@tokens: custom properties like --ink; not: {", ".join(bad)}'))
+            out.append(('tokens', f'@tokens: custom properties like --ink (--ink? when optional); not: {", ".join(bad)}'))
     if val.get('globals') and val['globals'] != 'none':
         bad = [g for g in split(val['globals']) if g not in GLOBALS]
         if bad:
