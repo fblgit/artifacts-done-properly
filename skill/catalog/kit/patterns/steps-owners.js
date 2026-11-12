@@ -1,24 +1,40 @@
 /* part:page.script.kit.patterns.steps-owners */
-/* Kit pattern: steps with owners (Kit.stepsOwners)    kit version 0.1.0    EXTENDS pattern.steps (kit/patterns/steps.js and steps.css stay as they are; this is a new file beside them)
-   What it is: a procedure drawn as a rail of step cards. Each card says who acts (an owner chip whose tone is fixed by the owner's place in the legend, so the same person looks the same on every card),
-   when the step is done, the fact it emits (the line a machine or a person can check), and what happens when it fails. A seam column marks where the seat changes hands. One step can be
-   marked as the current one: it is ringed, carries the word Now and aria-current="step"; steps before it say Passed. Plain DOM; every text is set with textContent.
-   pattern.steps stays the tick-list with phases and saved checkboxes; use this one to show a procedure with more than one owner.
-   API:
-     Kit.stepsOwners.render(box, {intro, actors, steps, seam, current, label, words}) -> {setCurrent(id|null), destroy()}
-       intro    a line above the legend
-       actors   [{id, label}]   the legend; the first three get distinct tones and shapes, later ones share the plain tone. Order is the key: keep it stable.
-       steps    [{id, name, who: [actor id], done, fact, fail}]   id is a short code shown before the name; fact is shown in mono; fail is the failure line
-       seam     {after: step id, label}   a dashed column after that step: "the seat changes hands"
-       current  step id
-       words    {done: "Done when", fact: "Emits", fail: "If it fails", now: "Now", passed: "Passed", who: "Who acts", seat: "The seat changes hands"}
-     Kit.stepsOwners.toneOf(actors, id) -> 0 | 1 | 2 | -1   the pure part
-   Needs from the board:
-     css     kit/patterns/steps-owners.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-mono --f-display, optional --info --seam
-     globals none
-   db collections: none.
-   Lifted from: a component family's section rail (owners per step with stable tones and a legend, the failure line, the emitted fact, the seam where the seat changes hands, the current-step ring).
-   Changed: the three tones are also three shapes, "Passed" and "Now" are words, the rail scrolls sideways inside its own box and stacks under 640px, and the words are options. */
+/**
+ * Steps with owners, failure lines and a seam
+ * Kit.stepsOwners.render(box, {intro, actors, steps, seam, current}) draws a legend of owners and one card per step. Each owner keeps the same tone and the same shape (disc, diamond, square) on every card, so who acts never rides on colour alone. A card says what done looks like, the fact the step emits (shown in mono) and, in a tinted line, what to do when it fails. A dashed seam column after a step marks where the seat changes hands. The current step is ringed, says Now and carries aria-current; the steps before it say Passed. The rail scrolls sideways inside its own box and stacks under 640px. pattern.steps stays the tick-list with phases and saved checkboxes; this is a new file beside it.
+ *
+ * EXTENDS pattern.steps (kit/patterns/steps.js and steps.css stay as they are; this is a new file beside them)
+ * What it is: a procedure drawn as a rail of step cards. Each card says who acts (an owner chip whose tone is fixed by the owner's place in the legend, so the same person looks the same on every card),
+ * when the step is done, the fact it emits (the line a machine or a person can check), and what happens when it fails. A seam column marks where the seat changes hands. One step can be
+ * marked as the current one: it is ringed, carries the word Now and aria-current="step"; steps before it say Passed. Plain DOM; every text is set with textContent.
+ * pattern.steps stays the tick-list with phases and saved checkboxes; use this one to show a procedure with more than one owner.
+ *
+ * API:
+ *   Kit.stepsOwners.render(box, {intro, actors, steps, seam, current, label, words}) -> {setCurrent(id|null), destroy()}
+ *     intro    a line above the legend
+ *     actors   [{id, label}]   the legend; the first three get distinct tones and shapes, later ones share the plain tone. Order is the key: keep it stable.
+ *     steps    [{id, name, who: [actor id], done, fact, fail}]   id is a short code shown before the name; fact is shown in mono; fail is the failure line
+ *     seam     {after: step id, label}   a dashed column after that step: "the seat changes hands"
+ *     current  step id
+ *     words    {done: "Done when", fact: "Emits", fail: "If it fails", now: "Now", passed: "Passed", who: "Who acts", seat: "The seat changes hands"}
+ *   Kit.stepsOwners.toneOf(actors, id) -> 0 | 1 | 2 | -1   the pure part
+ *
+ * CSS classes: .kit-so
+ *
+ * @id        pattern.steps-owners
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An upgrade of pattern.steps: a rail of step cards with who acts (stable tone and shape per owner), when it is done, the fact it emits, a failure line, a seam where the seat changes hands and a current-step ring.
+ * @tags      steps, owners, actors, procedure, failure, handoff, seam, runbook, rail
+ * @requires  kit.tokens
+ * @provides  Kit.stepsOwners.render, Kit.stepsOwners.toneOf
+ * @config    Kit.stepsOwners.render(box, opts) | intro, actors [{id, label}], steps [{id, name, who, done, fact, fail}], seam {after, label}, current, label, words; returns {setCurrent(id), destroy()}
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --danger --info? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

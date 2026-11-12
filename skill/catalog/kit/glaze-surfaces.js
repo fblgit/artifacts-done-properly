@@ -1,20 +1,32 @@
 /* part:page.script.kit.glaze-surfaces */
-/* Kit component: Glaze surfaces, the small script (Kit.glaze)    kit version 0.1.0    pairs with kit/glaze-surfaces.css
-   What it is: the parts are css; this file does the three things css cannot. It writes the svg defs the fleck layer needs, and it wires the switch and the segmented control
-   (aria-checked / aria-pressed, keyboard) and the button's busy state, so a page does not repeat them.
-   API (small and stable):
-     Kit.glaze.defs(host?) -> {gold, pebble, speckle}   once per page: adds a hidden svg (to host or document.body) with a gold gradient (#kit-g-gold), a pebble gradient (#kit-g-pebble;
-                                                        fill/stroke="url(#kit-g-gold)") and the fleck filter (#kit-speckle). Colours come from --seam-0..4 and --pebble-hi (css variables). Safe to call twice.
-     Kit.glaze.speck(parent, {fixed}) -> Element        adds a .kit-speck layer to parent (positioned) and runs defs()
-     Kit.glaze.tone(el, "ok"|"warn"|"bad"|"info"|"wait"|"idle"|null)   sets the kit-is-* class on el (null clears)
-     Kit.glaze.switchOf(btn, {checked, onChange(bool)}) -> {get(), set(bool), destroy()}   a button.kit-switch as role=switch
-     Kit.glaze.segOf(box, {value, onChange(id)})        -> {get(), set(id), destroy()}   buttons with data-id inside .kit-seg; one pressed; arrow keys move
-     Kit.glaze.busy(btn, on, {label})                   toggles kit-loading, aria-busy and aria-disabled on a button; label (optional) replaces its text while busy
-   Needs from the board:
-     css     kit/glaze-surfaces.css, and theme.glaze-depth for the full look (flat without it)
-     globals none
-   db collections: none.
-   Lifted from: a network-ops console's Glaze design system (orb, chip, button, form, switch, segmented control, card, facts, row, avatar, empty state, kiln flecks and the gold and pebble svg gradients). */
+/**
+ * Glaze surfaces
+ * Shape and light for the Glaze look, all from tokens: kit-orb (a breathing bead, a hollow ring for waiting), kit-chip, kit-btn (primary lacquer, ghost, danger, small, icon, loading), kit-field with kit-input, kit-select and kit-area, kit-switch, kit-seg, kit-card, kit-facts, kit-row, kit-ava and kit-empty. A state is a cascade: put kit-is-ok, kit-is-warn, kit-is-bad, kit-is-info, kit-is-wait or kit-is-idle on any part or ancestor. Kit.glaze adds the three things CSS cannot: the svg defs for the gold and pebble gradients and the fleck filter, the switch and segmented-control wiring, and a button's busy state. The fleck layer is opt in. Without theme.glaze-depth every part falls back to a flat look from the contract tokens. Motion is short, answers an action, and stops under prefers-reduced-motion.
+ *
+ * API (small and stable):
+ *   Kit.glaze.defs(host?) -> {gold, pebble, speckle}   once per page: adds a hidden svg (to host or document.body) with a gold gradient (#kit-g-gold), a pebble gradient (#kit-g-pebble;
+ *                                                      fill/stroke="url(#kit-g-gold)") and the fleck filter (#kit-speckle). Colours come from --seam-0..4 and --pebble-hi (css variables). Safe to call twice.
+ *   Kit.glaze.speck(parent, {fixed}) -> Element        adds a .kit-speck layer to parent (positioned) and runs defs()
+ *   Kit.glaze.tone(el, "ok"|"warn"|"bad"|"info"|"wait"|"idle"|null)   sets the kit-is-* class on el (null clears)
+ *   Kit.glaze.switchOf(btn, {checked, onChange(bool)}) -> {get(), set(bool), destroy()}   a button.kit-switch as role=switch
+ *   Kit.glaze.segOf(box, {value, onChange(id)})        -> {get(), set(id), destroy()}   buttons with data-id inside .kit-seg; one pressed; arrow keys move
+ *   Kit.glaze.busy(btn, on, {label})                   toggles kit-loading, aria-busy and aria-disabled on a button; label (optional) replaces its text while busy
+ *
+ * @id        kit.glaze-surfaces
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Porcelain-made parts in CSS: glossy beads, lacquer buttons, sunken fields, a switch, soft rows, lit cards with a pooled foot, an avatar disc and the kiln fleck layer.
+ * @tags      glaze, button, orb, chip, switch, segmented, card, row, avatar, empty state, porcelain, fleck
+ * @requires  theme.glaze-depth, kit.tokens
+ * @provides  Kit.glaze.defs, Kit.glaze.speck, Kit.glaze.tone, Kit.glaze.switchOf, Kit.glaze.segOf, Kit.glaze.busy
+ * @config    classes | kit-orb, kit-chip, kit-btn, kit-input, kit-switch, kit-seg, kit-card, kit-facts, kit-row, kit-ava, kit-empty; the state on the part or an ancestor: kit-is-ok | warn | bad | info | wait | idle
+ * @config    Kit.glaze.defs(host?) | writes the gold and pebble gradients and the fleck filter into a hidden svg; call once before using kit-speck or url(#kit-g-gold)
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,23 +1,38 @@
 /* part:page.script.kit.table */
-/* Kit component: data table (Kit.table)    kit version 0.1.0
-   What it is: a table from rows and columns inside its own scroll frame, with numeric columns, group rows with subtotals, a total row, highlighted rows and
-   signed figures whose sign is in the text. Plain DOM; every cell is set with textContent unless a column's cell() returns a Node.
-   API (small and stable):
-     Kit.table.render(box, {columns, rows, group, groupTotals, total, highlight, caption, note, label, tall}) -> {update(rows), table}
-       box          an element; it becomes the scroll frame (.kit-table-box, role=region, tabindex=0, aria-label = label or caption)
-       columns      [{key, label, num, fmt, signed, sum, cell(row) -> string | Node, cls}]   num right-aligns; signed adds + and −; sum totals it
-       rows         [{...}]   plain objects
-       group        a key or row => label; rows keep their order inside a group, groups keep first-seen order
-       groupTotals  true: a subtotal row under each group for the sum columns
-       total        true or a label ("Total"): a total row in tfoot for the sum columns
-       highlight    row => false | true | "word"   true highlights; a word also tags the first cell with it
-       tall         true caps the frame at 70vh so the head sticks while rows scroll
-     Kit.table.fmt(n, {decimals, signed, unit, locale}) -> string   real minus sign (−), grouping by locale (default "en-GB"), unit after a thin space
-   Needs from the board:
-     css     kit/table.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent-soft --ok --danger --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: five documents' tables (the scroll frame, the boxed table, numeric columns, a total row with +/− figures, a milestone table with group rows). */
+/**
+ * Data table
+ * Kit.table.render(box, {columns, rows, group, groupTotals, total, highlight, caption, note, label, tall}) builds the table with textContent only. Columns take num, signed, sum, decimals, unit, fmt or cell(row). Signed figures carry their sign in the text (+, −) and the colour only repeats it; a highlighted row can carry a word. Kit.table.fmt(n, opts) formats with a real minus sign. The css also works on hand-written tables.
+ *
+ * API (small and stable):
+ *   Kit.table.render(box, {columns, rows, group, groupTotals, total, highlight, caption, note, label, tall}) -> {update(rows), table}
+ *     box          an element; it becomes the scroll frame (.kit-table-box, role=region, tabindex=0, aria-label = label or caption)
+ *     columns      [{key, label, num, fmt, signed, sum, cell(row) -> string | Node, cls}]   num right-aligns; signed adds + and −; sum totals it
+ *     rows         [{...}]   plain objects
+ *     group        a key or row => label; rows keep their order inside a group, groups keep first-seen order
+ *     groupTotals  true: a subtotal row under each group for the sum columns
+ *     total        true or a label ("Total"): a total row in tfoot for the sum columns
+ *     highlight    row => false | true | "word"   true highlights; a word also tags the first cell with it
+ *     tall         true caps the frame at 70vh so the head sticks while rows scroll
+ *   Kit.table.fmt(n, {decimals, signed, unit, locale}) -> string   real minus sign (−), grouping by locale (default "en-GB"), unit after a thin space
+ *
+ * Plain DOM; every cell is set with textContent unless a column's cell() returns a Node.
+ * Optional custom properties: --seam.
+ *
+ * @id        kit.table
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A table in its own scroll frame with a sticky head, numeric columns, group rows with subtotals, a total row, highlighted rows and signed figures.
+ * @tags      table, data, numbers, totals, subtotal, group, budget, scroll, sticky header, tabular
+ * @requires  none
+ * @provides  Kit.table.render, Kit.table.fmt
+ * @config    Kit.table.render(box, opts) | columns [{key, label, num, signed, sum, decimals, unit, fmt, cell}], rows, group, groupTotals, total, highlight(row), caption, note, label, tall
+ * @config    markup | div.kit-table-box[role=region][tabindex=0] > table.kit-table, for hand-written tables
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent-soft --ok --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,23 +1,31 @@
 /* part:page.script.kit.viz.timeline */
-/* Kit visualization: vertical timeline and phase roadmap (Kit.timeline)    kit version 0.1.0
-   What it is: two forms of "what happened, in order".
-     mount   an event timeline: a rail down the left, a dot per event, and a card with the time, the title, the status word and a line of text. The dot holds a glyph (check, bang, cross, hollow,
-             dash), so a status never rides on colour alone. An event can name other things by id (links): hovering or focusing it lights them, and pressing it holds the light until it is
-             pressed again. A line of {marker: "Today"} between events draws a labelled divider.
-     phases  a roadmap: numbered phases (the order is the point), each with its dates, a state word (done, now, next) and a list.
-   API: Kit.timeline.mount(box, {events, statuses, targets, onHighlight, label, caption}) -> {highlight(ids), clear(), update(patch), destroy()}
-          events      [{id, when, title, text, status, links: [ids]} | {marker}]   when is shown as given; status is a key of statuses
-          statuses    {key: {label, tone, glyph}}   tone ok warn danger accent muted; glyph defaults by tone (check, bang, cross, bullet, dash)
-          targets     an element (or elements) holding the things the events point at; any [data-id] inside whose value is in links gets the class kit-hl while lit
-          onHighlight (ids) after a change; ids is [] when cleared
-        Kit.timeline.phases(box, {phases, label}) -> {destroy()}
-          phases      [{name, when, state: "done" | "now" | "next", text, items: [string]}]
-   Needs from the board:
-     css     kit/viz/timeline.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: a change report's event timeline (applied, dry-run and superseded dots), a decisions board's timeline that lights its cards, a roadmap's numbered phases, and a dated table with
-   a marked row. Changed: status is a glyph and a word as well as a colour, and the light follows keyboard focus as well as the pointer. */
+/**
+ * Vertical timeline and roadmap
+ * Kit.timeline.mount draws a rail down the left with a dot per event and a card with the time, the title, a status word and a line of text. The dot holds a glyph (check, bang, cross, hollow, dash), so a status never rides on colour alone. An event can name other things by id: hovering or focusing it lights them (the class kit-hl on any [data-id] inside the targets you give), and pressing it holds the light until it is pressed again. A {marker} entry draws a labelled divider such as Today. Kit.timeline.phases draws a roadmap of numbered phases, each with dates, a state word (done, now, next) and a list.
+ *
+ * API: Kit.timeline.mount(box, {events, statuses, targets, onHighlight, label, caption}) -> {highlight(ids), clear(), update(patch), destroy()}
+ *        events      [{id, when, title, text, status, links: [ids]} | {marker}]   when is shown as given; status is a key of statuses
+ *        statuses    {key: {label, tone, glyph}}   tone ok warn danger accent muted; glyph defaults by tone (check, bang, cross, bullet, dash)
+ *        targets     an element (or elements) holding the things the events point at; any [data-id] inside whose value is in links gets the class kit-hl while lit
+ *        onHighlight (ids) after a change; ids is [] when cleared
+ *      Kit.timeline.phases(box, {phases, label}) -> {destroy()}
+ *        phases      [{name, when, state: "done" | "now" | "next", text, items: [string]}]
+ *
+ * @id        viz.timeline
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Event timeline with glyph-and-word status dots that light linked cards, and numbered roadmap phases.
+ * @tags      timeline, events, roadmap, phases, status, highlight, history, milestones
+ * @requires  none
+ * @provides  Kit.timeline.mount, Kit.timeline.phases
+ * @config    Kit.timeline.mount(box, opts) | events [{id, when, title, text, status, links} | {marker}], statuses {key: {label, tone, glyph}}, targets, onHighlight(ids), label, caption
+ * @config    Kit.timeline.phases(box, opts) | phases [{name, when, state: done | now | next, text, items}], label
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --accent-soft --ok --warn --danger --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

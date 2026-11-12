@@ -1,16 +1,29 @@
 /* part:page.style.kit.theme.glaze-depth */
-/* Kit theme: Glaze depth    kit version 0.1.0    UPGRADE of theme.glaze (kit/themes/glaze.css, which is not edited): load this file after it.
-   What it adds: the tokens the glossy Glaze parts read and the flat palette lacks. A lit rim (--rim) and a pooled foot (--pool) for surfaces, --hi and --lo to mix
-   gloss in and out, thin edges (--edge, --edge-gold, --lac-rim, --danger-edge), the gold seam (--gold, --seam-0..4), a bead (--<meaning>-bead) and an ink (--<meaning>-ink)
-   for each of ok, warn, danger, info and wait (the -soft tints are Glaze's own), --sunk-2 (the deepest surface), the kiln fleck dials (--speck-opacity, --speck-invert),
-   a log block that stays dark in both themes (--log-*), an identity colour (--identity*) that marks who or what, never a state, four neutral kind greys (--kind-1..4),
-   and the radii and shadows (--glz-r-*, --glz-sh-*).
-   Reading rules: a bead is for a fill with a glyph or a word beside it (the celadon bead is 2.9:1 on the porcelain panel, under the 3:1 a graphic needs alone); draw a ring or
-   text with the -ink or the plain --ok/--warn/--danger/--info/--wait. Any other theme degrades: kit/glaze-surfaces.css gives every token below a fallback built from the
-   contract, so a part still draws, flat.
-   Kit.tokens CONTRACT lists them as glaze-surfaces: the tokens of this file plus --panel --sunk --ink --ink-2 --ink-3 --accent --accent-ink --f-ui --f-mono.
-   Light on :root, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]; Glaze follows the system (the source theme pinned light).
-   From: the Control panel's Glaze skin (its token contract: ground, light and depth, edges, gold, the five glazes, ornaments, log, identity, kinds) and its structural radii and shadows. */
+/**
+ * Glaze depth
+ * An upgrade of theme.glaze that adds a file and leaves Glaze's own files as they are: load glaze-depth.css after glaze.css. It adds the lit rim (--rim) and pooled foot (--pool), --hi and --lo for mixing gloss, thin edges (--edge, --edge-gold, --lac-rim, --danger-edge), the gold (--gold, --seam-0 to --seam-4), a bead for each of ok, warn, danger, info and wait (--ok-bead and so on) with its -ink for text on the -soft tint, --sunk-2, the kiln fleck dials, a log block that stays dark, an identity colour that marks who or what and never a state, four neutral kind greys, and the radii and shadows. Beads are for fills beside a word or glyph; the celadon bead is 2.9:1 on the porcelain panel. The json holds Glaze plus the depth tokens, so it is also a theme on its own. Other themes degrade: kit.glaze-surfaces gives every token a fallback.
+ *
+ * Reading rules: a bead is for a fill with a glyph or a word beside it (the celadon bead is 2.9:1 on the porcelain panel, under the 3:1 a graphic needs alone); draw a ring or
+ * text with the -ink or the plain --ok/--warn/--danger/--info/--wait. Any other theme degrades: kit/glaze-surfaces.css gives every token below a fallback built from the
+ * contract, so a part still draws, flat.
+ * Kit.tokens CONTRACT lists them as glaze-surfaces: the tokens of this file plus --panel --sunk --ink --ink-2 --ink-3 --accent --accent-ink --f-ui --f-mono.
+ * Light on :root, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]; Glaze follows the system (the source theme pinned light).
+ *
+ * @id        theme.glaze-depth
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   The tokens the glossy Glaze parts read and the flat Glaze lacks: a lit rim, a pooled foot, gold seam stops, a bead and an ink for each meaning, neutral kind greys.
+ * @tags      glaze, depth, porcelain, tenmoku, gold seam, bead, tokens, gloss
+ * @requires  theme.glaze, kit.tokens
+ * @config    fonts | the same as Glaze: Newsreader, Nunito, JetBrains Mono and Kalam from Google Fonts (the URL is in the json)
+ * @config    load order | kit/themes/glaze.css, then kit/themes/glaze-depth.css; the json is the merged light and dark maps
+ * @config    Kit.tokens CONTRACT | kit/tokens.js is not edited here: add the depth tokens to a 'glaze-surfaces' part of CONTRACT with both themes' values (they are listed in the css header)
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 :root {
   --sunk-2: #dce4e7;
   --shade: rgba(24, 52, 62, .26);

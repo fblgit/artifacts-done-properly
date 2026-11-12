@@ -1,27 +1,43 @@
 /* part:page.script.kit.namespaces */
-/* Kit pattern: namespaces (Kit.namespaces)    kit version 0.1.0
-   What it is: a read-only account of who can write where on an ADP artifact. Two sections.
-   Data, "Who can write where": one row per db rule, longest path first. Each row has the path (the root reads "everything else", a {self} segment reads "each viewer's own"), a sentence
-   ("Everyone reads; admins and up write.") and a ladder over the four levels of the db capability, lowest first: viewers, people who can interact, admins, the owner. The ladder is cut
-   into runs: "read and write" (solid, with a pen), "read only" (tinted, with an eye) and "no access" (an outline with a dash), each spanning the levels it covers, so it says it in
-   words and marks, not in colour alone. At the row's end, what you can do there: "You write" or "You read". The "you" verdict follows user.canEdit: an editor counts as interact
-   (writes interact-level paths and below, a footnote says so); a viewer writes nothing; admin and owner paths are never marked as yours.
-   Parts, "Locked parts": each prefix in parts.locked with a lock, how many parts it covers, and those part ids with their titles (whole-segment prefix match, as in docs/config.md); then
-   the parts left open, counted, with their ids in a disclosure. A change of parts.locked is announced through role="status". Nothing here writes: rules change by republish, locks on
-   the settings page.
-   API:
-     Kit.namespaces.mount(root, opts) -> {update(data), destroy()}
-       rules   [{path, read, write}]; default: the JSON of <meta name="adp:db-rules"> (a list, or {rules: [...]})
-       locks   [prefix]; default ADP.config.get('parts.locked'), re-read on ADP.config.on('parts.locked')
-       user    {canEdit}; default ADP.user (read at each draw; the runtime fills it once the page is ready)
-       parts   [part id]; default every [data-part] on the page       titles  {part id: title}       label  the region's accessible name (default "Namespaces")
-     Kit.namespaces.levels -> ["view", "interact", "admin", "owner"]
-   Needs from the board:
-     css     kit/patterns/namespaces.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono,
-             optional --accent-soft --seam --f-display --radius
-     globals none (the glyphs are this file's own); window.ADP is optional
-   db collections: config/current, read through ADP.config; no writes.
-   Lifted from: the settings page's read-only list of the namespaces it finds and its lock badges. Changed: one component for both, with the parts a lock covers listed under it. */
+/**
+ * Namespaces
+ * Kit.namespaces.mount(root) reads the page's db rules (the adp:db-rules meta tag), the parts.locked switch and ADP.user, and draws two sections. Who can write where has one row per rule, longest path first: the path (the root reads everything else, a {self} segment reads each viewer's own subtree), a sentence such as Everyone reads; admins and up write, and a ladder over the four levels of the db capability, lowest first (viewers, people who can interact, admins, the owner), cut into runs that read read and write (solid, with a pen), read only (tinted, with an eye) or no access (an outline with a dash), each spanning the levels it covers, under one row of level heads. At the row's end it says You write or You read: an editor (user.canEdit) counts as interact, so writes interact-level paths such as ns/shared and ns/users/{self}; a viewer writes nothing; admin and owner paths are never marked as yours, and a footnote says so. Locked parts shows each prefix with a lock, how many parts it covers and those part ids with their titles (whole-segment match), then the parts left open, counted, with their ids in a disclosure. It writes nothing: the rules change by republish and the locks on the settings page. A change of parts.locked is announced through role=status. The layout follows its container: under about 44rem each rule stacks (path, sentence, ladder, you) and the level heads shorten, with no sideways scroll; the only keyboard stop is the open-parts disclosure.
+ *
+ * What it is: a read-only account of who can write where on an ADP artifact. Two sections.
+ *
+ * Data, "Who can write where": one row per db rule, longest path first. Each row has the path (the root reads "everything else", a {self} segment reads "each viewer's own"), a sentence
+ * ("Everyone reads; admins and up write.") and a ladder over the four levels of the db capability, lowest first: viewers, people who can interact, admins, the owner. The ladder is cut
+ * into runs: "read and write" (solid, with a pen), "read only" (tinted, with an eye) and "no access" (an outline with a dash), each spanning the levels it covers, so it says it in
+ * words and marks, not in colour alone. At the row's end, what you can do there: "You write" or "You read". The "you" verdict follows user.canEdit: an editor counts as interact
+ * (writes interact-level paths and below, a footnote says so); a viewer writes nothing; admin and owner paths are never marked as yours.
+ *
+ * Parts, "Locked parts": each prefix in parts.locked with a lock, how many parts it covers, and those part ids with their titles (whole-segment prefix match, as in docs/config.md); then
+ * the parts left open, counted, with their ids in a disclosure. A change of parts.locked is announced through role="status". Nothing here writes: rules change by republish, locks on
+ * the settings page.
+ *
+ * API:
+ *   Kit.namespaces.mount(root, opts) -> {update(data), destroy()}
+ *     rules   [{path, read, write}]; default: the JSON of <meta name="adp:db-rules"> (a list, or {rules: [...]})
+ *     locks   [prefix]; default ADP.config.get('parts.locked'), re-read on ADP.config.on('parts.locked')
+ *     user    {canEdit}; default ADP.user (read at each draw; the runtime fills it once the page is ready)
+ *     parts   [part id]; default every [data-part] on the page       titles  {part id: title}       label  the region's accessible name (default "Namespaces")
+ *   Kit.namespaces.levels -> ["view", "interact", "admin", "owner"]
+ *
+ * @id        pattern.namespaces
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   Who can write where on an ADP artifact, read-only: each db rule as a path, a sentence and a ladder of the four levels, what you can do there, and the locked part prefixes with the parts they cover.
+ * @tags      namespaces, permissions, db-rules, locks, parts, read-only, settings, access
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.namespaces.mount, Kit.namespaces.levels
+ * @config    Kit.namespaces.mount(root, opts) | rules [{path, read, write}] (default the adp:db-rules meta), locks [prefix] (default ADP.config.get('parts.locked'), re-read on change), user {canEdit} (default ADP.user), parts [id] (default every [data-part]), titles {id: title}, label; returns {update, destroy}
+ * @config    parts.locked | read through ADP.config; optional, the component renders from the options alone
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --accent-soft? --seam? --f-display? --radius?
+ * @globals   none
+ * @db        reads config/current (through ADP.config)
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,25 +1,37 @@
 /* part:page.script.kit.stack */
-/* Kit layout: stacked sections (Kit.stack)    kit version 0.1.0
-   What it is: a page of full-height sections that rise over each other as you scroll (each one sticks, the next slides up and covers it), with a progress bar and "Step N of M" that
-   follow the scroll, and a previous and next footer on every section. A section taller than the screen sticks when its bottom meets the bottom of the screen, not its top, so all of it can
-   be read before the next one covers it. Plain DOM. The mouse-wheel "detent" of the board this came from is not part of it: scrolling stays the browser's own.
-   Falls back to a plain page (no sticking, natural heights) on a narrow screen (max-width 700px) and when the viewer asks for reduced motion; the bar, the step count and the footers still work.
-   API (small and stable):
-     Kit.stack.mount(root, {items, label, scroller, top, barLabel, footers}) -> {current(), count(), go(indexOrId), update(), destroy()}
-       items     [{id, title, eyebrow, render(body, i) | node}]   id is a bare token (letters, digits, . _ ~ -); render fills the section body, or pass a node/string
-       label     accessible name of the whole stack (default "Sections")
-       scroller  the scrolling element when the stack lives in a framed area instead of the page (default: the page)
-       top       css length the stack sticks below, for a fixed header above it (default "0px"); the bar sits at this offset
-       barLabel  the text before the step count (default "Step")
-       footers   false leaves out the previous and next footers
-     Kit.stack.bind(root, opts) -> same handle, for hand-written markup: root > section (each with an id and a heading); the bar and the footers are added
-     The step count is also read by assistive tech through a progressbar (valuenow is the step, valuetext "Step 3 of 4: Title"); go() moves focus to the section's heading.
-   State: data-flow="true" on the root while it is a plain page; [data-current] on the section in view; --kit-stack-h (the screen height the sections fill) is set on the root.
-   Needs from the board:
-     css     kit/layout/stack.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --f-display --f-mono, optional --seam --shadow
-     globals none required (ResizeObserver keeps the sticking points right when a section's height changes)
-   db collections: none.
-   Lifted from: an earlier board's journey page (sticky stacked sections and their tall-section fix, the progress bar, step count and previous and next section footers). */
+/**
+ * Stacked sections
+ * Kit.stack.mount(root, {items}) (or bind(root) over hand-written sections) makes a page of full-height sections that stick and are covered by the next as you scroll. A section taller than the screen sticks when its bottom meets the bottom of the screen, so all of it can be read. A bar at the top shows the progress and 'Step 3 of 4' with the section's name, and is a progressbar for assistive tech; each section ends with previous and next buttons that scroll to it and move focus to its heading. On a narrow screen (700px) and with reduced motion the sections stay in normal flow and everything else still works. Pass scroller to run it inside a framed area, and top to leave room for a fixed header. The mouse-wheel detents of the source are not carried: scrolling stays the browser's own.
+ *
+ * API (small and stable):
+ *   Kit.stack.mount(root, {items, label, scroller, top, barLabel, footers}) -> {current(), count(), go(indexOrId), update(), destroy()}
+ *     items     [{id, title, eyebrow, render(body, i) | node}]   id is a bare token (letters, digits, . _ ~ -); render fills the section body, or pass a node/string
+ *     label     accessible name of the whole stack (default "Sections")
+ *     scroller  the scrolling element when the stack lives in a framed area instead of the page (default: the page)
+ *     top       css length the stack sticks below, for a fixed header above it (default "0px"); the bar sits at this offset
+ *     barLabel  the text before the step count (default "Step")
+ *     footers   false leaves out the previous and next footers
+ *   Kit.stack.bind(root, opts) -> same handle, for hand-written markup: root > section (each with an id and a heading); the bar and the footers are added
+ *   The step count is also read by assistive tech through a progressbar (valuenow is the step, valuetext "Step 3 of 4: Title"); go() moves focus to the section's heading.
+ * State: data-flow="true" on the root while it is a plain page; [data-current] on the section in view; --kit-stack-h (the screen height the sections fill) is set on the root.
+ *
+ * ResizeObserver keeps the sticking points right when a section height changes.
+ *
+ * @id        layout.stack
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Full-height sections that rise over each other, with the tall-section fix, a progress bar, step N of M and previous and next footers.
+ * @tags      sticky, stacked, sections, scroll, progress, step, footer, previous, next, story
+ * @requires  kit.tokens
+ * @provides  Kit.stack.mount, Kit.stack.bind
+ * @config    Kit.stack.mount(root, {items, label, scroller, top, barLabel, footers}) | items [{id, title, eyebrow, render(body, i) | node}]; returns {current(), count(), go(indexOrId), update(), destroy()}
+ * @config    Kit.stack.bind(root, opts) | for hand-written markup: root > section, each with an id and a heading
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --f-display --f-mono --shadow? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,32 +1,40 @@
 /* part:page.script.kit.viz.bubbles */
-/* Kit visualization: bubble pictures (Kit.bubbles)    kit version 0.1.0
-   What it is: the same records drawn two ways. Clusters: a disc for each group, its records packed inside it as bubbles (sunflower packing: the first in the middle, the rest spiralling out),
-   a dotted gold ring round each disc. Lanes: one lane for each group, each record strung on a gold seam at its value on a square-root axis, bubbles that would overlap stepping up and down
-   (never more than 48 units sideways). A lens line under the picture shows the record in focus (hover, focus or pick) with its facts and actions. Records that fail the filter dim; they do
-   not disappear, so the counts stay honest. A third picture, orbits (one orbit for each group, one ring for each kind), is behind orbits: true; it is a draft, as in its source.
-   The axis is honest: the ticks are placed with the same function as the bubbles, and the axis names the scale ("square-root scale") in words.
-   API:
-     Kit.bubbles.mount(box, opts) -> {setLayout(name), setFilter(fn|null), select(id|null), update(patch), destroy()}
-       opts   { records, groups, layout: "clusters", enum: "life", scale, filter, width: 1000, lens, onPick(rec), onAction(key, rec), label, host, orbits: false, emptyLens }
-                records   [{id, group, value, state, glyph, label, sub, ring}]  value is a number from 0 up (days left, say); state a value of the enum (draws the ring colour, the small mark and the
-                          word in the lens); glyph a Kit.vocab glyph name drawn inside; label and sub name it; ring (orbits only) is the kind that picks the ring
-                groups    [{key, label}] in drawing order; a group a record names that is not listed is added, labelled by its key
-                scale     { name: "square-root", f: Math.sqrt, ticks: [[30, "30 days"], [90, "3 months"], [365, "1 year"]], max, nowLabel: "now" }  the lanes' axis. f must be increasing; ticks are
-                          drawn at f(value), so they cannot disagree with the bubbles. Records at 0 or less sit at "now".
-                filter    (rec) => boolean, true means the record matches
-                lens      (rec) => {title, sub, actions: [{key, label}]}  the lens line's text; the default shows label, sub and the state word
-       onPick fires on a click, Enter or Space (the bubble is a button); onAction on one of the lens line's actions.
-       setLayout("clusters" | "lanes" | "orbits"), setFilter(fn) and select(id) change the picture without remounting.
-     Kit.bubbles.packing(n, c) -> [[x, y]]   the sunflower positions of n bubbles for a spacing c (angle i * 2.399963, radius c * sqrt(i + 0.5)); pure, for a board's own picture
-   Each bubble has a name ("label, group, state, value") and a tip (Kit.tooltip); Tab visits them in group order; the lens line is a live region.
-   Needs from the board:
-     requires viz.seal (it defines the "life" enum the states come from; use your own enum with opts.enum), kit.vocab, kit.tooltip
-     css     kit/viz/bubbles.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-mono, optional --seam --seam-0..4 --hi --pebble-hi --rim --pool
-     globals Kit.vocab, Kit.tooltip
-   db collections: none.
-   Lifted from: a network-ops console's inventory pictures (a bubble mark with a halo, gloss and kind glyph; clusters by sunflower packing in a dotted seam ring; lanes on a square-root time axis
-   with collision rows; orbits; the lens line). Changed: groups, state words, the scale and its ticks are config, a dimmed record stays in the tab order only when it matches, the state is a
-   glyph as well as a ring, and the lens keeps its record until another is chosen so its actions can be reached. */
+/**
+ * Bubble pictures
+ * One set of records, two pictures. Clusters: a disc for each group, its records packed inside as bubbles by sunflower packing, a dotted gold ring round each disc. Lanes: one lane for each group, each record strung on a gold seam at its value on a square-root axis, bubbles that would overlap stepping up and down (never more than 48 units sideways). The axis is honest: its ticks use the same function as the bubbles and it names its scale in words. A lens line under the picture shows the record in focus with its facts and actions (it keeps the record until another is chosen, so its actions can be reached). Records the filter leaves out dim; they do not disappear, so counts stay honest. Orbits (a third picture, one orbit for each group) is behind a flag and unfinished, as in its source.
+ *
+ * API:
+ *   Kit.bubbles.mount(box, opts) -> {setLayout(name), setFilter(fn|null), select(id|null), update(patch), destroy()}
+ *     opts   { records, groups, layout: "clusters", enum: "life", scale, filter, width: 1000, lens, onPick(rec), onAction(key, rec), label, host, orbits: false, emptyLens }
+ *              records   [{id, group, value, state, glyph, label, sub, ring}]  value is a number from 0 up (days left, say); state a value of the enum (draws the ring colour, the small mark and the
+ *                        word in the lens); glyph a Kit.vocab glyph name drawn inside; label and sub name it; ring (orbits only) is the kind that picks the ring
+ *              groups    [{key, label}] in drawing order; a group a record names that is not listed is added, labelled by its key
+ *              scale     { name: "square-root", f: Math.sqrt, ticks: [[30, "30 days"], [90, "3 months"], [365, "1 year"]], max, nowLabel: "now" }  the lanes' axis. f must be increasing; ticks are
+ *                        drawn at f(value), so they cannot disagree with the bubbles. Records at 0 or less sit at "now".
+ *              filter    (rec) => boolean, true means the record matches
+ *              lens      (rec) => {title, sub, actions: [{key, label}]}  the lens line's text; the default shows label, sub and the state word
+ *     onPick fires on a click, Enter or Space (the bubble is a button); onAction on one of the lens line's actions.
+ *     setLayout("clusters" | "lanes" | "orbits"), setFilter(fn) and select(id) change the picture without remounting.
+ *   Kit.bubbles.packing(n, c) -> [[x, y]]   the sunflower positions of n bubbles for a spacing c (angle i * 2.399963, radius c * sqrt(i + 0.5)); pure, for a board's own picture
+ * Each bubble has a name ("label, group, state, value") and a tip (Kit.tooltip); Tab visits them in group order; the lens line is a live region.
+ *
+ * Also load kit/vocab.css.
+ *
+ * @id        viz.bubbles
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   The same records drawn as clusters of packed bubbles in a seam ring, or as strips on a square-root time axis that keeps overlapping items apart, with a lens line for the one in focus.
+ * @tags      bubbles, clusters, lanes, scale, square root, sunflower, lens, records, inventory
+ * @requires  viz.seal, kit.vocab, kit.tooltip
+ * @provides  Kit.bubbles.mount, Kit.bubbles.packing
+ * @config    Kit.bubbles.mount(box, {records, groups, layout, scale, filter, lens, onPick, onAction, orbits}) | records [{id, group, value, state, glyph, label, sub, ring}], groups [{key, label}], scale {name, f, ticks, max, nowLabel}; layout clusters | lanes (| orbits with orbits: true)
+ * @config    handle | {setLayout(name), setFilter(fn), select(id), update(patch), destroy()}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --seam? --seam-0? --seam-1? --seam-2? --seam-3? --seam-4? --hi? --pebble-hi? --rim? --pool? --sunk-2?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

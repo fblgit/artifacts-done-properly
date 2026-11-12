@@ -1,15 +1,31 @@
 /* part:page.style.kit.patterns.blueprint */
-/* Kit css: service blueprint    kit version 0.1.0    CSS only; a modifier on kit/table.css
-   <div class="kit-table-box kit-bp" role="region" aria-label="…" tabindex="0"> <table class="kit-table"> <thead><tr><th>Lane</th><th>Invite</th>…</tr></thead>
-     <tbody> <tr><th scope="row">Owner does</th><td>…</td>…</tr>
-             <tr class="kit-bp-line"><td colspan="N"><div><span>line of visibility</span></div></td></tr>   a dashed rule between the lanes the person sees and the lanes they do not
-             <tr><th scope="row">Backstage</th>…</tr> </tbody> </table> </div>
-   Lane names sit in the first column and stay in view while the steps scroll sideways. In a cell:
-     <span class="kit-bp-mot">moment of truth</span>   a ringed tag for a step that makes or breaks the trust
-     <span class="kit-bp-feel" data-feel="lo|mid|hi">Anxious</span>   the feeling as a word, with a dot that repeats low, middle or high
-     <span class="kit-bp-pain">…</span>, <span class="kit-bp-opp">…</span>   a pain point and an opportunity, each led by its own word
-     <span class="kit-bp-has">…</span>   the support a step leans on, in small mono
-   Needs from the board: the table's (--panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono) and --ok --warn --danger, optional --seam */
+/**
+ * Service blueprint
+ * CSS only, a modifier on the data table. Lane names stay in the first column while the steps scroll sideways inside the frame; tr.kit-bp-line draws the dashed line of interaction or visibility between lanes. In a cell: a ringed 'moment of truth' tag, the feeling as a word with a dot (low, middle, high), a pain point and an opportunity each led by its own word, and the support a step leans on in small mono.
+ *
+ * <div class="kit-table-box kit-bp" role="region" aria-label="…" tabindex="0"> <table class="kit-table"> <thead><tr><th>Lane</th><th>Invite</th>…</tr></thead>
+ *   <tbody> <tr><th scope="row">Owner does</th><td>…</td>…</tr>
+ *           <tr class="kit-bp-line"><td colspan="N"><div><span>line of visibility</span></div></td></tr>   a dashed rule between the lanes the person sees and the lanes they do not
+ *           <tr><th scope="row">Backstage</th>…</tr> </tbody> </table> </div>
+ * Lane names sit in the first column and stay in view while the steps scroll sideways. In a cell:
+ *   <span class="kit-bp-mot">moment of truth</span>   a ringed tag for a step that makes or breaks the trust
+ *   <span class="kit-bp-feel" data-feel="lo|mid|hi">Anxious</span>   the feeling as a word, with a dot that repeats low, middle or high
+ *   <span class="kit-bp-pain">…</span>, <span class="kit-bp-opp">…</span>   a pain point and an opportunity, each led by its own word
+ *   <span class="kit-bp-has">…</span>   the support a step leans on, in small mono
+ *
+ * @id        pattern.blueprint
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Swimlane table: touchpoints, what the person does and feels, frontstage, backstage and support, per step, with the lines of interaction and visibility.
+ * @tags      blueprint, service blueprint, swimlane, journey, touchpoints, frontstage, backstage, moment of truth, lanes
+ * @requires  kit.table
+ * @config    markup | div.kit-table-box.kit-bp > table.kit-table > thead (Lane + steps), tbody > tr > th[scope=row] + td, tr.kit-bp-line > td[colspan] > div > span
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --ok --warn --danger --seam?
+ * @globals   none
+ * @db        none
+ */
 .kit-bp { min-width: 0; max-width: 100%; }
 .kit-bp .kit-table { min-width: 1180px; font-size: 14px; }
 .kit-bp .kit-table thead th:first-child, .kit-bp .kit-table tbody th[scope="row"] { position: sticky; left: 0; z-index: 2; min-width: 116px; max-width: 150px; white-space: normal; background: var(--sunk); border-right: 1px solid var(--rule); }

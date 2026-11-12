@@ -1,26 +1,42 @@
 /* part:page.script.kit.patterns.disclosure-reader */
-/* Kit pattern: reference reader (Kit.disclosureReader)    kit version 0.1.0    EXTENDS pattern.disclosure (disclosure.js and disclosure.css stay as they are; this is a new file beside them)
-   What it is: the chrome around a long list of disclosure cards. A row of glance tiles (how many sections, how many open, anything the page counts), a filter box that says "3 of 9 sections" and shows a
-   designed empty state when nothing matches, and an index of the sections that follows the one in view. The cards stay Kit.disclosure's details elements; this file only hides the ones the filter drops,
-   adds ids where they are missing, and builds the tiles and the index. Plain DOM; every text is set with textContent. Without IntersectionObserver the index still works, it just does not follow.
-   API:
-     Kit.disclosureReader.mount(root, {cards, titleOf, textOf, tiles, filter, index, indexLabel, scroller, hash, words, onFilter}) -> {setFilter(q), current(), refresh(), destroy()}
-       root      the element that holds the cards (a Kit.disclosure.render box, or any list of details)
-       cards     selector for the cards inside root (default "details.kit-dis")
-       titleOf   (card) -> the title for the index (default the text of .kit-dis-t, else the summary)        textOf  (card) -> the text the filter searches (default the card's text)
-       tiles     [{label, value}] extra tiles after the two it counts itself (Sections, Open); false for none
-       filter    true (default) shows the filter box          index  true (default) shows the index
-       scroller  the scrolling element when it is not the page (a framed preview)
-       hash      true writes the section id to the page's #anchor on a press (default false: the index scrolls and focuses the section and leaves the address alone)
-       words     {sections, open, filter, placeholder, count(n, m), empty, emptyHint, clear, index}
-       onFilter  (query, shown, total) after every change
-     The index is a nav of buttons (links when hash is true). The section in view gets aria-current="location". A press scrolls the section to the top, opens it and moves focus to its summary.
-   Needs from the board:
-     css     kit/patterns/disclosure.css (the cards) and kit/patterns/disclosure-reader.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display, optional --seam --kit-topbar-h
-     globals none
-   db collections: none.
-   Lifted from: an earlier board's reference page (a filter with an "n of m sections" count and an empty state, an "On this page" index that follows the section in view, glance tiles).
-   Changed: the filter hides by the card's own text, not by a hub field; the tiles count what the page has, not what the board holds; the index is a list of buttons by default so a press never changes the page's address. */
+/**
+ * Reference reader: filter, index and glance tiles
+ * Kit.disclosureReader.mount(root, opts) wraps a list of disclosure cards (details elements, from Kit.disclosure or by hand). It adds a row of glance tiles (Sections and Open are counted; you can add your own), a filter box that hides the cards that do not match and says how many remain, an empty state that names the problem and offers to clear the filter, and an index of the sections that follows the one in view (an IntersectionObserver; without it the index still works). A press on an index entry opens the section, scrolls it to the top and moves focus to its summary, and by default leaves the page's address alone. From 860px the index is a sticky column; below that, a row of chips that scrolls inside its own box.
+ *
+ * The chrome around a long list of disclosure cards. A row of glance tiles (how many sections, how many open, anything the page counts), a filter box that says "3 of 9 sections" and shows a
+ * designed empty state when nothing matches, and an index of the sections that follows the one in view. The cards stay Kit.disclosure's details elements; this file only hides the ones the filter drops,
+ * adds ids where they are missing, and builds the tiles and the index. Plain DOM; every text is set with textContent. Without IntersectionObserver the index still works, it just does not follow.
+ *
+ * API:
+ *   Kit.disclosureReader.mount(root, {cards, titleOf, textOf, tiles, filter, index, indexLabel, scroller, hash, words, onFilter}) -> {setFilter(q), current(), refresh(), destroy()}
+ *     root      the element that holds the cards (a Kit.disclosure.render box, or any list of details)
+ *     cards     selector for the cards inside root (default "details.kit-dis")
+ *     titleOf   (card) -> the title for the index (default the text of .kit-dis-t, else the summary)        textOf  (card) -> the text the filter searches (default the card's text)
+ *     tiles     [{label, value}] extra tiles after the two it counts itself (Sections, Open); false for none
+ *     filter    true (default) shows the filter box          index  true (default) shows the index
+ *     scroller  the scrolling element when it is not the page (a framed preview)
+ *     hash      true writes the section id to the page's #anchor on a press (default false: the index scrolls and focuses the section and leaves the address alone)
+ *     words     {sections, open, filter, placeholder, count(n, m), empty, emptyHint, clear, index}
+ *     onFilter  (query, shown, total) after every change
+ *   The index is a nav of buttons (links when hash is true). The section in view gets aria-current="location". A press scrolls the section to the top, opens it and moves focus to its summary.
+ *
+ * CSS classes: .kit-rdr
+ *
+ * @id        pattern.disclosure-reader
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An upgrade of pattern.disclosure: glance tiles, a filter box that says "3 of 9 sections" with a designed empty state, and an index that follows the section in view.
+ * @tags      reader, filter, index, table of contents, search, glance, tiles, reference, sections, empty state
+ * @requires  kit.tokens, pattern.disclosure
+ * @provides  Kit.disclosureReader.mount
+ * @config    Kit.disclosureReader.mount(root, opts) | cards selector, titleOf, textOf, tiles [{label, value}] | false, filter, index, scroller, hash, words, onFilter; returns {setFilter, current, refresh, destroy}
+ * @config    IntersectionObserver | follows the section in view; optional
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --seam? --kit-topbar-h?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,21 +1,38 @@
 /* part:page.script.kit.patterns.figures */
-/* Kit pattern: key figures and the report hero (Kit.figures)    kit version 0.1.0    extends viz.core (Figures); a new file, kit/viz/core.js is unchanged
-   What it is: the numbers that open a report, in four layouts, and a hero that carries them. Figures can count up once when they first show (skipped for prefers-reduced-motion and when
-   the page is hidden; the final number is the text the screen reader gets either way). Plain DOM; every string is set with textContent.
-   API (small and stable):
-     Kit.figures.render(box, {variant, items, label, countUp}) -> {update(items), destroy()}
-       variant  "grid" (default) | "tiles" | "strip" | "facts"
-       item     grid:  {value, label, unit, hot, count}            value a number or text; count true counts a number up; hot marks the key figure (one is plenty)
-                tiles: {label, value: "Healthy", note, tone}       tone ok | warn | danger | info | muted: the state is the word, the dot repeats it
-                strip: {label, value: "A short phrase", note}
-                facts: {label, value, note}
-     Kit.figures.hero(box, {stamp, title, lede, chips, items, variant, countUp}) -> same handle
-       chips    [{label, value}]   a row of summary chips under the lede
-   Needs from the board:
-     css     kit/patterns/figures.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-soft --ok --warn --danger --f-ui --f-mono --f-display, optional --seam --gold-leaf --info --shadow
-     globals none
-   db collections: none.
-   Lifted from: seven documents' figure rows (a hairline key-figure grid, a hero with count-up stats, a hero with summary chips, a status tile row, one-screen summary tiles, a three-up state strip, a facts strip). */
+/**
+ * Key figures and hero
+ * The numbers that open a report. Kit.figures.render draws a dl in one of four layouts: grid (hairline cells, one marked as the key figure), tiles (a label, the state as a word with a dot, a line under it), strip (three statements split by rules) and facts (label and value pairs under rules). Kit.figures.hero wraps them with an optional stamp, a title, a lede, a row of summary chips and one gold hairline. Figures can count up once when they scroll into view; reduced motion and hidden pages get the final number. An upgrade of viz.core's Figures as a new file.
+ *
+ * The numbers that open a report, in four layouts, and a hero that carries them. Figures can count up once when they first show (skipped for prefers-reduced-motion and when
+ * the page is hidden; the final number is the text the screen reader gets either way). Plain DOM; every string is set with textContent.
+ *
+ * API (small and stable):
+ *   Kit.figures.render(box, {variant, items, label, countUp}) -> {update(items), destroy()}
+ *     variant  "grid" (default) | "tiles" | "strip" | "facts"
+ *     item     grid:  {value, label, unit, hot, count}            value a number or text; count true counts a number up; hot marks the key figure (one is plenty)
+ *              tiles: {label, value: "Healthy", note, tone}       tone ok | warn | danger | info | muted: the state is the word, the dot repeats it
+ *              strip: {label, value: "A short phrase", note}
+ *              facts: {label, value, note}
+ *   Kit.figures.hero(box, {stamp, title, lede, chips, items, variant, countUp}) -> same handle
+ *     chips    [{label, value}]   a row of summary chips under the lede
+ *
+ * CSS classes: .kit-figs .kit-hero
+ *
+ * @id        pattern.figures
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A report hero with stamp, summary chips and count-up figures, and four figure layouts: hairline grid, status tiles, three-up strip and facts.
+ * @tags      figures, hero, stats, kpi, tiles, summary, count up, facts, report
+ * @requires  none
+ * @provides  Kit.figures.render, Kit.figures.hero
+ * @config    Kit.figures.render(box, opts) | variant grid|tiles|strip|facts; items per variant (grid {value, label, unit, hot, count}; tiles {label, value, note, tone}; strip and facts {label, value, note}); countUp, label
+ * @config    Kit.figures.hero(box, opts) | stamp, title, lede, chips [{label, value}], items, variant, countUp
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --accent-soft --ok --warn --danger --shadow --info? --seam? --gold-leaf?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,38 +1,54 @@
 /* part:page.script.kit.confirm-sheet */
-/* Kit pattern: confirm sheet by risk (Kit.confirm)    kit version 0.1.0
-   What it is: a dialog for a change that has consequences. It tells the plan in order with each step's before and after, what the change needs and what it holds while it runs, and how to undo it.
-   The risk sets the tone, the words and the weight: routine, consequential, destructive (a typed word seals it), bulk (many items folded into one line). A change that needs hands (a PIN, a touch on
-   a hardware key) goes on to a waiting step in the same sheet. When the change starts, the sheet can fly into a tray. A failed or finished change has a result sheet. Kit.chrome's openModal is the
-   form dialog; this is the risk workflow, so both stay.
-   API (small and stable):
-     Kit.confirm.open(spec) -> Promise<{confirmed, typed?, pin?}>   one sheet at a time; opening another resolves the first as not confirmed
-       spec   kind        routine | consequential | destructive | bulk (or a key you added with define); default routine
-              title, lede strings        kicker (overrides the kind's)        tone  ok | warn | bad | info | wait (overrides the kind's)
-              steps       [{label, from, to, why, mono}]   what will change, in order; from and to draw as a before chip, an arrow and an after chip
-              bulk        {label, items: [{name, from, to, tone}]}   one folded line ("12 recipes retire") that opens to the list
-              needs       [{kind, label, detail, missing}]   what it takes; kind is a glyph: key | pin | lock | node | any word (draws a dot). missing marks it in the danger tone
-              holds       [string]   what it holds while it runs ("kiln 2"): one sentence says nothing else can use them
-              undo        string, or {none: true, text}   how to take it back, or that it cannot be
-              last        string   when it last ran
-              word, wordLabel   the word to type to unlock the confirm button; the stamp fills as the letters match
-              plan        {ms}     the plan is still loading: a skeleton shows and Apply stays off until ms have passed (or call plan.done())
-              hands       {pin, touch, serial, title, lede, pinLabel, demo, touch()}   the waiting step after confirm. pin asks for 6 or more digits first; touch() returns a promise that ends the wait
-              confirmLabel, cancelLabel, trayTitle, toast (false turns off the hand-off line)
-     Kit.confirm.result(spec) -> Promise<{action}>   spec.view "failed": {title, lede, what: {title, detail, code}, todo: [string], undo, holds, retryLabel} -> action log | close | retry
-                                                     spec.view "success": {title, lede, steps, undo, last, undoLabel} -> action undo | close
-     Kit.confirm.define({kind: {kicker, tone, glyph, confirmLabel}})   add or replace a risk preset
-     Kit.confirm.close()   cancel whatever is open
-     Options on the spec: host (a positioned element; the sheet then sits inside it instead of over the page), tray (a selector for the hand-off target, default "[data-tray]").
-   Keeps: focus trap and focus back to the opener, Escape and a click on the scrim cancel (not while locked), role=dialog with aria-labelledby, a polite live region ("The plan is ready",
-   "Sealed"). The fly into the tray runs only when a tray exists and motion is allowed. The PIN field is a password input, never logged, cleared once read; it is only returned when hands.pin is set.
-   Needs from the board:
-     css     kit/patterns/confirm-sheet.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-display --f-mono, optional --scrim
-             --shadow, and, from kit.glaze-surfaces, the buttons and fields; the Glaze depth tokens when present (flat without them)
-     kit     kit/glaze-surfaces.css (kit-btn, kit-input, kit-orb, kit-field, the kit-is-* tones); no script of the kit is called
-     globals none
-   db collections: none.
-   Lifted from: a network-ops console's confirm sheet (the plan with before and after chips, the needs and holds, the undo line, the typed-word seal with a stamp, the waiting-for-hands step, the
-   fly into the jobs tray, the failed and finished sheets). Changed: the presets are a table you extend, the project's own words and icons are gone, and the sheet can sit inside a host element. */
+/**
+ * Confirm sheet by risk
+ * Kit.confirm.open(spec) resolves {confirmed, typed, pin} and Kit.confirm.result(spec) resolves {action}. The spec sets a kind (routine, consequential, destructive, bulk), a title and lede, the steps with a before chip, an arrow and an after chip, a folded bulk list, what the change needs (a key, a PIN, a lock, with a missing one in the danger tone), what it holds while it runs, how to undo it or that it cannot be undone, and when it last ran. A plan that is still loading shows a skeleton and keeps the confirm button off. A word to type fills a stamp ring letter by letter and unlocks the button. A change that needs hands goes on to a waiting step in the same sheet: a PIN field, then a turning dashed ring and a Stop waiting button that says nothing has been signed yet. When it starts the sheet can fly into a tray. Failed and finished changes have a result sheet each. Focus is trapped and returned, Escape and the scrim cancel unless the sheet is locked, and a polite live region says when the plan is ready and when the word is sealed. The sheet sits over the page, or inside a positioned host. Kit.chrome’s openModal stays the form dialog; this is the risk workflow. The PIN is a password input that is cleared once read and returned only when asked for.
+ *
+ * A dialog for a change that has consequences. It tells the plan in order with each step's before and after, what the change needs and what it holds while it runs, and how to undo it.
+ * The risk sets the tone, the words and the weight: routine, consequential, destructive (a typed word seals it), bulk (many items folded into one line). A change that needs hands (a PIN, a touch on
+ * a hardware key) goes on to a waiting step in the same sheet. When the change starts, the sheet can fly into a tray. A failed or finished change has a result sheet. Kit.chrome's openModal is the
+ * form dialog; this is the risk workflow, so both stay.
+ *
+ * API (small and stable):
+ *   Kit.confirm.open(spec) -> Promise<{confirmed, typed?, pin?}>   one sheet at a time; opening another resolves the first as not confirmed
+ *     spec   kind        routine | consequential | destructive | bulk (or a key you added with define); default routine
+ *            title, lede strings        kicker (overrides the kind's)        tone  ok | warn | bad | info | wait (overrides the kind's)
+ *            steps       [{label, from, to, why, mono}]   what will change, in order; from and to draw as a before chip, an arrow and an after chip
+ *            bulk        {label, items: [{name, from, to, tone}]}   one folded line ("12 recipes retire") that opens to the list
+ *            needs       [{kind, label, detail, missing}]   what it takes; kind is a glyph: key | pin | lock | node | any word (draws a dot). missing marks it in the danger tone
+ *            holds       [string]   what it holds while it runs ("kiln 2"): one sentence says nothing else can use them
+ *            undo        string, or {none: true, text}   how to take it back, or that it cannot be
+ *            last        string   when it last ran
+ *            word, wordLabel   the word to type to unlock the confirm button; the stamp fills as the letters match
+ *            plan        {ms}     the plan is still loading: a skeleton shows and Apply stays off until ms have passed (or call plan.done())
+ *            hands       {pin, touch, serial, title, lede, pinLabel, demo, touch()}   the waiting step after confirm. pin asks for 6 or more digits first; touch() returns a promise that ends the wait
+ *            confirmLabel, cancelLabel, trayTitle, toast (false turns off the hand-off line)
+ *   Kit.confirm.result(spec) -> Promise<{action}>   spec.view "failed": {title, lede, what: {title, detail, code}, todo: [string], undo, holds, retryLabel} -> action log | close | retry
+ *                                                   spec.view "success": {title, lede, steps, undo, last, undoLabel} -> action undo | close
+ *   Kit.confirm.define({kind: {kicker, tone, glyph, confirmLabel}})   add or replace a risk preset
+ *   Kit.confirm.close()   cancel whatever is open
+ *   Options on the spec: host (a positioned element; the sheet then sits inside it instead of over the page), tray (a selector for the hand-off target, default "[data-tray]").
+ *
+ * Keeps: focus trap and focus back to the opener, Escape and a click on the scrim cancel (not while locked), role=dialog with aria-labelledby, a polite live region ("The plan is ready",
+ * "Sealed"). The fly into the tray runs only when a tray exists and motion is allowed. The PIN field is a password input, never logged, cleared once read; it is only returned when hands.pin is set.
+ *
+ * CSS classes: .kit-cs-scrim .kit-cs .kit-cs-steps .kit-cs-seal
+ *
+ * @id        pattern.confirm-sheet
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A dialog for a change that has consequences: the plan in order with before and after, what it needs and holds, how to undo it; for the dangerous ones a typed word that seals it.
+ * @tags      confirm, dialog, risk, plan, type the word, undo, sheet, hand-off, destructive
+ * @requires  kit.glaze-surfaces, kit.tokens
+ * @provides  Kit.confirm.open, Kit.confirm.result, Kit.confirm.define, Kit.confirm.close
+ * @config    Kit.confirm.open(spec) | spec: kind, title, lede, steps [{label, from, to, why, mono}], bulk {label, items}, needs [{kind, label, detail, missing}], holds [string], undo, last, word, plan {ms}, hands {pin, touch, serial, touch()}, confirmLabel, host, tray
+ * @config    Kit.confirm.result(spec) | spec.view is "failed" (what, todo, undo, holds) or "success" (steps, undo, last)
+ * @config    Kit.confirm.define({kind: {kicker, tone, glyph, confirmLabel}}) | adds or replaces a risk preset; tones are ok | warn | bad | info | wait from kit.glaze-surfaces
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --rule-2 --accent-ink --ok --warn --danger --f-display --f-mono --scrim? --shadow? --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

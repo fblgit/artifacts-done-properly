@@ -1,20 +1,37 @@
 /* part:page.script.kit.patterns.findings */
-/* Kit pattern: finding cards (Kit.findings)    kit version 0.1.0
-   What it is: review findings as cards. Each has a severity chip (a glyph and a word), an optional kind tag (conflict, noise, unclear), a title, the evidence in a sentence, a row of
-   where/what pairs and a fix. Sorted worst first. Plain DOM; every string is set with textContent, so a finding can quote text from anywhere.
-   API (small and stable):
-     Kit.findings.render(box, {items, sort, summary, cols, label}) -> {count(), update(items)}
-       item     {severity: "crit" | "high" | "med" | "low" | "ok", tag, title, body, evidence: [[key, value], ...], fix}
-       sort     true (default) orders crit, high, med, low, ok; items of one level keep their order
-       summary  true (default) puts a line above the list: "3 findings: 1 critical, 1 high, 1 medium"
-       cols     2 lays the cards in two columns from 760px up
-     Kit.findings.chip(severity, label?) -> HTMLElement   the severity chip alone (for a table cell or a heading)
-     Kit.findings.LEVELS -> [{id, word, plural}]
-   Needs from the board:
-     css     kit/patterns/findings.css; custom properties --panel --sunk --ink --ink-2 --rule --danger --warn --ok --accent --f-ui --f-mono --f-display, optional --info, --seam
-     globals none
-   db collections: none.
-   Lifted from: four documents' finding cards (a contract review's strongest-to-curable cards with citations, an icon-and-title pair, a triage card with a kind tag and a fix, the severity chip with an icon). */
+/**
+ * Finding cards
+ * Review findings as cards. The severity is a glyph and a word in a chip (so it reads without colour), an optional kind tag says what sort of problem it is (conflict, gap, noise), then the title, the evidence sentence, a row of where/what pairs and a Fix line. Kit.findings.render sorts worst first and writes the one-line count; Kit.findings.chip gives the chip alone for a table cell. All text is set with textContent, so a finding can quote anything.
+ *
+ * Review findings as cards. Each has a severity chip (a glyph and a word), an optional kind tag (conflict, noise, unclear), a title, the evidence in a sentence, a row of
+ * where/what pairs and a fix. Sorted worst first. Plain DOM; every string is set with textContent, so a finding can quote text from anywhere.
+ *
+ * API (small and stable):
+ *   Kit.findings.render(box, {items, sort, summary, cols, label}) -> {count(), update(items)}
+ *     item     {severity: "crit" | "high" | "med" | "low" | "ok", tag, title, body, evidence: [[key, value], ...], fix}
+ *     sort     true (default) orders crit, high, med, low, ok; items of one level keep their order
+ *     summary  true (default) puts a line above the list: "3 findings: 1 critical, 1 high, 1 medium"
+ *     cols     2 lays the cards in two columns from 760px up
+ *   Kit.findings.chip(severity, label?) -> HTMLElement   the severity chip alone (for a table cell or a heading)
+ *   Kit.findings.LEVELS -> [{id, word, plural}]
+ *
+ * CSS classes: .kit-finding .kit-sev
+ *
+ * @id        pattern.findings
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Severity finding cards (critical, high, medium, low, clear) with a kind tag, the evidence, where/what pairs and a fix, sorted worst first with a count line.
+ * @tags      findings, severity, review, audit, issues, triage, evidence, fix, chip
+ * @requires  none
+ * @provides  Kit.findings.render, Kit.findings.chip, Kit.findings.LEVELS
+ * @config    Kit.findings.render(box, opts) | items [{severity: crit|high|med|low|ok, tag, title, body, evidence: [[key, value]], fix}], sort, summary, cols, label
+ * @config    Kit.findings.chip(severity, label) | the severity chip alone
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --danger --warn --ok --info? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

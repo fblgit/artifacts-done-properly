@@ -1,23 +1,43 @@
 /* part:page.script.kit.patterns.steps */
-/* Kit pattern: numbered steps (Kit.steps)    kit version 0.1.0
-   What it is: a numbered step list with "done when" lines, id chips and gate steps, grouped in phases that count their own progress. Each step can carry a checkbox whose state is kept in this
-   browser (localStorage, keyed by the list and the step id); nothing is sent anywhere. Plain DOM; every string is set with textContent.
-   API (small and stable):
-     Kit.steps.render(box, {phases, steps, key, persist, reset, onChange}) -> {progress(), clear(), refresh(), destroy()}
-       phases   [{id, title, note, steps}]            or steps: [...] for one list without a header
-       step     {id, title, body, done, ids: ["T1.2"], gate: true, details: ["a line", ...]}
-                id is a bare token (it names the saved checkbox); body and done are plain text; done becomes the "Done when" line; gate marks a check that stops the line
-       key      the list's name in storage (default "steps"); persist false keeps the checkboxes in memory only
-       reset    true adds a "Clear ticks" button
-       onChange ({done, total, phase}) after every tick
-     Kit.steps.mount(root, {key, persist, onChange}) -> same handle; enhances markup that already exists (.kit-step[data-step]): adds the checkbox and the phase counts
-   Markup and classes: see kit/patterns/steps.css. Progress is announced in a polite live region on each phase header.
-   Needs from the board:
-     css     kit/patterns/steps.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display, optional --seam
-     globals none
-     storage localStorage when the frame allows it (every read and write is in try/catch; without it the ticks last until the page closes)
-   db collections: none.
-   Lifted from: six documents' step lists (big-number steps, done-when lines, id chips, a persistent checklist with per-phase progress, runbook step cards with gates). */
+/**
+ * Numbered steps
+ * A step list where the order is the markup's: the number is a CSS counter in the display face. A step can carry an id chip (T1.2), a 'Done when' line and the Gate mark for a check that stops the line. Phases group steps under a header with 'n of m done' and a thin bar. Each step can have a checkbox kept in localStorage (try/catch, memory-only when the frame refuses); Clear ticks resets them. Works as plain CSS on hand-written markup, and Kit.steps.mount enhances it.
+ *
+ * What it is: a numbered step list with "done when" lines, id chips and gate steps, grouped in phases that count their own progress. Each step can carry a checkbox whose state is kept in this
+ * browser (localStorage, keyed by the list and the step id); nothing is sent anywhere. Plain DOM; every string is set with textContent.
+ *
+ * API (small and stable):
+ *   Kit.steps.render(box, {phases, steps, key, persist, reset, onChange}) -> {progress(), clear(), refresh(), destroy()}
+ *     phases   [{id, title, note, steps}]            or steps: [...] for one list without a header
+ *     step     {id, title, body, done, ids: ["T1.2"], gate: true, details: ["a line", ...]}
+ *              id is a bare token (it names the saved checkbox); body and done are plain text; done becomes the "Done when" line; gate marks a check that stops the line
+ *     key      the list's name in storage (default "steps"); persist false keeps the checkboxes in memory only
+ *     reset    true adds a "Clear ticks" button
+ *     onChange ({done, total, phase}) after every tick
+ *   Kit.steps.mount(root, {key, persist, onChange}) -> same handle; enhances markup that already exists (.kit-step[data-step]): adds the checkbox and the phase counts
+ *
+ * Markup and classes: see kit/patterns/steps.css. Progress is announced in a polite live region on each phase header.
+ *
+ * storage localStorage when the frame allows it (every read and write is in try/catch; without it the ticks last until the page closes)
+ *
+ * CSS classes: .kit-steps .kit-step .kit-steps-phase
+ *
+ * @id        pattern.steps
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Big-number step list with done-when lines, id chips, gate steps and phases that count their own progress; the ticks stay in the browser.
+ * @tags      steps, checklist, runbook, progress, done when, gate, numbered list, phases
+ * @requires  none
+ * @provides  Kit.steps.render, Kit.steps.mount
+ * @config    Kit.steps.render(box, opts) | phases [{id, title, note, steps}] or steps; step {id, title, body, done, ids, gate, details}; key, persist, reset, onChange
+ * @config    markup | ol.kit-steps > li.kit-step[data-step] > div.kit-step-body, for Kit.steps.mount or no script at all
+ * @config    storage | localStorage key kit-steps:<key>:<step id>; every access is in try/catch
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

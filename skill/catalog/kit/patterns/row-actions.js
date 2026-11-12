@@ -1,26 +1,42 @@
 /* part:page.script.kit.row-actions */
-/* Kit pattern: row with a main action and a menu (Kit.rowActions)    kit version 0.1.0
-   What it is: three pieces for acting on a row. The row: its one main button follows the row's state (Recover when blocked, Renew when due, Open when ready, else Details) and a menu button holds
-   the rest. The menu: a small popover that opens with the keyboard and the pointer, closes in every way a person expects, and tints dangerous items. The pills: round action buttons on a card that
-   open their words on hover or focus, and are always shown on touch screens and under 480px.
-   The menu keeps: role=menu and role=menuitem, ArrowUp and ArrowDown wrap, Home and End, Tab closes it, Escape closes it and returns focus to the button that opened it, a click outside closes it,
-   and only one menu is open at a time. It opens upward when there is no room below.
-   API (small and stable):
-     Kit.rowActions.mount(root, {rows, main, menu, onAction, enum, label}) -> {update(rows), closeMenu(), destroy()}
-       rows      [{id, title, sub, state, chips: [{text}]}]    state is a value of the Kit.vocab enum (default "state"); a silent or missing state draws no bead
-       main      (row) -> {key, label, primary}   the one button, chosen by a function of the row's state
-       menu      (row) -> [{key, label, icon, danger}]   the rest; an item with the main action's key is left out
-       onAction  (key, row, event) after a button or a menu item is pressed
-     Kit.rowActions.menu(trigger, items, {label, onPick, onOpen, onClose}) -> {open(), close(), isOpen(), el, destroy()}   a menu for any button; items [{key, label, icon, danger}]
-     Kit.rowActions.pills(host, actions, {label, onPick, inline}) -> {el, destroy()}   host gets .kit-ra-host; actions [{key, label, icon, danger, primary}]; inline: true keeps them in the flow
-     Kit.rowActions.icons -> {name: svg markup}   refresh eye link download lock alert trash more plus edit copy check; an icon is a name from this map or svg path markup (24 grid, stroke only)
-   Needs from the board:
-     css     kit/patterns/row-actions.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-mono, optional --seam --shadow --glz-r-m, kit/glaze-surfaces.css
-     kit     kit/vocab.js and kit/vocab.css (the bead and chips), kit/glaze-surfaces.css (buttons)
-     globals Kit.vocab (rows only)
-   db collections: none.
-   Lifted from: a network-ops console's device row (the main action chosen from the device's state, the menu without the main action, the keyboard handling) and its quick-action pills (round, labelled
-   on hover or focus, always shown on touch). Changed: the main action and the menu are functions the board passes, there is one open menu at a time across the page, and the menu flips upward. */
+/**
+ * Row with main action and menu
+ * Kit.rowActions.mount(root, {rows, main, menu}) draws rows with a state bead, a title, a state chip, the one main button chosen by a function of the row (Recover when blocked, Renew when due, Open when ready, else Details) and a kebab menu that holds the rest, without the main action. Kit.rowActions.menu(trigger, items) is the menu for any button: role=menu, ArrowUp and ArrowDown wrap, Home and End, Tab closes it, Escape closes it and returns focus to the button, a click outside closes it, only one menu is open at a time, it flips upward when there is no room, and danger items are tinted. Kit.rowActions.pills(host, actions) adds round action pills to a card that open their words on hover or focus; on touch screens and under 480px they are always shown.
+ *
+ * What it is: three pieces for acting on a row. The row: its one main button follows the row's state (Recover when blocked, Renew when due, Open when ready, else Details) and a menu button holds
+ * the rest. The menu: a small popover that opens with the keyboard and the pointer, closes in every way a person expects, and tints dangerous items. The pills: round action buttons on a card that
+ * open their words on hover or focus, and are always shown on touch screens and under 480px.
+ *
+ * The menu keeps: role=menu and role=menuitem, ArrowUp and ArrowDown wrap, Home and End, Tab closes it, Escape closes it and returns focus to the button that opened it, a click outside closes it,
+ * and only one menu is open at a time. It opens upward when there is no room below.
+ *
+ * API (small and stable):
+ *   Kit.rowActions.mount(root, {rows, main, menu, onAction, enum, label}) -> {update(rows), closeMenu(), destroy()}
+ *     rows      [{id, title, sub, state, chips: [{text}]}]    state is a value of the Kit.vocab enum (default "state"); a silent or missing state draws no bead
+ *     main      (row) -> {key, label, primary}   the one button, chosen by a function of the row's state
+ *     menu      (row) -> [{key, label, icon, danger}]   the rest; an item with the main action's key is left out
+ *     onAction  (key, row, event) after a button or a menu item is pressed
+ *   Kit.rowActions.menu(trigger, items, {label, onPick, onOpen, onClose}) -> {open(), close(), isOpen(), el, destroy()}   a menu for any button; items [{key, label, icon, danger}]
+ *   Kit.rowActions.pills(host, actions, {label, onPick, inline}) -> {el, destroy()}   host gets .kit-ra-host; actions [{key, label, icon, danger, primary}]; inline: true keeps them in the flow
+ *   Kit.rowActions.icons -> {name: svg markup}   refresh eye link download lock alert trash more plus edit copy check; an icon is a name from this map or svg path markup (24 grid, stroke only)
+ *
+ * CSS classes: .kit-ra-row .kit-ra-menu .kit-ra-pills
+ *
+ * @id        pattern.row-actions
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A row whose one main button follows its state, a menu with the rest, and round action pills that open on hover or focus.
+ * @tags      menu, row, actions, kebab, popover, quick actions, pills, keyboard
+ * @requires  kit.vocab, kit.glaze-surfaces
+ * @provides  Kit.rowActions.mount, Kit.rowActions.menu, Kit.rowActions.pills, Kit.rowActions.icons
+ * @config    Kit.rowActions.mount(root, {rows, main, menu, onAction, enum, label}) | main(row) -> {key, label, primary}; menu(row) -> [{key, label, icon, danger}]; rows [{id, title, sub, state, chips}]
+ * @config    Kit.rowActions.menu(trigger, items, opts) and Kit.rowActions.pills(host, actions, opts) | the menu and the pills work without the rows
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --rule-2 --accent-ink --danger --f-mono --shadow? --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

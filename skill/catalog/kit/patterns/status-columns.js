@@ -1,25 +1,38 @@
 /* part:page.script.kit.status-columns */
-/* Kit pattern: status columns and lanes (Kit.statusColumns)    kit version 0.1.0
-   What it is: cards in one column per state, or per another key the reader switches to (the owner, say). The column that waits for a person is the widest. A column with no cards folds
-   to a narrow rail that still says its name and 0, and opens again when pressed. A column can have a limit: its count reads "5 / 4" and it says Over limit in words. Hovering or
-   focusing a card shows a glimpse of its note and extras next to it. Moving a card, by dragging it or by the Move menu on the card, asks for a reason first, in a small form above
-   the board, and only then changes the card and calls onMove. The state columns, their words, glyphs and tones come from the vocabulary table (kit/vocab.js); the built-in enum
-   "state" works out of the box.
-   API:
-     Kit.statusColumns.mount(box, opts) -> {setGroup(key), filter(fn|null), update(cards), group(), destroy()}
-       cards     [{id, title, state, owner, note, extras: [[label, value]], tags: [text]}]
-       groups    [{key, label, field, enum, none}]    the ways to group; default [{key: "state", label: "State", field: "state", enum: "state"}, {key: "owner", label: "Owner", field: "owner", none: "Unassigned"}]
-                 a group with an enum draws every worded value of it as a column, in the table's order; one without draws the distinct values, sorted, with the empty one last
-       group     the key of the starting group (default the first)         limits  {value: n} the most cards a column should hold (state columns), or limit: n for all
-       wide      the values whose column is wide (default: those whose tone in the table is "attention")
-       reason    false skips the reason form (default true)                 onMove  (card, to, reason) => Promise|void; a rejected promise puts the card back
-       remember  a localStorage key for the chosen group and the rails you opened (guarded)         label  the board's name for assistive tech
-   Needs from the board:
-     css     kit/patterns/status-columns.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --warn --danger --f-ui --f-mono, optional --seam
-     globals Kit.vocab, Kit.keepState (their kit files load first)
-   db collections: none; the board hands over its cards and writes the move in onMove.
-   Lifted from: an earlier board's kanban skin (the waiting column widest, empty columns as rails, the hover glimpse of a card) and a component family's task lanes (a switchable grouping key,
-   a limit per lane that shows over-limit, a drop that asks to move). */
+/**
+ * Status columns and lanes
+ * Kit.statusColumns.mount(box, {cards, groups, limits}) draws a board. Columns come from a vocabulary enum (every worded state, in the table's order) or from the distinct values of another key such as the owner, with the empty value last as its own column; the Group by buttons switch between them. The column whose tone is attention (it waits for a person) is the widest. A column with no cards folds to a narrow rail that still says its name and 0, and opens when pressed. A limit shows as "5 / 4" with Over limit in words and a dashed edge. Hovering or focusing a card shows a glimpse of its note and extras beside it. Moving a card, by dragging it or by the Move menu on the card, shows a form that asks why; only then does the card change and onMove(card, to, reason) run (a rejected promise puts it back). filter(fn) hides cards, which is how columns empty into rails. The board scrolls inside its own frame, never the page.
+ *
+ * What it is: cards in one column per state, or per another key the reader switches to (the owner, say). The column that waits for a person is the widest. A column with no cards folds
+ * to a narrow rail that still says its name and 0, and opens again when pressed. A column can have a limit: its count reads "5 / 4" and it says Over limit in words. Hovering or
+ * focusing a card shows a glimpse of its note and extras next to it. Moving a card, by dragging it or by the Move menu on the card, asks for a reason first, in a small form above
+ * the board, and only then changes the card and calls onMove. The state columns, their words, glyphs and tones come from the vocabulary table (kit/vocab.js); the built-in enum
+ * "state" works out of the box.
+ *
+ * API:
+ *   Kit.statusColumns.mount(box, opts) -> {setGroup(key), filter(fn|null), update(cards), group(), destroy()}
+ *     cards     [{id, title, state, owner, note, extras: [[label, value]], tags: [text]}]
+ *     groups    [{key, label, field, enum, none}]    the ways to group; default [{key: "state", label: "State", field: "state", enum: "state"}, {key: "owner", label: "Owner", field: "owner", none: "Unassigned"}]
+ *               a group with an enum draws every worded value of it as a column, in the table's order; one without draws the distinct values, sorted, with the empty one last
+ *     group     the key of the starting group (default the first)         limits  {value: n} the most cards a column should hold (state columns), or limit: n for all
+ *     wide      the values whose column is wide (default: those whose tone in the table is "attention")
+ *     reason    false skips the reason form (default true)                 onMove  (card, to, reason) => Promise|void; a rejected promise puts the card back
+ *     remember  a localStorage key for the chosen group and the rails you opened (guarded)         label  the board's name for assistive tech
+ *
+ * @id        pattern.status-columns
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Cards in one column per state or per a key you switch, the waiting column widest, empty columns folded to a rail, a limit per lane, a hover glimpse, and a move that asks for a reason.
+ * @tags      kanban, columns, lanes, board, status, wip limit, rail, drag, glimpse, group by
+ * @requires  kit.tokens, kit.vocab, kit.keep-state
+ * @provides  Kit.statusColumns.mount
+ * @config    Kit.statusColumns.mount(box, opts) | cards [{id, title, state, owner, note, extras [[label, value]], tags}], groups [{key, label, field, enum, none}], group, limits {value: n} or limit, wide, reason, onMove(card, to, reason), remember, stateEnum, label; returns {setGroup, filter, update, group, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --accent-ink? --warn --danger
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,24 +1,31 @@
 /* part:page.script.kit.viz.sparkline */
-/* Kit visualization: sparkline, bar sparkline and waveform (Kit.sparkline)    kit version 0.1.0
-   What it is: three small marks that fit in a line of text or a table cell and still tell the truth.
-     line   a line over a short series with an optional area, an emphasised last point and hollow low and high points. The vertical range is the data's own (a line shows shape, not size) and
-            the text under it says the low, the high and the last value, so the range is never hidden. Hover or arrow keys scrub the points; each one reads out in the tooltip.
-     bars   one bar per value, drawn from zero on a linear scale, so the heights compare.
-     wave   a waveform: one mirrored bar per sample, a played part in the accent and the rest quiet, with marked windows (a hatched band, a word and a keyboard stop each). With onSeek it is a
-            slider: click, drag or use the arrow keys, Home and End.
-   All three draw at the pixel width of their box (and again when it changes), use tokens for every colour and never use colour alone: the last point is a ring, the marked windows are hatched.
-   API (each returns {update(patch), destroy()}):
-     Kit.sparkline.line(box, {values, labels, unit, decimals, height, area, tone, caption, label, host})
-     Kit.sparkline.bars(box, {values, labels, unit, decimals, height, tone, highlight, caption, label, host})   highlight: the index drawn in full colour while the others are quieter
-     Kit.sparkline.wave(box, {values, marks, progress, height, onSeek, caption, label, host})   values 0 to 1; marks [{from, to, label, tone}] in 0 to 1; progress 0 to 1
-     tone    a pen (blue amber violet green red) or a meaning (ok warn danger accent); default blue
-   Needs from the board:
-     requires kit.tooltip (Kit.tooltip.show/hide/attach)
-     css     kit/viz/sparkline.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, the pens --c-blue --c-amber --c-violet --c-green --c-red, optional --seam
-     globals Kit.tooltip
-   db collections: none.
-   Lifted from: a secret-scan report (a per-line entropy sparkline under a character sweep) and a music-library page (the waveform with window marks and a played part). Changed: the sweep animation
-   is dropped; the line says its range in words; the waveform is a slider. */
+/**
+ * Sparkline and waveform
+ * Kit.sparkline.line draws a short series with an optional area, an emphasised last point and hollow low and high points; the vertical range is the data's own, and the text under it says the low, the high and the last value so the range is never hidden. Hover or the arrow keys read each point in the tooltip. Kit.sparkline.bars draws one bar per value from zero. Kit.sparkline.wave draws a mirrored-bar waveform with a played part and marked windows (hatched, labelled, keyboard-reachable); with onSeek it is a slider that responds to click, drag, arrow keys, Home and End. All three draw at the pixel width of their box and again when it changes.
+ *
+ * API (each returns {update(patch), destroy()}):
+ *   Kit.sparkline.line(box, {values, labels, unit, decimals, height, area, tone, caption, label, host})
+ *   Kit.sparkline.bars(box, {values, labels, unit, decimals, height, tone, highlight, caption, label, host})   highlight: the index drawn in full colour while the others are quieter
+ *   Kit.sparkline.wave(box, {values, marks, progress, height, onSeek, caption, label, host})   values 0 to 1; marks [{from, to, label, tone}] in 0 to 1; progress 0 to 1
+ *   tone    a pen (blue amber violet green red) or a meaning (ok warn danger accent); default blue
+ *
+ * @id        viz.sparkline
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Line and bar sparklines that state their range, and a waveform slider with marked windows.
+ * @tags      sparkline, waveform, trend, line, bars, seek, audio, marks, inline
+ * @requires  kit.tooltip
+ * @provides  Kit.sparkline.line, Kit.sparkline.bars, Kit.sparkline.wave
+ * @config    Kit.sparkline.line(box, opts) | values, labels, unit, decimals, height, area, tone, caption, label, host
+ * @config    Kit.sparkline.bars(box, opts) | values, labels, unit, decimals, height, tone, highlight, caption, label, host
+ * @config    Kit.sparkline.wave(box, opts) | values 0 to 1, marks [{from, to, label, tone, note}], progress 0 to 1, height, onSeek(p), caption, label, host
+ * @config    requires | kit.tooltip
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

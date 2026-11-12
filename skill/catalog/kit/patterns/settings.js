@@ -1,27 +1,47 @@
 /* part:page.script.kit.settings */
-/* Kit pattern: settings page (Kit.settings)    kit version 0.1.0
-   What it is: the generic settings page of docs/config.md. It draws the switch registry of ADP.config as one panel per group and one row per switch, divided by hairlines.
-   A summary line opens the page: how many settings, how many differ from their defaults, and whether editing is open or paused (and by whom). Each group heading carries its count.
-   A row: the label; the help; a meta line with the layer that enforces it (a page or database glyph and "Enforced by the page" / "Enforced by the database rule", from level),
-   "Changed by X, date" and, when the value differs from its default, the default itself beside a seam mark on the row's edge (the word "Default" says it, not the colour).
-   Controls by type: bool a switch with the word On or Off; enum a row of segments (native radios, arrow keys move) when it has at most four short options, else a select;
-   text and url an input saved on change or Enter (url in the mono face); list a textarea with one item per line and an item count; datetime a datetime-local input kept as ISO.
-   Each row saves at once through config.set and says "Saved" (a check) or the rejection (a cross) in its own role="status" line, with Undo for ten seconds.
-   Without user.canEdit every control is disabled and the summary says so. While edit.locked is on, a row's keyboard path is refused too, with a line that says why; the edit.locked
-   switch and its reason and until fields carry data-adp-unlock instead of data-adp-edit, so the freeze can be lifted from this page. A row redraws when config.on('*') fires and
-   leaves a field alone while it has focus. Footer: Export (config.json of the values that differ from their defaults) and Reset all to defaults (a second press within five seconds
-   confirms; no confirm()).
-   API:
-     Kit.settings.mount(root, opts) -> {update(), destroy()}
-       config    an object with all/get/set/reset/on (default window.ADP.config)      user      {canEdit, id} (default window.ADP.user)
-       groups    ["edit", "board", ...] order and filter of group names (default: every group, in registry order)      labels  {group: "Heading"} (defaults for the core groups)
-       onChange  (key, value, previous) after a save      download  (filename, text) => void, else an object-URL link is clicked      timeZone  for "Changed by" dates (default: the viewer's)
-   Needs from the board:
-     css     kit/patterns/settings.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --ok --danger --f-ui --f-mono,
-             optional --accent-soft --warn --seam --f-display --radius
-     globals none required; ADP.config and ADP.user when opts.config / opts.user are not given
-   db collections: config/current, read and written by the runtime through ADP.config (this file never touches the db).
-   Lifted from: the settings sketch of docs/config.md and the board page's switch rows (label, help, layer, who changed it); the undo window and the two-press reset are new. */
+/**
+ * Settings page
+ * Kit.settings.mount(root, {config, user, groups, labels, onChange, download}) draws the registry of ADP.config (or any object with all, get, set, reset and on) as one panel per group, its heading in the display face with a count, and one row per switch divided by hairlines. A summary line opens the page: how many settings, how many differ from their defaults, and whether editing is open or paused and by whom. Each row has its label and key (edit.locked in the mono face), the help, and a meta line: the layer that enforces it with a page or database glyph (Enforced by the page, Enforced by the database rule, from level), Changed by who and when, and, when the value differs from its default, the default itself beside a gold diamond on the label, so the word says it and not the colour. Controls by type: a switch for bool (a button with role switch and the word On or Off), a row of segments for an enum of up to four short options (native radios, so arrow keys move) and a select for longer ones, an input for text and url (url in the mono face) that saves on change or Enter, a textarea with one item per line and an item count for list, and a datetime-local input kept as an ISO string for datetime. A row saves at once through config.set and says Saved with a check, or the rejection with a cross, in its own status line; Undo restores the previous value for ten seconds. Without user.canEdit every control is disabled and the summary says so. While edit.locked is on, the other rows refuse a change from the keyboard as well as the runtime's dimming, and say why; the edit.locked switch and the until and reason fields carry data-adp-unlock instead of data-adp-edit, so a freeze can be lifted from this page. The footer has Export config.json (the values that differ from their defaults, to opts.download or an object-URL link) and Reset all to defaults (off while nothing differs; a second press within five seconds confirms, no confirm dialog). Rows redraw when config.on('*') fires and leave a field alone while it has focus. It does not edit the registry, show the db rules or list namespaces. The layout follows its container, not the window: under about 34rem the control drops under the label and nothing scrolls sideways; every control is a button, a labelled input, a select, a textarea or a radio, with a visible focus ring.
+ *
+ * What it is: the generic settings page of docs/config.md. It draws the switch registry of ADP.config as one panel per group and one row per switch, divided by hairlines.
+ *
+ * A summary line opens the page: how many settings, how many differ from their defaults, and whether editing is open or paused (and by whom). Each group heading carries its count.
+ *
+ * A row: the label; the help; a meta line with the layer that enforces it (a page or database glyph and "Enforced by the page" / "Enforced by the database rule", from level),
+ * "Changed by X, date" and, when the value differs from its default, the default itself beside a seam mark on the row's edge (the word "Default" says it, not the colour).
+ *
+ * Controls by type: bool a switch with the word On or Off; enum a row of segments (native radios, arrow keys move) when it has at most four short options, else a select;
+ * text and url an input saved on change or Enter (url in the mono face); list a textarea with one item per line and an item count; datetime a datetime-local input kept as ISO.
+ *
+ * Each row saves at once through config.set and says "Saved" (a check) or the rejection (a cross) in its own role="status" line, with Undo for ten seconds.
+ *
+ * Without user.canEdit every control is disabled and the summary says so. While edit.locked is on, a row's keyboard path is refused too, with a line that says why; the edit.locked
+ * switch and its reason and until fields carry data-adp-unlock instead of data-adp-edit, so the freeze can be lifted from this page. A row redraws when config.on('*') fires and
+ * leaves a field alone while it has focus. Footer: Export (config.json of the values that differ from their defaults) and Reset all to defaults (a second press within five seconds
+ * confirms; no confirm()).
+ *
+ * API:
+ *   Kit.settings.mount(root, opts) -> {update(), destroy()}
+ *     config    an object with all/get/set/reset/on (default window.ADP.config)      user      {canEdit, id} (default window.ADP.user)
+ *     groups    ["edit", "board", ...] order and filter of group names (default: every group, in registry order)      labels  {group: "Heading"} (defaults for the core groups)
+ *     onChange  (key, value, previous) after a save      download  (filename, text) => void, else an object-URL link is clicked      timeZone  for "Changed by" dates (default: the viewer's)
+ *
+ * @id        pattern.settings
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   The generic settings page of the config switches: one panel per group, one row per switch with the right control, the help, the layer that enforces it, who changed it and the default when it differs, saved at once with an Undo.
+ * @tags      settings, config, switches, freeze, preferences, admin, registry, undo, export
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.settings.mount
+ * @config    Kit.settings.mount(root, opts) | config {all, get, set, reset, on} (default window.ADP.config), user {canEdit} (default ADP.user), groups [names] to order or filter, labels {group: heading}, onChange(key, value, previous), download(filename, text), timeZone; returns {update, destroy}
+ * @config    ADP.config.all() / get / set / reset / on('*') | read the registry and the values, save one switch, reset all, redraw on a change
+ * @config    data-adp-edit / data-adp-unlock | every control carries data-adp-edit except edit.locked, edit.until and edit.reason, which carry data-adp-unlock
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --ok --danger --f-ui --f-mono --accent-soft? --warn? --seam? --f-display? --radius?
+ * @globals   none
+ * @db        reads config/current / writes config/current / Only through ADP.config; the component never touches the db. A write also appends changes/d-<ms> in the runtime, unless log.data-changes is off.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,21 +1,30 @@
 /* part:page.script.kit.viz.shelf */
-/* Kit visualization: to-scale capacity shelf (Kit.shelf)    kit version 0.1.0
-   What it is: one track per unit (a disk, a node, a quota) drawn on a shared scale: a unit twice as big has a track twice as long, and a track is cut into segments in proportion to their size.
-   Inside a segment the used part is solid, the allocated but unused part is hatched, and an unallocated segment is an empty dashed outline, so the three read without colour. A flagged
-   segment gets a --danger ring and a "!" in its label. Segments above a size threshold are named under the track; every segment has a tooltip and a keyboard stop. A unit can carry
-   status chips (a mark and a word).
-   API: Kit.shelf.mount(box, {units, unit, labelAbove, legend, label, caption, host}) -> {update(patch), destroy()}
-     units       [{id, name, sub, capacity, segments: [{id, label, size, used, kind, tone, flag, note}], chips: [{text, tone}]}]
-                 capacity is the track's full size (defaults to the sum of its segments); kind "alloc" (default) or "free"; used is a number from 0 to size; flag is a short reason or true
-     unit        "GiB": printed after every figure
-     labelAbove  smallest segment, as a share of the largest unit, that is named under the track (default 0.04); the rest are on hover and focus
-     legend      false hides the key (default true)
-   Needs from the board:
-     requires kit.tooltip (Kit.tooltip.attach)
-     css     kit/viz/shelf.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --ok --warn --danger --f-ui --f-mono, the pens --c-blue --c-amber --c-violet --c-green --c-red, optional --seam
-     globals Kit.tooltip
-   db collections: none.
-   Lifted from: a disk-usage report's drive shelf (drawDrives: tracks to scale, hatched allocations with a solid used fill, dashed unallocated space, a ringed "only copy" segment, status chips). */
+/**
+ * To-scale capacity shelf
+ * Kit.shelf.mount draws one track per unit (a disk, a node, a quota) on a shared scale, so a unit twice as big has a track twice as long, and cuts each track into segments in proportion to their size. Inside a segment the used part is solid, the allocated but unused part is hatched, and an unallocated segment is an empty dashed outline; a flagged segment gets a ring and a bang in its label. Segments above a size threshold are named under the track; every segment has a tooltip and a keyboard stop. A unit can carry status chips, each with a mark and a word.
+ *
+ * API: Kit.shelf.mount(box, {units, unit, labelAbove, legend, label, caption, host}) -> {update(patch), destroy()}
+ *   units       [{id, name, sub, capacity, segments: [{id, label, size, used, kind, tone, flag, note}], chips: [{text, tone}]}]
+ *               capacity is the track's full size (defaults to the sum of its segments); kind "alloc" (default) or "free"; used is a number from 0 to size; flag is a short reason or true
+ *   unit        "GiB": printed after every figure
+ *   labelAbove  smallest segment, as a share of the largest unit, that is named under the track (default 0.04); the rest are on hover and focus
+ *   legend      false hides the key (default true)
+ *
+ * @id        viz.shelf
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Tracks drawn on one scale, each cut into segments: used, allocated but unused, unallocated, and flagged.
+ * @tags      shelf, capacity, disk, storage, quota, segments, scale, used, free, status
+ * @requires  kit.tooltip
+ * @provides  Kit.shelf.mount
+ * @config    Kit.shelf.mount(box, opts) | units [{id, name, sub, capacity, segments [{id, label, size, used, kind, tone, flag, note}], chips [{text, tone}]}], unit, labelAbove, legend, label, caption, host
+ * @config    requires | kit.tooltip
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --ok --warn --danger --accent --c-blue --c-amber --c-violet --c-green --c-red --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

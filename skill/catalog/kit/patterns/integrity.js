@@ -1,24 +1,39 @@
 /* part:page.script.kit.integrity */
-/* Kit pattern: integrity check (Kit.integrity)    kit version 0.1.0
-   What it is: the page view that says whether an ADP artifact's live files, its database records and its holds agree. A verdict at the top (an orb, the word in the display face:
-   Sound, Needs a record, Changed files, Stale holds or Broken, chosen by severity, and one sentence with the counts; the Run button and its progress bar sit beside it) over four
-   checks on one panel, strung on a seam like a checklist: each has an orb, its title, a pill and a one-line verdict, then its detail. Files (the sha256 each file was recorded with, and, after Run,
-   the live one, so a publish nobody recorded reads "changed since the record" and an unreachable file reads "missing"), Changes (is the last publish in changes/ the one manifest/current names,
-   and how many data changes came since), Holds (parts held by someone: active, or stale once hold_until has passed) and Self-check (checks/latest, and "frozen" when the page is locked).
-   Hashes show their first 12 characters with the whole one in a title; pressing one copies it. Paths wrap anywhere. Nothing is written: the pattern only reads what it is given.
-   API:
-     Kit.integrity.mount(root, opts) -> {update(data), run(), destroy()}
-       manifest  the manifest/current doc {version, page_hash, files: {path: sha256 or its first 12}, parts, at, by}      parts   the parts/<id> docs (array, or {id: doc}); a doc with a holder is a hold
-       changes   the changes/ docs (array or map)      checks  the checks/latest doc {ok, missing, unmarked, overflow_x, errors, locked, at}      config  the config/current doc (edit.locked also reads as frozen)
-       files     optional {path: live sha256} already known, shown before any Run      now  ISO string or Date, the clock for holds (default: the clock)
-       fetchFile (path) => Promise of the live text of a published file; without it there is no Run button      onVerdict (verdict, counts) => void, called after each draw
-     run() fetches every file one after another, hashes the text with crypto.subtle (SHA-256) and compares by the recorded length; progress is announced through role="status". It returns a promise.
-   Needs from the board:
-     css     kit/patterns/integrity.css, kit/vocab.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam --f-display --radius --shadow
-     globals Kit.vocab (its kit file loads first)
-   db collections read (by the board, then passed in): manifest/current, changes, parts, checks/latest, config/current. None written.
-   Lifted from: the reference build's own habit of comparing a published file to manifest/current by eye, and the self-check document the runtime writes (adp.js check()).
-   Changed: the source was a script that printed a list; this is a view with a verdict, and a hash is never shown by colour alone. */
+/**
+ * Integrity check
+ * Kit.integrity.mount(root, {manifest, parts, changes, checks, config, now, fetchFile}) reads what the board hands it and opens with a verdict: an orb and the word in the display face (Sound, Needs a record, Changed files, Stale holds or Broken, chosen by severity) and one sentence with the counts, the panel tinted by the verdict's tone. When fetchFile is given, Run the check sits beside the verdict with a progress bar: it fetches each live file, hashes it with crypto.subtle and announces its progress through a status line. Below, the four checks share one panel, strung on a seam like a checklist, each with an orb, its title, a pill and a one-line verdict. Files lists every path in manifest/current as an aligned row: the recorded hash, the live one (or not checked), and a state that reads matches, changed (a publish nobody recorded) or missing. Changes compares the last publish in changes/ with the manifest version and counts the data changes since. Holds lists parts with a holder as active or stale, with who and until when. Self-check shows checks/latest: the missing and unmarked parts, overflow and errors, and frozen with a glyph when the page is locked. It writes nothing. Hashes show their first 12 characters, carry the whole one in a title and copy when pressed. Every state has a glyph and a word, never colour alone. The layout follows its container: under about 44rem the file rows stack with a label on each hash and paths wrap anywhere; every control is a button reachable by keyboard.
+ *
+ * The page view that says whether an ADP artifact's live files, its database records and its holds agree. A verdict at the top (an orb, the word in the display face:
+ * Sound, Needs a record, Changed files, Stale holds or Broken, chosen by severity, and one sentence with the counts; the Run button and its progress bar sit beside it) over four
+ * checks on one panel, strung on a seam like a checklist: each has an orb, its title, a pill and a one-line verdict, then its detail. Files (the sha256 each file was recorded with, and, after Run,
+ * the live one, so a publish nobody recorded reads "changed since the record" and an unreachable file reads "missing"), Changes (is the last publish in changes/ the one manifest/current names,
+ * and how many data changes came since), Holds (parts held by someone: active, or stale once hold_until has passed) and Self-check (checks/latest, and "frozen" when the page is locked).
+ * Hashes show their first 12 characters with the whole one in a title; pressing one copies it. Paths wrap anywhere. Nothing is written: the pattern only reads what it is given.
+ *
+ * API:
+ *   Kit.integrity.mount(root, opts) -> {update(data), run(), destroy()}
+ *     manifest  the manifest/current doc {version, page_hash, files: {path: sha256 or its first 12}, parts, at, by}      parts   the parts/<id> docs (array, or {id: doc}); a doc with a holder is a hold
+ *     changes   the changes/ docs (array or map)      checks  the checks/latest doc {ok, missing, unmarked, overflow_x, errors, locked, at}      config  the config/current doc (edit.locked also reads as frozen)
+ *     files     optional {path: live sha256} already known, shown before any Run      now  ISO string or Date, the clock for holds (default: the clock)
+ *     fetchFile (path) => Promise of the live text of a published file; without it there is no Run button      onVerdict (verdict, counts) => void, called after each draw
+ *   run() fetches every file one after another, hashes the text with crypto.subtle (SHA-256) and compares by the recorded length; progress is announced through role="status". It returns a promise.
+ * db collections read (by the board, then passed in): manifest/current, changes, parts, checks/latest, config/current. None written.
+ *
+ * @id        pattern.integrity
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   A page view that says whether an artifact's live files, its database records and its holds agree: a verdict with a Run button, then files, changes, holds and the self-check on one seam.
+ * @tags      integrity, manifest, hash, files, holds, changes, self-check, verdict, audit
+ * @requires  kit.tokens, kit.vocab, kit.dom
+ * @provides  Kit.integrity.mount
+ * @config    Kit.integrity.mount(root, opts) | manifest (the manifest/current doc), parts (parts docs, array or map), changes (changes docs), checks (checks/latest), config (config/current), files {path: live sha256} optional, now ISO string, fetchFile(path) => Promise of the live text, onVerdict(key, counts); returns {update, run, destroy}
+ * @config    fetchFile | optional: without it the Files section shows recorded hashes only and there is no Run button
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono --seam? --f-display? --radius? --shadow?
+ * @globals   none
+ * @db        reads manifest/current; changes; parts; checks/latest; config/current / The board reads these docs and passes them in as plain objects; the pattern never touches the db.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

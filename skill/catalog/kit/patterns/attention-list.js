@@ -1,25 +1,40 @@
 /* part:page.script.kit.attention-list */
-/* Kit pattern: needs-you list (Kit.attentionList)    kit version 0.1.0
-   What it is: one sentence that says how things are, then the things that need a person, worst first, each with the one button that deals with it. When nothing needs anyone, a calm
-   empty state says so. The heading takes its tone from the worst item. The list is of actions, not observations: a finding with no button belongs in a findings list. After a redraw the
-   focus stays on the same item's button.
-   API (small and stable):
-     Kit.attentionList.mount(root, {items, sentence, lede, rank, heading, level, emptyTitle, emptyText, label, enum, onAction}) -> {update(items), items(), destroy()}
-       items     [{id, tone, title, sub, action: {label, primary}}]   tone: wait | bad | warn | info (or any value of your enum)
-       sentence  (items) -> [headline, lede] to replace the default (default: "All quiet." / "One thing needs you." / "3 things need you." with a lede that counts waiting, failed and coming up)
-       lede      the line under an empty list's headline
-       rank      the tone order, worst first (default ["wait", "bad", "warn", "info"]); items of one tone keep the order they came in
-       heading   the card title above the rows (default "Needs you"); level the headline's heading level (default 2)
-       enum      the Kit.vocab enum for the leading bead; defined here (attention: wait, bad, warn, info) when the board has not defined its own
-       onAction  (item, event) when a row's button is pressed
-     Kit.attentionList.rank(items, order) -> [items]    the pure ordering;  Kit.attentionList.sentence(items) -> [headline, lede]
-   Needs from the board:
-     css     kit/patterns/attention-list.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --warn --danger --ok --f-ui --f-display, optional --wait --rim --pool --glz-r-l
-     kit     kit/vocab.js and kit/vocab.css (the beads), kit/glaze-surfaces.css (buttons)
-     globals Kit.vocab
-   db collections: none.
-   Lifted from: a network-ops console's opening page (the needs-you list ranked waiting, failed, soon; the sentence builder; the heading that takes the worst tone; the focus restored by button label).
-   Changed: items are config, the default sentence is generic, focus is kept by item id, and the beads and tones come from the vocabulary. */
+/**
+ * Needs you list
+ * Kit.attentionList.mount(root, {items}) draws a headline sentence, a lede, and a card of rows ranked waiting for you, then failed, then coming up. Each row has a state bead, a title, a line of detail and one button. The headline takes its colour from the worst item and its words from a sentence function (the default says "All quiet.", "One thing needs you." or "3 things need you." and counts what waits, what failed and what is coming up). With no items the card shows a calm "Nothing needs you." state. After a redraw the keyboard focus stays on the same item’s button. The list is of actions, not observations: a finding with no button belongs in a findings list. rank() and sentence() are exported as pure functions.
+ *
+ * One sentence that says how things are, then the things that need a person, worst first, each with the one button that deals with it. When nothing needs anyone, a calm
+ * empty state says so. The heading takes its tone from the worst item. The list is of actions, not observations: a finding with no button belongs in a findings list. After a redraw the
+ * focus stays on the same item's button.
+ *
+ * API (small and stable):
+ *   Kit.attentionList.mount(root, {items, sentence, lede, rank, heading, level, emptyTitle, emptyText, label, enum, onAction}) -> {update(items), items(), destroy()}
+ *     items     [{id, tone, title, sub, action: {label, primary}}]   tone: wait | bad | warn | info (or any value of your enum)
+ *     sentence  (items) -> [headline, lede] to replace the default (default: "All quiet." / "One thing needs you." / "3 things need you." with a lede that counts waiting, failed and coming up)
+ *     lede      the line under an empty list's headline
+ *     rank      the tone order, worst first (default ["wait", "bad", "warn", "info"]); items of one tone keep the order they came in
+ *     heading   the card title above the rows (default "Needs you"); level the headline's heading level (default 2)
+ *     enum      the Kit.vocab enum for the leading bead; defined here (attention: wait, bad, warn, info) when the board has not defined its own
+ *     onAction  (item, event) when a row's button is pressed
+ *   Kit.attentionList.rank(items, order) -> [items]    the pure ordering;  Kit.attentionList.sentence(items) -> [headline, lede]
+ *
+ * CSS classes: .kit-al .kit-al-row
+ *
+ * @id        pattern.attention-list
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   One sentence saying how things are, then the things that need a person, worst first, each with the one button that deals with it; or a calm empty state.
+ * @tags      attention, needs you, inbox, to do, actions, empty state, sentence
+ * @requires  kit.vocab, kit.glaze-surfaces
+ * @provides  Kit.attentionList.mount, Kit.attentionList.rank, Kit.attentionList.sentence
+ * @config    Kit.attentionList.mount(root, {items, sentence, lede, rank, heading, level, emptyTitle, emptyText, enum, onAction}) | items [{id, tone: wait | bad | warn | info, title, sub, action: {label, primary}}]; update(items) redraws
+ * @config    Kit.vocab | the enum "attention" is defined here when the board has not defined its own
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --rule-2 --ok --warn --danger --f-display --wait? --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

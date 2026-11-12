@@ -1,26 +1,41 @@
 /* part:page.script.kit.assist-panel */
-/* Kit pattern: assist panel (Kit.assistPanel)    kit version 0.1.0
-   What it is: the page's lane to Claude in one panel. At the top, whether a Claude Code session is watching (Kit.presence, compact, when loaded). Then the composer: what kind of
-   request (Ask now, Task, Fix, Design note: radio buttons with one line on what each does), which block it is about (Pick a block, or the shortcut; the block's name, id and
-   quoted text, Change and Clear), the words, and Send, whose label says where it goes (Ask now answers here; the others go to a session). Ctrl/⌘+Enter sends. When a way is
-   not available the composer says why in words and keeps the draft; with neither way it offers Copy, so the block and the words still reach Claude by hand. Then the feed:
-   the requests with their cards (Kit.requestCard; all, newest first, or open only) or the current conversation, where an answer streams in as it is written and can be sent on to a session.
-   Everything is reachable from the keyboard in reading order; sends, answers and errors are announced. Below 40rem the lanes wrap two by two and the buttons go full width.
-   Built over the Kit.assist engine only: it never touches the db.
-   API:
-     Kit.assistPanel.mount(box, opts) -> {setScope(pick | null, focus), pick(), focus(), show("requests"|"conversation"), destroy()}
-       engine      a Kit.assist engine (required): can, pick, send, ask, requests, messages (when present), presence, thread, reply, ping
-       lanes       which lanes to offer (default the "assist.lanes" switch, else ask, task, fix, design); "assist.ask-now" false drops ask
-       project     filters the request list                  titles  {partId: title} for block names
-       onReveal(partId)   scroll to a block (block buttons on cards)     artifactUrl  for the nudge     me, names  as Kit.requestCard
-       shortcut    the picker's key, shown in the hint (default the "assist.shortcut" switch, else Mod+Shift+K); the engine binds it: start it with onPick: p => panel.setScope(p, true)
-       words       {title, lanes: {lane: word}, help: {lane: text}, send: {lane: text}, ...}
-   Needs from the board:
-     css     kit/patterns/assist-panel.css, and the css of what it mounts (request-card, presence, block-picker, vocab); --panel --sunk --ink --ink-2 --rule --rule-2 --accent
-             --accent-ink --accent-soft --warn --f-ui --f-mono, optional --seam
-     globals Kit.vocab; optional Kit.requestCard, Kit.presence, Kit.blockPicker (the engine's picker), Kit.md
-   db collections: none here; the engine writes requests/, conversations/ and their changes/ entries.
-   Lifted from: a drafting board's bottom composer (mode switch, kept draft, byte count, Ctrl+Enter, the reason line, the last request) and its Claude pane (open or all requests). */
+/**
+ * Assist panel
+ * Kit.assistPanel.mount(box, {engine, titles, onReveal, artifactUrl}) builds over the assist engine only. At the top, the presence line (compact). The composer: what kind of request, as radio buttons with one line on what each does (Ask now answers here and changes nothing; Task, Fix and Design note go to a Claude Code session), which block it is about (Pick a block or the shortcut, then the block's name, id and quoted text with Change and Clear; without a block it is about the whole page), the words, and Send, whose label says where it goes. Ctrl or Cmd + Enter sends. When a way is not available the composer says why in words (only editors can send, no session is listening, sending is off, Ask now is not available) and keeps the draft, which also survives a reload; with neither way, Copy for Claude puts the block and the words on the clipboard. The feed shows the requests as request cards, newest first (all, or open only), so an answer stays in view when it lands, or the conversation, where Claude's answer streams in as it is written, earlier conversations can be continued, and a question can be sent on to a session as a task. Start the engine with onPick: p => panel.setScope(p, true) so the shortcut fills the composer. Everything is reachable from the keyboard in reading order, and sends, answers and errors are announced. At 390 px the kinds sit two by two and the buttons go full width.
+ *
+ * The page's lane to Claude in one panel. At the top, whether a Claude Code session is watching (Kit.presence, compact, when loaded). Then the composer: what kind of
+ * request (Ask now, Task, Fix, Design note: radio buttons with one line on what each does), which block it is about (Pick a block, or the shortcut; the block's name, id and
+ * quoted text, Change and Clear), the words, and Send, whose label says where it goes (Ask now answers here; the others go to a session). Ctrl/⌘+Enter sends. When a way is
+ * not available the composer says why in words and keeps the draft; with neither way it offers Copy, so the block and the words still reach Claude by hand. Then the feed:
+ * the requests with their cards (Kit.requestCard; all, newest first, or open only) or the current conversation, where an answer streams in as it is written and can be sent on to a session.
+ * Everything is reachable from the keyboard in reading order; sends, answers and errors are announced. Below 40rem the lanes wrap two by two and the buttons go full width.
+ * Built over the Kit.assist engine only: it never touches the db.
+ *
+ * API:
+ *   Kit.assistPanel.mount(box, opts) -> {setScope(pick | null, focus), pick(), focus(), show("requests"|"conversation"), destroy()}
+ *     engine      a Kit.assist engine (required): can, pick, send, ask, requests, messages (when present), presence, thread, reply, ping
+ *     lanes       which lanes to offer (default the "assist.lanes" switch, else ask, task, fix, design); "assist.ask-now" false drops ask
+ *     project     filters the request list                  titles  {partId: title} for block names
+ *     onReveal(partId)   scroll to a block (block buttons on cards)     artifactUrl  for the nudge     me, names  as Kit.requestCard
+ *     shortcut    the picker's key, shown in the hint (default the "assist.shortcut" switch, else Mod+Shift+K); the engine binds it: start it with onPick: p => panel.setScope(p, true)
+ *     words       {title, lanes: {lane: word}, help: {lane: text}, send: {lane: text}, ...}
+ *
+ * @id        pattern.assist-panel
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   The page's lane to Claude in one panel: whether a session watches, a composer (kind, block, words) that sends to a session or asks Claude at once, and the feed of request cards or the current conversation.
+ * @tags      assist, claude, composer, chat, ask, task, fix, design, panel, requests, conversation, presence
+ * @requires  kit.tokens, kit.vocab, kit.keep-state, pattern.assist, pattern.block-picker, pattern.request-card, pattern.presence, kit.dom
+ * @provides  Kit.assistPanel.mount
+ * @config    Kit.assistPanel.mount(box, opts) | engine (a Kit.assist engine, required), lanes, project, titles, onReveal(partId), artifactUrl, me, names, shortcut, words {title, kind, lanes, help, send}; returns {setScope, pick, show, focus, destroy}
+ * @config    Kit.assist.start({..., onPick}) | onPick: p => panel.setScope(p, true), so the shortcut fills the composer and moves focus to the words
+ * @config    ADP.config | optional: assist.lanes, assist.ask-now and assist.shortcut are read when the runtime is present
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --warn --f-ui --f-mono --seam? --f-display?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,25 +1,32 @@
 /* part:page.script.kit.lease-graph */
-/* Kit visualization: lease and waiter graph (Kit.leaseGraph)    kit version 0.1.0
-   What it is: who holds each exclusive resource, who is waiting for it to be released, and, nested under it, every request that was denied because of it. A resource is a
-   {kind, name} pair. Each held resource is a node with its state, kind, holder and when the lease runs out; the people waiting for its release list under it with where each wait
-   came from; each denial hangs under the resource that caused it, with who asked and what held it. A denial whose resource nothing holds now stands alone and says so.
-   It is a nested list on purpose: the order and the words carry the meaning, so it reads in a screen reader and prints. A lease that ran out but was never released shows as
-   Expired, in words, with how long ago.
-   Every state word, glyph and tone comes from the vocabulary table (kit/vocab.js). This file adds three small enums only when the page has not defined them: "lease-state"
-   (held, expired, released, denied), "lease-kind" (a glyph per kind of resource) and "wait-origin"; pass your own names as stateEnum / kindEnum / originEnum.
-   API:
-     Kit.leaseGraph.mount(box, opts) -> {update(data), destroy()}
-       holds    [{resource: {kind, name}, holder, until (ISO), state: "held" | "released"}]
-       waits    [{actor, resource: {kind, name}, origin}]        the waiters on a resource's release; the holder's own wait is left out
-       denials  [{id, asker, resource: {kind, name}, because: {holder, until}, at}]
-       now      ISO string or Date taken as now (default: the clock)      timeZone  for the clock text (default: the viewer's)
-       stateEnum "lease-state"   kindEnum "lease-kind"   originEnum "wait-origin"
-   Needs from the board:
-     css     kit/viz/lease-graph.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono,
-             optional --rim --pool --glz-r-l --glz-sh-1
-     globals Kit.vocab
-   db collections: none; the board hands over its claims, subscriptions and denials as three lists.
-   Lifted from: a component family's claim graph and claim row (a held claim, the members subscribed to its release, the denials of the same key nested under it). */
+/**
+ * Lease and waiter graph
+ * Kit.leaseGraph.mount(box, {holds, waits, denials, now}) draws a nested list. Each held resource ({kind, name}) is a node with its state, kind, holder and when the lease runs out; a lease past its time that was never released reads Expired, with how long ago. The people waiting for its release list under it with where each wait came from (the holder's own wait is left out). Each denied request hangs under the resource that caused it, joined by a line, with who asked, who held it and until when; a denial whose resource nothing holds now stands alone and says so. It is a list on purpose, so it reads in a screen reader and prints; the order and the words carry the meaning. State words come from the vocabulary table: the file adds lease-state, lease-kind and wait-origin only if the page has not defined them.
+ *
+ * API:
+ *   Kit.leaseGraph.mount(box, opts) -> {update(data), destroy()}
+ *     holds    [{resource: {kind, name}, holder, until (ISO), state: "held" | "released"}]
+ *     waits    [{actor, resource: {kind, name}, origin}]        the waiters on a resource's release; the holder's own wait is left out
+ *     denials  [{id, asker, resource: {kind, name}, because: {holder, until}, at}]
+ *     now      ISO string or Date taken as now (default: the clock)      timeZone  for the clock text (default: the viewer's)
+ *     stateEnum "lease-state"   kindEnum "lease-kind"   originEnum "wait-origin"
+ *
+ * The board hands over its claims, subscriptions and denials as three lists.
+ *
+ * @id        viz.lease-graph
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Who holds each exclusive resource, who waits for its release, and, nested under it, each request that was turned away because of it.
+ * @tags      lease, lock, claim, waiters, denied, resource, holder, expiry, graph
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.leaseGraph.mount
+ * @config    Kit.leaseGraph.mount(box, opts) | holds [{resource {kind, name}, holder, until, state}], waits [{actor, resource, origin}], denials [{id, asker, resource, because {holder, until}, at}], now, timeZone, stateEnum, kindEnum, originEnum; returns {update, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --danger --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,29 +1,39 @@
 /* part:page.script.kit.capability-picker */
-/* Kit pattern: capability picker (Kit.capabilityPicker)    kit version 0.1.0
-   What it is: a switch for each capability, and each says what it needs. Turning one on turns on what it needs, shown as "included" and locked while something that needs it is on. A sentence
-   under the switches states the order they will run in ("Runs, in order: Build pages, then Publish site."). Capabilities of groups that cannot be mixed say so, and the sentence turns to a
-   warning. A preset fills the switches. A second piece, steps(), draws the progress of one target through the same capabilities as chips: done, or not yet.
-   API (small and stable):
-     Kit.capabilityPicker.mount(root, {capabilities, groups, presets, exclusive, value, label, onChange}) -> picker
-       capabilities  {key: {title, group, needs: [key], note}}   the order of the keys is the tie-break for the run order
-       groups        {key: label}   headings (default: the group key)           presets  {key: {label, keys: [key]}}
-       exclusive     true: the closure may not span more than one group (default false)
-       value         [key] switched on at the start                              onChange  ({chosen, included, order, groups, valid, problem}) after each change
-     picker.get() -> the same state;  picker.set([key]);  picker.destroy()
-     Kit.capabilityPicker.closure(capabilities, keys) -> {order, included, cycles, unknown}
-       order     every key that will run, prerequisites first (depth first, in the order of the capabilities); included = order minus the chosen keys
-       cycles    [[key, ...]] groups of keys that need each other (they are left out of order and named in the sentence); unknown = keys no capability has
-       The function is pure and has a cycle guard.
-     Kit.capabilityPicker.steps({capabilities, keys, done, na, label}) -> Element   the progress chips of one target: keys is the target's capabilities, done the finished ones, na the ones that
-       do not apply (left out); it says "3 of 5 steps"
-   Needs from the board:
-     css     kit/patterns/capability-picker.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --ok --warn --danger --f-ui --f-mono, kit/glaze-surfaces.css (switch, select)
-     kit     kit/vocab.js and kit/vocab.css (the step chips), kit/glaze-surfaces.css
-     globals Kit.vocab (steps only)
-   db collections: none.
-   Lifted from: a network-ops console's onboarding form (the capability catalog with prerequisites, the closure that switches on what is needed, the presets, the sentence that states the order,
-   the warning when two kinds are mixed, the per-node step chips). Changed: the closure is a pure exported function with a cycle guard and prerequisites-first order, an included capability is
-   shown and locked instead of silently on, and exclusivity is an option. */
+/**
+ * Capability picker
+ * Kit.capabilityPicker.mount(root, {capabilities}) draws a switch for each capability in groups, each with a line saying what it needs. Turning one on switches on its prerequisites, drawn as included (dashed, locked while something that needs them is on). A sentence under the switches states the order, prerequisites first ("Runs, in order: Build the pages, then Check the links, then Publish the site."), and turns to a warning when the groups cannot be mixed (an option) or when capabilities need each other. A preset fills the switches; changing one by hand sets the preset back to Custom. closure(capabilities, keys) is a pure depth-first function with a cycle guard and is exported for tests. steps({capabilities, keys, done, na}) draws the progress of one target through the same capabilities as chips (done, or not yet) with a count.
+ *
+ * API (small and stable):
+ *   Kit.capabilityPicker.mount(root, {capabilities, groups, presets, exclusive, value, label, onChange}) -> picker
+ *     capabilities  {key: {title, group, needs: [key], note}}   the order of the keys is the tie-break for the run order
+ *     groups        {key: label}   headings (default: the group key)           presets  {key: {label, keys: [key]}}
+ *     exclusive     true: the closure may not span more than one group (default false)
+ *     value         [key] switched on at the start                              onChange  ({chosen, included, order, groups, valid, problem}) after each change
+ *   picker.get() -> the same state;  picker.set([key]);  picker.destroy()
+ *   Kit.capabilityPicker.closure(capabilities, keys) -> {order, included, cycles, unknown}
+ *     order     every key that will run, prerequisites first (depth first, in the order of the capabilities); included = order minus the chosen keys
+ *     cycles    [[key, ...]] groups of keys that need each other (they are left out of order and named in the sentence); unknown = keys no capability has
+ *     The function is pure and has a cycle guard.
+ *   Kit.capabilityPicker.steps({capabilities, keys, done, na, label}) -> Element   the progress chips of one target: keys is the target's capabilities, done the finished ones, na the ones that
+ *     do not apply (left out); it says "3 of 5 steps"
+ *
+ * CSS classes: .kit-cp .kit-cp-row
+ *
+ * @id        pattern.capability-picker
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A switch per capability that says what it needs; turning one on includes its prerequisites, and a sentence states the order it will run; kinds that cannot mix say so.
+ * @tags      capability, switch, prerequisites, dependencies, preset, order, onboarding, steps
+ * @requires  kit.vocab, kit.glaze-surfaces
+ * @provides  Kit.capabilityPicker.mount, Kit.capabilityPicker.closure, Kit.capabilityPicker.steps
+ * @config    Kit.capabilityPicker.mount(root, {capabilities, groups, presets, exclusive, value, label, onChange}) | capabilities {key: {title, group, needs: [key], note}}; presets {key: {label, keys}}; onChange({chosen, included, order, groups, valid, problem})
+ * @config    Kit.capabilityPicker.steps({capabilities, keys, done, na, label}) | needs Kit.vocab for the chips
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --rule-2 --ok --warn --danger --f-mono --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,19 +1,39 @@
+<!--
+Lifecycle board page
+Taken as text, as template.record is: copy it and replace the invented records. It shows how the pieces share one record list: a tiny store (the records, a lit set, an only filter and the selected record) lives in kit/templates/expiry-board.js; each view writes to it through its own callbacks and reads from it, and no view calls another. An action (renew, check, revoke) is never done inside a view. It leaves as a cancelable eb:action event on the document and the page decides what it means. Tabs are Kit.tabs with #anchors (overview, trust, inventory). Overview: dial meters counted from the records, the runway by kind, a note for the bubble you pick, the five nearest seals. Trust: the signing tree with passes and limits. Inventory: facet buttons for kind and state (hover lights, press filters), clusters or lanes, and the lens line. One drawer opens for a record from any of them. Two facet rows in expiry-board.js filter it; pattern.facet-batch draws its own record list and reports no change to a store, so it does not fit here.
+
+What it is: a page for things that expire (certificates, keys, licences, leases), taken as text. Three tabs under one head. Overview: five dial meters, the runway (what ends when, by kind), a note under it for the
+bubble you pick, and the five nearest seals. Trust: the signing tree, with the passes and limits. Inventory: facet buttons for kind and state, the bubble pictures (clusters or lanes), and the lens line.
+One drawer opens for the record you pick in any of them. The status line under the head says how many are shown and how many are lit.
+How the pieces share data: one list of records and a tiny store inside kit/templates/expiry-board.js (the records, a lit set, an only filter and the selected record). A view writes to the store through its own
+callbacks and reads from it; no view calls another. An action (renew, check, revoke) is never done in a view. It leaves as a cancelable "eb:action" event on the document, with {key, id, item}; the handler at the
+bottom of this file is where the page does the work (or sends the request), and it calls preventDefault() to say it took it.
+Copy it, replace the invented records (kit/samples/expiry-board.json: items, lanes, authorities, kinds, groups) with yours, delete the tabs you do not need. Tab ids are bare tokens and become the page's #anchor.
+Take also, by reference (this file is taken as text): kit/templates/expiry-board.css and .js, and the pieces' files named in this entry's requires (viz.dial-meter, viz.runway, viz.seal, viz.trust-tree, viz.bubbles, kit.drawer, kit.tabs,
+kit.tooltip, kit.vocab, kit.callout, the glaze surfaces and the Glaze depth theme the trust tree and the seals draw on).
+Load in the head: your theme (kit/themes/glaze.css and glaze-depth.css give the porcelain look; any other theme degrades flat), then the css files in the order of the links below.
+Load before the script at the end: the scripts, in the order shown.
+pattern.facet-batch is not used: it draws its own record list and reports no change to a store, so two facet rows in expiry-board.js filter this page.
+
+Delete this comment when you copy the template into your page.
+
+@id        template.expiry-board
+@group     Templates
+@status    new
+@version   0.1.0
+@updated   2026-10-24
+@summary   A page for things that expire: five dial meters, the runway, the nearest seals, a trust tree tab and an inventory tab with facets and bubble pictures, and one drawer for details.
+@tags      expiry, certificates, lifecycle, dashboard, runway, trust tree, inventory, drawer, tabs, dial meters, template, page
+@requires  kit.tokens, kit.vocab, kit.tabs, kit.tooltip, kit.drawer, viz.dial-meter, viz.runway, viz.seal, viz.trust-tree, viz.bubbles
+@config    taken as text | the .html.txt is not loaded; copy its markup, then load the css and scripts it lists in that order
+@config    Kit.expiryBoard.mount(root, data) | data {items, lanes, authorities, kinds, groups, actions, drawerHost, hash, label, onAction}; root holds [data-eb="dials|runway|picked|seals|tree|facets|layout|bubbles|status|tabs"]; returns {store, select, setOnly, light, destroy}
+@config    eb:action | a cancelable CustomEvent on the document with detail {key, id, item}; cancel it to say the page took the action
+@config    not yet | pattern.facet-batch is not used: it has no change hook for the store; two facet rows inside expiry-board.js filter the page
+@tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --danger --seam?
+@globals   none
+@db        none
+-->
 <!-- part:kit.template.expiry-board -->
-<!-- Kit template: lifecycle board page (template.expiry-board)    kit version 0.1.0
-     What it is: a page for things that expire (certificates, keys, licences, leases), taken as text. Three tabs under one head. Overview: five dial meters, the runway (what ends when, by kind), a note under it for the
-     bubble you pick, and the five nearest seals. Trust: the signing tree, with the passes and limits. Inventory: facet buttons for kind and state, the bubble pictures (clusters or lanes), and the lens line.
-     One drawer opens for the record you pick in any of them. The status line under the head says how many are shown and how many are lit.
-     How the pieces share data: one list of records and a tiny store inside kit/templates/expiry-board.js (the records, a lit set, an only filter and the selected record). A view writes to the store through its own
-     callbacks and reads from it; no view calls another. An action (renew, check, revoke) is never done in a view. It leaves as a cancelable "eb:action" event on the document, with {key, id, item}; the handler at the
-     bottom of this file is where the page does the work (or sends the request), and it calls preventDefault() to say it took it.
-     Copy it, replace the invented records (kit/samples/expiry-board.json: items, lanes, authorities, kinds, groups) with yours, delete the tabs you do not need. Tab ids are bare tokens and become the page's #anchor.
-     Take also, by reference (this file is taken as text): kit/templates/expiry-board.css and .js, and the pieces' files named in this entry's requires (viz.dial-meter, viz.runway, viz.seal, viz.trust-tree, viz.bubbles, kit.drawer, kit.tabs,
-     kit.tooltip, kit.vocab, kit.callout, the glaze surfaces and the Glaze depth theme the trust tree and the seals draw on).
-     Load in the head: your theme (kit/themes/glaze.css and glaze-depth.css give the porcelain look; any other theme degrades flat), then the css files in the order of the links below.
-     Load before the script at the end: the scripts, in the order shown.
-     Needs from the board: tokens --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-display --f-mono (optional --seam and the depth tokens); no db.
-     pattern.facet-batch is not used: it draws its own record list and reports no change to a store, so two facet rows in expiry-board.js filter this page.
-     Lifted from: a network-ops console's certificates page (overview, trust and inventory tabs over one record list and one drawer); every record here is invented. -->
 <link rel="stylesheet" href="kit/vocab.css">
 <link rel="stylesheet" href="kit/tabs.css">
 <link rel="stylesheet" href="kit/tooltip.css">

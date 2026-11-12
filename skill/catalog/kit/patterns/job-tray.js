@@ -1,35 +1,50 @@
 /* part:page.script.kit.job-tray */
-/* Kit pattern: jobs tray (Kit.jobTray)    kit version 0.1.0
-   What it is: work in progress as capsules in a tray. The head says it in one sentence ("1 job running, 1 waiting for you") over a pile of small state beads, and opens upward into the capsules.
-   A capsule is a job: its state bead and word, how long it has run, a progress wave while it runs, the last log line, small pills for what it holds, and a log that follows the end unless the
-   person scrolled up. A job that waits for the person goes to the top in its own colour with a hollow ring that turns slowly, and opens the tray; it is never buried. A job that stays quiet for
-   8 s says "no new output for 8 s, still working". A finished job gets its buttons (Continue, Try again, the job's own actions, Dismiss). The tab title takes a prefix while a job waits or runs.
-   The transport is an adapter, so a board brings its own server (or a scripted one, as the preview does). Timers stop while the page is hidden.
-   API (small and stable):
-     Kit.jobTray.mount(root, {adapter, single, label, dock, titlePrefix, quietAfter, pollMs, enum, states, words, actions, onContinue, onEvent, open, emptyText}) -> tray
-       adapter     {start(kind, params) -> Promise<view>, poll(id, since) -> Promise<view | null>, resume?() -> Promise<[view]>}
-                   a poll that rejects with {lost: true} or returns null marks the job lost
-       view        {id, title, kind, status, banner, log, next, startedAt, endedAt, now, leases, result}
-                     status   running | paused | done | failed        (a running job with a banner is waiting for you; paused is a job that ended waiting for you)
-                     banner   what a running job waits on (text)     log   [line] new since the last poll; a line is a string or {text, tone: ok | bad | wait | dim}
-                     next     the cursor to poll with next            startedAt, endedAt, now   milliseconds; now (the server clock) corrects clock skew
-                     leases   [string]  what it holds, drawn as pills result  {waiting: text, actions: [{label, primary, kind, params}]}
-       single      true: one job at a time; starting another is refused with a sentence and a "Show job" button (default false)
-       dock        "inline" (default; the board places the root) | "corner" (fixed to the bottom right of the viewport; full width under 480px)
-       titlePrefix true (default) sets "Waiting for you: " / "Running: " / "Done: " / "Failed: " on document.title
-       enum, states  the Kit.vocab enum of the beads (default "state") and the map {running, waiting, paused, done, failed, lost} to its values
-       words       overrides for the state words        actions  (job) -> [{label, primary, danger, run(job)}] added to a finished job
-       onContinue  (job) for the Continue button; the default starts the same kind again with the params it reported
-       onEvent     (name, job) for started | update | finished
-     tray.start(kind, params, {title}) -> Promise<job>   resolves when the job ends; null when refused
-     tray.attach(view) / tray.reveal(id) / tray.open(bool) / tray.jobs() / tray.clearDone() / tray.destroy() / tray.el
-   Needs from the board:
-     css     kit/patterns/job-tray.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, optional --wait --seam --shadow
-     kit     kit/vocab.js and kit/vocab.css (the beads and their tones), kit/glaze-surfaces.css (buttons and pills)
-     globals Kit.vocab
-   db collections: none.
-   Lifted from: a network-ops console's jobs tray and job capsule (the job runtime with polling by cursor, lost jobs, the waiting-for-you block, the progress wave, lease pills, the log that
-   follows, the one-sentence summary and the title prefix). Changed: the transport is an adapter, "one job at a time" is an option, and the beads and tones come from the vocabulary. */
+/**
+ * Jobs tray
+ * Kit.jobTray.mount(root, {adapter}) draws a tray whose head is a sentence ("1 job running, 1 waiting for you") over a pile of small state beads, and opens upward into capsules. A capsule has a state bead and word, the time it has run, a progress wave while it runs, the last log line, small pills for what it holds, and a log that follows the end unless the reader scrolled up. A job that waits for the person goes first in its own colour with a hollow ring that turns slowly, and opens the tray. A quiet job says how long it has been quiet and that it is still working. A finished job gets Continue, Try again, its own actions and Dismiss. The transport is an adapter ({start, poll(id, since), resume}), so a board brings its own server; a job that the service no longer knows is marked lost. Options: one job at a time, a corner dock, a tab-title prefix. Timers stop while the page is hidden and the wave and ring stop under reduced motion. The state beads and tones come from the vocabulary.
+ *
+ * Work in progress as capsules in a tray. The head says it in one sentence ("1 job running, 1 waiting for you") over a pile of small state beads, and opens upward into the capsules.
+ * A capsule is a job: its state bead and word, how long it has run, a progress wave while it runs, the last log line, small pills for what it holds, and a log that follows the end unless the
+ * person scrolled up. A job that waits for the person goes to the top in its own colour with a hollow ring that turns slowly, and opens the tray; it is never buried. A job that stays quiet for
+ * 8 s says "no new output for 8 s, still working". A finished job gets its buttons (Continue, Try again, the job's own actions, Dismiss). The tab title takes a prefix while a job waits or runs.
+ * The transport is an adapter, so a board brings its own server (or a scripted one, as the preview does). Timers stop while the page is hidden.
+ *
+ * API (small and stable):
+ *   Kit.jobTray.mount(root, {adapter, single, label, dock, titlePrefix, quietAfter, pollMs, enum, states, words, actions, onContinue, onEvent, open, emptyText}) -> tray
+ *     adapter     {start(kind, params) -> Promise<view>, poll(id, since) -> Promise<view | null>, resume?() -> Promise<[view]>}
+ *                 a poll that rejects with {lost: true} or returns null marks the job lost
+ *     view        {id, title, kind, status, banner, log, next, startedAt, endedAt, now, leases, result}
+ *                   status   running | paused | done | failed        (a running job with a banner is waiting for you; paused is a job that ended waiting for you)
+ *                   banner   what a running job waits on (text)     log   [line] new since the last poll; a line is a string or {text, tone: ok | bad | wait | dim}
+ *                   next     the cursor to poll with next            startedAt, endedAt, now   milliseconds; now (the server clock) corrects clock skew
+ *                   leases   [string]  what it holds, drawn as pills result  {waiting: text, actions: [{label, primary, kind, params}]}
+ *     single      true: one job at a time; starting another is refused with a sentence and a "Show job" button (default false)
+ *     dock        "inline" (default; the board places the root) | "corner" (fixed to the bottom right of the viewport; full width under 480px)
+ *     titlePrefix true (default) sets "Waiting for you: " / "Running: " / "Done: " / "Failed: " on document.title
+ *     enum, states  the Kit.vocab enum of the beads (default "state") and the map {running, waiting, paused, done, failed, lost} to its values
+ *     words       overrides for the state words        actions  (job) -> [{label, primary, danger, run(job)}] added to a finished job
+ *     onContinue  (job) for the Continue button; the default starts the same kind again with the params it reported
+ *     onEvent     (name, job) for started | update | finished
+ *   tray.start(kind, params, {title}) -> Promise<job>   resolves when the job ends; null when refused
+ *   tray.attach(view) / tray.reveal(id) / tray.open(bool) / tray.jobs() / tray.clearDone() / tray.destroy() / tray.el
+ *
+ * CSS classes: .kit-jt .kit-jt-job .kit-jt-wait .kit-jt-wave
+ *
+ * @id        pattern.job-tray
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Work in progress as capsules in a tray: running, waiting for you, done, failed; the log follows the end, waiting jobs come first, and the head says it in a sentence.
+ * @tags      jobs, tray, progress, log, capsule, waiting for you, queue, status
+ * @requires  kit.vocab, kit.glaze-surfaces
+ * @provides  Kit.jobTray.mount
+ * @config    Kit.jobTray.mount(root, {adapter, single, dock, label, titlePrefix, quietAfter, pollMs, enum, states, words, actions, onContinue, onEvent}) | adapter {start(kind, params) -> view, poll(id, since) -> view | null, resume?()}; view {id, title, kind, status: running | paused | done | failed, banner, log, next, startedAt, endedAt, now, leases, result}
+ * @config    Kit.vocab | beads come from a vocabulary enum (default "state": running, waiting, done, failed, ended); load kit/vocab.js and kit/vocab.css first
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --rule-2 --ok --warn --danger --f-mono --log-bg? --log-ink? --shadow? --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,27 +1,34 @@
 /* part:page.script.kit.viz.wheel */
-/* Kit visualization: key wheel, key chip and mood plot (Kit.viz.KeyWheel, Kit.viz.KeyChip, Kit.viz.MoodPlot)    kit version 0.1.0
-   What it is: three marks for music libraries and anything else laid out on a 24-position circle.
-     KeyWheel  the Camelot wheel: twelve numbers on two rings (B outside, A inside), each a hue step apart. It can light one key and its three neighbours (one number
-               up, one down, the other ring), or show a count per key as a tint; with onPick each key is a button with arrow-key movement around the wheel.
-     KeyChip   a small label with the key's hue as a dot, for a table row or a track card.
-     MoodPlot  a square plot of two 0 to 100 measures (valence across, arousal up), one dot per item, with quadrant guides; the active dot is ringed and named.
-   Colour is derived, not stored: each key's hue is a step on the circle, mixed into --panel at 12 to 38 per cent so the label stays --ink on both themes. The active key adds a
-   --seam ring and a bold label, so the state never rides on colour alone.
-   Needs from the board:
-     config  KeyWheel({size, active, counts, max, center, onPick, label, lightness, chroma})
-               size       px (default 220); keys are named inside the ring from 140 px up, otherwise only the lit ones are
-               active     "8A": lit with its neighbours (ignored when counts is set)
-               counts     {"8A": 3, …}: tints each key by count / max (max defaults to the largest count) and prints the count
-               center     text in the middle (e.g. the active key)
-               onPick     (code) when set, keys are buttons: Tab to the wheel, arrows move (left and right around a ring, up and down between rings), Enter or Space picks
-             KeyChip({code, name, label})   code "8A", name "A minor"
-             MoodPlot({size, points: [{id, label, x, y}], active, xLabel, yLabel, onPick, label})   x and y are 0 to 100
-             Kit.viz.wheelUtil: {hue(code), neighbours(code), codes, fill(code, pct, opts)}
-     css     kit/viz/viz.css (the kv- chip); custom properties --panel --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, optional --seam
-     needs   kit/viz/core.js loaded first
-     globals window.htmPreact (htm + preact standalone)
-   db collections: none.
-   Lifted from: the YouTuner Uplift page (its Camelot wheel with count mode, the Camelot chip, hue and lightness helpers, and the valence/arousal plot). */
+/**
+ * Key wheel and mood plot
+ * Kit.viz.KeyWheel draws the 24 Camelot keys on two rings; it can light one key and its three neighbours or tint each key by a count, and with onPick the keys are buttons moved with the arrow keys. Kit.viz.KeyChip is the label with the key's hue as a dot. Kit.viz.MoodPlot is a square plot of two 0 to 100 measures with quadrant guides, one dot per item and the active one ringed and named. Colour is derived from the key number and mixed into --panel at 12 to 38 per cent, so labels stay --ink in both themes; the active key adds a --seam ring so state is never colour alone.
+ *
+ * Config:
+ * KeyWheel({size, active, counts, max, center, onPick, label, lightness, chroma})
+ *   size       px (default 220); keys are named inside the ring from 140 px up, otherwise only the lit ones are
+ *   active     "8A": lit with its neighbours (ignored when counts is set)
+ *   counts     {"8A": 3, …}: tints each key by count / max (max defaults to the largest count) and prints the count
+ *   center     text in the middle (e.g. the active key)
+ *   onPick     (code) when set, keys are buttons: Tab to the wheel, arrows move (left and right around a ring, up and down between rings), Enter or Space picks
+ * KeyChip({code, name, label})   code "8A", name "A minor"
+ * MoodPlot({size, points: [{id, label, x, y}], active, xLabel, yLabel, onPick, label})   x and y are 0 to 100
+ * Kit.viz.wheelUtil: {hue(code), neighbours(code), codes, fill(code, pct, opts)}
+ *
+ * @id        viz.wheel
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   The Camelot key wheel with neighbours or per-key counts, a key chip with its hue, and a 0 to 100 valence and arousal plot.
+ * @tags      wheel, camelot, key, music, mood, valence, arousal, scatter, chip, harmonic mixing
+ * @requires  viz.core
+ * @provides  Kit.viz.KeyWheel, Kit.viz.KeyChip, Kit.viz.MoodPlot, Kit.viz.wheelUtil
+ * @config    KeyWheel({size, active, counts, max, center, onPick, label, lightness, chroma}) | active "8A" lights it and its neighbours; counts {"8A": 3} tints by count
+ * @config    KeyChip({code, name, label}) | code "8A", name "A minor"
+ * @config    MoodPlot({size, points, active, xLabel, yLabel, onPick, label}) | points [{id, label, x, y}], x and y 0 to 100
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

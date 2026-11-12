@@ -1,35 +1,41 @@
 /* part:page.script.kit.file-browser */
-/* Kit layout: file browser (Kit.fileBrowser)    kit version 0.2.0
-   What it is: the published files of an ADP artifact as a place to work in, drawn from manifest/current and the records beside it. Two panes. The tree on the left is a real tree (folders
-   open and close, arrow keys walk it): each file shows its kind, how many parts it holds and three marks that carry a glyph and a word, never colour alone: changed after the chosen version,
-   held by an agent, and open comments. The selected file's folders are traced by a seam down the tree. The sheet on the right names the file, gives its hash in groups of four with Copy,
-   its size and when it last changed, a ribbon of every version with the ones that touched this file filled, the page's actions (Open, Compare and any related views), then two tabs:
-   Parts (the file's parts as an outline, parents before children; each opens to its summary, full hash, last change, holder or stale hold, comments, and whether its copy lives in content/)
-   and History (every version that touched the file, newest first: which parts were added, changed or removed with their hashes, and a Compare for that step). The text outside the parts
-   ("_rest:<path>") is listed as such. A file with no parts says so, and its history comes from the version manifests when the page passes them.
-   The toolbar filters by path or part id, picks the version after which changes are marked, and narrows to Changed, Held or Commented files, each with its count.
-   Below 46rem the panes take turns: the tree, then the sheet with an "All files" button back. Plain DOM; every text is set with textContent. It reads nothing from the db and writes nothing.
-   API:
-     Kit.fileBrowser.mount(root, opts) -> {select(path), update(data), setSince(version), destroy()}
-       manifest   {schema, page_hash, parts: {id: hash}, files: {path: hash}, parents: {id: parent}, part_file: {id: path}}   manifest/current (or adp.py manifest DIR)
-       sizes      {path: bytes}                         parts     the parts/<id> docs as {id: doc} or [{id, ...}]: title, summary, version, at, by, holder, hold_until
-       changes    the changes/ docs [{version, at, by, summary, parts: [{id, from, to}]}]; data-only ones (version "") are skipped
-       manifests  optional {version: {files, parts}}: a file's own hash per version, so files without parts get a history too
-       threads    the threads/ docs {id: {part, status, holder, note}}      content   the content/ docs {part id: doc} (or a list of part ids)
-       since      the version after which changes are marked (default: the one before the latest)      selected   a path      now   ISO or Date for holds (default: the clock)
-       views      [{id, label}] related views offered on the sheet           timeZone  for dates (default "UTC")     label  the tree's name (default "Published files")
-       onSelect(path)   onOpen(path)   onCompare({path, from, to})   onPart(id, path)   onView(id, {path})      each button appears only when its callback is given
-       onSince(version) the reader picked another version to mark from ("" for every change); setSince() never calls it
-     update(data) takes any of the options above and redraws, keeping the selection, the open folders and the tab. select() never calls onSelect.
-     Keyboard: the tree follows the WAI tree pattern (Up, Down, Left, Right, Home, End, Enter, a letter jumps); the tabs take Left and Right; changes are announced through role="status".
-   Needs from the board:
-     css     kit/layout/file-browser.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono,
-             optional --f-display --seam --radius --shadow
-     kit     kit.tokens
-     globals none (navigator.clipboard for Copy when present, with a select-the-text fallback)
-   db collections: none read here; a board reads manifest/current, parts, changes, threads and content and passes them in, then calls update() when they change.
-   Lifted from: the first file browser of this kit (folders, an extension badge, the parts of a file) and adp.py manifest and diff (the shape of the manifest and of added, changed, removed).
-   Changed: a tree with open and closed folders instead of flat groups; who holds what, comments and history per file; a version scale; the narrow layout takes turns instead of stacking. */
+/**
+ * File browser
+ * Kit.fileBrowser.mount(root, {manifest, sizes, parts, changes, manifests, threads, content, since, selected, views, onSelect, onOpen, onCompare, onPart, onView, onSince}) draws two panes. The tree follows the WAI tree pattern: folders open and close, Up and Down walk it, Left and Right close, open and climb, Home and End jump, a letter jumps to the next name. Each file shows its kind, its part count and three marks with a glyph and a word: changed after the chosen version, held by an agent (or a stale hold once hold_until has passed), and open comments. A seam traces the selected file's folders. The sheet gives the path, the file hash in groups of four with Copy, its size and last change, a scale of every version with the ones that touched the file filled and the ones after the chosen version ringed, the page's actions (Open file, Compare the last step, related views), then two tabs. Parts lists the file's parts as an outline, parents before children, and the text outside the parts (_rest:<path>); each opens to its summary, full hash, last change, holder, open comments and whether its copy lives in content/. History lists every version that touched the file, newest first, with each part added, changed or removed and its hashes, and a Compare for that step; a file with no parts gets its history from the version manifests when they are passed. The toolbar finds by path, part id or title, picks the version after which changes are marked, and narrows to Changed, Held or Commented files with their counts. Below 46rem the panes take turns: the tree, then the sheet with an All files button back. It reads and writes nothing in the db: the page passes the docs in and calls update().
+ *
+ * API:
+ *   Kit.fileBrowser.mount(root, opts) -> {select(path), update(data), setSince(version), destroy()}
+ *     manifest   {schema, page_hash, parts: {id: hash}, files: {path: hash}, parents: {id: parent}, part_file: {id: path}}   manifest/current (or adp.py manifest DIR)
+ *     sizes      {path: bytes}                         parts     the parts/<id> docs as {id: doc} or [{id, ...}]: title, summary, version, at, by, holder, hold_until
+ *     changes    the changes/ docs [{version, at, by, summary, parts: [{id, from, to}]}]; data-only ones (version "") are skipped
+ *     manifests  optional {version: {files, parts}}: a file's own hash per version, so files without parts get a history too
+ *     threads    the threads/ docs {id: {part, status, holder, note}}      content   the content/ docs {part id: doc} (or a list of part ids)
+ *     since      the version after which changes are marked (default: the one before the latest)      selected   a path      now   ISO or Date for holds (default: the clock)
+ *     views      [{id, label}] related views offered on the sheet           timeZone  for dates (default "UTC")     label  the tree's name (default "Published files")
+ *     onSelect(path)   onOpen(path)   onCompare({path, from, to})   onPart(id, path)   onView(id, {path})      each button appears only when its callback is given
+ *     onSince(version) the reader picked another version to mark from ("" for every change); setSince() never calls it
+ *   update(data) takes any of the options above and redraws, keeping the selection, the open folders and the tab. select() never calls onSelect.
+ *   Keyboard: the tree follows the WAI tree pattern (Up, Down, Left, Right, Home, End, Enter, a letter jumps); the tabs take Left and Right; changes are announced through role="status".
+ *
+ * It reads nothing from the db and writes nothing: a board reads manifest/current, parts, changes, threads and content, passes them in, and calls update() when they change.
+ * Copy uses navigator.clipboard when present, with a select-the-text fallback.
+ *
+ * @id        layout.file-browser
+ * @group     Layouts
+ * @status    new
+ * @version   0.2.0
+ * @updated   2026-11-13
+ * @summary   The published files of an ADP artifact as a tree you can walk, and a sheet per file: its hash, the versions that touched it, its parts with who holds them and their comments, and its history with a Compare for each step.
+ * @tags      files, manifest, tree, parts, hash, holds, history, adp/2, browser, explorer, versions
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.fileBrowser.mount
+ * @config    Kit.fileBrowser.mount(root, opts) | manifest {schema, page_hash, parts, files, parents, part_file}, sizes {path: bytes}, parts {id: parts doc}, changes [changes docs], manifests {version: {files, parts}} (optional), threads {id: threads doc}, content {id: content doc} or [ids], since, selected, now, views [{id, label}], timeZone, label; returns {select, update, setSince, destroy}
+ * @config    callbacks | onSelect(path), onSince(version), onOpen(path), onCompare({path, from, to}), onPart(id, path), onView(id, {path}); a button appears only when its callback is given, and select() and setSince() never call back
+ * @config    update(data) | any of the options; the selection, the open folders and the tab are kept when they still exist
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono --f-display? --seam? --radius? --shadow?
+ * @globals   none
+ * @db        reads manifest/current; parts; changes; threads; content / The layout does not read the db itself: the page reads these docs and passes them in.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

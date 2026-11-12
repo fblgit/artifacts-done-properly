@@ -1,13 +1,32 @@
+<!--
+Record page
+Taken as text: copy kit/templates/record.html.txt and replace the invented kiln record. The head carries the name, a code and a status mark; the body sits behind a seam edge and is a tab set (kit.tabs, underline style) whose ids are #anchors. Overview is two columns of facts that stack when narrow. Health is a data table whose first column is a status mark with its word, with a legend; the mark is a glyph and a word, never colour alone. History is a dated list. Draft check: the source was a disk-inspection report; what was kept is its layout and its health table, none of its content, and the heavy chart dependency the plan listed was not needed.
+
+What it is: one record on one page, taken as text. A head (name, code, status, one line), a seam edge down the left, and a tab set: Overview (two columns of facts and a note),
+Health (a table whose first column is a status mark with its word) and History (a dated list). Copy it, replace the invented service record, delete the tabs you do not need.
+Tab ids are bare tokens (letters, digits, . _ ~ -) and become the page's #anchor, so each tab has a link you can send.
+Take also, by reference (the server copies them; this file is taken as text):  kit/templates/record.css, kit/tabs.css and .js, kit/table.css, kit/callout.css
+Load in the head: your theme (kit/themes/glaze.css or your own tokens), then the four css files in the order of the links below.
+Load before the script at the end: kit/tabs.js
+
+Delete this comment when you copy the template into your page.
+
+@id        template.record
+@group     Templates
+@status    new
+@version   0.1.0
+@updated   2026-10-24
+@summary   One record on one page: a head with name, code and status, a seam edge, and Overview, Health and History tabs. Taken as text.
+@tags      template, record, detail page, tabs, health, status, facts
+@requires  kit.tabs, kit.table, kit.callout
+@config    copy | kit/templates/record.html.txt into your page; take kit/templates/record.css, kit/tabs.css and .js, kit/table.css and kit/callout.css by reference
+@config    html | .kit-trec > .kit-trec-body > .kit-trec-head + .kit-tabs.line with [data-tab] buttons and [data-tab-panel] sections
+@config    script | Kit.tabs.mount(document.getElementById("rec-tabs"))
+@tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --ok --warn --danger --shadow --f-ui --f-display --f-mono --seam?
+@globals   none
+@db        none
+-->
 <!-- part:kit.template.record -->
-<!-- Kit template: record page (template.record)    kit version 0.1.0
-     What it is: one record on one page, taken as text. A head (name, code, status, one line), a seam edge down the left, and a tab set: Overview (two columns of facts and a note),
-     Health (a table whose first column is a status mark with its word) and History (a dated list). Copy it, replace the invented service record, delete the tabs you do not need.
-     Tab ids are bare tokens (letters, digits, . _ ~ -) and become the page's #anchor, so each tab has a link you can send.
-     Take also, by reference (the server copies them; this file is taken as text):  kit/templates/record.css, kit/tabs.css and .js, kit/table.css, kit/callout.css
-     Load in the head: your theme (kit/themes/glaze.css or your own tokens), then the four css files in the order of the links below.
-     Load before the script at the end: kit/tabs.js
-     Needs from the board: tokens --bg --panel --sunk --ink --ink-2 --rule --rule-2 --ok --warn --danger --shadow --f-ui --f-display --f-mono (optional --seam); no db.
-     Lifted from: a drive-inspection report's record layout (accent edge, head, two columns) and its health table with a status column. -->
 <link rel="stylesheet" href="kit/tabs.css">
 <link rel="stylesheet" href="kit/table.css">
 <link rel="stylesheet" href="kit/callout.css">

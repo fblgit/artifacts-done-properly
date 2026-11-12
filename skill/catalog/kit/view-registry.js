@@ -1,40 +1,57 @@
 /* part:page.script.kit.view-registry */
-/* Kit component: view registry and layout board (Kit.views)    kit version 0.1.0
-   What it is: a page drawn from a layout document instead of from code. The layout lists regions of blocks; each block names a data kind, a registered view of that kind, optional alternative
-   views the viewer can switch between (the choice is remembered per viewer), and the options that view takes (a filter, columns). Everything is checked against the registry before anything is drawn:
-   an unknown kind, an unregistered view, options on the wrong view, a filter on a field the rows do not have, a filter on text, or a column the view does not draw is a typed refusal with a code,
-   never a silent blank. Filters select by enum, number or flag only, never by text. Plain DOM; every text is set with textContent.
-
-   THE API (small and stable; a view switcher or a layout editor builds on exactly these)
-     Kit.views.kind(id, {label, fields})              declare a data kind and the shape of its rows
-         fields  {name: {type: "enum", values: [...]} | {type: "integer"} | {type: "bool"} | {type: "string"} | {type: "content"} | {type: "message", fields: {...}}}
-                 enum, integer and bool can be filtered on; string and content cannot (content is free text that must never decide anything); message nests (reach it with a dotted path, "owner.team")
-     Kit.views.register({kind, name, label, form, options, columns, render})   register a view of a kind; the same kind and name replaces; returns the view (frozen)
-         label    the word on the switcher (default name)      form     a free tag for the shape ("lanes", "table", "feed") that a switcher can show as an icon
-         options  the one options arm this view takes in a layout block ("table", "lanes", "cards" ...), or null when it takes none
-         columns  the field paths a "columns" option may name (for a table-like view)
-         render   (box, ctx) -> {update(ctx), destroy()} | void     ctx = {rows, options, block, kind}; rows are already filtered; without render the block draws a designed "no renderer yet" empty state
-     Kit.views.get(kind, name) -> view | null      Kit.views.list(kind?) -> [view]      Kit.views.kinds() -> [{id, label, fields}]      Kit.views.arms() -> [arm names a block may carry]
-     Kit.views.alternatives(block) -> [view names]      the block's main view first, then each of block.view.views not already named: what a switcher offers
-     Kit.views.validate(layout) -> [{block, code, view?, arm?, field?}]      [] when the layout is sound
-         codes: UNKNOWN_KIND, UNREGISTERED_VIEW, OPTIONS_OUTSIDE_VIEW, UNKNOWN_FIELD, PATH_INTO_CONTENT, INVALID_FIELD (the filter's last field is text, a list or a message), BAD_VALUE, UNKNOWN_COLUMN
-         field is the path inside the layout, "regions[0].blocks[1].view.table.filter[0].field"
-     Kit.views.describe(problem) -> one plain sentence for a person
-     Kit.views.checkFilter(kind, filter) -> [{code, field}]      filter = [{field, op: "eq" | "ne" | "in" | "gte" | "lte", value}]  ("in" takes an array, "gte" and "lte" only an integer field)
-     Kit.views.filter(kind, rows, filter) -> rows      applies a sound filter (throws Kit.views.Refused with .problems when it is not)
-     Kit.views.mount(box, {layout, rows, storageKey, label, onRefuse, onSwitch}) -> board
-         layout   {regions: [{id, shape, columns, blocks: [{id, title, view: {data, view, views: [alts], <arm>: {filter, columns}}}]}]}
-                  shape: "row" (blocks side by side), "columns" or "stack" (one under another), "grid" (region.columns across, default 2)
-         rows     {kind: [row, ...]}                   storageKey  prefix of the localStorage key that remembers each block's chosen view (none: not remembered)
-         onRefuse (problems) when the layout is refused; the box then shows the refusal and draws nothing else      onSwitch (blockId, viewName) after a viewer switches
-         board    {setRows(kind, rows), chosen(blockId) -> name, choose(blockId, name) -> boolean, on(fn) -> off, problems, destroy()}
-                  on(fn): fn(blockId, viewName) after every switch, by a viewer or by choose(); this is the hook a separate switcher uses
-     Options in a block belong to its main view; an alternative view is drawn with no options.
-   Needs from the board:
-     css     kit/view-registry.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --danger --f-ui --f-display --f-mono, optional --seam --radius
-     globals none (localStorage only when storageKey is given; every read and write is guarded)
-   db collections: none.
-   Lifted from: a component family's Board page (regions and blocks drawn from a layout, the per-viewer alternative-view switcher), its view registry and layout validator, and its typed filter check. */
+/**
+ * View registry and layout board
+ * Declare data kinds with Kit.views.kind (the fields of a row, typed), register views for a kind with Kit.views.register, then Kit.views.mount(box, {layout, rows}) draws the layout. A block names a kind, a main view, alternative views and the options its main view takes (a filter, columns). Before anything is drawn the layout is validated: an unknown kind, an unregistered view, options on a view that does not take them, a filter on a field the rows lack, a filter on text, or a column the view does not draw is a typed refusal (UNKNOWN_KIND, UNREGISTERED_VIEW, OPTIONS_OUTSIDE_VIEW, UNKNOWN_FIELD, PATH_INTO_CONTENT, INVALID_FIELD, BAD_VALUE, UNKNOWN_COLUMN) and the refusal is drawn instead of a half page. Filters select by enum, number or flag only, never by text. Blocks with alternatives get a switch whose choice is remembered per viewer; board.on(fn) tells a separate switcher when a view changes, and Kit.views.alternatives(block) lists what to offer. The API is documented in the file header.
+ *
+ * What it is: a page drawn from a layout document instead of from code. The layout lists regions of blocks; each block names a data kind, a registered view of that kind, optional alternative
+ * views the viewer can switch between (the choice is remembered per viewer), and the options that view takes (a filter, columns). Everything is checked against the registry before anything is drawn:
+ * an unknown kind, an unregistered view, options on the wrong view, a filter on a field the rows do not have, a filter on text, or a column the view does not draw is a typed refusal with a code,
+ * never a silent blank. Filters select by enum, number or flag only, never by text. Plain DOM; every text is set with textContent.
+ *
+ * THE API (small and stable; a view switcher or a layout editor builds on exactly these)
+ *   Kit.views.kind(id, {label, fields})              declare a data kind and the shape of its rows
+ *       fields  {name: {type: "enum", values: [...]} | {type: "integer"} | {type: "bool"} | {type: "string"} | {type: "content"} | {type: "message", fields: {...}}}
+ *               enum, integer and bool can be filtered on; string and content cannot (content is free text that must never decide anything); message nests (reach it with a dotted path, "owner.team")
+ *   Kit.views.register({kind, name, label, form, options, columns, render})   register a view of a kind; the same kind and name replaces; returns the view (frozen)
+ *       label    the word on the switcher (default name)      form     a free tag for the shape ("lanes", "table", "feed") that a switcher can show as an icon
+ *       options  the one options arm this view takes in a layout block ("table", "lanes", "cards" ...), or null when it takes none
+ *       columns  the field paths a "columns" option may name (for a table-like view)
+ *       render   (box, ctx) -> {update(ctx), destroy()} | void     ctx = {rows, options, block, kind}; rows are already filtered; without render the block draws a designed "no renderer yet" empty state
+ *   Kit.views.get(kind, name) -> view | null      Kit.views.list(kind?) -> [view]      Kit.views.kinds() -> [{id, label, fields}]      Kit.views.arms() -> [arm names a block may carry]
+ *   Kit.views.alternatives(block) -> [view names]      the block's main view first, then each of block.view.views not already named: what a switcher offers
+ *   Kit.views.validate(layout) -> [{block, code, view?, arm?, field?}]      [] when the layout is sound
+ *       codes: UNKNOWN_KIND, UNREGISTERED_VIEW, OPTIONS_OUTSIDE_VIEW, UNKNOWN_FIELD, PATH_INTO_CONTENT, INVALID_FIELD (the filter's last field is text, a list or a message), BAD_VALUE, UNKNOWN_COLUMN
+ *       field is the path inside the layout, "regions[0].blocks[1].view.table.filter[0].field"
+ *   Kit.views.describe(problem) -> one plain sentence for a person
+ *   Kit.views.checkFilter(kind, filter) -> [{code, field}]      filter = [{field, op: "eq" | "ne" | "in" | "gte" | "lte", value}]  ("in" takes an array, "gte" and "lte" only an integer field)
+ *   Kit.views.filter(kind, rows, filter) -> rows      applies a sound filter (throws Kit.views.Refused with .problems when it is not)
+ *   Kit.views.mount(box, {layout, rows, storageKey, label, onRefuse, onSwitch}) -> board
+ *       layout   {regions: [{id, shape, columns, blocks: [{id, title, view: {data, view, views: [alts], <arm>: {filter, columns}}}]}]}
+ *                shape: "row" (blocks side by side), "columns" or "stack" (one under another), "grid" (region.columns across, default 2)
+ *       rows     {kind: [row, ...]}                   storageKey  prefix of the localStorage key that remembers each block's chosen view (none: not remembered)
+ *       onRefuse (problems) when the layout is refused; the box then shows the refusal and draws nothing else      onSwitch (blockId, viewName) after a viewer switches
+ *       board    {setRows(kind, rows), chosen(blockId) -> name, choose(blockId, name) -> boolean, on(fn) -> off, problems, destroy()}
+ *                on(fn): fn(blockId, viewName) after every switch, by a viewer or by choose(); this is the hook a separate switcher uses
+ *   Options in a block belong to its main view; an alternative view is drawn with no options.
+ *
+ * localStorage is used only when storageKey is given; every read and write is guarded.
+ *
+ * @id        kit.view-registry
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A page drawn from a layout document: regions of blocks, each bound to a data kind and a registered view, with alternative views the viewer can switch between and a validator that refuses what it cannot draw.
+ * @tags      layout, registry, views, validator, board, regions, blocks, alternatives, filter, refusal, data-first
+ * @requires  kit.tokens
+ * @provides  Kit.views.kind, Kit.views.register, Kit.views.get, Kit.views.list, Kit.views.alternatives, Kit.views.validate, Kit.views.describe, Kit.views.checkFilter, Kit.views.filter, Kit.views.mount
+ * @config    Kit.views.kind(id, {label, fields}) | fields {name: {type: enum | integer | bool | string | content | message, values, fields}}
+ * @config    Kit.views.register({kind, name, label, form, options, columns, render}) | render(box, {rows, options, block, kind}) returns {update(ctx), destroy()}
+ * @config    Kit.views.mount(box, {layout, rows, storageKey, label, onRefuse, onSwitch}) | layout {regions: [{id, shape, columns, blocks: [{id, title, view: {data, view, views, <arm>: {filter, columns}}}]}]}; returns {setRows(kind, rows), chosen(id), choose(id, name), on(fn), problems, destroy()}
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --danger --f-ui --f-display --f-mono --seam? --radius?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

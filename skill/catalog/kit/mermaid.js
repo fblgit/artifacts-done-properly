@@ -1,30 +1,46 @@
 /* part:page.script.kit.mermaid */
-/* Kit component: themed Mermaid (Kit.mermaid)    kit version 0.1.0
-   What it is: Mermaid diagrams drawn in the page's own tokens, redrawn when the theme changes, in a frame with a caption, a legend and a sideways scroll.
-   Why its own class: the artifact platform draws every pre.mermaid itself, in its own two palettes. This file leaves those alone and draws .kit-mmd blocks,
-   passing the theme as a per-diagram init directive, so it never changes the platform's Mermaid settings and the two can share a page.
-   It uses the page's window.mermaid when one is loaded (the platform's), and otherwise loads mermaid 11.4.1 from cdn.jsdelivr.net, once, on first use.
-   Markup:
-     <figure class="kit-mmd-frame">
-       <figcaption class="kit-mmd-cap"><b>Release flow</b><span>left to right</span></figcaption>
-       <div class="kit-mmd-scroll"><pre class="kit-mmd" data-label="Release flow" style="--kit-mmd-min: 640px">flowchart LR …</pre></div>
-       <p class="kit-legend"><span style="--c: var(--ok)">shipped</span> …</p>
-     </figure>
-     The source is the block's text, or data-src="#id" naming a <script type="text/plain" id="id">.
-     In the source, %name% is the colour of token --name and %name/18% that colour at 18% over --panel, e.g.  classDef done fill:%ok/18%,stroke:%ok%
-   API (small and stable):
-     Kit.mermaid.mount(root = document, {selector, watch, src}) -> {render(), destroy()}
-       selector  default ".kit-mmd"
-       watch     extra elements whose data-theme, class or style changes mean a redraw (the root element and the OS setting are always watched)
-       src       the mermaid script URL to load when the page has none (default the pinned jsDelivr build)
-     Kit.mermaid.palette(el) -> {name: "#rrggbb"}   the themeVariables it passes, resolved in el's context (tokens can differ per pane)
-   A diagram that fails to draw shows its source and the reason, never a blank.
-   Needs from the board:
-     css     kit/mermaid.css; custom properties --panel --sunk --bg --ink --ink-2 --rule --accent --accent-ink --accent-soft --f-ui --f-mono, optional --seam
-     globals window.mermaid (optional; loaded from the CDN when absent)
-   db collections: none.
-   Lifted from: diagrams themed from page tokens (the hex resolver and %token% placeholders), the platform's theme-aware Mermaid runtime (redraw on theme change),
-   and three documents' diagram frames (caption, legend swatches, a scroll frame with a minimum width). */
+/**
+ * Themed Mermaid
+ * Kit.mermaid.mount(root, {selector, watch}) draws every .kit-mmd block (its text, or data-src naming a script type=text/plain) with themeVariables resolved from the tokens where the block sits, passed as a per-diagram init directive. It leaves the platform's own pre.mermaid blocks alone, so both can share a page; it uses the page's window.mermaid when there is one and otherwise loads mermaid 11.4.1 from jsDelivr once. In the source, %ok% is the --ok colour and %ok/18% that colour at 18% over --panel. A diagram that fails shows its source and the reason.
+ *
+ * What it is: Mermaid diagrams drawn in the page's own tokens, redrawn when the theme changes, in a frame with a caption, a legend and a sideways scroll.
+ * Why its own class: the artifact platform draws every pre.mermaid itself, in its own two palettes. This file leaves those alone and draws .kit-mmd blocks,
+ * passing the theme as a per-diagram init directive, so it never changes the platform's Mermaid settings and the two can share a page.
+ * It uses the page's window.mermaid when one is loaded (the platform's), and otherwise loads mermaid 11.4.1 from cdn.jsdelivr.net, once, on first use.
+ * Markup:
+ *   <figure class="kit-mmd-frame">
+ *     <figcaption class="kit-mmd-cap"><b>Release flow</b><span>left to right</span></figcaption>
+ *     <div class="kit-mmd-scroll"><pre class="kit-mmd" data-label="Release flow" style="--kit-mmd-min: 640px">flowchart LR …</pre></div>
+ *     <p class="kit-legend"><span style="--c: var(--ok)">shipped</span> …</p>
+ *   </figure>
+ *   The source is the block's text, or data-src="#id" naming a <script type="text/plain" id="id">.
+ *   In the source, %name% is the colour of token --name and %name/18% that colour at 18% over --panel, e.g.  classDef done fill:%ok/18%,stroke:%ok%
+ * API (small and stable):
+ *   Kit.mermaid.mount(root = document, {selector, watch, src}) -> {render(), destroy()}
+ *     selector  default ".kit-mmd"
+ *     watch     extra elements whose data-theme, class or style changes mean a redraw (the root element and the OS setting are always watched)
+ *     src       the mermaid script URL to load when the page has none (default the pinned jsDelivr build)
+ *   Kit.mermaid.palette(el) -> {name: "#rrggbb"}   the themeVariables it passes, resolved in el's context (tokens can differ per pane)
+ * A diagram that fails to draw shows its source and the reason, never a blank.
+ *
+ * Optional custom properties: --seam.
+ *
+ * @id        kit.mermaid
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Mermaid diagrams in the page's own tokens, redrawn on a theme change, in a frame with caption, legend and a sideways scroll.
+ * @tags      mermaid, diagram, flowchart, sequence, theme, dark mode, legend, caption, scroll
+ * @requires  none
+ * @provides  Kit.mermaid.mount, Kit.mermaid.palette, Kit.mermaid.load
+ * @config    Kit.mermaid.mount(root, opts) | selector (default .kit-mmd), watch (elements whose data-theme, class or style mean a redraw), src
+ * @config    markup | figure.kit-mmd-frame > figcaption.kit-mmd-cap + .kit-mmd-scroll > pre.kit-mmd (+ p.kit-legend)
+ * @config    network | cdn.jsdelivr.net/npm/mermaid@11.4.1 when the page has no window.mermaid
+ * @tokens    --panel --sunk --bg --ink --ink-2 --rule --accent --accent-ink --accent-soft --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

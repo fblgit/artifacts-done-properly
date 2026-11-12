@@ -1,22 +1,34 @@
 /* part:page.script.kit.viz.impact */
-/* Kit visualization: impact preview (Kit.viz.impactOf, Kit.viz.ImpactList, Kit.viz.PreviewBanner)    kit version 0.1.0
-   What it is: what a change does to a board before anyone applies it. impactOf compares two snapshots of records and answers in the terms people
-   care about: what is new, what is removed, which fields change (a status moving to a negative one counts as a loss), and, when records cover
-   targets through a link field, which targets get their first live cover and which lose their last one. ImpactList shows that as marked rows
-   (+ new, ~ change, − loss, ✓ good); PreviewBanner is the one-line summary with Keep and Stop buttons that sits above a previewed view.
-   Needs from the board:
-     config  impactOf(before, after, {fields, linkField, target, live, negative})
-               before, after  {id: {kind, status, label, code, <fields>, <linkField>: [id]}}
-               fields     the fields compared (default ["status", "label"]); linkField the array field that links a record to targets (optional)
-               target     the kind that gets covered (optional); live {kind: [statuses]}: only these records count as a live cover (all when omitted)
-               negative   statuses that read as a loss (default ["rejected", "dropped", "superseded"])
-             ImpactList({impact, after, kinds, words})          after is the same "after" map, for names
-             PreviewBanner({impact, label, after, onKeep, onStop, canKeep})
-     css     kit/viz/viz.css; custom properties --panel --ink --ink-2 --ink-3 --rule-2 --sunk --accent --accent-soft --ok --danger --c-amber --f-mono
-     needs   kit/viz/core.js loaded first
-   db collections: none. The board builds the "after" snapshot (the Journey Whiteboard projects Claude's proposed actions onto a copy).
-   Lifted from: Journey Whiteboard app.js (coverage, impactOf, ImpactList, PreviewBanner). Changed: kinds, link field, live statuses and
-   compared fields come from the board; removed records are reported; names come from code or label. */
+/**
+ * Impact preview
+ * impactOf compares two snapshots of records in the terms people care about. ImpactList shows the answer as marked rows (+ new, ~ change, − loss, ✓ gain); PreviewBanner is the one-line summary with Keep and Stop that sits above a previewed view. With the tree's marks the same answer paints onto the tree.
+ *
+ * Config:
+ * impactOf(before, after, {fields, linkField, target, live, negative})
+ *   before, after  {id: {kind, status, label, code, <fields>, <linkField>: [id]}}
+ *   fields     the fields compared (default ["status", "label"]); linkField the array field that links a record to targets (optional)
+ *   target     the kind that gets covered (optional); live {kind: [statuses]}: only these records count as a live cover (all when omitted)
+ *   negative   statuses that read as a loss (default ["rejected", "dropped", "superseded"])
+ * ImpactList({impact, after, kinds, words})          after is the same "after" map, for names
+ * PreviewBanner({impact, label, after, onKeep, onStop, canKeep})
+ *
+ * The board builds the "after" snapshot (the Journey Whiteboard projects Claude's proposed actions onto a copy).
+ *
+ * @id        viz.impact
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   What a change does before anyone applies it: new, changed, lost, and which targets gain or lose their last cover.
+ * @tags      impact, diff, preview, dry run, proposal, changes, coverage
+ * @requires  viz.core
+ * @provides  Kit.viz.impactOf, Kit.viz.ImpactList, Kit.viz.PreviewBanner
+ * @config    impactOf(before, after, options) | snapshots {id: {kind, status, label, code, ...}}; options {fields, linkField, target, live, negative}
+ * @config    ImpactList | {impact, after, kinds, words}
+ * @config    PreviewBanner | {impact, label, after, onKeep, onStop, canKeep}
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

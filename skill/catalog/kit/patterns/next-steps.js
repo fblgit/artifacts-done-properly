@@ -1,24 +1,41 @@
 /* part:page.script.kit.next-steps */
-/* Kit component: next steps with a prompt builder (Kit.nextSteps)    kit version 0.1.0
-   What it is: a checklist of next steps where the owner ticks Done on what is finished and Pick on what Claude should do next, reorders with Up and Down,
-   adds a note to a step and adds steps of their own. The picked, unfinished steps build one text (a prompt for Claude by default, or any command or message
-   through build()), shown in a read-only box with a Copy button. It can sit inside a collapsible strip that counts what is pending. Plain DOM, no framework.
-   API (small and stable):
-     Kit.nextSteps.mount(root, opts) -> {setState(state), state(), text(), destroy()}
-       items       [{id, title, sub, ref}]    the board's own steps; ref is a short pointer the default text adds in brackets, e.g. "workstream 4"
-       state       {done: {id: true}, picked: {id: true}, notes: {id: text}, order: [id], extras: [{id, title}]}    start empty; the board keeps what onChange gives it
-       onChange(state)   called after every change with the whole state: hand it to Kit.saveStatus.persist, or write it to one db doc
-       build(picked, ctx) -> string    picked is [{id, title, sub, ref, note}] in order; ctx {items, state}; default "proceed with: 1) a (ref) [note: n]; 2) b"
-       lead        the default text's first words (default "proceed with: ");  emptyText  shown when nothing is picked
-       allowAdd    show the "Add your own step" line (default true);  collapsible  wrap in a details strip with a pending count (default false);  open  its initial state
-       title, headingLevel (2-6, default 2), words  texts that replace the defaults
-     setState(state) is for a live subscription: it replaces the state and redraws.
-   Needs from the board:
-     css     kit/patterns/next-steps.css; custom properties --panel --bg --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --f-ui --f-mono; optional --seam
-     globals Kit.copy (kit/copy.js) for the Copy button; without it the text is selected for a manual copy
-     caps    none. To keep the state across visits give onChange a writer (kit.save-status keeps it in the db doc or the browser).
-   db collections: none of its own; the board stores the state object in one doc, e.g. board/state.
-   Lifted from: a session board's next-steps list with its prompt builder, a proposal's collapsible next-steps strip, and a share manifest's folder picks that build a copy command. */
+/**
+ * Next steps with prompt builder
+ * Kit.nextSteps.mount(root, {items, state, onChange}) draws a checklist where Done marks what is finished and Pick marks what Claude should do next. Steps move with Up and Down (focus stays on the button), take a note, and the owner can add steps of their own. The picked, unfinished steps build one text in a read-only box with a Copy button: a prompt for Claude by default ("proceed with: 1) a (ref) [note: n]; 2) b"), or any command or message through build(picked, {items, state}). With collapsible it becomes a details strip that counts what is pending. The whole state is one object handed to onChange, so a board saves it with kit.save-status or one db doc.
+ *
+ * What it is: a checklist of next steps where the owner ticks Done on what is finished and Pick on what Claude should do next, reorders with Up and Down,
+ * adds a note to a step and adds steps of their own. The picked, unfinished steps build one text (a prompt for Claude by default, or any command or message
+ * through build()), shown in a read-only box with a Copy button. It can sit inside a collapsible strip that counts what is pending. Plain DOM, no framework.
+ *
+ * API (small and stable):
+ *   Kit.nextSteps.mount(root, opts) -> {setState(state), state(), text(), destroy()}
+ *     items       [{id, title, sub, ref}]    the board's own steps; ref is a short pointer the default text adds in brackets, e.g. "workstream 4"
+ *     state       {done: {id: true}, picked: {id: true}, notes: {id: text}, order: [id], extras: [{id, title}]}    start empty; the board keeps what onChange gives it
+ *     onChange(state)   called after every change with the whole state: hand it to Kit.saveStatus.persist, or write it to one db doc
+ *     build(picked, ctx) -> string    picked is [{id, title, sub, ref, note}] in order; ctx {items, state}; default "proceed with: 1) a (ref) [note: n]; 2) b"
+ *     lead        the default text's first words (default "proceed with: ");  emptyText  shown when nothing is picked
+ *     allowAdd    show the "Add your own step" line (default true);  collapsible  wrap in a details strip with a pending count (default false);  open  its initial state
+ *     title, headingLevel (2-6, default 2), words  texts that replace the defaults
+ *   setState(state) is for a live subscription: it replaces the state and redraws.
+ *
+ * caps none. To keep the state across visits give onChange a writer (kit.save-status keeps it in the db doc or the browser).
+ *
+ * @id        pattern.next-steps
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Checklist of next steps that builds a copyable prompt (or a command) from the picked ones; reorder, notes, own steps, collapsible strip.
+ * @tags      next steps, checklist, prompt, builder, copy, reorder, notes, command, strip
+ * @requires  kit.copy
+ * @provides  Kit.nextSteps.mount
+ * @config    Kit.nextSteps.mount(root, {items, state, onChange, build, lead, allowAdd, collapsible, title, words}) | items [{id, title, sub, ref}]; state {done, picked, notes, order, extras}; onChange(state) after every change
+ * @config    build(picked, ctx) | returns the text; the default builds the prompt, a command builder returns a command from ctx.items and the picks
+ * @config    Kit.copy | the Copy button uses Kit.copy.text; without it the text is selected
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

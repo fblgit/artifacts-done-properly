@@ -1,35 +1,44 @@
 /* part:page.script.kit.viewer3d */
-/* Kit layout: 3D viewer with parameters (Kit.viewer3d)    kit version 0.1.0
-   What it is: a WebGL viewport beside an engineering sidebar. The sidebar holds view controls (an explode slider and layer checkboxes), number inputs for the model's
-   parameters, a list of fixed dimensions and readouts that pass or fail; changing a parameter rebuilds the model and re-checks every readout. Materials come from the
-   page's colour tokens and are rebuilt when the theme changes. three.js is loaded from cdnjs as a module (pinned); orbit, pan and zoom are the kit's own, so there is no
-   second library and no import map. The model is yours: you write model(ctx) with the THREE it hands you. Plain DOM, no framework.
-   API (small and stable):
-     Kit.viewer3d.mount(root, {title, note, params, view, fixed, legend, model, applyView, home, hud, three}) -> Promise<{rebuild(), setParam(id, v), setView(id, v), resetCamera(), destroy()}>
-       root      an element; give it a height (css --kit-v3-h, default 560px). Above 760px of its own width the sidebar sits to the right (310px), below it goes under the view.
-       params    [{id, label, value, min, max, step, unit}]   number inputs, in the model's units; read back as ctx.p.<id> (a number; a blank or invalid field counts as 0)
-       view      [{id, label, type: "range" | "check", value, min, max, step}]   view controls; read back as ctx.view.<id>; they call applyView, not model
-       fixed     [[label, value]]   dimensions that do not change, shown as a list
-       legend    [{label, token}]   swatches named by a colour token, e.g. {label: "printed part", token: "--accent"}
-       model     (ctx) -> {group, parts, readouts}   called on mount, on every parameter input and on a theme change; the old group is disposed
-                   ctx = {THREE, p, view, tok(name) -> THREE.Color, mat(tokenOrCss, extra) -> MeshStandardMaterial}
-                   group     the THREE.Object3D to show (added to the scene)
-                   parts     {name: Object3D}   handed back to applyView
-                   readouts  [{k, v, ok}]   ok true or false gets a ✓ pass or ✕ fail mark with the word for screen readers; leave ok out for a plain figure
-       applyView (ctx, built) -> void   move or hide parts from ctx.view (explode distance, layers); called after model() and on every view input
-       home      {pos: [x, y, z], tgt: [x, y, z]}   the opening camera (default pos [0, 0, 300], tgt [0, 0, 0])
-       hud       the hint line over the view (default "drag to orbit, wheel to zoom, right-drag or Shift-drag to pan, arrow keys, + and −")
-       three     the module URL (default https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js)
-     Keyboard: the view takes the focus; arrows orbit, + and − zoom, 0 resets the camera. The corner buttons do the same for touch. Rendering is on demand (no loop), so a still
-     model costs nothing, and prefers-reduced-motion has nothing to stop.
-     If the library or WebGL is unavailable the view says so, the controls stay, and model() is not called (it needs THREE).
-   Needs from the board:
-     css     kit/layout/viewer3d.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --ok --danger --accent --f-ui --f-mono, optional --seam
-     network the three module from cdnjs.cloudflare.com
-     globals none
-   db collections: none.
-   Lifted from: a parametric rack viewer (its grid of viewport and sidebar, parameters read by readParams and rebuilt by build, readouts with a chk() pass/fail, the explode slider and
-   layer toggles in applyView, and materials rebuilt from css variables when the colour scheme changes). */
+/**
+ * 3D viewer with parameters
+ * Kit.viewer3d.mount(root, {params, view, fixed, legend, model, applyView}) shows your model beside an engineering sidebar. You write model(ctx), which builds three.js objects from the parameters with materials taken from the page's colour tokens, and returns the readouts to show with a pass or fail mark and its word. The view controls (an explode slider, layer checkboxes) call applyView without rebuilding. Materials are rebuilt when the theme changes. three.js loads from cdnjs as a pinned module; orbit, pan and zoom are the kit's own, with keyboard and button controls, so there is no import map and no second library. It renders on demand, so a still model costs nothing. Draft check: the source was a bespoke rack designer; its viewer, parameter and readout mechanics were kept and none of its geometry.
+ *
+ * API (small and stable):
+ *   Kit.viewer3d.mount(root, {title, note, params, view, fixed, legend, model, applyView, home, hud, three}) -> Promise<{rebuild(), setParam(id, v), setView(id, v), resetCamera(), destroy()}>
+ *     root      an element; give it a height (css --kit-v3-h, default 560px). Above 760px of its own width the sidebar sits to the right (310px), below it goes under the view.
+ *     params    [{id, label, value, min, max, step, unit}]   number inputs, in the model's units; read back as ctx.p.<id> (a number; a blank or invalid field counts as 0)
+ *     view      [{id, label, type: "range" | "check", value, min, max, step}]   view controls; read back as ctx.view.<id>; they call applyView, not model
+ *     fixed     [[label, value]]   dimensions that do not change, shown as a list
+ *     legend    [{label, token}]   swatches named by a colour token, e.g. {label: "printed part", token: "--accent"}
+ *     model     (ctx) -> {group, parts, readouts}   called on mount, on every parameter input and on a theme change; the old group is disposed
+ *                 ctx = {THREE, p, view, tok(name) -> THREE.Color, mat(tokenOrCss, extra) -> MeshStandardMaterial}
+ *                 group     the THREE.Object3D to show (added to the scene)
+ *                 parts     {name: Object3D}   handed back to applyView
+ *                 readouts  [{k, v, ok}]   ok true or false gets a ✓ pass or ✕ fail mark with the word for screen readers; leave ok out for a plain figure
+ *     applyView (ctx, built) -> void   move or hide parts from ctx.view (explode distance, layers); called after model() and on every view input
+ *     home      {pos: [x, y, z], tgt: [x, y, z]}   the opening camera (default pos [0, 0, 300], tgt [0, 0, 0])
+ *     hud       the hint line over the view (default "drag to orbit, wheel to zoom, right-drag or Shift-drag to pan, arrow keys, + and −")
+ *     three     the module URL (default https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js)
+ *   Keyboard: the view takes the focus; arrows orbit, + and − zoom, 0 resets the camera. The corner buttons do the same for touch. Rendering is on demand (no loop), so a still
+ *   model costs nothing, and prefers-reduced-motion has nothing to stop.
+ *   If the library or WebGL is unavailable the view says so, the controls stay, and model() is not called (it needs THREE).
+ *
+ * @id        layout.viewer3d
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A WebGL viewport beside a sidebar of view controls, number parameters, fixed dimensions and readouts that pass or fail; the model rebuilds on input.
+ * @tags      3d, three.js, viewer, parametric, cad, readouts, explode, webgl
+ * @requires  none
+ * @provides  Kit.viewer3d.mount
+ * @config    Kit.viewer3d.mount(root, opts) | title, note, params [{id, label, value, min, max, step, unit}], view [{id, label, type range|check, value}], fixed [[k, v]], legend [{label, token}], model(ctx), applyView(ctx, built), home, hud, three
+ * @config    model(ctx) | ctx {THREE, p, view, tok(name), mat(token|css, extra)}; return {group, parts, readouts [{k, v, ok}]}
+ * @config    network | the three.js module from cdnjs.cloudflare.com (0.160.0)
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --ok --danger --accent --f-ui --f-mono --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

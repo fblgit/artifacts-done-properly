@@ -1,18 +1,33 @@
 /* part:page.script.kit.store */
-/* Kit component: store (Kit.util, Kit.store, Kit.db)    kit version 0.1.0
-   What it is: small helpers, an rAF-batched global state object with a subscribe hook, and a queued write layer over the claude.ai db capability
-   (put/upd/del per document, local optimistic patches, a retrying writer, the connect sequence for db/user and optional capabilities).
-   Needs from the board:
-     config  Kit.store.create({lsPrefix, state})                      lsPrefix names the localStorage keys, state is the board's initial state object
-             Kit.db.create({store, toast, pathTemplate, scopeSlot, words, caps})
-               pathTemplate  "s/{scope}/{name}" : where a collection lives; {name} is the collection, {scope} the current scope id (omit {scope} for flat collections)
-               scopeSlot     the state slot that holds the current scope id (default "scopeId")
-               words         {refused, full, busy, failed, lost} toast texts (neutral defaults)
-               caps          capability names the page may use besides db and user, e.g. ["sample","comments"]
-     state   S.canWrite, S.conn, S.me, S.connMsg are written by Kit.db.connect; for each collection the board keeps a slot S[name] with the same name (localSet/localPatch use it)
-     globals window.htmPreact (htm + preact standalone) for the useS hook; window.claude for connect
-   db collections: reads and writes whatever collections the board names; none of its own.
-   Lifted from: Journey Whiteboard app.js (store, data layer, utils); the ADR Drafting Table's core.js and data.js carry the same shapes with another path. */
+/**
+ * Store and db layer
+ * The base every other kit file stands on. Kit.store.create gives S, set, emit, useS and ls (localStorage under a prefix). Kit.db.create gives per-document write queues (one chain per path, so writes to one doc never race), localSet and localPatch for optimistic paint, writeOne with backoff on rate limits, typed toasts for refusals and full storage, and connect(), which resolves db and user first and the optional capabilities after. Kit.util holds the small helpers (clip, merge, sortEntries, ago, isTyping).
+ *
+ * What it is: small helpers, an rAF-batched global state object with a subscribe hook, and a queued write layer over the claude.ai db capability
+ * (put/upd/del per document, local optimistic patches, a retrying writer, the connect sequence for db/user and optional capabilities).
+ * config  Kit.store.create({lsPrefix, state})                      lsPrefix names the localStorage keys, state is the board's initial state object
+ *         Kit.db.create({store, toast, pathTemplate, scopeSlot, words, caps})
+ *           pathTemplate  "s/{scope}/{name}" : where a collection lives; {name} is the collection, {scope} the current scope id (omit {scope} for flat collections)
+ *           scopeSlot     the state slot that holds the current scope id (default "scopeId")
+ *           words         {refused, full, busy, failed, lost} toast texts (neutral defaults)
+ *           caps          capability names the page may use besides db and user, e.g. ["sample","comments"]
+ * state   S.canWrite, S.conn, S.me, S.connMsg are written by Kit.db.connect; for each collection the board keeps a slot S[name] with the same name (localSet/localPatch use it)
+ *
+ * @id        kit.store
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Board state in one object with a subscribe hook, and a queued write layer over the db capability: put, update, delete, optimistic local patches, retries, the connect sequence.
+ * @tags      state, store, db, data layer, writes, optimistic, connect, capabilities, localstorage, util
+ * @requires  none
+ * @provides  Kit.util, Kit.store.create, Kit.db.create
+ * @config    Kit.store.create({lsPrefix, state}) | lsPrefix names the localStorage keys; state is the board’s initial state object
+ * @config    Kit.db.create({store, toast, pathTemplate, scopeSlot, words, caps}) | pathTemplate "s/{scope}/{name}" says where a collection lives; caps are the capabilities besides db and user
+ * @config    state slots | S.canWrite, S.conn, S.me, S.connMsg (written by connect); one slot S[name] per collection the board keeps
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

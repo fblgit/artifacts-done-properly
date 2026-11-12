@@ -1,13 +1,29 @@
 /* part:page.style.kit.theme.manuscript */
-/* Kit theme: Manuscript    kit version 0.1.0
-   A sheet of paper on a desk: blue ink for the reader, red pen for what is open, one serif voice.
-   Character: Source Serif 4 for everything but code, 17px on 1.6 inside a 36rem measure, labels in small caps (--label-caps: all-small-caps, no capitals), near-square 2 and 4px corners, rules do the structure (hairlines, heavy --ink rules over title blocks). Colour never fills a pill: use --label-caps and a word. The review tone (--wait) is a plum added here so review and open are not both red; the skin itself read review as blue.
-   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
-   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
-   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
-   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
-   Fonts: https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap
-   From: the hub's Manuscript skin (small caps, heavy rules, clause numbering, 36rem measure) and an earlier board's spec-document skin. */
+/**
+ * Manuscript
+ * Source Serif 4 for everything but code (Courier Prime), 17px on 1.6 in a 36rem measure. Labels are small caps (--label-caps), not capitals and not mono. Rules do the structure, corners are 2 and 4px, and colour never fills a pill: a state is a word. The skin read review as blue, the same as info; here --wait is a plum so review and open are not both blue or red. Clause numbering and stamps are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ *
+ * Character: Source Serif 4 for everything but code, 17px on 1.6 inside a 36rem measure, labels in small caps (--label-caps: all-small-caps, no capitals), near-square 2 and 4px corners, rules do the structure (hairlines, heavy --ink rules over title blocks). Colour never fills a pill: use --label-caps and a word. The review tone (--wait) is a plum added here so review and open are not both red; the skin itself read review as blue.
+ * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+ * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
+ * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+ * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+ * Fonts: https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap
+ *
+ * @id        theme.manuscript
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A controlled document: a sheet of paper on a desk, blue ink for the reader and red pen for what is open, one serif voice with small-caps labels.
+ * @tags      palette, tokens, colours, dark mode, manuscript, document, serif, small caps, paper, ink, specification
+ * @requires  none
+ * @config    fonts | Source Serif 4 and Courier Prime from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {
   color-scheme: light;

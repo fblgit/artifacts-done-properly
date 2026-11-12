@@ -1,24 +1,32 @@
 /* part:page.script.kit.viz.topology */
-/* Kit visualization: clickable topology (Kit.topology)    kit version 0.1.0
-   What it is: an SVG diagram of nodes in zones, joined by links, with a detail panel beside it. A node is a button (Tab to it, Enter or Space picks it, aria-pressed says which is picked);
-   hover and focus show a one-line tooltip, a pick fills the panel. Zones are labelled areas, links are straight lines between node edges (or a polyline you give) with an optional arrow and
-   a label, dashed for a weak or occasional path. Positions are config: the diagram is drawn in its own viewBox and scales to the box, never narrower than minWidth (below that the figure
-   scrolls inside its own frame, so the text stays readable on a phone).
-   API: Kit.topology.mount(box, {width, height, minWidth, zones, nodes, links, notes, detail, selected, onSelect, empty, label, caption, host}) -> {select(id), update(patch), destroy()}
-     width, height   the viewBox size (default 640 by 360)
-     zones           [{id, x, y, w, h, title, sub, kind}]   kind "outline" draws a heavier perimeter instead of a filled area
-     nodes           [{id, x, y, w, h, title, sub, state, tip}]   state {tone: ok | warn | danger, label} adds a round mark with a glyph (check, bang, cross) and the word in the tooltip
-     links           [{from, to, points, label, dashed, arrow}]   from and to are node ids; points [[x, y], …] replaces the straight line; arrow "to" (default none), "both"; label sits at the middle
-     notes           [{x, y, text, anchor}]   free text in the drawing
-     detail          (node) => {kicker, title, sub, rows: [[label, value]], lists: [{title, items}], tags: [{text, on}]} | Node | null, called on each pick
-     onSelect        (id | null) after a pick; picking the picked node again clears it
-   Needs from the board:
-     requires kit.tooltip (Kit.tooltip.attach)
-     css     kit/viz/topology.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals Kit.tooltip
-   db collections: none.
-   Lifted from: a network report's topology (topoSVG with zones, perimeters, tunnels and links; .tn nodes as buttons; showNode filling a detail panel). Changed: positions, names and text are config,
-   the detail panel is a callback, nodes get a state mark, and the figure scrolls inside its frame instead of shrinking its text on a narrow screen. */
+/**
+ * Clickable topology
+ * Kit.topology.mount draws nodes in zones, joined by straight links (or a polyline you give) with optional arrows and labels, beside a detail panel. A node is a button: Tab to it, Enter or Space picks it, aria-pressed says which is picked, and hover or focus shows a one-line tooltip. Positions are config; the drawing scales to its box but never narrower than minWidth, below which the figure scrolls inside its own frame so the text stays readable on a phone. A node can carry a state mark (check, bang, cross). The detail panel is a callback that returns rows, lists and tags.
+ *
+ * API: Kit.topology.mount(box, {width, height, minWidth, zones, nodes, links, notes, detail, selected, onSelect, empty, label, caption, host}) -> {select(id), update(patch), destroy()}
+ *   width, height   the viewBox size (default 640 by 360)
+ *   zones           [{id, x, y, w, h, title, sub, kind}]   kind "outline" draws a heavier perimeter instead of a filled area
+ *   nodes           [{id, x, y, w, h, title, sub, state, tip}]   state {tone: ok | warn | danger, label} adds a round mark with a glyph (check, bang, cross) and the word in the tooltip
+ *   links           [{from, to, points, label, dashed, arrow}]   from and to are node ids; points [[x, y], …] replaces the straight line; arrow "to" (default none), "both"; label sits at the middle
+ *   notes           [{x, y, text, anchor}]   free text in the drawing
+ *   detail          (node) => {kicker, title, sub, rows: [[label, value]], lists: [{title, items}], tags: [{text, on}]} | Node | null, called on each pick
+ *   onSelect        (id | null) after a pick; picking the picked node again clears it
+ *
+ * @id        viz.topology
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   SVG node diagram in zones with links; picking a node fills a detail panel.
+ * @tags      topology, network, nodes, diagram, svg, detail, zones, links
+ * @requires  kit.tooltip
+ * @provides  Kit.topology.mount
+ * @config    Kit.topology.mount(box, opts) | width, height, minWidth, zones, nodes, links, notes, detail(node), selected, onSelect, empty, label, caption, host
+ * @config    requires | kit.tooltip
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --ok --warn --danger --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

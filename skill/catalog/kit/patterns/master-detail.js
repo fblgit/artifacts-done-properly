@@ -1,25 +1,40 @@
 /* part:page.script.kit.master-detail */
-/* Kit pattern: master-detail with filters (Kit.masterDetail)    kit version 0.1.0
-   What it is: a filterable, searchable list of records on the left and the selected record on the right. The list is a listbox in groups (arrow keys move and select, Home and End jump),
-   the filters are toggle chips that narrow together, and the detail pane is whatever your renderDetail returns. When the component itself is narrower than 760px
-   (a phone, or a narrow pane) the list turns into a select above the detail, so the layout follows its own width and not the viewport.
-   Plain DOM; list text is set with textContent. Your renderDetail returns a Node (or a string, shown as text).
-   API:
-     Kit.masterDetail.mount(root, {items, renderDetail, groups, filters, search, selected, label, narrow, emptyList, emptyDetail, onSelect})
-         -> {select(id), update(items), state(), destroy()}
-       items         [{id, name, group, sub, chips: [{label, tone}], keys}]   keys is extra search text; group is the heading in the list
-       renderDetail  (item) => Node | string
-       groups        the order of the group headings (default: first seen)
-       filters       [{id, label, test(item) -> boolean}]   each chip is on or off; chips that are on all apply
-       search        {placeholder, label}   matches name, sub, group and keys; all words must appear
-       selected      the first selected id (default: the first visible item)
-       narrow        the width in px under which the list becomes a select (default 760)
-       onSelect      (item) after a selection
-   Needs from the board:
-     css     kit/patterns/master-detail.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: a runbook's cluster browser (.md, .list, .litem, the verdict filter buttons, renderList, matches and the mobile select). */
+/**
+ * Master-detail with filters
+ * Kit.masterDetail.mount(root, {items, renderDetail, groups, filters, search, selected, label, narrow, onSelect}) renders a grouped listbox (arrow keys, Home and End move and select) with a search box and toggle chips that narrow together, and a detail pane filled by your renderDetail(item). The stack switches by the component's own width (default 760 px), so it also holds inside a narrow pane; then the list becomes a select above the detail. A status line counts the visible records.
+ *
+ * What it is: a filterable, searchable list of records on the left and the selected record on the right. The list is a listbox in groups (arrow keys move and select, Home and End jump),
+ * the filters are toggle chips that narrow together, and the detail pane is whatever your renderDetail returns. When the component itself is narrower than 760px
+ * (a phone, or a narrow pane) the list turns into a select above the detail, so the layout follows its own width and not the viewport.
+ *
+ * Plain DOM; list text is set with textContent. Your renderDetail returns a Node (or a string, shown as text).
+ *
+ * API:
+ *   Kit.masterDetail.mount(root, {items, renderDetail, groups, filters, search, selected, label, narrow, emptyList, emptyDetail, onSelect})
+ *       -> {select(id), update(items), state(), destroy()}
+ *     items         [{id, name, group, sub, chips: [{label, tone}], keys}]   keys is extra search text; group is the heading in the list
+ *     renderDetail  (item) => Node | string
+ *     groups        the order of the group headings (default: first seen)
+ *     filters       [{id, label, test(item) -> boolean}]   each chip is on or off; chips that are on all apply
+ *     search        {placeholder, label}   matches name, sub, group and keys; all words must appear
+ *     selected      the first selected id (default: the first visible item)
+ *     narrow        the width in px under which the list becomes a select (default 760)
+ *     onSelect      (item) after a selection
+ *
+ * @id        pattern.master-detail
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A filterable, searchable list on the left and the selected record on the right; the list becomes a select when the component is narrow.
+ * @tags      layout, master detail, list, detail, filter, search, listbox, split view, phone, inspector
+ * @requires  none
+ * @provides  Kit.masterDetail.mount
+ * @config    Kit.masterDetail.mount(root, opts) | items [{id, name, group, sub, chips [{label, tone}], keys}], renderDetail(item) -> Node, groups, filters [{id, label, test}], search {placeholder, label}, selected, label, narrow, emptyList, emptyDetail, onSelect
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

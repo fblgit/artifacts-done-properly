@@ -1,28 +1,44 @@
 /* part:page.script.kit.viz.tree */
-/* Kit visualization: lineage tree (Kit.viz.Tree, Kit.viz.layoutTree, Kit.viz.lineage)    kit version 0.1.0
-   What it is: records drawn as a left-to-right tree. Each node is drawn once, under its first parent that does not lead back to it; its other
-   parents get a dashed cross edge. Roots of the root kinds each get a band; everything else that has no parent sits in a last band.
-   Selecting a node lights its whole lineage (every ancestor through any parent, every descendant) and dims the rest. Branches fold with a
-   count of what they hide; the view zooms (45 to 130 %) and pans by dragging the background with a mouse (touch scrolls natively).
-   Marks paint a proposal onto the tree: new (dashed accent), change (amber), loss (red), good (green).
-   Needs from the board:
-     config  Tree({nodes, kinds, statuses, rank, rootKinds, selected, onPick, marks, words, legend, bar, banner, height, zoom})
-               nodes     [{id, label, kind, status, code, chips: [text], bucket, parents: [id], order, shape: "card" | "pill", state: "chosen" | "closed" | "open"}]
-                         parents[0] is the preferred parent; order sorts siblings and decides who claims a node first (creation time works)
-               kinds     {kind: {label, tone}}   statuses {status: tone}   rank {kind: n}: sibling order by kind (pills first, unknown kinds 5)
-               rootKinds kinds whose parentless nodes open their own band (others go to the last band, titled words.loose)
-               selected / onPick(id)   controlled selection; without onPick the tree keeps its own
-               marks     {id: "new" | "change" | "loss" | "good"}
-               legend    [[style, text]] with style solid | dash | new | change | loss
-               bar, banner  optional vnodes drawn in the toolbar (a Replay scrubber) and above the tree (a PreviewBanner)
-               height    css height of the scroll box (default 460px)
-             layoutTree(nodes, {rank, rootKinds, collapsed}) and lineage(layout, id) are the pure parts, usable without the component.
-     css     kit/viz/viz.css; custom properties --panel --canvas --dot --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-soft --ok --danger --warn
-             --c-amber --c-blue --c-green and --c-<pen> for the kinds' tones, --f-ui --f-mono
-     needs   kit/viz/core.js loaded first
-   db collections: none. The board maps its own records to nodes (the Journey Whiteboard: problems, solves, about, from, paths, page sources).
-   Lifted from: Journey Whiteboard app.js (RANK, parentsOf, buildTree, lineage, TreeNode, TreeView). Changed: parent derivation moved to the board
-   (nodes carry parents), question paths became pill nodes, the fold state is per tree instead of per space in localStorage. */
+/**
+ * Lineage tree
+ * The Journey Whiteboard's tree view as a component. Root kinds open their own bands; nodes without a parent gather in a last band. Select a node and every ancestor and descendant lights up while the rest dims. Branches fold with a count of what they hide; the view zooms and pans. Marks paint a proposal onto it: new, change, loss, good. layoutTree and lineage are exported as pure functions.
+ *
+ * Config:
+ * Tree({nodes, kinds, statuses, rank, rootKinds, selected, onPick, marks, words, legend, bar, banner, height, zoom})
+ *   nodes     [{id, label, kind, status, code, chips: [text], bucket, parents: [id], order, shape: "card" | "pill", state: "chosen" | "closed" | "open"}]
+ *             parents[0] is the preferred parent; order sorts siblings and decides who claims a node first (creation time works)
+ *   kinds     {kind: {label, tone}}   statuses {status: tone}   rank {kind: n}: sibling order by kind (pills first, unknown kinds 5)
+ *   rootKinds kinds whose parentless nodes open their own band (others go to the last band, titled words.loose)
+ *   selected / onPick(id)   controlled selection; without onPick the tree keeps its own
+ *   marks     {id: "new" | "change" | "loss" | "good"}
+ *   legend    [[style, text]] with style solid | dash | new | change | loss
+ *   bar, banner  optional vnodes drawn in the toolbar (a Replay scrubber) and above the tree (a PreviewBanner)
+ *   height    css height of the scroll box (default 460px)
+ * layoutTree(nodes, {rank, rootKinds, collapsed}) and lineage(layout, id) are the pure parts, usable without the component.
+ *
+ * The board maps its own records to nodes (the Journey Whiteboard: problems, solves, about, from, paths, page sources).
+ * Tone colours: --c-<pen> for each pen tone used.
+ *
+ * @id        viz.tree
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Records as a left-to-right tree: each drawn once under its first parent, other parents as dashed edges, the selected node's whole lineage lit.
+ * @tags      tree, lineage, graph, hierarchy, outline, journey, dag, diagram
+ * @requires  viz.core
+ * @provides  Kit.viz.Tree, Kit.viz.layoutTree, Kit.viz.lineage
+ * @config    nodes | [{id, label, kind, status, code, chips, bucket, parents: [id], order, shape: card | pill, state}]
+ * @config    kinds / statuses | {kind: {label, tone}} / {status: tone}
+ * @config    rank | {kind: n}: sibling order
+ * @config    rootKinds | kinds whose roots open a band
+ * @config    selected, onPick | controlled selection (optional)
+ * @config    marks | {id: new | change | loss | good}
+ * @config    bar, banner | vnodes for the toolbar and above the tree (a Replay, a PreviewBanner)
+ * @config    legend, words, height | [[style, text]], {loose, empty}, css height
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

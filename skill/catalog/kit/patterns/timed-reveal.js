@@ -1,25 +1,42 @@
 /* part:page.script.kit.timed-reveal */
-/* Kit pattern: timed reveal (Kit.timedReveal)    kit version 0.1.0
-   What it is: a sealed card. Opening it starts a draining ring (Kit.dialMeter.drain) and lists the rows. Each row has a button where its value will be; pressing it fetches that one value and puts
-   it in the button's place for a short time, then the button comes back. Closing the card, the ring running out, the page being hidden and a change of theme all hide every shown value at once.
-   The rules it keeps: a value is not in the page until it is pressed, it is held in one text node only, it is never logged or put in an event, and it is emptied on timeout, on close, on page hide
-   and on theme change. The time left is told in words as well as the ring: a button reads it out on request.
-   This is a courtesy to the reader, not a security boundary: whoever can see the page while a value shows can read it, and a script on the page can read the text node. Say so in your own docs.
-   API (small and stable):
-     Kit.timedReveal.mount(root, {title, items, fetch, authorize, duration, valueSeconds, copy, label, sealedText, openText, onOpen, onClose}) -> {open(), close(), isOpen(), hideAll(), destroy()}
-       items         [{id, label, sub, slots: [{key, label}]}]   a row with no slots has one, "Value"; a slot with `none: true` says "none" instead of a button
-       fetch         (id, slotKey) -> string | Promise<string>   called on press, once per reveal; the board supplies it
-       authorize     () -> Promise<boolean>   called by Open; resolve false (or reject) to stay sealed. Default: allow
-       duration      seconds the card stays open (default 120)       valueSeconds   seconds one value shows (default 30)
-       copy          true adds a Copy button next to a shown value (uses Kit.copy.wire)
-       sealedText, openText   the sentences under the state title      onOpen, onClose   called after the card changes state
-   Needs from the board:
-     css     kit/patterns/timed-reveal.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --warn --f-ui --f-mono --f-display, optional --seam --rim --pool
-     kit     kit/viz/dial-meter.js and kit/viz/dial-meter.css (the ring), kit/vocab.js and kit/vocab.css, kit/copy.js and kit/copy.css (when copy is on), kit/glaze-surfaces.css (buttons)
-     globals Kit.dialMeter, Kit.vocab; Kit.copy when copy is true
-   db collections: none.
-   Lifted from: a network-ops console's sealed-vault page (the ring that drains while the vault is open, the sealed and open card, a password shown in place of its button for a short time,
-   the hide-everything on close). Changed: the fetch is a callback, the values are never kept outside one text node, hidden pages and theme changes hide them, and the time left can be read out. */
+/**
+ * Timed reveal
+ * Kit.timedReveal.mount(root, {items, fetch}) draws a sealed card. Open starts a draining ring (Kit.dialMeter.drain) and lists the rows. Each row has a Show button where its value will be; pressing it calls fetch(id, slot), puts the value in the button’s place with the seconds left, an optional Copy button (Kit.copy) and a Hide button, and brings the button back when the time is up. The value is not in the page until it is pressed, it sits in one text node, it is never logged or put in an event, and it is emptied on timeout, on close, when the page is hidden and when the theme changes. The time left is told in words as well as the ring: a button reads it out. This hides a value from a glance at the screen. It is not a security boundary, and the docs of a board that uses it should say so.
+ *
+ * What it is: a sealed card. Opening it starts a draining ring (Kit.dialMeter.drain) and lists the rows. Each row has a button where its value will be; pressing it fetches that one value and puts
+ * it in the button's place for a short time, then the button comes back. Closing the card, the ring running out, the page being hidden and a change of theme all hide every shown value at once.
+ *
+ * The rules it keeps: a value is not in the page until it is pressed, it is held in one text node only, it is never logged or put in an event, and it is emptied on timeout, on close, on page hide
+ * and on theme change. The time left is told in words as well as the ring: a button reads it out on request.
+ *
+ * This is a courtesy to the reader, not a security boundary: whoever can see the page while a value shows can read it, and a script on the page can read the text node. Say so in your own docs.
+ *
+ * API (small and stable):
+ *   Kit.timedReveal.mount(root, {title, items, fetch, authorize, duration, valueSeconds, copy, label, sealedText, openText, onOpen, onClose}) -> {open(), close(), isOpen(), hideAll(), destroy()}
+ *     items         [{id, label, sub, slots: [{key, label}]}]   a row with no slots has one, "Value"; a slot with `none: true` says "none" instead of a button
+ *     fetch         (id, slotKey) -> string | Promise<string>   called on press, once per reveal; the board supplies it
+ *     authorize     () -> Promise<boolean>   called by Open; resolve false (or reject) to stay sealed. Default: allow
+ *     duration      seconds the card stays open (default 120)       valueSeconds   seconds one value shows (default 30)
+ *     copy          true adds a Copy button next to a shown value (uses Kit.copy.wire)
+ *     sealedText, openText   the sentences under the state title      onOpen, onClose   called after the card changes state
+ *
+ * CSS classes: .kit-tr .kit-tr-card .kit-tr-shown
+ *
+ * @id        pattern.timed-reveal
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A sealed card with a draining ring; open it and each value shows in place of its button for a short time, then hides itself; closing hides all of them at once.
+ * @tags      reveal, secret, timer, sealed, password, countdown, vault
+ * @requires  viz.dial-meter, kit.vocab, kit.copy, kit.glaze-surfaces
+ * @provides  Kit.timedReveal.mount
+ * @config    Kit.timedReveal.mount(root, {title, items, fetch, authorize, duration, valueSeconds, copy, label, onOpen, onClose}) | items [{id, label, sub, slots: [{key, label, none}]}]; fetch(id, slotKey) -> string | Promise<string>; authorize() -> Promise<boolean>
+ * @config    Kit.dialMeter, Kit.vocab | the ring needs kit/viz/dial-meter.js and .css; Kit.copy only when copy is true
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --rule-2 --ok --f-mono --f-display --rim? --pool? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

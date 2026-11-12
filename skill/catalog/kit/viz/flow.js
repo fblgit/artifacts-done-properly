@@ -1,18 +1,26 @@
 /* part:page.script.kit.viz.flow */
-/* Kit visualization: flow diagram (Kit.flow)    kit version 0.1.0
-   What it is: a left-to-right flow built from HTML, not an image: columns of nodes with an arrow between each pair of columns. One node in a column is a pipeline step, several stacked in a column
-   are a fan-out (one source feeding sinks) or a fan-in. It runs as rows on a wide box and folds into one column with down arrows when the box is narrower than 560 px (a container query, so it
-   follows the box and not the window). Kinds tell what a node is without colour: a source has a filled head, a sink a heavy border, a human step a double border and the word "Person", a
-   blocked path a dashed border and a cross. A link between columns can be "blocked" (a cross in place of the arrowhead). Steps can be numbered when the order is the point.
-   API: Kit.flow.mount(box, {stages, numbered, label, caption}) -> {update(patch), destroy()}
-     stages    [ [node, …] | {nodes: [node, …], link: "ok" | "blocked" | "none", linkLabel} , … ]   the link belongs to the gap before that column
-     node      {id, title, text, kind: "step" | "source" | "sink" | "human" | "blocked", tag: {text, tone}, dashed}   tone: ok warn danger accent muted; the tag shows a mark (check, bang, cross) and its words
-   Needs from the board:
-     css     kit/viz/flow.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: four reports' flows (a source feeding stages and sinks in a grid, a row of layer boxes joined by arrows, an inline-SVG pipeline with arrowheads, a strip with human steps).
-   Changed: one component for all four, in HTML so the text wraps and selects, with the arrows drawn in css. The SVG variant with markers is Kit.topology's links. */
+/**
+ * Flow diagrams
+ * Kit.flow.mount builds a left-to-right flow in HTML: columns of nodes with an arrow between each pair. One node in a column is a pipeline step; several stacked are a fan-out or a fan-in. It folds into one column with down arrows when its box is narrower than 560 px (a container query). Kinds read without colour: a source has a filled head, a sink a heavy border, a person step a double border and the word Person, a blocked path a dashed border and a cross. A link between columns can be blocked, drawn dashed with a cross for an arrowhead. Steps can be numbered when the order is the point. The inline SVG variant with arrow markers is covered by Kit.topology's links.
+ *
+ * API: Kit.flow.mount(box, {stages, numbered, label, caption}) -> {update(patch), destroy()}
+ *   stages    [ [node, …] | {nodes: [node, …], link: "ok" | "blocked" | "none", linkLabel} , … ]   the link belongs to the gap before that column
+ *   node      {id, title, text, kind: "step" | "source" | "sink" | "human" | "blocked", tag: {text, tone}, dashed}   tone: ok warn danger accent muted; the tag shows a mark (check, bang, cross) and its words
+ *
+ * @id        viz.flow
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Columns of nodes joined by arrows: a source feeding sinks, a pipeline, a human step, a blocked path.
+ * @tags      flow, pipeline, diagram, steps, arrows, human in the loop, blocked, fan-out
+ * @requires  none
+ * @provides  Kit.flow.mount
+ * @config    Kit.flow.mount(box, opts) | stages [[node] | {nodes, link: ok | blocked | none, linkLabel}], numbered, label, caption; node {id, title, text, kind: step | source | sink | human | blocked, tag {text, tone}, dashed}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --accent-soft --ok --warn --danger --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

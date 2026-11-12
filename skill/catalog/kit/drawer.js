@@ -1,25 +1,37 @@
 /* part:page.script.kit.drawer */
-/* Kit component: side drawer (Kit.drawer)    kit version 0.1.0
-   What it is: a floating panel at the right with a head, a scrolling body and a pinned foot. Escape closes it and focus goes back to the button that opened it. Two modes:
-   non-modal (default; the page behind stays usable, no scrim) and modal (a scrim, focus held inside, aria-modal). Opening it again for another record replaces the content
-   without closing. At phone width it becomes a bottom sheet. kit.chrome's openModal stays the form dialog; this is for the detail of a record.
-   API (small and stable):
-     Kit.drawer.open({title, head, body, foot, modal, host, opener, focus, label, onClose}) -> {close(), el, setTitle(s), setHead(x), setBody(x), setFoot(x), isOpen()}
-       title    string, the drawer's name for assistive tech and its default head text
-       head     Node | string, replaces the default head (an avatar and a title, say); a close button is always added
-       body     Node | string | Node[]    the scrolling part          foot  Node | string | Node[]   pinned at the bottom (none = no foot)
-       modal    true holds focus and dims the page; false (default) leaves the page alone
-       host     an element to open inside (it must be positioned: position relative); default document.body, fixed to the viewport
-       opener   the element to focus after closing (default: the element focused when the drawer first opened)
-       focus    false leaves focus where it is (a drawer opened on load); default true moves it into the body
-       onClose  called once after it has closed
-     Kit.drawer.current() -> the open handle or null;  Kit.drawer.close() closes whatever is open.
-   One drawer per host: open() on a host that already has one reuses it (new content, same element, no close event).
-   Needs from the board:
-     css     kit/drawer.css; custom properties --panel --ink --ink-2 --rule --rule-2 --shadow --f-ui --f-display --accent, optional --scrim --rim --pool --glz-r-xl
-     globals none
-   db collections: none.
-   Lifted from: a network-ops console's right-hand detail drawer (open, close, replace) and a deposit drawer with a scrim and Escape. */
+/**
+ * Side drawer
+ * Kit.drawer.open({title, head, body, foot, modal, host, opener, onClose}) opens a detail drawer and returns {close, el, setTitle, setHead, setBody, setFoot}. Non-modal by default (the page behind stays usable); modal adds a scrim, holds focus inside and sets aria-modal. Opening it again for another record replaces the content without closing. Escape closes; focus returns to the opener. A host element confines it to a frame; at phone width it becomes a bottom sheet. kit.chrome's openModal stays the form dialog.
+ *
+ * API (small and stable):
+ *   Kit.drawer.open({title, head, body, foot, modal, host, opener, focus, label, onClose}) -> {close(), el, setTitle(s), setHead(x), setBody(x), setFoot(x), isOpen()}
+ *     title    string, the drawer's name for assistive tech and its default head text
+ *     head     Node | string, replaces the default head (an avatar and a title, say); a close button is always added
+ *     body     Node | string | Node[]    the scrolling part          foot  Node | string | Node[]   pinned at the bottom (none = no foot)
+ *     modal    true holds focus and dims the page; false (default) leaves the page alone
+ *     host     an element to open inside (it must be positioned: position relative); default document.body, fixed to the viewport
+ *     opener   the element to focus after closing (default: the element focused when the drawer first opened)
+ *     focus    false leaves focus where it is (a drawer opened on load); default true moves it into the body
+ *     onClose  called once after it has closed
+ *   Kit.drawer.current() -> the open handle or null;  Kit.drawer.close() closes whatever is open.
+ * One drawer per host: open() on a host that already has one reuses it (new content, same element, no close event).
+ *
+ * Optional custom properties: --scrim --rim --pool --glz-r-xl.
+ *
+ * @id        kit.drawer
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A floating panel at the right with a head, a scrolling body and a pinned foot; Escape closes it and focus goes back to the button that opened it.
+ * @tags      drawer, side panel, detail, sheet, modal, focus
+ * @requires  kit.tokens
+ * @provides  Kit.drawer.open, Kit.drawer.current, Kit.drawer.close
+ * @config    Kit.drawer.open({title, head, body, foot, modal, host, opener, onClose}) | head, body and foot take a Node, a string or an array of Nodes; host must be a positioned element, default document.body
+ * @tokens    --panel --ink --ink-2 --rule --rule-2 --shadow --f-ui --f-display --accent
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

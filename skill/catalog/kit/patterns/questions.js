@@ -1,26 +1,44 @@
 /* part:page.script.kit.questions */
-/* Kit component: question cards with a sticky answer bar (Kit.questions)    kit version 0.1.0
-   What it is: the owner's open questions as cards. Each card has the question, why it matters, a few facts, options with an optional recommendation,
-   a note, and its own state (not answered, picked and not submitted, submitted with a time). A sticky bar counts the submitted answers, takes every
-   recommendation at once, submits every picked answer, and copies the answers as text for a page that cannot save. Plain DOM, no framework.
-   API (small and stable):
-     Kit.questions.mount(root, opts) -> {setAnswers(map), answers(), refresh(), destroy()}
-       questions   [{id, title, why, facts: [text], options: [{id, label, detail}], recommended: optionId, reason, allowOther}]
-                   allowOther adds a "Something else" option that needs a note before it can be submitted
-       answers     {questionId: {q, choice, label, note, at, claude, log: [{at, by, what}]}}   answers already saved (claude is Claude's reply, shown under the card)
-       collection  db collection the answers are written to (default "answers"); one doc per question, id = question id
-       db          the object Kit.db.create returns (uses db.put); or save(id, doc) -> Promise, which wins when both are given
-       canWrite    false when the viewer may read but not write (Submit stays off, Copy my answers still works); default true when a save target exists
-       headingLevel  2-6, the level of each card's heading (default 3);  words  texts that replace the defaults
-       onSubmit(doc)  hook after a save;  onState(text)  hook for the bar's status line
-     setAnswers(map) is for the board's live subscription: it replaces the saved answers and keeps any card the owner is editing.
-   Doc written: {q, choice, label, note, at}. Claude may add {claude, log} on the same doc; the card shows them.
-   Needs from the board:
-     css     kit/patterns/questions.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono; optional --seam, --kit-topbar-h
-     globals Kit.copy (kit/copy.js) for Copy my answers; without it the answers appear in a text box to copy by hand
-     caps    db (optional): the collection above, in the board's db. Without it the cards still work and the answers can be copied.
-   db collections: writes <collection>/<question id>; the board reads the same collection (onSnapshot) and calls setAnswers.
-   Lifted from: a decisions board's question cards and answer bar, and a task list's option cards with reply, Claude's note and history. */
+/**
+ * Question cards with sticky answer bar
+ * Kit.questions.mount(root, {questions, answers, db}) draws one card per question: the question, why it matters, a few facts, radio options (one marked Recommended), a note and its own state in words (not answered, picked and not submitted, submitted with a time). The sticky bar counts the submitted answers with a meter, takes every recommendation at once, submits every picked answer, and copies the answers as text for a page that cannot save. A "Something else" option needs a note before it can be submitted. A saved answer can carry Claude's reply and a history, which the card shows under it. Live updates come in through setAnswers, which never overwrites a card the owner is editing.
+ *
+ * What it is: the owner's open questions as cards. Each card has the question, why it matters, a few facts, options with an optional recommendation,
+ * a note, and its own state (not answered, picked and not submitted, submitted with a time). A sticky bar counts the submitted answers, takes every
+ * recommendation at once, submits every picked answer, and copies the answers as text for a page that cannot save. Plain DOM, no framework.
+ *
+ * API (small and stable):
+ *   Kit.questions.mount(root, opts) -> {setAnswers(map), answers(), refresh(), destroy()}
+ *     questions   [{id, title, why, facts: [text], options: [{id, label, detail}], recommended: optionId, reason, allowOther}]
+ *                 allowOther adds a "Something else" option that needs a note before it can be submitted
+ *     answers     {questionId: {q, choice, label, note, at, claude, log: [{at, by, what}]}}   answers already saved (claude is Claude's reply, shown under the card)
+ *     collection  db collection the answers are written to (default "answers"); one doc per question, id = question id
+ *     db          the object Kit.db.create returns (uses db.put); or save(id, doc) -> Promise, which wins when both are given
+ *     canWrite    false when the viewer may read but not write (Submit stays off, Copy my answers still works); default true when a save target exists
+ *     headingLevel  2-6, the level of each card's heading (default 3);  words  texts that replace the defaults
+ *     onSubmit(doc)  hook after a save;  onState(text)  hook for the bar's status line
+ *   setAnswers(map) is for the board's live subscription: it replaces the saved answers and keeps any card the owner is editing.
+ *
+ * Doc written: {q, choice, label, note, at}. Claude may add {claude, log} on the same doc; the card shows them.
+ *
+ * caps db (optional): the collection above, in the board's db. Without it the cards still work and the answers can be copied.
+ *
+ * @id        pattern.questions
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Owner questions with options and a recommendation, a sticky bar counting answers, take-all, submit-all and a copy fallback.
+ * @tags      questions, answers, owner input, options, recommendation, sticky bar, submit, decisions, db
+ * @requires  kit.copy
+ * @provides  Kit.questions.mount
+ * @config    Kit.questions.mount(root, {questions, answers, collection, db | save, canWrite}) | questions [{id, title, why, facts, options [{id, label, detail}], recommended, reason, allowOther}]; answers is what is already saved; db is the object Kit.db.create returns, or save(id, doc) -> Promise
+ * @config    hooks | onSubmit(doc) after a save, onState(text) for the status line; setAnswers(map) from the board's live subscription
+ * @config    Kit.copy | Copy my answers uses Kit.copy.text; without it the answers appear in a box to copy by hand
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono
+ * @globals   none
+ * @db        reads answers (or the configured collection), through the board's own snapshot, handed to setAnswers / writes answers/<question id>: {q, choice, label, note, at} / A real artifact declares the db capability. Claude may add {claude, claudeAt, log: [{at, by, what}]} to the same doc and the card shows it. With no db the cards still work and the answers copy out as text.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

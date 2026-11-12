@@ -1,38 +1,48 @@
 /* part:page.script.kit.viz.seal */
-/* Kit visualization: lifetime seal (Kit.seal)    kit version 0.1.0
-   What it is: a porcelain medallion whose ring is the time an item has left. The number sits in the display serif with its unit under it; as the end nears, a crackle spreads over the
-   glaze (more cracks, each a little stronger, growing outward from a point that is the same for the same item). Ended states are words, not just colour: expired, revoked, ended,
-   replaced, end unknown. Round action buttons fan out above the seal on hover or focus; under 480px and on touch they sit in a row beneath. A mini seal is the same ring in a row.
-   Batch 10 calls this file: the API below is small and stable, extend it only by adding options.
-   The life enum: this file defines the enum "life" in Kit.vocab (only when the board has not defined its own): ok, soon, urgent, expired, revoked, ended, replaced, unknown. The words,
-   glyphs and tones come from that table, so a board renames or recolours a state once. The ring and the crackle follow the state's tone (data-vo-tone).
-   API:
-     Kit.seal.make(item, opts) -> Element   a .kit-sl-wrap (seal, label, actions); append it anywhere
-       item   { id, label, left, life, total, state, actions }
-                left    time left in days (a number; 0 or less is over; null or undefined means the end is not known)
-                life    the fraction of the whole life still left, 0 to 1 (a ring needs it; with total instead, it is left / total; with neither, no arc is drawn, never a guess)
-                state   one of Kit.seal.states, or leave it out and it is worked out from left (<= urgentDays urgent, <= soonDays soon, <= 0 expired, null unknown)
-                actions  this item's own action list (instead of opts.actions)
-       opts   { size: 124 (px, 80 to 180), soonDays: 60, urgentDays: 14, unitOf(left, state) -> {big, unit}, actions: [{key, label, icon, danger}], onAction(key, item, event),
-                onOpen(item, event), labelHidden: false, crackle: true }
-                icon    a name from Kit.seal.icons (refresh, pulse, box, ban, open, key, bell, copy), an svg path string (24 grid, stroke only), or a Node
-                onOpen  makes the seal a button (Enter and Space work); without it and without actions the seal is a plain image
-       The seal's accessible name is "<label>, <text>", e.g. "shop, 9 days left".
-     Kit.seal.mini(item, opts) -> Element   a 40px ring with a short number, for rows; aria-hidden (put the item's text beside it)
-     Kit.seal.parts(item, opts) -> {state, frac, big, unit, text, row}   the pure part: what the seal says (row is the Kit.vocab row of the state)
-     Kit.seal.text(item, opts) -> string    "9 days left", "Revoked", "End date unknown"
-     Kit.seal.stateOf(item, opts) -> state  the state a seal will show
-     Kit.seal.states -> [state]             the values of the life enum
-     Kit.seal.icons -> {name: path markup}
-   Unit rule (replace it with opts.unitOf): over one day left, whole days; 730 days and more, years to one decimal; under one day, hours (at least one).
-   Needs from the board:
-     requires kit.vocab (the life enum, tones and glyphs), kit/vocab.css (the tone cascade --vo-c)
-     css     kit/viz/seal.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-display --shadow, optional glaze depth (--pebble-hi --rim --pool --glz-sh-1 --seam)
-     globals Kit.vocab
-   db collections: none.
-   Lifted from: a network-ops console's certificate seal (ring arc, number and unit, crackle path rotated by a hash of the item, round quick actions on an arc, the mini seal in rows).
-   Changed: the unit comes from a callback, the states are the vocab table's, the crackle is generated from the item's id and grows with age instead of only fading in, the ring is the
-   tone colour (3:1 on the panel), and the actions are config. */
+/**
+ * Lifetime seal
+ * A porcelain seal for anything with an end: the ring is the fraction of life left, the number and its unit sit in the display serif, and a crackle spreads over the glaze as the end nears (more cracks, each a little stronger, growing outward from a point that is the same for the same item). Ended items say so in words: expired, revoked, ended, replaced, end date unknown. Round action buttons fan out above the seal on hover or focus (2 to 5, 29 degrees apart); under 480px and on touch they sit in a row beneath. The mini seal is the same ring at 40px for a row. The file also defines the Kit.vocab enum 'life' (ok, soon, urgent, expired, revoked, ended, replaced, unknown) that the other batch 9 pieces read, unless the board has defined its own. The unit comes from a callback (days by default, hours under a day, years from 730 days). A small API for other entries: Kit.seal.make, mini, parts, text, stateOf.
+ *
+ * Batch 10 calls this file: the API below is small and stable, extend it only by adding options.
+ * The life enum: this file defines the enum "life" in Kit.vocab (only when the board has not defined its own): ok, soon, urgent, expired, revoked, ended, replaced, unknown. The words,
+ * glyphs and tones come from that table, so a board renames or recolours a state once. The ring and the crackle follow the state's tone (data-vo-tone).
+ * API:
+ *   Kit.seal.make(item, opts) -> Element   a .kit-sl-wrap (seal, label, actions); append it anywhere
+ *     item   { id, label, left, life, total, state, actions }
+ *              left    time left in days (a number; 0 or less is over; null or undefined means the end is not known)
+ *              life    the fraction of the whole life still left, 0 to 1 (a ring needs it; with total instead, it is left / total; with neither, no arc is drawn, never a guess)
+ *              state   one of Kit.seal.states, or leave it out and it is worked out from left (<= urgentDays urgent, <= soonDays soon, <= 0 expired, null unknown)
+ *              actions  this item's own action list (instead of opts.actions)
+ *     opts   { size: 124 (px, 80 to 180), soonDays: 60, urgentDays: 14, unitOf(left, state) -> {big, unit}, actions: [{key, label, icon, danger}], onAction(key, item, event),
+ *              onOpen(item, event), labelHidden: false, crackle: true }
+ *              icon    a name from Kit.seal.icons (refresh, pulse, box, ban, open, key, bell, copy), an svg path string (24 grid, stroke only), or a Node
+ *              onOpen  makes the seal a button (Enter and Space work); without it and without actions the seal is a plain image
+ *     The seal's accessible name is "<label>, <text>", e.g. "shop, 9 days left".
+ *   Kit.seal.mini(item, opts) -> Element   a 40px ring with a short number, for rows; aria-hidden (put the item's text beside it)
+ *   Kit.seal.parts(item, opts) -> {state, frac, big, unit, text, row}   the pure part: what the seal says (row is the Kit.vocab row of the state)
+ *   Kit.seal.text(item, opts) -> string    "9 days left", "Revoked", "End date unknown"
+ *   Kit.seal.stateOf(item, opts) -> state  the state a seal will show
+ *   Kit.seal.states -> [state]             the values of the life enum
+ *   Kit.seal.icons -> {name: path markup}
+ * Unit rule (replace it with opts.unitOf): over one day left, whole days; 730 days and more, years to one decimal; under one day, hours (at least one).
+ *
+ * Also load kit/vocab.css.
+ *
+ * @id        viz.seal
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A medallion whose ring is the time left, with the number in serif and a crackle that spreads over the glaze as the end nears; round action buttons fan out on hover or focus.
+ * @tags      seal, ring, countdown, lifetime, expiry, medallion, crackle, actions, porcelain
+ * @requires  kit.vocab, theme.glaze-depth
+ * @provides  Kit.seal.make, Kit.seal.mini, Kit.seal.parts, Kit.seal.text, Kit.seal.stateOf, Kit.seal.states, Kit.seal.icons
+ * @config    Kit.seal.make(item, {size, soonDays, urgentDays, unitOf, actions, onAction, onOpen}) | item {id, label, left (days), life (0 to 1) or total, state, actions}; actions [{key, label, icon, danger}]; a ring needs life or total, with neither no arc is drawn
+ * @config    Kit.seal.parts(item) -> {state, frac, big, unit, text, row} | the pure part, for a board that draws its own
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --f-display --shadow? --pebble-hi? --rim? --pool? --glz-sh-1?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

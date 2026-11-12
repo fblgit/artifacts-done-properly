@@ -1,30 +1,46 @@
 /* part:page.script.kit.claude-lane */
-/* Kit component: Claude lane (Kit.claudeLane)    kit version 0.1.1
-   What it is: sends a request to the Claude Code session that has the artifact open (comments.sendToClaude, anchored to an element), with a queued
-   fallback when nobody listens (the request doc stays on the board and the next session picks it up); the request lifecycle
-   (queue, ack, pending, done) read off the doc; the listener check (polled every 30 s); and the UI: ListenHint, ReqLine (one request card),
-   ReqList (requests about one record), QueueStrip (counts per step).
-   Needs from the board:
-     config  Kit.claudeLane.create({store, db, chrome, collection, presenceSlot, presenceKey, who, steps, hints, workingState, ackStates, doneStatus,
-                                    recordField, textMax, words, footer, onList, onAnswered})
-               collection     db collection of requests (default "requests"); the state slot has the same name
-               presenceSlot   state slot of presence docs (default "presence"); presenceKey the doc id the Claude session keeps fresh (default "claude-code")
-               who            display name of the session (default "Claude Code")
-               steps          ordered step names (default ["queue","ack","pending","done"]); hints {step: text}; css classes derive from the step names
-               workingState   request.state value that means "being worked on" (default "working"), ackStates values that mean acknowledged (default ["ack","seen"]), doneStatus request.status value for answered (default "done")
-               recordField    field on the request that names the record it is about (default "itemId")
-               textMax        clip for the request text (default 3000)
-               words          {delivered, queued, listening, writersOnly, checking, none, stuck} texts
-               footer(ctx)    hook (function): text appended to the delivered message; ctx {text, rid, recordId, anchor}; default "— request <rid>"
-               onList()       hook: what the QueueStrip click does (open the board's list of requests)
-               onAnswered(id, request)  hook returning a toast action {label, fn} when a request turns done (optional)
-     state   S.listen (null | "available" | other), S.answered (count), S.<collection>, S.<presenceSlot>
-     css     kit/claude-lane.css; custom properties --rule --panel --accent --accent-soft --ok --warn --sunk --ink --ink-2 --danger; classes .faint and .dot from kit/chrome.css
-     caps    C.comments (comments capability, full form): canSendToClaude, anchorFor, sendToClaude. Without it requests queue.
-   Request doc written: {text, <recordField>, status: "open", delivered, author, created}; then {delivered, why, sentAt}. The session writes back
-   state "ack" + ackBy, state "working" + progress[{at,text}], status "done" + response.
-   db collections: writes and reads <collection>; reads <presenceSlot>/<presenceKey> through the board's subscription.
-   Lifted from: Journey Whiteboard app.js (sendToCode, answerArrived, reqState, REQ_STEPS, pollListen, ListenHint, ReqLine, QueueStrip, ReqList); the ADR Drafting Table's data.js has the same lane with more states (ping, refresh) that stay board code. */
+/**
+ * Claude lane
+ * sendRequest(text, anchorEl, recordId) writes the request doc first, then delivers it through comments.sendToClaude when a session listens; otherwise the doc waits for the next session. The session writes back ack, working with progress lines, and done with a response, and the lane paints each step. ListenHint says whether a session is listening, QueueStrip counts requests per step, ReqList shows the requests about one record.
+ *
+ * What it is: sends a request to the Claude Code session that has the artifact open (comments.sendToClaude, anchored to an element), with a queued
+ * fallback when nobody listens (the request doc stays on the board and the next session picks it up); the request lifecycle
+ * (queue, ack, pending, done) read off the doc; the listener check (polled every 30 s); and the UI: ListenHint, ReqLine (one request card),
+ * ReqList (requests about one record), QueueStrip (counts per step).
+ * config  Kit.claudeLane.create({store, db, chrome, collection, presenceSlot, presenceKey, who, steps, hints, workingState, ackStates, doneStatus,
+ *                                recordField, textMax, words, footer, onList, onAnswered})
+ *           collection     db collection of requests (default "requests"); the state slot has the same name
+ *           presenceSlot   state slot of presence docs (default "presence"); presenceKey the doc id the Claude session keeps fresh (default "claude-code")
+ *           who            display name of the session (default "Claude Code")
+ *           steps          ordered step names (default ["queue","ack","pending","done"]); hints {step: text}; css classes derive from the step names
+ *           workingState   request.state value that means "being worked on" (default "working"), ackStates values that mean acknowledged (default ["ack","seen"]), doneStatus request.status value for answered (default "done")
+ *           recordField    field on the request that names the record it is about (default "itemId")
+ *           textMax        clip for the request text (default 3000)
+ *           words          {delivered, queued, listening, writersOnly, checking, none, stuck} texts
+ *           footer(ctx)    hook (function): text appended to the delivered message; ctx {text, rid, recordId, anchor}; default "— request <rid>"
+ *           onList()       hook: what the QueueStrip click does (open the board's list of requests)
+ *           onAnswered(id, request)  hook returning a toast action {label, fn} when a request turns done (optional)
+ * state   S.listen (null | "available" | other), S.answered (count), S.<collection>, S.<presenceSlot>
+ * Request doc written: {text, <recordField>, status: "open", delivered, author, created}; then {delivered, why, sentAt}. The session writes back
+ * state "ack" + ackBy, state "working" + progress[{at,text}], status "done" + response.
+ *
+ * @id        kit.claude-lane
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.1
+ * @updated   2026-10-24
+ * @summary   Sends a request to the Claude Code session that has the page open, queues it on the board when nobody listens, and shows each request’s answer state: queued, acknowledged, working, answered.
+ * @tags      claude, claude code, requests, queue, answer states, stepper, comments, sendtoclaude, presence
+ * @requires  kit.store, kit.chrome
+ * @provides  Kit.claudeLane.create
+ * @config    Kit.claudeLane.create({store, db, chrome, collection, presenceSlot, presenceKey, who, steps, hints, …}) | every name has a default: collection "requests", steps queue/ack/pending/done, who "Claude Code"
+ * @config    workingState, ackStates, doneStatus, recordField | which request fields mean which step (defaults working; ack, seen; done; itemId)
+ * @config    hooks | footer(ctx) for the delivered text; onList() for the strip; onAnswered(id, r) for a toast action
+ * @config    capability | comments in the full form (canSendToClaude, anchorFor, sendToClaude); without it requests queue
+ * @tokens    --panel --rule --accent --accent-soft --ok --warn --sunk --ink --ink-2 --danger
+ * @globals   htm-preact
+ * @db        reads requests (or the configured collection); presence/claude-code / writes requests: {text, itemId, status, delivered, author, created}, then {delivered, why, sentAt} / The Claude Code session writes state ack, state working with progress[{at, text}], and status done with response.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

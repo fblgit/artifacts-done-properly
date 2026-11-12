@@ -1,22 +1,38 @@
 /* part:page.script.kit.work-card */
-/* Kit pattern: work card with stamps (Kit.workCard)    kit version 0.1.0
-   What it is: one work item as a card. Its id, title, state pill and verdict, who has it, what it expects from someone, how many questions are still open, and the resource it holds.
-   Three stamps say more than the state alone: the outcome stamp (how it ended and what it ended onto: a commit, another item or a record), the answered stamp (what the answer was and
-   whether the person it was for has read it), and the provenance badge at the foot (who wrote what the card shows, a person, an agent or an agent's polish of a person's words, and
-   whether the record has moved since, in words: Stale, with the version shown and the version now). A polished title sits over the title as filed, which stays one line below it.
-   Every state, verdict, expects, outcome, provenance, freshness and receipt word, glyph and tone comes from the vocabulary table (kit/vocab.js). This file adds six small enums only when
-   the page has not defined them: "work-verdict", "work-expects", "work-outcome", "work-provenance", "work-freshness" and "work-receipt". The state uses the built-in "state" enum.
-   API:
-     Kit.workCard.render(item, opts) -> Element       one card;   Kit.workCard.mount(box, {items, ...opts}) -> {update(items), destroy()}   a responsive list of cards
-       item   {id, title, rawTitle, state, verdict, owner, expects, openAsks, holds: {kind, name}, outcome: {kind, ref: {type: "commit"|"item"|"record", value, recordKind}},
-               answered: {answer, state: "answered"|"read", by, at}, authored: {by, kind: "human"|"agent"|"polished", at, version}, version}
-       opts   stateEnum (default "state")  onOpen (item) makes the title a button  timeZone  for the clock text (default: the viewer's)
-              A value the table leaves null draws nothing; a value it does not know draws a flagged unknown mark.
-   Needs from the board:
-     css     kit/patterns/work-card.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, optional --rim --pool --glz-r-l --glz-sh-1 --seam
-     globals Kit.vocab
-   db collections: none; the board hands over its items.
-   Lifted from: a component family's task card, outcome stamp, answered stamp and provenance badge (who wrote what is shown and whether the record moved since). */
+/**
+ * Work card with stamps
+ * Kit.workCard.render(item) returns one card; mount(box, {items}) draws a list. The card shows the id and version, the title (a polished title sits over the title as filed), the state pill and verdict, the owner, what it expects (a reply, a review), how many questions are open, and the resource it holds. Three stamps say more than the state: the outcome stamp (how it ended and what it ended onto, a commit, another item or a record), the answered stamp (the answer and whether the person it was for has read it, with who and when), and the provenance badge at the foot (written by a person, written by an agent, or polished by an agent, and Stale in words with the version shown and the version now when the record moved after the card was written). A value the vocabulary leaves silent draws nothing; one it does not know is flagged. The file adds work-verdict, work-expects, work-outcome, work-provenance, work-freshness and work-receipt only if the page has not defined them.
+ *
+ * What it is: one work item as a card. Its id, title, state pill and verdict, who has it, what it expects from someone, how many questions are still open, and the resource it holds.
+ * Three stamps say more than the state alone: the outcome stamp (how it ended and what it ended onto: a commit, another item or a record), the answered stamp (what the answer was and
+ * whether the person it was for has read it), and the provenance badge at the foot (who wrote what the card shows, a person, an agent or an agent's polish of a person's words, and
+ * whether the record has moved since, in words: Stale, with the version shown and the version now). A polished title sits over the title as filed, which stays one line below it.
+ *
+ * Every state, verdict, expects, outcome, provenance, freshness and receipt word, glyph and tone comes from the vocabulary table (kit/vocab.js). This file adds six small enums only when
+ * the page has not defined them: "work-verdict", "work-expects", "work-outcome", "work-provenance", "work-freshness" and "work-receipt". The state uses the built-in "state" enum.
+ *
+ * API:
+ *   Kit.workCard.render(item, opts) -> Element       one card;   Kit.workCard.mount(box, {items, ...opts}) -> {update(items), destroy()}   a responsive list of cards
+ *     item   {id, title, rawTitle, state, verdict, owner, expects, openAsks, holds: {kind, name}, outcome: {kind, ref: {type: "commit"|"item"|"record", value, recordKind}},
+ *             answered: {answer, state: "answered"|"read", by, at}, authored: {by, kind: "human"|"agent"|"polished", at, version}, version}
+ *     opts   stateEnum (default "state")  onOpen (item) makes the title a button  timeZone  for the clock text (default: the viewer's)
+ *            A value the table leaves null draws nothing; a value it does not know draws a flagged unknown mark.
+ *
+ * @id        pattern.work-card
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   One work item as a card: id, title, state, verdict, owner, what it expects, open questions, what it holds, how it ended, and who wrote what the card shows.
+ * @tags      work item, task card, outcome, stamp, provenance, freshness, stale, read receipt, verdict, owner
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.workCard.render, Kit.workCard.mount
+ * @config    Kit.workCard.render(item, opts) | item {id, title, rawTitle, state, verdict, owner, expects, openAsks, holds {kind, name}, outcome {kind, ref {type, value, recordKind}}, answered {answer, state, by, at}, authored {by, kind, at, version}, version}; opts {stateEnum, onOpen, timeZone}
+ * @config    Kit.workCard.mount(box, {items, ...opts}) | returns {update, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

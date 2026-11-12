@@ -1,20 +1,29 @@
 /* part:page.script.kit.viz.slider-chart */
-/* Kit visualization: what-if slider chart (Kit.sliderChart)    kit version 0.1.0
-   What it is: one or more sliders that redraw a column chart and a row of readout tiles from a model you write. Move a slider and the chart, the figures and the sentence under them change at
-   once; the sliders are native range inputs, so they work with the keyboard, touch and a screen reader, and a polite live line says what changed. The chart is Kit.bars.columns, so it starts
-   at zero, has a legend and patterns when there are two series (two scenarios side by side), and a table view. The model is a function; the component has no opinion about the subject.
-   API: Kit.sliderChart.mount(box, {inputs, model, chart, title, label, host}) -> {values(), set(id, value), update(patch), destroy()}
-     inputs    [{id, label, min, max, step, value, unit, format(v)}]   one slider each
-     model     (values {id: number}) => {categories: [{id, label}], series: [{id, label, values, tone}], readouts: [{label, value, note}], note, highlight}
-               highlight is a category id; the readouts and the note are plain text; the model is called on every move
-     chart     {unit, yLabel, max, ticks, height, decimals, valueLabels, table}   passed to Kit.bars.columns; give max when the scale should not change as the slider moves
-   Needs from the board:
-     requires viz.bars (Kit.bars.columns and its css), kit.tooltip
-     css     kit/viz/slider-chart.css and kit/viz/bars.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, the pens, optional --seam
-     globals Kit.bars, Kit.tooltip
-   db collections: none.
-   Lifted from: a cluster-sizing page's quorum slider (voters against failures tolerated), its endurance calculator (two scenarios drawn side by side) and its readout tiles. Changed: the model is a
-   callback so the shell serves any what-if, the scale can be pinned so the bars do not rescale under the pointer, and the chart reuses the shared bars. */
+/**
+ * What-if slider chart
+ * Kit.sliderChart.mount takes native range inputs and a model function. Move a slider and the readout tiles, the column chart and a polite live sentence change together. The chart is Kit.bars.columns, so it starts at zero, has a legend and fill patterns when there are two series (two scenarios side by side), and offers a table view; pin its max so the bars do not rescale under the pointer. The component has no opinion about the subject: the quorum example (panel size against absences tolerated) and the two-scenario wear example in the preview are both just models.
+ *
+ * API: Kit.sliderChart.mount(box, {inputs, model, chart, title, label, host}) -> {values(), set(id, value), update(patch), destroy()}
+ *   inputs    [{id, label, min, max, step, value, unit, format(v)}]   one slider each
+ *   model     (values {id: number}) => {categories: [{id, label}], series: [{id, label, values, tone}], readouts: [{label, value, note}], note, highlight}
+ *             highlight is a category id; the readouts and the note are plain text; the model is called on every move
+ *   chart     {unit, yLabel, max, ticks, height, decimals, valueLabels, table}   passed to Kit.bars.columns; give max when the scale should not change as the slider moves
+ *
+ * @id        viz.slider-chart
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Sliders that redraw a column chart, readout tiles and a sentence from a model you write.
+ * @tags      slider, what-if, calculator, scenario, readout, chart, model, interactive
+ * @requires  viz.bars, kit.tooltip
+ * @provides  Kit.sliderChart.mount
+ * @config    Kit.sliderChart.mount(box, opts) | inputs [{id, label, min, max, step, value, unit, format}], model(values) => {categories, series, readouts [{label, value, note}], note, highlight}, chart {unit, yLabel, max, ticks, height, decimals, valueLabels, table}, title, label, host
+ * @config    requires | viz.bars (Kit.bars.columns and bars.css), kit.tooltip
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --seam? --c-blue --c-amber --c-violet --c-green --c-red
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

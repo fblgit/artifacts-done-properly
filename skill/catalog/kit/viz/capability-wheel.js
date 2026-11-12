@@ -1,26 +1,37 @@
 /* part:page.script.kit.viz.capability-wheel */
-/* Kit visualization: capability wheel (Kit.capabilityWheel)    kit version 0.1.0
-   What it is: a ring of beads round a core, one bead for each thing something may do. A lit bead (allowed) is solid, ticked and joined to the core by a gold seam; an unlit one is dashed,
-   unticked and joined by a dotted line, so the difference is shape and not only colour. Labels sit by the bead (right, left, above or below, by angle). The drawing is an image whose name
-   lists what is allowed, and the card form also prints that list. A button bar lights, among several wheels, every one that has a chosen ability.
-   API:
-     Kit.capabilityWheel.make(caps, allowed, opts) -> SVGElement
-       caps     [{key, label, hint}]  3 to 12 abilities, in drawing order (the first at twelve o'clock, clockwise); hint is the longer sentence for the title
-       allowed  an array or Set of keys that are lit
-       opts     { name: "Server CA", glyph: "diamond" (a Kit.vocab glyph for the core, optional), small: false }
-       The svg has role="img" and aria-label "<name> may: Sign CAs, Servers" (or "may do nothing"); data-lit lists the lit keys.
-     Kit.capabilityWheel.bar(box, caps, opts) -> {get(), set(key|null), destroy()}   a toggle group of buttons (aria-pressed), one chosen at a time; choosing it again clears
-       opts   { label: "Light up by ability", value, onChange(key|null), labels: {key: text} }
-     Kit.capabilityWheel.mount(box, {caps, wheels, bar, cardColumns, name}) -> {set(key|null), destroy()}   cards of wheels with the bar above; choosing an ability dims the wheels that lack it
-       wheels   [{id, name, sub, allowed, glyph}]
-       Each card prints "May: …" under the wheel, and a dimmed card says "No <ability>" in words.
-   Needs from the board:
-     requires kit.tokens
-     css     kit/viz/capability-wheel.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-display, optional --seam --edge-gold --rim --pool --glz-r-l --glz-sh-1
-     globals Kit.vocab is used when it is present (the core's glyph); the wheel works without it
-   db collections: none.
-   Lifted from: a network-ops console's capability wheels (eight beads round a core, lit beads joined by a gold seam) and the ability buttons that light every key that has one.
-   Changed: the count is any number from 3 to 12, the abilities and the lit set are config, and an unlit bead is a different shape instead of a paler one. */
+/**
+ * Capability wheel
+ * A ring of beads round a core, one bead for each thing something may do (any count from 3 to 12). A lit (allowed) bead is solid, ticked and joined to the core by a gold seam; an unlit one is dashed and unticked, so the difference is shape and not only colour. Labels sit by the bead, right, left, above or below by its angle. The drawing is an image whose accessible name lists what is allowed. Kit.capabilityWheel.bar makes a toggle group of buttons (aria-pressed) and mount() puts wheels in cards with the bar above: choose an ability and the cards without it dim and say so in words.
+ *
+ * API:
+ *   Kit.capabilityWheel.make(caps, allowed, opts) -> SVGElement
+ *     caps     [{key, label, hint}]  3 to 12 abilities, in drawing order (the first at twelve o'clock, clockwise); hint is the longer sentence for the title
+ *     allowed  an array or Set of keys that are lit
+ *     opts     { name: "Server CA", glyph: "diamond" (a Kit.vocab glyph for the core, optional), small: false }
+ *     The svg has role="img" and aria-label "<name> may: Sign CAs, Servers" (or "may do nothing"); data-lit lists the lit keys.
+ *   Kit.capabilityWheel.bar(box, caps, opts) -> {get(), set(key|null), destroy()}   a toggle group of buttons (aria-pressed), one chosen at a time; choosing it again clears
+ *     opts   { label: "Light up by ability", value, onChange(key|null), labels: {key: text} }
+ *   Kit.capabilityWheel.mount(box, {caps, wheels, bar, cardColumns, name}) -> {set(key|null), destroy()}   cards of wheels with the bar above; choosing an ability dims the wheels that lack it
+ *     wheels   [{id, name, sub, allowed, glyph}]
+ *     Each card prints "May: …" under the wheel, and a dimmed card says "No <ability>" in words.
+ *
+ * Kit.vocab is used when it is present (the core's glyph); the wheel works without it.
+ *
+ * @id        viz.capability-wheel
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Eight beads round a core: lit beads are what something may do, joined by gold seams; a text alternative lists them; a button bar can light everything that has one.
+ * @tags      wheel, capability, permissions, abilities, ring, beads, role, toggle
+ * @requires  kit.tokens
+ * @provides  Kit.capabilityWheel.make, Kit.capabilityWheel.bar, Kit.capabilityWheel.mount
+ * @config    Kit.capabilityWheel.make(caps, allowed, {name, glyph, small}) | caps [{key, label, hint}] (3 to 12), allowed an array or Set of keys; returns an svg with role=img
+ * @config    Kit.capabilityWheel.mount(box, {caps, wheels, bar}) | wheels [{id, name, sub, allowed, glyph}]; bar false leaves the button bar out
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --accent-ink --seam? --edge? --edge-gold? --rim? --pool?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

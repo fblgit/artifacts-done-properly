@@ -1,27 +1,46 @@
 /* part:page.script.kit.playground */
-/* Kit pattern: playground (Kit.playground)    kit version 0.1.0
-   What it is: try any catalog entry live on a page. A picker (a select grouped by kind, with a filter box) chooses the entry; the component loads its requires first (depth-first, no entry twice),
-   then styles, then scripts, fetches the entry's first sample and mounts it on an isolated stage by calling the Kit.<name>.mount found in the entry's provides. The sample is an editable textarea:
-   Apply re-reads it (a JSON error is shown with its position, never thrown) and calls update(data) on the mounted instance when it has one, else (or when update throws) destroys and mounts again; Reset sample puts the
-   published one back. Theme, mode (light, dark, auto) and width (390, 768, full) change the stage only, never the page. An entry with no mount says so. An error thrown by a mount is shown, not thrown.
-   The theme is applied on the stage, not on :root: the kit's theme css only applies on :root, so the stage copies the custom properties from the theme's json (the css path with .json, light map then dark map
-   for dark mode), the way the catalog's previews do. The stage has its own data-theme and contain: content.
-   Layout: a head (filter and entry picker, then the entry's name in the display face with its summary and what loads first), a stage bar (theme select, mode and width as segments of
-   native radios, so arrow keys move), the bench (the stage on a dotted ground, its width written above it) and the sample panel (beside the bench when there is room, under it when not:
-   the sample's path, the editor, Apply and Reset sample).
-   API:
-     Kit.playground.mount(root, opts) -> {open(id), update(next), destroy()}
-       catalog   the entries list, or an object with entries [{id, name, kind, group, tags, files [{path, role}], requires, provides, preview {samples, uses}}]
-       base      url prefix the files are fetched from (default '')       themes  [{id, name, css}] css relative to base; the first is selected at the start; "Page tokens" in the
-                 select is the page's own tokens, which keep the page's mode (the mode segments are off then)
-       entry     the entry to open first                                  load    (url, kind) => Promise, kind "style" | "script" | "json"; default injects link/script once, cached by url
-       enabled   false renders one line and nothing else; ADP.config.get('playground.enabled') === false does too (re-checked on change)       label  accessible name of the region
-       mount     (entry, stage, data) -> {update, destroy} | null, tried first for every entry (a page's own preview of it); null falls back to the entry's Kit.<name>.mount
-   Needs from the board:
-     css     kit/patterns/playground.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-mono, optional --seam --ink-3 --f-display --radius
-     globals Kit.tokens (loaded first)
-   db collections: config/current, read through ADP.config when the runtime exists; nothing is written.
-   Lifted from: the kit workbench template (parts/bench.js: theme, mode and width on a stage, the sample fetch) and the catalog page's entry loader (requires first, styles then scripts, cached by path). */
+/**
+ * Playground
+ * Kit.playground.mount(root, {catalog, base, themes, entry}) opens with a head: a filter box and a select of every entry grouped by kind, then the chosen entry's name in the display face with its summary and what it loads first. It loads the entry's requires first (no entry twice), then its styles, then its scripts, fetches the first sample and calls the Kit.<name>.mount named in provides on an isolated stage. An entry with no mount says so. A stage bar holds the theme select (the first theme is chosen at the start; Page tokens uses the page's own tokens and mode, and turns the mode segments off) and mode (light, dark, auto) and width (390 px, 768 px, full) as segments of native radios. The stage sits on a dotted bench with its width, theme and mode written above it. Theme, mode and width change the stage only, never the page: the kit's theme css only applies on :root, so the stage copies the custom properties from the theme's json instead, light then dark. The sample has its own panel with its path: Apply re-reads it (a JSON error is shown with its line and column, never thrown) and uses update(data) on the mounted instance when it has one, else mounts again; Reset sample puts the published one back. An error thrown by a mount is shown in a line, not thrown. When the page's playground.enabled switch is off, or enabled is false, it renders one line that says how to turn it on and nothing else. It writes nothing. The layout follows its container: the sample panel sits beside the bench from about 62rem and under it below that; at 390 px the controls stack and the stage scrolls inside its own frame. Every control is a labelled select, input, radio, textarea or button, reached by Tab in reading order.
+ *
+ * What it is: try any catalog entry live on a page. A picker (a select grouped by kind, with a filter box) chooses the entry; the component loads its requires first (depth-first, no entry twice),
+ * then styles, then scripts, fetches the entry's first sample and mounts it on an isolated stage by calling the Kit.<name>.mount found in the entry's provides. The sample is an editable textarea:
+ * Apply re-reads it (a JSON error is shown with its position, never thrown) and calls update(data) on the mounted instance when it has one, else (or when update throws) destroys and mounts again; Reset sample puts the
+ * published one back. Theme, mode (light, dark, auto) and width (390, 768, full) change the stage only, never the page. An entry with no mount says so. An error thrown by a mount is shown, not thrown.
+ *
+ * The theme is applied on the stage, not on :root: the kit's theme css only applies on :root, so the stage copies the custom properties from the theme's json (the css path with .json, light map then dark map
+ * for dark mode), the way the catalog's previews do. The stage has its own data-theme and contain: content.
+ *
+ * Layout: a head (filter and entry picker, then the entry's name in the display face with its summary and what loads first), a stage bar (theme select, mode and width as segments of
+ * native radios, so arrow keys move), the bench (the stage on a dotted ground, its width written above it) and the sample panel (beside the bench when there is room, under it when not:
+ * the sample's path, the editor, Apply and Reset sample).
+ *
+ * API:
+ *   Kit.playground.mount(root, opts) -> {open(id), update(next), destroy()}
+ *     catalog   the entries list, or an object with entries [{id, name, kind, group, tags, files [{path, role}], requires, provides, preview {samples, uses}}]
+ *     base      url prefix the files are fetched from (default '')       themes  [{id, name, css}] css relative to base; the first is selected at the start; "Page tokens" in the
+ *               select is the page's own tokens, which keep the page's mode (the mode segments are off then)
+ *     entry     the entry to open first                                  load    (url, kind) => Promise, kind "style" | "script" | "json"; default injects link/script once, cached by url
+ *     enabled   false renders one line and nothing else; ADP.config.get('playground.enabled') === false does too (re-checked on change)       label  accessible name of the region
+ *     mount     (entry, stage, data) -> {update, destroy} | null, tried first for every entry (a page's own preview of it); null falls back to the entry's Kit.<name>.mount
+ *
+ * @id        pattern.playground
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   Try any catalog entry live on a page: pick it, edit its sample, switch the stage's theme, mode and width.
+ * @tags      playground, try, preview, sample, theme, width, workbench, catalog, tools
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.playground.mount
+ * @config    Kit.playground.mount(root, opts) | catalog [entries] or {entries}, base url prefix (default ''), themes [{id, name, css}] with css relative to base, entry opened first, load(url, kind) optional loader, enabled, label; returns {open, update, destroy}
+ * @config    catalog | the entries list the picker shows; each needs id, name, kind, files, requires, provides, preview.samples
+ * @config    base | where the entries' files are fetched from
+ * @config    themes | the stage themes; each needs kit/themes/<id>.json beside its css; the first is chosen at the start
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-mono --ink-3? --seam? --f-display? --radius?
+ * @globals   none
+ * @db        reads config/current, through ADP.config.get('playground.enabled'), only when the runtime exists
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

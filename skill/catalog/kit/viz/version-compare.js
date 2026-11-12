@@ -1,25 +1,33 @@
 /* part:page.script.kit.version-compare */
-/* Kit visualization: version compare (Kit.versionCompare)    kit version 0.1.0
-   What it is: two versions of an ADP artifact side by side, read from its records. Two selects pick the from and the to version (each option names the version, its date, its author and its
-   summary; the two latest by default). Under them a version line: every version as a stop in order (not to a time scale), the chosen span drawn heavy, data changes as small diamonds
-   between the stops they fall between. Then a tally (added, removed, changed, data changes, each a count with its mark and word; the same sentence goes to a role="status" line for
-   assistive technology) and one panel with three lists: added, removed, changed. A changed part shows its id, the from and to hash (first 8 characters each) and, folding every change between the two versions that touched it, who changed it and when.
-   When manifests hold both versions the parts are compared from them (the way adp.py diff does); otherwise the change docs between the two versions are walked, and a note says which. When
-   the page content of a part is known for both versions a "Show text" disclosure draws a line diff, with a + or - in a gutter and the word added or removed for assistive technology.
-   Data changes between the versions (a change doc with data and no parts) are listed last with their summaries.
-   API: Kit.versionCompare.mount(root, opts) -> {set(from, to), update(data), destroy()}
-          changes     [{version, at, by, summary, parts: [{id, from, to}], threads, data}]   any order; sorted by at. A page's own data change has version "" and is never offered as a version
-          manifests   optional {version: manifest}; manifest.parts is {partId: hash}
-          content     optional {version: {partId: html}}
-          from, to    initial versions (default: the two latest)     onPart(id)  makes each part id a button      label  the region's name
-          timeZone    for dates (default UTC)       words  optional overrides: {added, removed, changed, data, from, to, show, hide}
-        update(data) takes any of {changes, manifests, content} and redraws, keeping the choice when it still exists.
-   Needs from the board:
-     css     kit/viz/version-compare.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --danger --f-ui --f-mono, optional --seam --f-display --radius
-     globals Kit.tokens (the theme contract; nothing is called)
-   db collections: reads changes, manifest/current, content (the board passes what it read); writes none.
-   Lifted from: adp.py diff (added, removed and changed from two manifests) and the What changed panel of the reference page (the changes/ docs).
-   Changed: folds every change between two chosen versions instead of listing the latest ten; the line diff carries its marks in words as well as colour. */
+/**
+ * Version compare
+ * Kit.versionCompare.mount(root, {changes, manifests, content, from, to, onPart}) draws two selects (from and to version, each option naming the version, date, author and summary; the two latest by default). Under them a version line puts every version on a track in order (spaced evenly, not to a time scale): the chosen span is drawn heavy, the two ends are rings, and data changes are small diamonds between the versions they fall between. A tally follows (added, removed, changed and data changes, each a count with its mark and word); the same sentence goes to a role=status line for screen readers. Then one panel with four lists. A changed part shows its id, the first eight characters of its from and to hash, and every change between the two versions that touched it, with who and when. When manifests are given for both versions the comparison comes from them, the way adp.py diff does, and a note says so (and says when the change docs disagree); otherwise the change docs between the versions are walked. When the text of a part is known in both versions, a Show text disclosure draws a line diff with a + or - in a gutter and the words added and removed for screen readers, never colour alone. Data changes between the versions are listed last with their summaries and the docs they touched. It reads nothing itself: the board passes the records it read, and update(data) redraws. It does not write. The layout follows its container: under about 34rem the selects stack and the version line drops its dates; the diff scrolls inside its own box; every control is a select, a summary or a button, with a visible focus ring.
+ *
+ * API: Kit.versionCompare.mount(root, opts) -> {set(from, to), update(data), destroy()}
+ *        changes     [{version, at, by, summary, parts: [{id, from, to}], threads, data}]   any order; sorted by at. A page's own data change has version "" and is never offered as a version
+ *        manifests   optional {version: manifest}; manifest.parts is {partId: hash}
+ *        content     optional {version: {partId: html}}
+ *        from, to    initial versions (default: the two latest)     onPart(id)  makes each part id a button      label  the region's name
+ *        timeZone    for dates (default UTC)       words  optional overrides: {added, removed, changed, data, from, to, show, hide}
+ *      update(data) takes any of {changes, manifests, content} and redraws, keeping the choice when it still exists.
+ *
+ * Reads changes, manifest/current, content (the board passes what it read); writes none.
+ *
+ * @id        viz.version-compare
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   Two versions of an ADP artifact side by side: a version line, a tally, the parts added, removed and changed between them, who changed each and when, a line diff of the text, and the data changes in between.
+ * @tags      versions, diff, changes, manifest, parts, hash, history, adp
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.versionCompare.mount
+ * @config    Kit.versionCompare.mount(root, opts) | changes [changes/<nnnnnn> docs: {version, at, by, summary, parts [{id, from, to}], threads, data}], manifests {version: manifest}, content {version: {partId: html}}, from, to, onPart(id), label, timeZone, words; returns {set, update, destroy}
+ * @config    update(data) | any of {changes, manifests, content}; the choice of versions is kept when it still exists
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --danger --f-ui --f-mono --ink-3? --seam? --f-display? --radius?
+ * @globals   none
+ * @db        reads changes; manifest/current; content / The board reads the docs and passes them in; the component never opens the db.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

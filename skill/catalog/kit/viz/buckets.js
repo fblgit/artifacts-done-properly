@@ -1,20 +1,35 @@
 /* part:page.script.kit.viz.buckets */
-/* Kit visualization: bucket board (Kit.viz.Buckets)    kit version 0.1.0
-   What it is: cards sorted into ordered buckets (MoSCoW, now/next/later, a status column set). Drag a card with a mouse, or by its grip on touch,
-   and a line shows where it will land; every card also has a "Move to" select, so keyboard and screen-reader users move cards without dragging.
-   Each bucket heads its count, its hint and the sum of a numeric field when cards carry one (estimated days). Kind toggles filter the cards.
-   Needs from the board:
-     config  Buckets({buckets, cards, onMove, onOpen, canEdit, kinds, statuses, filterKinds, sumLabel, title, words})
-               buckets [{id, label, hint, tone}]  ("" is a valid id: the unsorted bucket)
-               cards   [{id, bucket, order, label, code, kind, status, chips: [text], value}]   value: the number summed per bucket (optional)
-               onMove(id, bucket, order)  the board writes the card's bucket and order (order lands between its new neighbours)
-               onOpen(id)  optional: a card title click opens the record
-               filterKinds kinds offered as toggles (default: every kind on the cards); sumLabel e.g. "d estimated"
-     css     kit/viz/viz.css; custom properties --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-soft --ok --warn --danger --f-mono --f-display
-     needs   kit/viz/core.js loaded first
-   db collections: none. The board writes the bucket and order fields (the Journey Whiteboard: items/<id>.moscow and .order).
-   Lifted from: Journey Whiteboard app.js (BUCKETS, MoscowView, moveBucket). Changed: buckets, kinds and the summed field come from config; the
-   estimate side effect stays board code (call it from onMove). */
+/**
+ * Bucket board
+ * The Journey Whiteboard's MoSCoW board with buckets from config. A mouse drags a card anywhere; touch drags it by its grip. Every card also has a Move to menu, so moving never needs a drag. Buckets show their count, hint and the sum of a numeric field; kind toggles filter the cards.
+ *
+ * Config:
+ * Buckets({buckets, cards, onMove, onOpen, canEdit, kinds, statuses, filterKinds, sumLabel, title, words})
+ *   buckets [{id, label, hint, tone}]  ("" is a valid id: the unsorted bucket)
+ *   cards   [{id, bucket, order, label, code, kind, status, chips: [text], value}]   value: the number summed per bucket (optional)
+ *   onMove(id, bucket, order)  the board writes the card's bucket and order (order lands between its new neighbours)
+ *   onOpen(id)  optional: a card title click opens the record
+ *   filterKinds kinds offered as toggles (default: every kind on the cards); sumLabel e.g. "d estimated"
+ *
+ * The board writes the bucket and order fields (the Journey Whiteboard: items/<id>.moscow and .order).
+ *
+ * @id        viz.buckets
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Cards sorted into ordered buckets (MoSCoW, now/next/later): drag with a drop line, or use each card's Move to menu.
+ * @tags      kanban, moscow, buckets, columns, drag and drop, priority, board
+ * @requires  viz.core
+ * @provides  Kit.viz.Buckets
+ * @config    buckets | [{id, label, hint, tone}]
+ * @config    cards | [{id, bucket, order, label, code, kind, status, chips, value}]
+ * @config    onMove | (id, bucket, order): the board writes both fields
+ * @config    onOpen | (id) optional
+ * @config    options | canEdit, filterKinds, sumLabel, title, words
+ * @globals   htm-preact
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit;

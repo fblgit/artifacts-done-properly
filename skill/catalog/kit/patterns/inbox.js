@@ -1,27 +1,41 @@
 /* part:page.script.kit.inbox */
-/* Kit pattern: the inbox card (Kit.inbox)    kit version 0.1.0
-   What it is: the page end of the loop (docs/assist.md, contracts 3 and 5). It lists the proposals in incoming/ (status new, merged or held, newest first), classifies each new one
-   on open with ADP.classify against manifest/current and records merged or held, and draws per proposal: the summary, who and when, the status; each part as before and after
-   (a line diff of its html as text); each held item with both versions and, for editors, a pick (keep live, take the proposal) recorded on the proposal; the files it will publish
-   with their ifMatch (content null: the file is removed, with its reason); a part with kind content is copy whose content/<id> doc moves (its file rides along). Apply (editors) makes one debounced files-form publish with an ifMatch per file; after {shas} it writes manifest/current, parts/<id>, content/<id>,
-   changes/<seq> and sets the proposal applied; on conflict it names the files that moved and leaves the proposal held. Decline asks for a reason and records it.
-   A presence line says whether an agent is watching (a presence/* doc fresher than assist.presence-minutes, or comments.canSendToClaude() answering available); else it offers
-   the handoff to copy. After Apply, a publish conflict, a hold on open or Decline it wakes the watching sessions with comments.sendToClaude (docs/assist.md: the comment is only
-   the wake-up, the proposal doc is the record; the trailer line is "· adp proposal {<pid>} · applied <version> | held | declined"); the thread id is kept on the proposal as
-   wake.thread and later events reply into it. Without a listening session the data change stands and the next export finds it. Nothing is published on load.
-   API:
-     Kit.inbox.mount(root, opts) -> {update(), destroy()}
-       db        the db handle (default ADP.db)      user  {canEdit, id} (default ADP.user)      artifact  the artifact capability handle, or a promise of it (default claude.use('artifact'))
-       config    ADP.config (assist.presence-minutes)      url   the artifact's claude.ai url for the handoff line (optional; the line says "this artifact" without it)
-       comments  the comments capability handle, or a promise of it (default claude.use('comments')); without sendToClaude on it, no wake-up is sent
-       classify  (base, live, incoming) => classes (default ADP.classify)      debounce  ms Apply waits for a second press to fold into one call (default 600)
-   Needs from the board:
-     css     kit/patterns/inbox.css; custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono
-     globals Kit.dom (its kit file loads first); ADP when opts.db / opts.classify are not given
-   The proposal's live_files {path: sha256} is the live listing the agent exported; Apply records it, so a record-only proposal (no files) still trues manifest.files.
-   db collections: reads incoming, incoming/<pid>/chunks, manifest/current, content, presence, requests; writes incoming/<pid>, manifest/current, parts/<id>, content/<id>,
-   changes/<seq> and changes/d-<ms> (editors only).
-   Lifted from: the explainer's "proposed version" card, generalised from one proposal to the inbox. */
+/**
+ * Inbox card
+ * Kit.inbox.mount(root, {db, user, artifact, config, url}) lists incoming/<pid> proposals whose status is new, merged or held, newest first, and classifies every new one on open with ADP.classify (base: the live record with the proposal's from-hashes; live: manifest/current; incoming: its to-hashes), recording merged or held with the classes and a changes/d-<ms> data change. A proposal whose base version is no longer live is classified against the live record, not refused. Per proposal: the summary, who, when and the status (merged reads 'merged, not yet published'); each part opens to a line diff of its live html against the proposed html; each held item shows the base, live and proposed hashes and both versions, and editors pick Keep live or Take the proposal, which is written on the proposal as a decision. The files it will publish are listed with their ifMatch. Apply is off until every held item is picked; presses within the debounce window fold into one artifact.publish files-form call with an ifMatch per file; after {shas} it writes manifest/current (the new hashes, the next seq and the version), parts/<id>, content/<id>, changes/<seq> with from and to hashes, and sets the proposal applied. On a conflict it names the files that moved (expected and actual sha), records the conflict and leaves the proposal held. Decline asks for a reason inline and records it. The presence line says who is watching when a presence/* doc is fresher than assist.presence-minutes, else offers the handoff 'watch the artifact <url>' with the open request ids and a copy button. Without the artifact capability the inbox is read-only and says why; without a db it says so; nothing is published on load.
+ *
+ * The page end of the loop (docs/assist.md, contracts 3 and 5). It lists the proposals in incoming/ (status new, merged or held, newest first), classifies each new one
+ * on open with ADP.classify against manifest/current and records merged or held, and draws per proposal: the summary, who and when, the status; each part as before and after
+ * (a line diff of its html as text); each held item with both versions and, for editors, a pick (keep live, take the proposal) recorded on the proposal; the files it will publish
+ * with their ifMatch (content null: the file is removed, with its reason); a part with kind content is copy whose content/<id> doc moves (its file rides along). Apply (editors) makes one debounced files-form publish with an ifMatch per file; after {shas} it writes manifest/current, parts/<id>, content/<id>,
+ * changes/<seq> and sets the proposal applied; on conflict it names the files that moved and leaves the proposal held. Decline asks for a reason and records it.
+ * A presence line says whether an agent is watching (a presence/* doc fresher than assist.presence-minutes, or comments.canSendToClaude() answering available); else it offers
+ * the handoff to copy. After Apply, a publish conflict, a hold on open or Decline it wakes the watching sessions with comments.sendToClaude (docs/assist.md: the comment is only
+ * the wake-up, the proposal doc is the record; the trailer line is "· adp proposal {<pid>} · applied <version> | held | declined"); the thread id is kept on the proposal as
+ * wake.thread and later events reply into it. Without a listening session the data change stands and the next export finds it. Nothing is published on load.
+ *
+ * API:
+ *   Kit.inbox.mount(root, opts) -> {update(), destroy()}
+ *     db        the db handle (default ADP.db)      user  {canEdit, id} (default ADP.user)      artifact  the artifact capability handle, or a promise of it (default claude.use('artifact'))
+ *     config    ADP.config (assist.presence-minutes)      url   the artifact's claude.ai url for the handoff line (optional; the line says "this artifact" without it)
+ *     comments  the comments capability handle, or a promise of it (default claude.use('comments')); without sendToClaude on it, no wake-up is sent
+ *     classify  (base, live, incoming) => classes (default ADP.classify)      debounce  ms Apply waits for a second press to fold into one call (default 600)
+ * The proposal's live_files {path: sha256} is the live listing the agent exported; Apply records it, so a record-only proposal (no files) still trues manifest.files.
+ *
+ * @id        pattern.inbox
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
+ * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.inbox.mount
+ * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or promise (default claude.use('artifact')), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms; returns {update, destroy}
+ * @config    ADP.classify(base, live, incoming) | contract 4 of docs/architecture.md, in adp.js
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono --radius?
+ * @globals   none
+ * @db        reads incoming; manifest/current; content; presence; requests / writes incoming; manifest/current; parts; content; changes / Writes only for editors and only on Apply, Decline, a pick or the classification of a new proposal; incoming sits under the root rule.
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

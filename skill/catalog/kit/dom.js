@@ -1,13 +1,24 @@
 /* part:page.script.kit.dom */
-/* Kit helper: DOM builders (Kit.dom)    kit version 0.1.0
-   What it is: the two element builders the kit scripts each used to carry a copy of, now one: el for HTML, sv for SVG. Load it before any script that says so; it draws nothing itself.
-   API:
-     Kit.dom.el(tag, cls, txt) -> Element     createElement(tag); cls sets className when given; txt sets textContent when not null
-     Kit.dom.sv(tag, attrs, cls, txt) -> SVGElement   createElementNS(svg, tag); cls sets the class attribute; attrs {name: value} are set as attributes; txt sets textContent when not null
-   Needs from the board:
-     css     none; no tokens
-     globals none
-   db collections: none. */
+/**
+ * DOM helpers
+ * Kit.dom.el(tag, cls, txt) makes an HTML element with an optional class name and text; Kit.dom.sv(tag, attrs, cls, txt) makes an SVG element with attributes, an optional class and text. Kit scripts that draw take this entry as a requirement instead of carrying their own copy; load kit/dom.js before them. It draws nothing, needs no tokens and no db, and takes no setup.
+ *
+ * API:
+ *   Kit.dom.el(tag, cls, txt) -> Element     createElement(tag); cls sets className when given; txt sets textContent when not null
+ *   Kit.dom.sv(tag, attrs, cls, txt) -> SVGElement   createElementNS(svg, tag); cls sets the class attribute; attrs {name: value} are set as attributes; txt sets textContent when not null
+ *
+ * @id        kit.dom
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   el and sv, the two element builders the kit scripts share: one for HTML, one for SVG.
+ * @tags      dom, helper, el, svg, element, builder
+ * @requires  none
+ * @provides  Kit.dom.el, Kit.dom.sv
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

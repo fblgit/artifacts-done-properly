@@ -1,28 +1,43 @@
 /* part:page.script.kit.report-cards */
-/* Kit pattern: structured report cards (Kit.reportCards)    kit version 0.1.0
-   What it is: nine fixed-shape status reports (done, blocked, decision, handoff, ask, question, feedback, fault, status). Every card has the same head, a kind pill with the subject, who
-   filed it and when, then only that kind's fields in a fixed order, so a reader learns the shapes once. One renderer holds a field spec per kind. The done card is the one to copy: it
-   carries test runs as a pass, fail and skip strip drawn to scale, an asked-versus-did table where the work diverged from the ask, and a list of what was not checked, so a report says
-   what it did not verify. A card reads only typed fields; nothing is parsed out of prose.
-   Kind, severity, progress, block reason and feedback kind words come from the vocabulary table (kit/vocab.js). This file adds five small enums only when the page has not defined them:
-   "report-kind", "block-reason", "severity", "feedback-kind" and "progress".
-   API:
-     Kit.reportCards.render(report, opts) -> Element       one card;  Kit.reportCards.mount(box, {reports, labels, timeZone}) -> {update(reports), destroy()}  a list of cards
-       report   {kind, subject, by, at (ISO), ref, ref2, body}      kind is one of Kit.reportCards.kinds; body is the kind's fields:
-         done      {tests: [{command, passed, failed, skipped}], diverged: [{asked, did}], unverified: [text], summary}
-         blocked   {reason, on: {kind, name}, detail}          decision  {decision, alternatives: [text], consequences: [text]}
-         handoff   {to, nextStep}                              ask       {question}
-         question  {to, question, options: [text]}             feedback  {items: [{kind, where, line, note}]}
-         fault     {severity, component, expected, observed, evidence: [text]}      status  {progress, summary}
-       labels   {ref, ref2} the words for the two reference fields, per kind or for all: {done: {ref: "Commit", ref2: "Branch"}} or {ref: "Reference"}
-       timeZone for the clock text (default: the viewer's)
-       A kind the renderer does not know draws a flagged unknown mark and the raw body, never nothing.
-   Needs from the board:
-     css     kit/patterns/report-cards.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono,
-             optional --rim --pool --glz-r-l --glz-sh-1 --seam
-     globals Kit.vocab
-   db collections: none; the board hands over its reports.
-   Lifted from: a component family's nine report cards (done with tests, divergence and unverified; blocked; decision; handoff; ask; question; feedback; fault; status). */
+/**
+ * Structured report cards
+ * Kit.reportCards.render(report) returns one card; mount(box, {reports}) draws a list. All nine share one head (a kind pill, the subject, who filed it, when) and one frame, and a field spec per kind decides what follows, so a reader learns the shapes once. The done card carries test runs as a pass, fail and skip strip drawn to scale with the three counts in words, a table of where the work differs from the ask (Asked for, What was done) and a list of what was not checked, so a report says what it did not verify. Blocked names what it waits on, decision lists alternatives and what follows, handoff names who gets it and what is left, question lists options, feedback is a table of kind, place and note, fault sets expected beside seen with evidence. Field names are neutral (subject, ref, ref2), with labels you can set. A kind it does not know shows a flagged mark and the raw body. Kind, severity, progress, block reason and feedback kind words come from the vocabulary table.
+ *
+ * What it is: nine fixed-shape status reports (done, blocked, decision, handoff, ask, question, feedback, fault, status). Every card has the same head, a kind pill with the subject, who
+ * filed it and when, then only that kind's fields in a fixed order, so a reader learns the shapes once. One renderer holds a field spec per kind. The done card is the one to copy: it
+ * carries test runs as a pass, fail and skip strip drawn to scale, an asked-versus-did table where the work diverged from the ask, and a list of what was not checked, so a report says
+ * what it did not verify. A card reads only typed fields; nothing is parsed out of prose.
+ *
+ * Kind, severity, progress, block reason and feedback kind words come from the vocabulary table (kit/vocab.js). This file adds five small enums only when the page has not defined them:
+ * "report-kind", "block-reason", "severity", "feedback-kind" and "progress".
+ *
+ * API:
+ *   Kit.reportCards.render(report, opts) -> Element       one card;  Kit.reportCards.mount(box, {reports, labels, timeZone}) -> {update(reports), destroy()}  a list of cards
+ *     report   {kind, subject, by, at (ISO), ref, ref2, body}      kind is one of Kit.reportCards.kinds; body is the kind's fields:
+ *       done      {tests: [{command, passed, failed, skipped}], diverged: [{asked, did}], unverified: [text], summary}
+ *       blocked   {reason, on: {kind, name}, detail}          decision  {decision, alternatives: [text], consequences: [text]}
+ *       handoff   {to, nextStep}                              ask       {question}
+ *       question  {to, question, options: [text]}             feedback  {items: [{kind, where, line, note}]}
+ *       fault     {severity, component, expected, observed, evidence: [text]}      status  {progress, summary}
+ *     labels   {ref, ref2} the words for the two reference fields, per kind or for all: {done: {ref: "Commit", ref2: "Branch"}} or {ref: "Reference"}
+ *     timeZone for the clock text (default: the viewer's)
+ *     A kind the renderer does not know draws a flagged unknown mark and the raw body, never nothing.
+ *
+ * @id        pattern.report-cards
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Nine fixed-shape reports (done, blocked, decision, handoff, ask, question, feedback, fault, status): a kind pill, the subject, who and when, then only that kind's fields in a fixed order.
+ * @tags      report, status report, done, blocked, decision, handoff, fault, feedback, tests, divergence, unverified
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.reportCards.render, Kit.reportCards.mount, Kit.reportCards.kinds
+ * @config    Kit.reportCards.render(report, {labels, timeZone}) | report {kind, subject, by, at, ref, ref2, body}; body fields by kind are listed in the file header
+ * @config    Kit.reportCards.mount(box, {reports, labels, timeZone}) | returns {update, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --ok --danger --accent-ink? --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

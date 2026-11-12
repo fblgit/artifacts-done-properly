@@ -1,21 +1,36 @@
 /* part:page.script.kit.iconset */
-/* Kit component: icon map (Kit.iconset)    kit version 0.1.0    extends kit/chrome.js
-   What it is: a second inline-SVG icon set for everyday interface glyphs (transport, search, check, alert, keyboard, list, home, link and more), as one map of path data that
-   comes out as a string, an element or a ready preact vnode in three variants: line (stroke only), fill (closed shapes filled) and duo (closed shapes tinted, outline on top).
-   Kit.icons, which kit/chrome.js freezes, keeps the canvas tools and is not changed; Kit.iconset sits beside it, and iconset.get() tries its own map first and
-   falls back to Kit.icons when it has the name, so a board can ask one place. Icons use currentColor only: they take the colour of the text around them.
-   API (small and stable):
-     Kit.iconset.svg(name, {variant, size, label, stroke, cls}) -> string   variant "line" (default) | "fill" | "duo"; size px (default 16); label makes it an image for assistive tech, otherwise aria-hidden
-     Kit.iconset.el(name, opts) -> SVGElement         the same, built with DOM
-     Kit.iconset.get(name, opts) -> string | vnode    own icon as a string; a chrome icon as the vnode chrome already holds; null when neither knows the name
-     Kit.iconset.html(name, opts) -> vnode            for htm/preact: a span holding the svg (needs window.htmPreact)
-     Kit.iconset.names -> [string]                    every name, in the order of the map
-     Kit.iconset.register({name: "<path data markup>"}) -> void   add or replace icons (24 × 24 grid, no fill or stroke attributes on the paths); a board's own glyphs go here
-   Needs from the board:
-     css     none (the svg carries its own size, fill and stroke); the colour is the text colour around it
-     globals window.htmPreact for html() only; kit/chrome.js for the get() fallback only
-   db collections: none.
-   Lifted from: the YouTuner Uplift page's inline icon map (P, ic, icFill, ic2): its 24-grid paths, kept without the video-site mark. */
+/**
+ * Icon map
+ * Kit.iconset sits beside Kit.icons (which kit/chrome.js freezes and which keeps the canvas tools) and does not change it. svg(name, {variant, size, label, stroke}) returns a string; el() builds the element; html() gives a preact vnode; get() tries this map first and falls back to Kit.icons. Variants: line (stroke only), fill (closed shapes filled) and duo (closed shapes tinted with the outline on top). Icons use currentColor only and are aria-hidden unless a label is given. register() adds a board's own glyphs on the same 24 by 24 grid.
+ *
+ * What it is: a second inline-SVG icon set for everyday interface glyphs (transport, search, check, alert, keyboard, list, home, link and more), as one map of path data that
+ * comes out as a string, an element or a ready preact vnode in three variants: line (stroke only), fill (closed shapes filled) and duo (closed shapes tinted, outline on top).
+ * Kit.icons, which kit/chrome.js freezes, keeps the canvas tools and is not changed; Kit.iconset sits beside it, and iconset.get() tries its own map first and
+ * falls back to Kit.icons when it has the name, so a board can ask one place. Icons use currentColor only: they take the colour of the text around them.
+ * API (small and stable):
+ *   Kit.iconset.svg(name, {variant, size, label, stroke, cls}) -> string   variant "line" (default) | "fill" | "duo"; size px (default 16); label makes it an image for assistive tech, otherwise aria-hidden
+ *   Kit.iconset.el(name, opts) -> SVGElement         the same, built with DOM
+ *   Kit.iconset.get(name, opts) -> string | vnode    own icon as a string; a chrome icon as the vnode chrome already holds; null when neither knows the name
+ *   Kit.iconset.html(name, opts) -> vnode            for htm/preact: a span holding the svg (needs window.htmPreact)
+ *   Kit.iconset.names -> [string]                    every name, in the order of the map
+ *   Kit.iconset.register({name: "<path data markup>"}) -> void   add or replace icons (24 × 24 grid, no fill or stroke attributes on the paths); a board's own glyphs go here
+ *
+ * window.htmPreact is needed for html() only; kit/chrome.js for the get() fallback only.
+ *
+ * @id        kit.icons
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An inline SVG icon set for everyday glyphs, as a string, an element or a vnode, in line, fill and two-tone variants.
+ * @tags      icons, svg, glyphs, two-tone, currentcolor, upgrade
+ * @requires  kit.chrome
+ * @provides  Kit.iconset.svg, Kit.iconset.el, Kit.iconset.get, Kit.iconset.html, Kit.iconset.names, Kit.iconset.register
+ * @config    Kit.iconset.svg(name, {variant, size, label, stroke, cls}) | variant line | fill | duo; size px; label makes it an image for assistive tech
+ * @config    extends | kit.chrome: the new map sits in Kit.iconset; Kit.icons is not touched
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

@@ -1,29 +1,43 @@
 /* part:page.script.kit.roster-wall */
-/* Kit pattern: roster, presence and claims (Kit.rosterWall)    kit version 0.1.0
-   What it is: the people and agents working on something, drawn three ways from one list. A wall of cards (name and role, a state pill and an activity pill from kit.vocab, the
-   resources each one holds, how many messages wait for it, and a last-seen beat that says Live or Stale in words), a team table, and a claims table with expiry. A filter by state
-   counts what it hides. A card opens a side drawer (kit.drawer) with the actor's items and, when the page can send, a line to write to them; that draft survives a redraw
-   (kit.keep-state). The view and filter are remembered in this browser when you give a key.
-   Every state word, glyph and tone comes from the vocabulary table (kit/vocab.js). This file adds two small enums only when the page has not defined them: "actor-state" and
-   "actor-activity"; define your own with Kit.vocab.define({...}) before mount and pass their names as stateEnum / activityEnum.
-   API:
-     Kit.rosterWall.mount(box, opts) -> {update(actors, claims), setView(v), setFilter(state|null), open(name), destroy()}
-       actors     [{name, role, state, activity, holds: [{name, kind}], queued, lastSeen (ISO), items: [{id, title, state}]}]
-       claims     [{resource, holder, until (ISO), state}]    state: "held" | "released"; the claims table lists what was held, with expiry against now
-       now        ISO string or Date the page treats as now (default: the clock); liveMin the minutes a last-seen counts as Live (default 5)
-       view       "wall" (default) | "team" | "claims"      filter  a state value or null
-       stateEnum  vocabulary enum of the actor's state (default "actor-state")      activityEnum  (default "actor-activity")      itemEnum  (default "state")
-       remember   a localStorage key for the view and filter (guarded; the page works without it)
-       onSend     (name, text) => Promise|void; set it and the drawer shows a send line      onOpen  (name) after a drawer opens
-       drawerHost an element (position: relative) to confine the drawer to; default the page
-       timeZone   for the clock text (default: the viewer's; the preview passes "UTC")
-   Needs from the board:
-     css     kit/patterns/roster-wall.css, kit/vocab.css, kit/drawer.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono,
-             optional --rim --pool --glz-r-l --glz-sh-1 --seam (the porcelain look under Glaze depth; flat under any other theme)
-     globals Kit.vocab, Kit.drawer, Kit.keepState (their kit files load first)
-   db collections: none; the board gives it the list and keeps it fresh with update().
-   Lifted from: a component family's member wall and roster (card, claims, queue count, last seen, send line), an earlier board's team and status pass (live and stale), and a task page's
-   team table and claims table with expiry. */
+/**
+ * Roster, presence and claims
+ * Kit.rosterWall.mount(box, {actors, claims, now, onSend, remember, drawerHost}) draws one list three ways. The wall has a card per actor with its name and role, a state pill and an activity pill from kit.vocab, the resources it holds, how many messages wait for it, and a last-seen beat that says Live or Stale in words with the time. The Team view is a table of the same list; the Claims view is a table of what is held with when it runs out (Held, Expired or Released, in words). A filter by state shows a count per state. Pressing a name opens a side drawer (kit.drawer) with the actor's items, its holds and, when onSend is given, a line to write to it; a half-typed message survives a redraw (kit.keep-state) when update() brings new data. The view and filter are remembered in this browser under your key. State words come from the vocabulary table: the file adds the enums actor-state and actor-activity only if the page has not defined them.
+ *
+ * What it is: the people and agents working on something, drawn three ways from one list. A wall of cards (name and role, a state pill and an activity pill from kit.vocab, the
+ * resources each one holds, how many messages wait for it, and a last-seen beat that says Live or Stale in words), a team table, and a claims table with expiry. A filter by state
+ * counts what it hides. A card opens a side drawer (kit.drawer) with the actor's items and, when the page can send, a line to write to them; that draft survives a redraw
+ * (kit.keep-state). The view and filter are remembered in this browser when you give a key.
+ *
+ * Every state word, glyph and tone comes from the vocabulary table (kit/vocab.js). This file adds two small enums only when the page has not defined them: "actor-state" and
+ * "actor-activity"; define your own with Kit.vocab.define({...}) before mount and pass their names as stateEnum / activityEnum.
+ *
+ * API:
+ *   Kit.rosterWall.mount(box, opts) -> {update(actors, claims), setView(v), setFilter(state|null), open(name), destroy()}
+ *     actors     [{name, role, state, activity, holds: [{name, kind}], queued, lastSeen (ISO), items: [{id, title, state}]}]
+ *     claims     [{resource, holder, until (ISO), state}]    state: "held" | "released"; the claims table lists what was held, with expiry against now
+ *     now        ISO string or Date the page treats as now (default: the clock); liveMin the minutes a last-seen counts as Live (default 5)
+ *     view       "wall" (default) | "team" | "claims"      filter  a state value or null
+ *     stateEnum  vocabulary enum of the actor's state (default "actor-state")      activityEnum  (default "actor-activity")      itemEnum  (default "state")
+ *     remember   a localStorage key for the view and filter (guarded; the page works without it)
+ *     onSend     (name, text) => Promise|void; set it and the drawer shows a send line      onOpen  (name) after a drawer opens
+ *     drawerHost an element (position: relative) to confine the drawer to; default the page
+ *     timeZone   for the clock text (default: the viewer's; the preview passes "UTC")
+ *
+ * @id        pattern.roster
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A wall of cards, one per person or agent (state and activity pills, what it holds, a queue count, a Live or Stale last-seen), a team table, and a claims table with expiry.
+ * @tags      roster, presence, members, team, claims, last seen, live, stale, wall, drawer
+ * @requires  kit.tokens, kit.vocab, kit.drawer, kit.keep-state
+ * @provides  Kit.rosterWall.mount, setView, setFilter
+ * @config    Kit.rosterWall.mount(box, opts) | actors [{name, role, state, activity, holds [{name, kind}], queued, lastSeen, items [{id, title, state}]}], claims [{resource, holder, until, state}], now, liveMin, view wall | team | claims, filter, stateEnum, activityEnum, itemEnum, remember, onSend(name, text), onOpen, drawerHost, timeZone; returns {update, setView, setFilter, open, destroy}
+ * @config    Kit.vocab.define({...}) | optional: your own actor-state and actor-activity tables (word, short, glyph, tone, motion per value); the file supplies small defaults when they are missing
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --ok --accent-ink? --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

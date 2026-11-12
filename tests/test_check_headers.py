@@ -103,6 +103,10 @@ class Validate(Base):
     def test_config_repeats(self):
         self.assertEqual(self.rules(GOOD.replace(' * @tokens', ' * @config    markup | div.kit-demo\n * @tokens'))[1], [])
 
+    def test_optional_token_marker(self):
+        self.assertEqual(self.rules(header(tokens='--panel --seam?'))[1], [])
+        self.assertIn('tokens', self.rules(header(tokens='--panel (optional)'))[1])
+
     def test_tokens_only_required_with_a_style_file(self):
         t = header(id='kit.other', tokens=None)
         self.assertEqual(self.rules(t, 'kit/other.js'), ('header', []))
@@ -110,6 +114,12 @@ class Validate(Base):
     def test_provides_only_required_for_js(self):
         t = '<!--\nTemplate\nA shell.\n@id template.t\n@group Templates\n@status new\n@version 0.1.0\n@updated 2026-10-25\n@summary s\n@tags shell\n@requires none\n@tokens none\n@globals none\n@db none\n-->\n'
         self.assertEqual(self.rules(t, 'kit/t.html.txt'), ('header', []))
+
+    def test_notes_paragraphs_are_not_about(self):
+        text = GOOD.replace(' * A table from rows and columns.\n', ' * A table from rows and columns.\n *\n * API: render(box, opts) draws it.\n * More notes.\n')
+        title, about, tags = ch.parse(ch.comment_of(text, 'x.js'))
+        self.assertEqual((title, about), ('Demo table', 'A table from rows and columns.'))
+        self.assertEqual(self.rules(text), ('header', []))
 
     def test_summary_length_and_title_and_about(self):
         self.assertIn('summary', self.rules(header(summary='x' * 300))[1])

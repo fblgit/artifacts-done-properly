@@ -1,33 +1,43 @@
 /* part:page.script.kit.viz.dial-meter */
-/* Kit visualization: dial meter (Kit.dialMeter)    kit version 0.1.0
-   What it is: a tile with a 270 degree dial (the gap is at the bottom), a big number with its unit, a title and a caption. Three variants of the dial: value (an arc with a gold bead at its
-   end), segments (the arc split by kind, 6 degrees apart, kind colours from --kind-1..4) and drain (a ring that empties as a count-down, warning in the last 20 s). When the tile has
-   actions, they take the caption's place on hover or focus; on touch and under 480px the caption and the actions are both shown. The number is always real text, and the tile's
-   accessible name says it again with the unit and the caption.
-   Batch 10 calls this file: the API below is small and stable, extend it only by adding options.
-   API:
-     Kit.dialMeter.make(opts) -> {el, update(patch), destroy()}    a tile
-       opts   { title, value, unit, frac, tone, segments, caption, actions, onAction(key, event), ariaLabel, kindLabels }
-                value     the big number as text ("34", "1,284", "98%"); long values shrink
-                unit      the small word under it ("certificates", "days")
-                frac      0 to 1, how much of the arc is filled (value variant). Nothing is drawn beyond the number: no frac, no arc, no bead
-                tone      ok | warn | bad | idle, or any Kit.vocab tone (success, attention, danger, ended, neutral, active, info, review); colours the arc, never the number
-                segments  [{v, kind, label}]  the segmented variant: v the count, kind 1 to 4 (the arc colour --kind-N), label for the key line; zero counts are left out
-                actions   [{key, label, icon, danger}]  icon is a Kit.vocab glyph name, svg path markup (24 grid, stroke only) or a Node; onAction gets the key
-       update(patch) redraws with the changed options; destroy() removes the tile
-     Kit.dialMeter.dial(opts) -> Element    only the dial with its number (value, unit, frac, tone, segments), no tile
-     Kit.dialMeter.drain(opts) -> {el, remaining(), reset(seconds), pause(), resume(), destroy()}    a draining ring, the sealed-vault count-down
-       opts   { title, total (seconds), remaining (seconds), warnAt: 20, caption, actions, onAction, onTick(seconds), onEnd(), word(seconds) -> {value, unit, spoken} }
-                the default word gives 1:12 min under an hour, 59 s under a minute; spoken is the sentence assistive tech reads ("1 minute 12 seconds left"), refreshed every 5 s and at the warning
-     Kit.dialMeter.arcPath(cx, cy, r, a0, a1) -> "M… A…"  an svg arc path in degrees (0 is three o'clock, clockwise), for a board's own dial
-   Tone: [data-vo-tone] on the tile sets --vo-c (kit/vocab.css); the arc takes it. The bead is the gold seam. Text is --ink and --ink-2 on the panel.
-   Needs from the board:
-     requires kit.vocab (tones, glyphs), kit/vocab.css
-     css     kit/viz/dial-meter.css; custom properties --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-display, optional --seam --kind-1..4 --rim --pool --glz-r-l --glz-sh-1
-     globals Kit.vocab
-   db collections: none.
-   Lifted from: a network-ops console's meter tiles (arcPath, the dial with a gold bead, the segmented total, the caption that gives way to action buttons) and the sealed-vault card's ring
-   that drains while it is open. Changed: the number, unit and caption are config, the draining ring is a component with its own clock, and the tones are the vocab's. */
+/**
+ * Dial meter
+ * A tile with a 270 degree dial (the gap at the bottom), a big number with its unit, a title and a caption. Three variants of the dial: value (an arc with a gold bead at its end), segments (the arc split by kind, 6 degrees apart, colours from --kind-1..4, counts named under the dial), and drain (a ring that empties as a count-down, warning in its last 20 seconds; the sealed-vault ring). When the tile has actions they take the caption's place on hover or focus; on touch and under 480px both show. The number is real text, and the tile's accessible name repeats it with unit and caption. Kit.dialMeter.make, dial and drain are the small API other entries call; arcPath is the pure arc geometry.
+ *
+ * Batch 10 calls this file: the API below is small and stable, extend it only by adding options.
+ * API:
+ *   Kit.dialMeter.make(opts) -> {el, update(patch), destroy()}    a tile
+ *     opts   { title, value, unit, frac, tone, segments, caption, actions, onAction(key, event), ariaLabel, kindLabels }
+ *              value     the big number as text ("34", "1,284", "98%"); long values shrink
+ *              unit      the small word under it ("certificates", "days")
+ *              frac      0 to 1, how much of the arc is filled (value variant). Nothing is drawn beyond the number: no frac, no arc, no bead
+ *              tone      ok | warn | bad | idle, or any Kit.vocab tone (success, attention, danger, ended, neutral, active, info, review); colours the arc, never the number
+ *              segments  [{v, kind, label}]  the segmented variant: v the count, kind 1 to 4 (the arc colour --kind-N), label for the key line; zero counts are left out
+ *              actions   [{key, label, icon, danger}]  icon is a Kit.vocab glyph name, svg path markup (24 grid, stroke only) or a Node; onAction gets the key
+ *     update(patch) redraws with the changed options; destroy() removes the tile
+ *   Kit.dialMeter.dial(opts) -> Element    only the dial with its number (value, unit, frac, tone, segments), no tile
+ *   Kit.dialMeter.drain(opts) -> {el, remaining(), reset(seconds), pause(), resume(), destroy()}    a draining ring, the sealed-vault count-down
+ *     opts   { title, total (seconds), remaining (seconds), warnAt: 20, caption, actions, onAction, onTick(seconds), onEnd(), word(seconds) -> {value, unit, spoken} }
+ *              the default word gives 1:12 min under an hour, 59 s under a minute; spoken is the sentence assistive tech reads ("1 minute 12 seconds left"), refreshed every 5 s and at the warning
+ *   Kit.dialMeter.arcPath(cx, cy, r, a0, a1) -> "M… A…"  an svg arc path in degrees (0 is three o'clock, clockwise), for a board's own dial
+ * Tone: [data-vo-tone] on the tile sets --vo-c (kit/vocab.css); the arc takes it. The bead is the gold seam. Text is --ink and --ink-2 on the panel.
+ *
+ * Also load kit/vocab.css.
+ *
+ * @id        viz.dial-meter
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A 270 degree dial tile with a gold bead at the end of its arc, a big number and a unit; segments can split the arc by kind; the caption gives way to action buttons on hover or focus.
+ * @tags      dial, meter, gauge, arc, tile, countdown, drain, segments, kpi
+ * @requires  kit.vocab
+ * @provides  Kit.dialMeter.make, Kit.dialMeter.dial, Kit.dialMeter.drain, Kit.dialMeter.arcPath
+ * @config    Kit.dialMeter.make({title, value, unit, frac, tone, segments, caption, actions, onAction}) | returns {el, update(patch), destroy()}; tone is ok | warn | bad | idle or a Kit.vocab tone; no frac means no arc
+ * @config    Kit.dialMeter.drain({title, total, remaining, warnAt, caption, actions, onTick, onEnd, word}) | returns {el, remaining(), reset(seconds), pause(), resume(), destroy()}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-display --seam? --kind-1? --kind-2? --kind-3? --kind-4? --rim? --pool? --glz-r-l?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

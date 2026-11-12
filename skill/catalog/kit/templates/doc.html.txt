@@ -1,16 +1,35 @@
+<!--
+Document templates
+Taken as text: copy kit/templates/doc.html.txt into your page and replace the invented proposal. It is built from the entries it requires, not beside them: the contents rail and reading column are the document shell, the guide is a callout, the options table is the data table. Its own css adds the title block, the self-numbering sections (a CSS counter, so adding or deleting a section renumbers the rest), the part head, the example block, the fill-in slot and the checklist. The same pieces make a postmortem (swap the sections) and a fill-in form (keep the guide and example blocks); the comment at the top of the file says how.
+
+What it is: the body of a long document, taken as text. A title block (kind, title, subtitle, meta strip, provenance), then the document shell's contents rail and
+reading column, with numbered sections, guide and example blocks, a part head for grouping, a fill-in slot and a checklist. Copy it into your own page,
+replace the invented proposal, delete what you do not use. The same pieces make the other two shapes:
+  a postmortem keeps the title block and swaps the sections for: summary, impact, timeline (a kit-table), what went well, what went badly, action items (.kit-tdoc-check);
+  a fill-in form keeps every .kit-tdoc-fill and gives each section a guide (.kit-callout) and an example (.kit-tdoc-ex), so the next writer sees what good looks like.
+Take also, by reference (the server copies them; this file is taken as text):  kit/templates/doc.css, kit/layout/doc-shell.css and .js, kit/callout.css, kit/table.css
+Load in the head: your theme (kit/themes/glaze.css or your own tokens), then the four css files in the order of the links below.
+Load before the script at the end: kit/layout/doc-shell.js
+Section ids are bare tokens; the contents rail is filled from them. Sections number themselves (CSS counter): add or delete one and the rest renumber.
+
+Delete this comment when you copy the template into your page.
+
+@id        template.doc
+@group     Templates
+@status    new
+@version   0.1.0
+@updated   2026-10-24
+@summary   A long-document body on the doc shell: title block with a meta strip, numbered sections, guide and example blocks, part heads, a fill-in slot and a checklist. Taken as text.
+@tags      template, document, proposal, postmortem, form, sections, guide, example, numbered, part head
+@requires  layout.doc-shell, kit.callout, kit.table
+@config    copy | kit/templates/doc.html.txt into your page; take kit/templates/doc.css, kit/layout/doc-shell.css and .js, kit/callout.css and kit/table.css by reference
+@config    html | one .kit-tdoc article: .kit-tdoc-head, then .kit-doc.kit-tdoc-shell with .kit-doc-sec.kit-tdoc-sec sections; ids are bare tokens
+@config    script | Kit.docShell.mount(document.getElementById("doc-shell"))
+@tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --warn --f-ui --f-display --f-mono --seam? --gold-leaf?
+@globals   none
+@db        none
+-->
 <!-- part:kit.template.doc -->
-<!-- Kit template: document (template.doc)    kit version 0.1.0
-     What it is: the body of a long document, taken as text. A title block (kind, title, subtitle, meta strip, provenance), then the document shell's contents rail and
-     reading column, with numbered sections, guide and example blocks, a part head for grouping, a fill-in slot and a checklist. Copy it into your own page,
-     replace the invented proposal, delete what you do not use. The same pieces make the other two shapes:
-       a postmortem keeps the title block and swaps the sections for: summary, impact, timeline (a kit-table), what went well, what went badly, action items (.kit-tdoc-check);
-       a fill-in form keeps every .kit-tdoc-fill and gives each section a guide (.kit-callout) and an example (.kit-tdoc-ex), so the next writer sees what good looks like.
-     Take also, by reference (the server copies them; this file is taken as text):  kit/templates/doc.css, kit/layout/doc-shell.css and .js, kit/callout.css, kit/table.css
-     Load in the head: your theme (kit/themes/glaze.css or your own tokens), then the four css files in the order of the links below.
-     Load before the script at the end: kit/layout/doc-shell.js
-     Needs from the board: tokens --bg --panel --sunk --ink --ink-2 --rule --rule-2 --warn --f-ui --f-display --f-mono (optional --seam, --gold-leaf); no db.
-     Section ids are bare tokens; the contents rail is filled from them. Sections number themselves (CSS counter): add or delete one and the rest renumber.
-     Lifted from: a proposal, a postmortem guide, a fill-in template shell, a numbered-section page and a part-head page. -->
 <link rel="stylesheet" href="kit/layout/doc-shell.css">
 <link rel="stylesheet" href="kit/callout.css">
 <link rel="stylesheet" href="kit/table.css">

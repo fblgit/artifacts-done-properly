@@ -1,22 +1,36 @@
 /* part:page.script.kit.card-history */
-/* Kit pattern: card history (Kit.cardHistory)    kit version 0.1.0
-   What it is: one record's story in three parts. A track along the top with a node wherever the state changed (a long track keeps the first, the last and an even spread of up to six
-   between; a node jumps to its row below), then the conversation as turns (each turn is an ask, the answer and the reply, three short lines), then the moves grouped by day with the
-   day in the left column and one line per move. A line of tags above says how many moves and turns there are, over how long, and when the last one was.
-   Every state word, glyph and tone comes from the vocabulary table (kit/vocab.js); the built-in enum "state" does for most records, pass stateEnum for your own. A node is a glyph and
-   a word, never colour alone.
-   API:
-     Kit.cardHistory.mount(box, opts) -> {update(data), jump(index), destroy()}
-       moves      [{at (ISO), by, what, state}]      any order; shown newest first, the track runs oldest to newest
-       turns      [{n, ask: {by, text}, answer: {choice, reply, approval, at}, reply: {by, text}}]   answer may be null (shown as No answer)
-       me         the name that reads as "You" (default none: names are shown as given)
-       stateEnum  vocabulary enum of a move's state (default "state")       timeZone  for days and clock times (default: the viewer's; the preview passes "UTC")
-       maxNodes   most nodes on the track (default 8)
-   Needs from the board:
-     css     kit/patterns/card-history.css, kit/vocab.css; custom properties --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, optional --seam
-     globals Kit.vocab
-   db collections: none; the board hands over the record's log and turns.
-   Lifted from: an earlier board's card history (the journey track, the conversation of turns and the moves by day). */
+/**
+ * Card history
+ * Kit.cardHistory.mount(box, {moves, turns, me}) draws three parts. A track along the top has a node wherever the state changed (a long record keeps the first, the last and an even spread of up to six between); a node is a button that scrolls to its move and flashes it. Under it the conversation shows each turn as three short lines, the ask, the answer ("chose X", a quoted reply, "approved the gate", or No answer) and the reply, each with an avatar of initials. Last come the moves grouped by day, the day in the left column and one line a move. A line of tags above says how many moves and turns, over how long, and when the last one was. States come from the vocabulary table (the built-in state enum, or your own).
+ *
+ * One record's story in three parts. A track along the top with a node wherever the state changed (a long track keeps the first, the last and an even spread of up to six
+ * between; a node jumps to its row below), then the conversation as turns (each turn is an ask, the answer and the reply, three short lines), then the moves grouped by day with the
+ * day in the left column and one line per move. A line of tags above says how many moves and turns there are, over how long, and when the last one was.
+ * Every state word, glyph and tone comes from the vocabulary table (kit/vocab.js); the built-in enum "state" does for most records, pass stateEnum for your own. A node is a glyph and
+ * a word, never colour alone.
+ *
+ * API:
+ *   Kit.cardHistory.mount(box, opts) -> {update(data), jump(index), destroy()}
+ *     moves      [{at (ISO), by, what, state}]      any order; shown newest first, the track runs oldest to newest
+ *     turns      [{n, ask: {by, text}, answer: {choice, reply, approval, at}, reply: {by, text}}]   answer may be null (shown as No answer)
+ *     me         the name that reads as "You" (default none: names are shown as given)
+ *     stateEnum  vocabulary enum of a move's state (default "state")       timeZone  for days and clock times (default: the viewer's; the preview passes "UTC")
+ *     maxNodes   most nodes on the track (default 8)
+ *
+ * @id        pattern.card-history
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   One record's story: a track with a node where its state changed, the turns as ask, answer and reply, then moves grouped by day.
+ * @tags      history, activity, turns, conversation, journey, track, moves, record
+ * @requires  kit.tokens, kit.vocab
+ * @provides  Kit.cardHistory.mount
+ * @config    Kit.cardHistory.mount(box, opts) | moves [{at, by, what, state}], turns [{n, ask {by, text}, answer {by, choice, reply, approval, at} | null, reply {by, text}}], me, stateEnum, timeZone, maxNodes; returns {update, jump, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

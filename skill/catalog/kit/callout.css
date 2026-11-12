@@ -1,12 +1,30 @@
 /* part:page.style.kit.callout */
-/* Kit css: callouts and marks    kit version 0.1.0    extends kit/chrome.css (a new file; chrome.css is unchanged)
-   Callout: <aside class="kit-callout" data-tone="note|ok|warn|danger|pending"><p class="kit-callout-k">Kicker</p><p>Body…</p></aside>
-     The kicker names the tone in words (Note, Verified, Check first, Stop, Waiting on you), so meaning never rides on colour alone.
-     A pending callout is the owner-input box: a dashed edge and a list (ul) of what is still needed.
-   Mark: <span class="kit-mark" data-mark="inference">my inference</span> or data-mark="verified" | "unverified" | "estimate", inline in a sentence.
-   Every tint is color-mix of a meaning token into --panel; text stays --ink; kickers and marks take the tone mixed 78% with --ink, 4.5:1 or more on their tint in the kit's three themes.
-   Needs from the board: --panel --ink --ink-2 --rule --accent --ok --warn --danger --f-ui --f-mono; optional --seam (the note tone's edge; falls back to --accent)
-   Lifted from: three-tone callouts with a mono kicker, a Glaze note with an orb, the verified/inference marker, and a pending-input box, across four documents. */
+/**
+ * Callouts and inference marks
+ * CSS only: aside.kit-callout[data-tone] with p.kit-callout-k for the kicker, which says the tone in words so meaning never rides on colour; the pending tone is the owner-input box with a list of what is still needed. span.kit-mark[data-mark] marks a claim inline, the way the owner asks guesses to be marked. Tints mix the meaning token into --panel, so it works in any theme. An upgrade of kit.chrome as a new file: chrome.css is unchanged.
+ *
+ * Callout: <aside class="kit-callout" data-tone="note|ok|warn|danger|pending"><p class="kit-callout-k">Kicker</p><p>Body…</p></aside>
+ *   The kicker names the tone in words (Note, Verified, Check first, Stop, Waiting on you), so meaning never rides on colour alone.
+ *   A pending callout is the owner-input box: a dashed edge and a list (ul) of what is still needed.
+ * Mark: <span class="kit-mark" data-mark="inference">my inference</span> or data-mark="verified" | "unverified" | "estimate", inline in a sentence.
+ * Every tint is color-mix of a meaning token into --panel; text stays --ink; kickers and marks take the tone mixed 78% with --ink, 4.5:1 or more on their tint in the kit's three themes.
+ *
+ * Optional custom property --seam is the note tone's edge; it falls back to --accent.
+ *
+ * @id        kit.callout
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Note, verified, warn, danger and pending callouts with a kicker and a glaze orb, plus inline verified, inference, estimate and unverified marks.
+ * @tags      callout, note, warning, danger, banner, admonition, inference, verified, estimate, pending, owner input
+ * @requires  none
+ * @config    markup | aside.kit-callout[data-tone=note|ok|warn|danger|pending] > p.kit-callout-k + p (+ ul)
+ * @config    marks | span.kit-mark[data-mark=verified|inference|estimate|unverified]
+ * @tokens    --panel --ink --ink-2 --rule --accent --ok --warn --danger --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 .kit-callout { --tone: var(--accent); --edge: var(--seam, var(--accent));
   position: relative; display: grid; gap: 4px; margin: 0;
   padding: 13px 16px 13px 39px; border-radius: 14px; color: var(--ink); font: 15px/1.55 var(--f-ui);

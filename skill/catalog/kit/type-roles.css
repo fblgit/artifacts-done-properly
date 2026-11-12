@@ -1,32 +1,49 @@
 /* part:page.style.kit.type-roles */
-/* Kit css: type roles    kit version 0.1.0    css only
-   Twenty named roles so no two kinds of text look alike. Each role is a font shorthand token (--kit-t-<role>) and a class (.kit-t-<role>). They are built on the theme's three families
-   (--f-display, --f-ui, --f-mono), so a theme change changes every role. A role differs by size, weight, italic and tracking, never by a family the theme does not have.
-   Role            class           where it is used                                   family
-   hero            .kit-t-hero     one-line statements ("All quiet.")                 display
-   title           .kit-t-title    the page title (h1)                                display
-   sect            .kit-t-sect     section title (h2), drawer title                   display
-   card            .kit-t-card     card and row-group title (h3)                      ui
-   body            .kit-t-body     reading text, 64ch                                 ui
-   lede            .kit-t-lede     the sentence under a title                         display
-   meta            .kit-t-meta     captions, who and when                             ui
-   label           .kit-t-label    form labels                                        ui
-   input           .kit-t-input    inputs and selects                                 ui
-   hint            .kit-t-hint     hints under a field                                display italic
-   error           .kit-t-error    error text                                         ui
-   btn             .kit-t-btn      buttons                                            ui
-   chip            .kit-t-chip     chips and pills                                    ui
-   nav             .kit-t-nav      navigation labels                                  ui
-   numeral         .kit-t-numeral  big figures (a seal, a count), tabular             display
-   unit            .kit-t-unit     the unit under a numeral ("days")                  display italic
-   meter           .kit-t-meter    dashboard figures, tabular                         ui
-   mono            .kit-t-mono     identifiers, paths, logs                           mono
-   empty           .kit-t-empty    an empty state's headline                          display italic
-   sheet           .kit-t-sheet    a confirm sheet's title                            display
-   Use the class on an element, or the token in your own rule: font: var(--kit-t-card). Reading roles (body, lede, hint) are capped near 65ch. Number roles use tabular numerals.
-   The tokens are declared on :root and on .kit-tr: when your theme tokens live on an element rather than :root (a stage, a scoped block), put .kit-tr on that element.
-   Muted roles use --ink-2 (not --ink-3), so they keep AA contrast in every kit theme.
-   Needs from the board: --f-display --f-ui --f-mono --ink --ink-2 --danger */
+/**
+ * Type roles
+ * A table of roles (hero, title, sect, card, body, lede, meta, label, input, hint, error, btn, chip, nav, numeral, unit, meter, mono, empty, sheet) as CSS: --kit-t-<role> holds the font shorthand and .kit-t-<role> applies it with tracking and numerals. Roles are built on the theme's three families (--f-display, --f-ui, --f-mono), so changing the theme changes every role; they differ by size, weight, italic and tracking. Reading roles are capped near 65 characters, number roles use tabular numerals, muted roles use --ink-2 so they keep contrast in every kit theme.
+ *
+ * Twenty named roles so no two kinds of text look alike. Each role is a font shorthand token (--kit-t-<role>) and a class (.kit-t-<role>). They are built on the theme's three families
+ * (--f-display, --f-ui, --f-mono), so a theme change changes every role. A role differs by size, weight, italic and tracking, never by a family the theme does not have.
+ * Role            class           where it is used                                   family
+ * hero            .kit-t-hero     one-line statements ("All quiet.")                 display
+ * title           .kit-t-title    the page title (h1)                                display
+ * sect            .kit-t-sect     section title (h2), drawer title                   display
+ * card            .kit-t-card     card and row-group title (h3)                      ui
+ * body            .kit-t-body     reading text, 64ch                                 ui
+ * lede            .kit-t-lede     the sentence under a title                         display
+ * meta            .kit-t-meta     captions, who and when                             ui
+ * label           .kit-t-label    form labels                                        ui
+ * input           .kit-t-input    inputs and selects                                 ui
+ * hint            .kit-t-hint     hints under a field                                display italic
+ * error           .kit-t-error    error text                                         ui
+ * btn             .kit-t-btn      buttons                                            ui
+ * chip            .kit-t-chip     chips and pills                                    ui
+ * nav             .kit-t-nav      navigation labels                                  ui
+ * numeral         .kit-t-numeral  big figures (a seal, a count), tabular             display
+ * unit            .kit-t-unit     the unit under a numeral ("days")                  display italic
+ * meter           .kit-t-meter    dashboard figures, tabular                         ui
+ * mono            .kit-t-mono     identifiers, paths, logs                           mono
+ * empty           .kit-t-empty    an empty state's headline                          display italic
+ * sheet           .kit-t-sheet    a confirm sheet's title                            display
+ * Use the class on an element, or the token in your own rule: font: var(--kit-t-card). Reading roles (body, lede, hint) are capped near 65ch. Number roles use tabular numerals.
+ * The tokens are declared on :root and on .kit-tr: when your theme tokens live on an element rather than :root (a stage, a scoped block), put .kit-tr on that element.
+ * Muted roles use --ink-2 (not --ink-3), so they keep AA contrast in every kit theme.
+ *
+ * @id        kit.type-roles
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   Twenty named type roles, each a font shorthand token and a class, so no two kinds of text look alike: statements, titles, labels, hints, numerals, units, buttons, chips, code.
+ * @tags      typography, type scale, roles, headings, labels, numerals, fonts
+ * @requires  kit.tokens
+ * @config    tokens | --f-display, --f-ui and --f-mono come from the theme
+ * @config    scope | the --kit-t-* tokens are declared on :root and on .kit-tr; add .kit-tr to the element that carries your theme tokens when they are not on :root
+ * @tokens    --f-display --f-ui --f-mono --ink --ink-2 --danger
+ * @globals   none
+ * @db        none
+ */
 :root, .kit-tr {
   --kit-t-hero: 500 clamp(2.6rem, 8vw, 5rem)/.98 var(--f-display);
   --kit-t-title: 500 clamp(2rem, 5vw, 3.2rem)/1.04 var(--f-display);

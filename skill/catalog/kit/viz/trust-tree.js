@@ -1,49 +1,53 @@
 /* part:page.script.kit.viz.trust-tree */
-/* Kit visualization: trust tree (Kit.trustTree)    kit version 0.1.0
-   What it is: a signing hierarchy drawn as a porcelain family tree. Authorities are medallions (a disc, a gold rim, a ring that is the life they have left) joined to what they signed by gold
-   seams; the things they signed hang beneath as small medallions in fans of seven. Hover, focus or pick a medallion and the chain up to the root lights: its seams thicken and glow, everything
-   else dims. A caption narrates the chain. Arrow keys walk the tree, Enter opens one. Under 640px the drawing gives way to a nested list. Around the tree (each part optional, from the data):
-     holders  the hardware keys or places that hold the authorities, each a row of slot buttons that light their authority
-     passes   "who may sign what": one button for each kind of thing, lighting its authority and everything of that kind
-     limits   a card for each kind with the limits written into it, as pebbles
-     lanes    the same items grouped by the thing they belong to (a subject), one pill each, lighting what that subject holds
-   Reading it top to bottom is the point: root first, then the authorities it signed, then what they signed. A stand-alone authority (no parent) sits on the second row under a dotted ghost
-   "no parent". Nothing about a real network is in this file: every name comes from the data.
-   API:
-     Kit.trustTree.mount(box, opts) -> handle
-       opts   { authorities, leaves, kinds, groups, holders, enum: "life", perRow: 7, gap: 44, compact: "auto" | true | false, compactBelow: 640, sections, titles, captions, legend: true,
-                label, host, onOpen(id, opener) }
-                authorities  [{id, name, parent, sub, glyph, state, life, left, standalone, ghost, r, x, y, facts, chips, caps}]
-                               parent is an authority id or null; the first parentless authority is the root, later ones are stand-alone. state is a value of the enum (default "life"); life
-                               (0 to 1) is the ring; left is the text for the time left ("5 years left"); glyph a Kit.vocab glyph for the medallion; r, x, y override the layout
-                leaves       [{id, authority, kind, label, state, life, left, short, subject, group, facts, chips, caps}]   short: true draws a dashed disc with no ring (ends by design)
-                kinds        {key: {label, short, plural, mark: "dot" | "ring" | "square" | "diamond", authority, limits: [text], glyph}}   mark is the kind's shape on the leaf; authority is the id
-                               that signs this kind (for the passes); the order of keys is the drawing order
-                groups       [{id, label, sub, glyph}]   lanes; a leaf names its group and its subject (the pill's text)
-                holders      [{id, label, serial, slots: [{authority, slot}]}], holdersNote
-                sections     which parts to draw, default ["holders","tree","passes","limits","lanes"] (a part with no data is left out)
-                titles       {holders: {title, lede}, tree: …, limits: …, lanes: …}
-                captions     {idle, authority(a), leaf(l, chain), kind(k, n), subject(name, n), cap(c)} each returns a sentence; defaults narrate the chain
-                onOpen       called with the id and the element that opened it (a medallion, a slot, a list button); the host opens its drawer (kit.drawer) with handle.detailEl(id)
-       handle   { light(spec), clear(), pin(id|null), focus(id), chainOf(id) -> [id], chainEl(id) -> Element, detailEl(id, {onAction}) -> Element, update(patch), destroy() }
-                light({id} | {ids:[…]} | {kind} | {subject: [leaf ids], label} | {cap: key}) lights without opening; clear() removes it; pin(id) holds a chain lit (pin(null) when the host's
-                drawer closes); focus(id) moves keyboard focus to a medallion
-     Kit.trustTree.chainEl(id) -> Element   the chain breadcrumb of the last mounted tree (see handle.chainEl)
-       The chain: one row for each step (root last), each a button, joined by a gold hop; the first is marked "this one".
-     detailEl(id) builds the detail for a drawer: head, state pill and time left, the chain, the facts as a list (each fact [label, value, tag]; tag read | inferred | design draws a .kit-mark
-       so what was read and what was worked out stay apart), and a button to light everything the authority signs.
-   Layout rule: the tree is laid out from the data (override with x, y, r). Fans of perRow leaves, gap apart, rows 60 apart, grouped by kind; rows grow the viewBox. Between a parent and a
-   child: a seam that leaves the parent downward and enters the child from above. The tree needs about 760px; narrower, it scrolls inside its own box, or (compact) shows the nested list.
-   Needs from the board:
-     requires viz.seal (the "life" enum), kit.vocab, kit.drawer (the host's detail drawer; optional at run time), kit.callout (the .kit-mark provenance tags), kit.glaze-surfaces (.kit-ava .kit-row .kit-chip),
-              theme.glaze-depth
-     css     kit/viz/trust-tree.css, kit/vocab.css, kit/glaze-surfaces.css, kit/callout.css; custom properties --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-display --f-mono,
-             optional --seam --seam-0..4 --pebble-hi --rim --pool --glz-r-l
-     globals Kit.vocab
-   db collections: none.
-   Lifted from: a network-ops console's certificate trust page (the medallion family tree with gold seams, the lit chain, the roving-focus keyboard, the phone stack, the hardware-key holders, the
-   "who may sign what" passes, the subject lanes, the chain breadcrumb with hops, the limits pebbles and the detail content). Changed: authorities, kinds, groups, holders and every sentence are
-   config; the layout is computed; the detail drawer is the host's (onOpen and detailEl); states are the vocab's; the dim is kept off the labels so text stays readable while lit. */
+/**
+ * Trust tree
+ * A family tree for anything that signs something else: a root, the authorities it signed, and what they signed. Each authority is a medallion (a lit disc, a gold rim, a ring that is the life it has left); what it signed hangs beneath in fans of seven, grouped by kind, each kind a shape (dot, ring, square, diamond) so colour stays for state. Hover, focus or pick a medallion and its chain up to the root lights: the seams on the chain thicken and glow, everything else dims, and a caption narrates it in a sentence. The keyboard model is a roving tab stop (arrows move, Up goes to the parent, Down to the first child, Enter opens). A stand-alone authority with no parent sits on the second row under a dotted ghost. Around the tree, each part optional and driven by the data: the hardware keys that hold the authorities (slot buttons light their authority), the 'who may sign what' buttons, a card of limits for each kind, and subject lanes that light everything one thing holds. handle.chainEl(id) is the breadcrumb of hops from a medallion to the root; handle.detailEl(id) is the content for the host's drawer (facts tagged read, inferred or by design keep what was read apart from what was worked out). Under 640px the drawing is replaced by a nested list. Every name is data: the sample is a made-up company.
+ *
+ * API:
+ *   Kit.trustTree.mount(box, opts) -> handle
+ *     opts   { authorities, leaves, kinds, groups, holders, enum: "life", perRow: 7, gap: 44, compact: "auto" | true | false, compactBelow: 640, sections, titles, captions, legend: true,
+ *              label, host, onOpen(id, opener) }
+ *              authorities  [{id, name, parent, sub, glyph, state, life, left, standalone, ghost, r, x, y, facts, chips, caps}]
+ *                             parent is an authority id or null; the first parentless authority is the root, later ones are stand-alone. state is a value of the enum (default "life"); life
+ *                             (0 to 1) is the ring; left is the text for the time left ("5 years left"); glyph a Kit.vocab glyph for the medallion; r, x, y override the layout
+ *              leaves       [{id, authority, kind, label, state, life, left, short, subject, group, facts, chips, caps}]   short: true draws a dashed disc with no ring (ends by design)
+ *              kinds        {key: {label, short, plural, mark: "dot" | "ring" | "square" | "diamond", authority, limits: [text], glyph}}   mark is the kind's shape on the leaf; authority is the id
+ *                             that signs this kind (for the passes); the order of keys is the drawing order
+ *              groups       [{id, label, sub, glyph}]   lanes; a leaf names its group and its subject (the pill's text)
+ *              holders      [{id, label, serial, slots: [{authority, slot}]}], holdersNote
+ *              sections     which parts to draw, default ["holders","tree","passes","limits","lanes"] (a part with no data is left out)
+ *              titles       {holders: {title, lede}, tree: …, limits: …, lanes: …}
+ *              captions     {idle, authority(a), leaf(l, chain), kind(k, n), subject(name, n), cap(c)} each returns a sentence; defaults narrate the chain
+ *              onOpen       called with the id and the element that opened it (a medallion, a slot, a list button); the host opens its drawer (kit.drawer) with handle.detailEl(id)
+ *     handle   { light(spec), clear(), pin(id|null), focus(id), chainOf(id) -> [id], chainEl(id) -> Element, detailEl(id, {onAction}) -> Element, update(patch), destroy() }
+ *              light({id} | {ids:[…]} | {kind} | {subject: [leaf ids], label} | {cap: key}) lights without opening; clear() removes it; pin(id) holds a chain lit (pin(null) when the host's
+ *              drawer closes); focus(id) moves keyboard focus to a medallion
+ *   Kit.trustTree.chainEl(id) -> Element   the chain breadcrumb of the last mounted tree (see handle.chainEl)
+ *     The chain: one row for each step (root last), each a button, joined by a gold hop; the first is marked "this one".
+ *   detailEl(id) builds the detail for a drawer: head, state pill and time left, the chain, the facts as a list (each fact [label, value, tag]; tag read | inferred | design draws a .kit-mark
+ *     so what was read and what was worked out stay apart), and a button to light everything the authority signs.
+ * Layout rule: the tree is laid out from the data (override with x, y, r). Fans of perRow leaves, gap apart, rows 60 apart, grouped by kind; rows grow the viewBox. Between a parent and a
+ * child: a seam that leaves the parent downward and enters the child from above. The tree needs about 760px; narrower, it scrolls inside its own box, or (compact) shows the nested list.
+ *
+ * Also load kit/vocab.css, kit/glaze-surfaces.css and kit/callout.css.
+ * Also needs kit.drawer (the host's detail drawer; optional at run time).
+ *
+ * @id        viz.trust-tree
+ * @group     Visualizations
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A signing hierarchy drawn as porcelain medallions on gold seams: pick or hover one and the chain up to the root lights; arrow keys walk it; phones get a nested list.
+ * @tags      trust, tree, hierarchy, certificate, authority, signing, chain, medallion, seam, keyboard, porcelain
+ * @requires  viz.seal, kit.vocab, kit.callout, kit.glaze-surfaces, theme.glaze-depth
+ * @provides  Kit.trustTree.mount, Kit.trustTree.chainEl, handle.light, handle.clear, handle.pin, handle.focus, handle.chainOf, handle.chainEl, handle.detailEl
+ * @config    Kit.trustTree.mount(box, {authorities, leaves, kinds, groups, holders, captions, onOpen}) | authorities [{id, name, parent, sub, glyph, state, life, left, standalone, ghost, caps, facts}], leaves [{id, authority, kind, label, state, life, left, short, subject, group, facts}], kinds {key: {label, short, plural, mark, authority, limits}}; layout is computed (override with x, y, r)
+ * @config    onOpen(id, opener) | the host opens its detail (kit.drawer) with handle.detailEl(id); handle.pin(null) when it closes
+ * @config    states | values of the Kit.vocab enum 'life' (viz.seal defines it): ok, soon, urgent, expired, revoked, ended, replaced, unknown
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --accent-ink --f-display --f-mono --seam? --seam-0? --seam-1? --seam-2? --seam-3? --seam-4? --pebble-hi? --rim? --pool?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

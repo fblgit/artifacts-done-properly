@@ -1,33 +1,46 @@
 /* part:page.script.kit.doc-shell */
-/* Kit component: document shell with sticky contents (Kit.docShell)    kit version 0.1.0
-   What it is: a sticky contents rail beside a reading column (65ch), whose link for the section in view is marked; the rail turns into a "Contents" menu
-   at the top of the column when the shell is narrower than 640px (marginalia move above their section under 920px) (a container query, so it also holds inside a pane). Plain DOM, no framework.
-   Markup:
-     <div class="kit-doc">
-       <nav class="kit-doc-toc" aria-label="Contents"></nav>        (filled from the sections when empty)
-       <div class="kit-doc-main">
-         <section class="kit-doc-sec" id="install" data-group="Start">  data-group opens a group in the contents; data-toc overrides the link text
-           <aside class="kit-doc-note">marginalia (optional)</aside>  a narrow mono column beside the body; above it when narrow
-           <div class="kit-doc-body"><h2>Install</h2>…</div>
-         </section> …
-       </div>
-     </div>
-   API (small and stable):
-     Kit.docShell.mount(root, {sections, heading, label, hash, scroller, offset, onChange}) -> {current(), go(id), refresh(), destroy()}
-       sections  selector for the sections inside root (default "section[id]")
-       heading   selector for a section's title (default "h2, h3")
-       hash      true (default): a contents click writes #id with history.replaceState, and #id on load opens there; false leaves location alone
-       scroller  the scrolling element when it is not the page (a pane, a framed preview)
-       offset    px under the top (after --kit-topbar-h) where a section counts as reached (default 24)
-       onChange  (id) when the section in view changes
-   The current link has aria-current="location". The last section counts as current once the column is scrolled to its end. Clicks move focus to the section.
-   Needs from the board:
-     css     kit/layout/doc-shell.css; custom properties --bg --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display, optional --seam
-     state   --kit-topbar-h (written by Kit.topbar) when a sticky bar sits above
-     globals none (ResizeObserver when present)
-   db collections: none.
-   Lifted from: five documents' contents rails (the scroll-spy sidebar, the rail beside a reading column, the left table of contents, a runbook's section rail
-   with a scroll-position spy, and a section grid with a mono marginalia rail). */
+/**
+ * Document shell with sticky contents
+ * Kit.docShell.mount(root, {sections, heading, hash, scroller, offset, onChange}) fills the rail from the sections (data-group opens a group, data-toc renames a link), marks the current link with aria-current, counts the last section once the column is at its end, and moves focus to a section on click. The rail turns into a menu by the shell's own width, so it also holds inside a pane. With hash on, a click writes #id without a scroll jump or a history entry. It reads --kit-topbar-h, so it sits under the sticky top bar.
+ *
+ * Markup:
+ *   <div class="kit-doc">
+ *     <nav class="kit-doc-toc" aria-label="Contents"></nav>        (filled from the sections when empty)
+ *     <div class="kit-doc-main">
+ *       <section class="kit-doc-sec" id="install" data-group="Start">  data-group opens a group in the contents; data-toc overrides the link text
+ *         <aside class="kit-doc-note">marginalia (optional)</aside>  a narrow mono column beside the body; above it when narrow
+ *         <div class="kit-doc-body"><h2>Install</h2>…</div>
+ *       </section> …
+ *     </div>
+ *   </div>
+ * API (small and stable):
+ *   Kit.docShell.mount(root, {sections, heading, label, hash, scroller, offset, onChange}) -> {current(), go(id), refresh(), destroy()}
+ *     sections  selector for the sections inside root (default "section[id]")
+ *     heading   selector for a section's title (default "h2, h3")
+ *     hash      true (default): a contents click writes #id with history.replaceState, and #id on load opens there; false leaves location alone
+ *     scroller  the scrolling element when it is not the page (a pane, a framed preview)
+ *     offset    px under the top (after --kit-topbar-h) where a section counts as reached (default 24)
+ *     onChange  (id) when the section in view changes
+ * The current link has aria-current="location". The last section counts as current once the column is scrolled to its end. Clicks move focus to the section.
+ *
+ * ResizeObserver is used when present. When a sticky bar sits above, --kit-topbar-h (written by Kit.topbar) is read.
+ *
+ * @id        layout.doc-shell
+ * @group     Layouts
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A sticky contents rail that marks the section in view, beside a 65ch reading column with optional marginalia; a Contents menu under 760px.
+ * @tags      layout, document, toc, contents, scroll spy, rail, sidebar, reading column, marginalia, sticky, phone
+ * @requires  none
+ * @provides  Kit.docShell.mount
+ * @config    Kit.docShell.mount(root, opts) | sections (selector), heading, label, hash (default true), scroller, offset (px), onChange(id)
+ * @config    markup | .kit-doc > nav.kit-doc-toc + .kit-doc-main > section.kit-doc-sec[id] (> aside.kit-doc-note + .kit-doc-body)
+ * @config    --kit-topbar-h | written by Kit.topbar when a sticky bar sits above
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --f-display
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

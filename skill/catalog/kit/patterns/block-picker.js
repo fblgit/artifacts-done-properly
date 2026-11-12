@@ -1,23 +1,39 @@
 /* part:page.script.kit.block-picker */
-/* Kit pattern: block picker (Kit.blockPicker)    kit version 0.1.0
-   What it is: the way a person points at one block of the page before saying what they want about it. Opening it dims the page around one [data-part] block at a time, names it on a
-   tag beside it, and puts a small bar at the bottom of the screen: the block's name and place (block 3 of 9), Previous, Next, Pick this block and Cancel. Hover moves the lens; a click
-   picks the block under the pointer (on a touch screen the first tap moves the lens and Pick this block confirms). From the keyboard: arrows move, Home and End jump, Enter picks, Esc
-   leaves; focus sits in the bar and returns where it was. Each move is announced. The pick is {id, label, hash, quote, el}: the part id (with :key for a repeated item), its title,
-   its content hash when the page knows it, and its text, whitespace collapsed and cut at quoteMax characters.
-   Kit.assist's engine.pick() opens this when it is loaded and binds the shortcut itself; bind() is for a page without the engine (do not use both, or the key fires twice).
-   API:
-     Kit.blockPicker.open(opts) -> Promise<{id, label, hash, quote, el} | null>   null when the person leaves; a second open() while one is open returns the same promise
-       titles     {partId: title} (ADP.page's titles)          hashOf(el) -> hash ('' when unknown; default el.dataset.hash)
-       root       where to look for blocks (default document)  skip  selector of blocks never offered (default "[data-uncommentable], [data-assist-ui]")
-       quoteMax   characters of quote (default 600)            start  element or part id to open on (default: the block holding focus, else the first one on screen)
-       words      {title, of, prev, next, pick, cancel, none, keys}   the bar's words
-     Kit.blockPicker.bind({shortcut: "Mod+Shift+K", onPick(pick), open: opts}) -> {unbind()}   a global key that opens the picker (ignored while typing in a field)
-     Kit.blockPicker.isOpen() -> bool;   Kit.blockPicker.close() leaves with null
-   Needs from the board:
-     css     kit/patterns/block-picker.css; custom properties --panel --ink --ink-2 --rule --accent --accent-ink --f-ui --f-mono, optional --seam --shadow
-   db collections: none.
-   Lifted from: the runtime's comment mode (crosshair over [data-part], titles from the page, the part:key anchor); a drafting board asked for a block quote and a shortcut it never had. */
+/**
+ * Block picker
+ * Kit.blockPicker.open({titles, hashOf, quoteMax, root}) dims the page around one [data-part] block at a time with a ring and a tag that names it (the page's title for the part, else its heading, else its id; a repeated item adds its key), and puts a small bar at the bottom of the screen with the name, its place (3 of 9), Pick this block, Previous, Next and Cancel. Hover moves the ring and a click picks; on a touch screen the first tap moves the ring and Pick this block confirms. From the keyboard the arrows move, Home and End jump, Enter picks and Esc leaves; focus stays in the bar while it is open and goes back where it was after. Each move is announced. The promise resolves {id, label, hash, quote, el} (the quote is the block's text, whitespace collapsed, at most 600 characters) or null. Blocks inside [data-uncommentable] or [data-assist-ui] are never offered, so the panel cannot pick itself. The assist engine's pick() opens it when it is loaded and binds the shortcut itself; on a page without the engine, bind({shortcut: 'Mod+Shift+K', onPick}) adds the key (ignored while typing). At 390 px the bar spans the screen above the safe area and its buttons go full width. It reads nothing and writes nothing.
+ *
+ * The way a person points at one block of the page before saying what they want about it. Opening it dims the page around one [data-part] block at a time, names it on a
+ * tag beside it, and puts a small bar at the bottom of the screen: the block's name and place (block 3 of 9), Previous, Next, Pick this block and Cancel. Hover moves the lens; a click
+ * picks the block under the pointer (on a touch screen the first tap moves the lens and Pick this block confirms). From the keyboard: arrows move, Home and End jump, Enter picks, Esc
+ * leaves; focus sits in the bar and returns where it was. Each move is announced. The pick is {id, label, hash, quote, el}: the part id (with :key for a repeated item), its title,
+ * its content hash when the page knows it, and its text, whitespace collapsed and cut at quoteMax characters.
+ * Kit.assist's engine.pick() opens this when it is loaded and binds the shortcut itself; bind() is for a page without the engine (do not use both, or the key fires twice).
+ *
+ * API:
+ *   Kit.blockPicker.open(opts) -> Promise<{id, label, hash, quote, el} | null>   null when the person leaves; a second open() while one is open returns the same promise
+ *     titles     {partId: title} (ADP.page's titles)          hashOf(el) -> hash ('' when unknown; default el.dataset.hash)
+ *     root       where to look for blocks (default document)  skip  selector of blocks never offered (default "[data-uncommentable], [data-assist-ui]")
+ *     quoteMax   characters of quote (default 600)            start  element or part id to open on (default: the block holding focus, else the first one on screen)
+ *     words      {title, of, prev, next, pick, cancel, none, keys}   the bar's words
+ *   Kit.blockPicker.bind({shortcut: "Mod+Shift+K", onPick(pick), open: opts}) -> {unbind()}   a global key that opens the picker (ignored while typing in a field)
+ *   Kit.blockPicker.isOpen() -> bool;   Kit.blockPicker.close() leaves with null
+ *
+ * @id        pattern.block-picker
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-13
+ * @summary   Point at one block of the page before saying what you want about it: the page dims around one [data-part] block at a time, a bar names it, and Enter, a click or Pick this block returns its id, title, hash and text.
+ * @tags      block, picker, select, quote, shortcut, keyboard, assist, claude, data-part, scope
+ * @requires  kit.tokens, kit.dom
+ * @provides  Kit.blockPicker.open, Kit.blockPicker.bind, Kit.blockPicker.isOpen, Kit.blockPicker.close, Kit.blockPicker.keyLabel, Kit.blockPicker.matches
+ * @config    Kit.blockPicker.open(opts) | titles {part id: title}, hashOf(el) -> hash, root (default document), skip (selector never offered), quoteMax (default 600), start (element or part id), words {title, of, prev, next, pick, cancel, none, keys}; resolves {id, label, hash, quote, el} or null
+ * @config    Kit.blockPicker.bind(opts) | shortcut (default Mod+Shift+K), onPick(pick), open (the options for open); returns {unbind}. Not on a page that runs the assist engine, which binds the key itself
+ * @tokens    --panel --ink --ink-2 --rule --accent --accent-ink --f-ui --f-mono --seam? --shadow?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

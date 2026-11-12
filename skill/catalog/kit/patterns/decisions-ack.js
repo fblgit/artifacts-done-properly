@@ -1,23 +1,39 @@
 /* part:page.script.kit.patterns.decisions-ack */
-/* Kit pattern: decision cards with an acknowledgement (Kit.decisionsAck)    kit version 0.1.0    EXTENDS pattern.decisions (decisions.js and decisions.css stay as they are; this is a new file beside them)
-   What it is: what a decision card shows after it is answered. The answer, who answered and when; the prompt line that went to the agent; and an acknowledgement block that says who read the answer,
-   when, and what they said back. The block has three looks: "stamp" (a rubber stamp: a ruled box with the word Read and the reader), "line" (a terminal line: reader> ACK, the time, the text) and "note"
-   (a sticky note; when the agent asks back it says "asks" and has a dashed edge). The look changes the paper, never the facts: reader, time and words are text in every look.
-   Plain DOM; every text is set with textContent. Times are written in UTC with a Z so the card reads the same for every viewer.
-   API:
-     Kit.decisionsAck.render(box, {cards, look, headingLevel, words, timeZone}) -> {setLook(look), update(cards), destroy()}
-       cards   [{id, question, why, answer, answeredBy, answeredAt, prompt, ack}]   ack: {by, at, text, asks} | null (no block until the agent has read it)
-                 answer  the label of the answer given (a string)        prompt  the line sent to the agent, shown as "Sent to the agent"
-                 ack.asks  true when the agent asks back instead of confirming: the note says "asks", the stamp says "Question", the line says ASK
-       look    "stamp" (default) | "line" | "note"        words  texts that replace the defaults       timeZone  default "UTC"
-     Kit.decisionsAck.block(ack, {look, words, timeZone}) -> Element    only the acknowledgement block, to append to a card Kit.decisions already drew
-     Kit.decisionsAck.attach(root, acks, {look, ...})    appends a block to each .kit-d[data-d="<id>"] under root for which acks[id] exists; returns {detach()}
-   Needs from the board:
-     css     kit/patterns/decisions-ack.css (kit/patterns/decisions.css when you attach to its cards); custom properties --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --warn --f-ui --f-mono --f-display, optional --seam
-     globals none
-   db collections: none.
-   Lifted from: an earlier board's acknowledgement block in three skins (a rubber stamp, a terminal ACK line, a sticky note that asks back) and a component family's answered stamp (what the answer was, who read it,
-   when) and request card (the prompt line). Changed: the stamp and the note are tilted by one degree at most, nothing moves, and the look is an option you can switch at run time. */
+/**
+ * Decision cards with an acknowledgement
+ * Kit.decisionsAck.render(box, {cards, look}) draws each decision with its answer, who answered and when (UTC with a Z), the line that was sent to the agent, and an acknowledgement block: who read it, when, and what they said. Three looks share the facts: stamp (a ruled box tilted one degree with the word Read), line (a terminal line, reader> ACK, in mono) and note (a sticky note with a tape strip; when the agent asks back it says "asks back" and the edge is dashed). setLook switches at run time. Kit.decisionsAck.block builds only the block, and attach adds it to the cards Kit.decisions already drew. pattern.decisions is unchanged.
+ *
+ * What a decision card shows after it is answered. The answer, who answered and when; the prompt line that went to the agent; and an acknowledgement block that says who read the answer,
+ * when, and what they said back. The block has three looks: "stamp" (a rubber stamp: a ruled box with the word Read and the reader), "line" (a terminal line: reader> ACK, the time, the text) and "note"
+ * (a sticky note; when the agent asks back it says "asks" and has a dashed edge). The look changes the paper, never the facts: reader, time and words are text in every look.
+ * Plain DOM; every text is set with textContent. Times are written in UTC with a Z so the card reads the same for every viewer.
+ *
+ * API:
+ *   Kit.decisionsAck.render(box, {cards, look, headingLevel, words, timeZone}) -> {setLook(look), update(cards), destroy()}
+ *     cards   [{id, question, why, answer, answeredBy, answeredAt, prompt, ack}]   ack: {by, at, text, asks} | null (no block until the agent has read it)
+ *               answer  the label of the answer given (a string)        prompt  the line sent to the agent, shown as "Sent to the agent"
+ *               ack.asks  true when the agent asks back instead of confirming: the note says "asks", the stamp says "Question", the line says ASK
+ *     look    "stamp" (default) | "line" | "note"        words  texts that replace the defaults       timeZone  default "UTC"
+ *   Kit.decisionsAck.block(ack, {look, words, timeZone}) -> Element    only the acknowledgement block, to append to a card Kit.decisions already drew
+ *   Kit.decisionsAck.attach(root, acks, {look, ...})    appends a block to each .kit-d[data-d="<id>"] under root for which acks[id] exists; returns {detach()}
+ *
+ * CSS classes: .kit-da
+ *
+ * @id        pattern.decisions-ack
+ * @group     Patterns
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   An upgrade of pattern.decisions: what an answered card shows, the answer and who gave it, the prompt line, and an acknowledgement as a rubber stamp, a terminal line or a sticky note that can ask back.
+ * @tags      decision, acknowledgement, ack, stamp, sticky note, terminal, answered, read receipt, prompt
+ * @requires  kit.tokens
+ * @provides  Kit.decisionsAck.render, Kit.decisionsAck.block, Kit.decisionsAck.attach
+ * @config    Kit.decisionsAck.render(box, opts) | cards [{id, question, why, answer, answeredBy, answeredAt, prompt, ack: {by, at, text, asks}}], look stamp | line | note, headingLevel, words, timeZone; returns {setLook, update, destroy}
+ * @config    Kit.decisionsAck.attach(root, acks, opts) | adds a block to each .kit-d[data-d] card of Kit.decisions; returns {detach()}
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --warn --ok? --seam?
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };

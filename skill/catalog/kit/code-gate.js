@@ -1,22 +1,34 @@
 /* part:page.script.kit.code-gate */
-/* Kit component: rotating code card (Kit.codeGate)    kit version 0.1.0
-   What it is: a card that shows a short-lived code in large type with a ring that drains until the code changes, and the seconds left in words.
-   Use it where a person reads a one-time code aloud or types it into another place (an activation step, a join code, a lease that renews). The code
-   comes from a function the board gives it, once per period, so a real board asks its own service; the default is a stand-in that anyone reading this
-   file can compute, which makes it a demonstration of the card and never an authenticator. Plain DOM, no framework.
-   API (small and stable):
-     Kit.codeGate.mount(el, opts) -> {refresh(), destroy()}
-       period   seconds a code lives, aligned to the clock (default 30);  digits  length of the stand-in code (default 6);  group  digits per group when shown (default 3)
-       code(step) -> string | Promise<string>    the code for that period number (floor(unix seconds / period)); default Kit.codeGate.demoCode
-       label    the line above the code;  note  the line below it;  now()  clock in ms (default Date.now), for tests
-       onRotate(code, step)   called when a new code is shown
-       words    texts that replace the defaults (keys: label, note, left, loading, failed)
-     Kit.codeGate.demoCode(step, digits) -> string   the stand-in (FNV hash of a fixed phrase and the step)
-   Needs from the board:
-     css     kit/code-gate.css; custom properties --ink --panel --rule --f-ui --f-mono; optional --seam
-     caps    none for the stand-in; a real code function usually calls the board's own service (an ask-Claude or server call is the board's, not this file's)
-   db collections: none.
-   Lifted from: a security proposal's activation-code card (six digits, a 30 second ring, "s left"). */
+/**
+ * Rotating code card
+ * Kit.codeGate.mount(el, {period, code, label, note}) shows a code that changes every period (aligned to the clock), with a ring that drains and the seconds left written out. Use it where a person reads a one-time code aloud or types it in elsewhere. The code comes from code(step), once per period, and may return a promise, so a real board asks its own service. The default generator is a hash of the period number that anyone reading the file can compute: it shows the card and is never an authenticator, and the preview says so. The ring jumps without a transition when the viewer prefers reduced motion, and the seconds are always in words.
+ *
+ * API (small and stable):
+ *   Kit.codeGate.mount(el, opts) -> {refresh(), destroy()}
+ *     period   seconds a code lives, aligned to the clock (default 30);  digits  length of the stand-in code (default 6);  group  digits per group when shown (default 3)
+ *     code(step) -> string | Promise<string>    the code for that period number (floor(unix seconds / period)); default Kit.codeGate.demoCode
+ *     label    the line above the code;  note  the line below it;  now()  clock in ms (default Date.now), for tests
+ *     onRotate(code, step)   called when a new code is shown
+ *     words    texts that replace the defaults (keys: label, note, left, loading, failed)
+ *   Kit.codeGate.demoCode(step, digits) -> string   the stand-in (FNV hash of a fixed phrase and the step)
+ *
+ * Optional custom properties: --seam.
+ *
+ * @id        kit.code-gate
+ * @group     Board kit
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-10-24
+ * @summary   A short-lived code in large type with a draining ring and the seconds left in words. The default code is a demonstration, not a secret.
+ * @tags      code, one-time, countdown, ring, timer, activation, gate, rotating
+ * @requires  none
+ * @provides  Kit.codeGate.mount, Kit.codeGate.demoCode
+ * @config    Kit.codeGate.mount(el, {period, digits, group, code, label, note, onRotate}) | code(step) -> string | Promise<string>; step is floor(unix seconds / period); default is the stand-in Kit.codeGate.demoCode
+ * @config    words | label, note, left(n), loading, failed
+ * @tokens    --ink --panel --rule --f-ui --f-mono
+ * @globals   none
+ * @db        none
+ */
 (function () {
 'use strict';
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };
