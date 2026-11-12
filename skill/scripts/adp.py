@@ -469,7 +469,10 @@ def new(a):
             if p != 'template.json': files[real_name(p)] = os.path.join(src, p)
     for p in meta.get('drop', []): files.pop(real_name(p), None)
     files['adp.js'] = os.path.join(HERE, 'assets', 'adp.js')
-    sub = lambda t: t.replace('{{title}}', title).replace('{{slug}}', slug)
+    cat = opt(a, '--catalog')
+    cat = cat if cat and CAT_URL.match(cat) else saved_catalog()
+    cat = cat or 'none saved yet: python3 adp.py catalog <url> saves the owner\'s catalog url'
+    sub = lambda t: t.replace('{{title}}', title).replace('{{slug}}', slug).replace('{{catalog}}', cat)
     for p, src in sorted(files.items()):
         dst = os.path.join(d, sub(p)); os.makedirs(os.path.dirname(dst), exist_ok=True)
         if p == 'adp.js': shutil.copyfile(src, dst); continue
