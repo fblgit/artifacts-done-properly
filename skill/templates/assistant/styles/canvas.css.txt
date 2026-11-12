@@ -1,0 +1,27 @@
+/* part:page.style.canvas */
+/* The Canvas view. kit/canvas.css (taken from the catalog) needs tokens the page does not define: --canvas --dot --sticky-ink --f-hand, a --c-<colour> per pen colour and a .tint-<name> per sticky tint.
+   They are defined here and only under .canvas-view, derived from the page's tokens (--panel --sunk --ink); the pen palette has a light and a dark set, in the three theme blocks of page.css
+   (light on the view, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]). No catalog theme is taken: it would replace the page's tokens. */
+.canvas-view{
+  --c-ink:var(--ink);--c-blue:#2350c2;--c-red:#b8392a;--c-green:#1f7a52;--c-amber:#a86a00;--c-violet:#6a48c0;
+  --st-yellow:#f7e58b;--st-blue:#bcd9f5;--st-pink:#f6c4c8;--st-green:#bfe5c9;--sticky-ink:#22252b;
+  --canvas:color-mix(in srgb,var(--panel) 55%,var(--sunk));--dot:color-mix(in srgb,var(--ink) 18%,transparent);
+  --f-hand:"Segoe Print","Bradley Hand","Comic Sans MS",cursive}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .canvas-view{
+  --c-blue:#86a6ff;--c-red:#ff8c79;--c-green:#6fd3a0;--c-amber:#f0b54a;--c-violet:#b8a1ff;
+  --st-yellow:#e6d26a;--st-blue:#9fc5ec;--st-pink:#eaaab1;--st-green:#a1d8b2;--sticky-ink:#1d1f24}}
+:root[data-theme="dark"] .canvas-view{
+  --c-blue:#86a6ff;--c-red:#ff8c79;--c-green:#6fd3a0;--c-amber:#f0b54a;--c-violet:#b8a1ff;
+  --st-yellow:#e6d26a;--st-blue:#9fc5ec;--st-pink:#eaaab1;--st-green:#a1d8b2;--sticky-ink:#1d1f24}
+.canvas-view .tint-yellow{background:var(--st-yellow)}
+.canvas-view .tint-blue{background:var(--st-blue)}
+.canvas-view .tint-pink{background:var(--st-pink)}
+.canvas-view .tint-green{background:var(--st-green)}
+.canvas-view{display:grid;gap:16px}
+.canvas-view>*{min-width:0}
+.canvas-host{min-width:0}
+.canvas-host .cv-root{height:clamp(520px,80vh,820px);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--panel)}
+@media (min-width:761px){.canvas-view .toolrail{max-height:calc(100% - 24px);overflow-y:auto}}
+.canvas-note{margin:0}
+.canvas-modes{display:flex;gap:2px;margin-bottom:8px;overflow-x:auto}
+/* /part:page.style.canvas */
