@@ -1,0 +1,33 @@
+{
+ "note": "Invented things in an invented studio.",
+ "items": [
+  {
+   "id": "a1",
+   "tone": "warn",
+   "title": "The clay supplier contract ends in 21 days",
+   "sub": "Renewal terms are in the shared folder.",
+   "action": {
+    "label": "Open the contract"
+   }
+  },
+  {
+   "id": "a2",
+   "tone": "wait",
+   "title": "Kiln 2 is waiting for its key",
+   "sub": "The firing starts the moment the key is turned.",
+   "action": {
+    "label": "Open the job",
+    "primary": true
+   }
+  },
+  {
+   "id": "a3",
+   "tone": "bad",
+   "title": "The weekend class booking failed",
+   "sub": "The payment page did not answer twice.",
+   "action": {
+    "label": "Try again"
+   }
+  }
+ ]
+}

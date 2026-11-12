@@ -1,0 +1,27 @@
+/* part:page.style.kit.viz.sparkline */
+/* Kit css: sparkline, bar sparkline and waveform    kit version 0.1.0    pairs with kit/viz/sparkline.js
+   .kit-sp (root, .is-line .is-bars .is-wave)  .kit-sp-plot (the svg)  .kit-sp-cap (the words under it: range, last, windows)
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono --c-blue --c-amber --c-violet --c-green --c-red, optional --seam */
+.kit-sp { display: grid; gap: 4px; min-width: 0; font: 13px/1.4 var(--f-ui); color: var(--ink); --kc: var(--c-blue); }
+.kit-sp.is-amber { --kc: var(--c-amber); } .kit-sp.is-violet { --kc: var(--c-violet); } .kit-sp.is-green { --kc: var(--c-green); } .kit-sp.is-red { --kc: var(--c-red); }
+.kit-sp.is-ok { --kc: var(--ok); } .kit-sp.is-warn { --kc: var(--warn); } .kit-sp.is-danger { --kc: var(--danger); } .kit-sp.is-accent { --kc: var(--accent); }
+.kit-sp-plot { min-width: 0; }
+.kit-sp-plot svg { display: block; max-width: 100%; border-radius: 6px; }
+.kit-sp-plot svg:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-sp-cap { margin: 0; font: 12px var(--f-mono); color: var(--ink-2); }
+.kit-sp-none { color: var(--ink-2); font-size: 12.5px; }
+.kit-sp-line { fill: none; stroke: var(--kc); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.kit-sp-area { fill: color-mix(in srgb, var(--kc) 14%, transparent); stroke: none; }
+.kit-sp-end { fill: var(--kc); stroke: var(--panel); stroke-width: 2; }
+.kit-sp-ext { fill: var(--panel); stroke: var(--kc); stroke-width: 1.6; }
+.kit-sp-cur { fill: var(--panel); stroke: var(--ink); stroke-width: 2; pointer-events: none; }
+.kit-sp-base { stroke: var(--ink-2); stroke-width: 1; }
+.kit-sp-bar { fill: var(--kc); } .kit-sp-bar.dim { fill: color-mix(in srgb, var(--kc) 35%, var(--panel)); stroke: var(--kc); stroke-width: .75; } .kit-sp-bar:focus-visible { outline: none; stroke: var(--ink); stroke-width: 2; }
+.kit-sp-wv { fill: var(--ink-2); opacity: .55; } .kit-sp-wv.on { fill: var(--accent); opacity: 1; }
+.kit-sp-head { stroke: var(--ink); stroke-width: 2; }
+.kit-sp-hline { stroke: var(--kc); } .kit-sp-mline { stroke: var(--kc); stroke-width: 1.5; }
+.kit-sp-mark { cursor: default; } .kit-sp-mark:focus-visible { outline: none; stroke: var(--ink); stroke-width: 2; }
+.kit-sp-t-blue { --kc: var(--c-blue); } .kit-sp-t-amber { --kc: var(--c-amber); } .kit-sp-t-violet { --kc: var(--c-violet); } .kit-sp-t-green { --kc: var(--c-green); } .kit-sp-t-red { --kc: var(--c-red); }
+.kit-sp-t-ok { --kc: var(--ok); } .kit-sp-t-warn { --kc: var(--warn); } .kit-sp-t-danger { --kc: var(--danger); } .kit-sp-t-accent { --kc: var(--accent); }
+.is-wave svg[role="slider"] { cursor: ew-resize; touch-action: pan-y; }
+/* /part:page.style.kit.viz.sparkline */

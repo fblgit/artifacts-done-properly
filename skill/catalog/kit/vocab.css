@@ -1,0 +1,53 @@
+/* part:page.style.kit.vocab */
+/* Kit css: state vocabulary and marks    kit version 0.1.0    pairs with kit/vocab.js
+   [data-vo-tone="neutral|active|review|attention|info|danger|success|ended"] sets --vo-c (the tone colour) and --vo-soft (a tint of it over the panel) on any element; everything
+   inside can read them. Marks: .kit-vo-pill (word), .kit-vo-chip (short word), .kit-vo-orb (+ .kit-vo-sm|md|lg), .kit-vo-tile (frame or character over the short word),
+   .kit-vo-head (lane head, with .kit-vo-n count), .kit-vo-key (legend). Motion: [data-vo-motion="breathe|turn|nudge"], off under prefers-reduced-motion.
+   Text is always --ink on the tint (AA in any theme); the tone colour draws the glyph, the border and the bead.
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --ok --warn --danger --f-ui --f-mono, optional --info --wait --hi --lo --glyph-drop --on-state */
+[data-vo-tone] { --vo-c: var(--ink-3); --vo-soft: color-mix(in srgb, var(--vo-c) 13%, var(--panel)); }
+[data-vo-tone="neutral"] { --vo-c: var(--ink-2); }
+[data-vo-tone="active"] { --vo-c: var(--info, var(--accent)); }
+[data-vo-tone="review"] { --vo-c: var(--wait, var(--accent)); }
+[data-vo-tone="attention"] { --vo-c: var(--warn); }
+[data-vo-tone="info"] { --vo-c: var(--accent); }
+[data-vo-tone="danger"] { --vo-c: var(--danger); }
+[data-vo-tone="success"] { --vo-c: var(--ok); }
+[data-vo-tone="ended"] { --vo-c: var(--ink-3); }
+.kit-vo { display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; font-family: var(--f-ui); color: var(--ink); vertical-align: middle; }
+.kit-vo-g { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.kit-vo-w { min-width: 0; overflow-wrap: anywhere; }
+.kit-vo-pill { height: 26px; padding: 0 11px 0 9px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--vo-c) 45%, var(--panel)); background: var(--vo-soft); font: 600 13px/1 var(--f-ui); white-space: nowrap; }
+.kit-vo-pill .kit-vo-g, .kit-vo-chip .kit-vo-g { color: var(--vo-c); }
+[data-vo-tone="attention"].kit-vo-pill { border-width: 2px; font-weight: 700; }
+.kit-vo-chip { height: 22px; padding: 0 8px 0 6px; border-radius: 6px; background: var(--vo-soft); font: 600 11.5px/1 var(--f-mono); letter-spacing: .02em; white-space: nowrap; }
+.kit-vo-chip .kit-vo-g { width: 1.2em; height: 1.2em; }
+.kit-vo-orb { flex: none; display: inline-grid; place-items: center; border-radius: 50%; color: var(--on-state, var(--panel)); --vo-hi: var(--hi, #fff); --vo-lo: var(--lo, #000);
+  background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--vo-hi) 62%, var(--vo-c)) 0 12%, var(--vo-c) 46%, color-mix(in srgb, var(--vo-lo) 28%, var(--vo-c)) 100%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vo-c) 20%, transparent), 0 2px 5px color-mix(in srgb, var(--vo-c) 40%, transparent); }
+.kit-vo-orb .kit-vo-g { width: 62%; height: 62%; stroke-width: 2.6; filter: var(--glyph-drop, none); }
+.kit-vo-orb.kit-vo-sm { width: 18px; height: 18px; } .kit-vo-orb.kit-vo-md { width: 24px; height: 24px; } .kit-vo-orb.kit-vo-lg { width: 34px; height: 34px; }
+.kit-vo-orb[data-vo-tone="ended"], .kit-vo-orb[data-vo-tone="neutral"] { color: var(--panel); }
+.kit-vo-orb[data-vo-motion="turn"] { outline: 1.5px dashed var(--seam, var(--vo-c)); outline-offset: 3px; }
+.kit-vo-tile { flex-direction: column; gap: 3px; width: 56px; text-align: center; font: 600 11.5px/1.2 var(--f-ui); }
+.kit-vo-box { width: 34px; height: 34px; overflow: visible; }
+.kit-vo-fr { fill: var(--vo-soft); stroke: var(--vo-c); stroke-width: 1.5; stroke-linejoin: round; }
+.kit-vo-mk { fill: none; stroke: var(--vo-c); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.kit-vo-char { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; background: var(--vo-soft); border: 1px solid var(--vo-c); color: var(--ink); font: 700 16px/1 var(--f-mono); }
+.kit-vo-head { gap: 8px; font: 700 14px/1.2 var(--f-ui); }
+.kit-vo-n { margin-left: 2px; min-width: 22px; padding: 2px 7px; border-radius: 999px; background: var(--vo-soft); font: 600 12px/1.2 var(--f-mono); text-align: center; font-variant-numeric: tabular-nums; }
+.kit-vo-unknown { height: auto; min-height: 24px; padding: 3px 9px; border: 1px dashed var(--ink-2); border-radius: 8px; background: var(--sunk); font: 500 12px/1.2 var(--f-mono); flex-wrap: wrap; }
+.kit-vo-unknown .kit-vo-g { color: var(--ink-2); }
+.kit-vo-q { color: var(--ink-2); font-style: italic; }
+.kit-vo-key { display: flex; flex-wrap: wrap; gap: 10px 18px; min-width: 0; }
+.kit-vo-key-i { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.kit-vo-key-t { font: 13px/1.3 var(--f-ui); color: var(--ink-2); }
+@keyframes kit-vo-breathe { 50% { transform: scale(.88); box-shadow: 0 0 0 7px color-mix(in srgb, var(--vo-c) 0%, transparent), 0 2px 5px color-mix(in srgb, var(--vo-c) 40%, transparent); } }
+@keyframes kit-vo-turn { to { transform: rotate(360deg); } }
+@keyframes kit-vo-nudge { 50% { transform: translateX(2px); } }
+[data-vo-motion="breathe"].kit-vo-orb { animation: kit-vo-breathe 1.8s ease-in-out infinite; }
+[data-vo-motion="breathe"] > .kit-vo-g { animation: kit-vo-breathe 1.8s ease-in-out infinite; transform-origin: center; }
+[data-vo-motion="turn"] > .kit-vo-g { animation: kit-vo-turn 6s linear infinite; transform-origin: center; }
+[data-vo-motion="nudge"] > .kit-vo-g { animation: kit-vo-nudge 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .kit-vo, .kit-vo * { animation: none !important; } }
+/* /part:page.style.kit.vocab */

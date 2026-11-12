@@ -1,0 +1,96 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Artifact Kit Catalog v2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="adp:build" content="1">
+<!--
+READ THIS FIRST. It sits at the top so that a trimmed or cropped read of this file still shows it.
+
+ARTIFACT KIT CATALOG v2. Building blocks for claude.ai artifacts: components, themes, templates, guides.
+You TAKE an entry's files BY REFERENCE. You do not copy code by hand.
+This artifact's own URL is the catalog URL: https://claude.ai/artifact/LzGUCv8xCa8XLnqwF7Vemx
+
+WHERE TO START
+  1. Read catalog.json (id, name, summary, tags). Do not open every page.
+  2. Pick the entry and everything it requires (listed first, in load order).
+WHAT TO GET
+  Put a files map in the files of your artifact's Artifact publish, one reference per file:
+  {"kit/tabs.js": {"artifact": "<catalog url>", "path": "kit/tabs.js"}}
+  The server copies the file. You must be able to open this artifact.
+  Scripts, styles, data and images copy. HTML and XML pages do not: templates are .html.txt text,
+  copy the shell into your own index.html. The Take it tab of each entry prints the exact map.
+WHAT TO CHECK
+  Read each taken file back from your artifact: its sha256 equals the one under Files.
+  Required entries loaded first. The theme supplies the colour tokens, components carry no literal colour.
+  No horizontal scroll at 390 px. Do not edit a taken file in place: fix it here and take it again.
+HOW ADP WORKS (guide: entry guide.artifact-dataplane, file kit/guides/artifact-dataplane.md)
+  adp/2 layout = thin index.html + adp.js + content.js + parts/ + styles/. Every piece is a part with a
+  stable id, marked in the source and with data-part. Per-part hashes say what changed. Copy lives in
+  content docs, with content.js as the fallback. Comment anchors are part ids. Several agents edit through
+  read, hold, publish, record, with if_version pinned on every write. python3 -I adp.py check must say ok.
+THIS PAGE: entries load from catalog.json. The text of the how-to panel is content.js, key catalog.howto.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Familjen+Grotesk:wght@500;700&family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Kalam:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="styles/catalog.css">
+
+<!-- part:page.header -->
+<header class="top" data-part="page.header" data-comment-target>
+  <div class="wrap top-in">
+    <div class="brand">
+      <h1>Artifact Kit Catalog</h1>
+      <!-- part:catalog.lead --><p class="lead" data-part="catalog.lead" data-comment-target>Building blocks for claude.ai artifacts: components, themes, templates and guides. Preview one, then take its files into your artifact by reference.</p><!-- /part:catalog.lead -->
+    </div>
+    <div class="top-side">
+      <p class="top-meta" id="topMeta" aria-live="polite">Opening the catalog…</p>
+      <!-- part:page.changes -->
+      <details class="wc" id="wc" data-part="page.changes" data-comment-target hidden>
+        <summary><span>What changed</span><span class="wc-n" id="wcN"></span></summary>
+        <div class="wc-body">
+          <section><h3>Latest changes</h3><ol class="wc-list" id="wcChanges"></ol></section>
+          <section><h3>Owner decisions in force</h3><ul class="wc-list wc-dec" id="wcDecisions"></ul></section>
+        </div>
+      </details>
+      <!-- /part:page.changes -->
+    </div>
+  </div>
+</header>
+<!-- /part:page.header -->
+<!-- part:page.tabs --><nav class="tabs" aria-label="Kinds of entry" data-part="page.tabs" data-comment-target><div class="wrap tabs-in" id="tabs"></div></nav><!-- /part:page.tabs -->
+<main class="wrap" id="app"><div class="boot"><b>Artifact Kit Catalog</b><span>Loading the entries…</span></div></main>
+
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script src="adp.js"></script>
+<script src="content.js"></script>
+<script src="parts/previews.js"></script>
+<script src="parts/previews-kit.js"></script>
+<script src="parts/previews-b1.js"></script>
+<script src="parts/previews-b2.js"></script>
+<script src="parts/previews-b3.js"></script>
+<script src="parts/previews-b4.js"></script>
+<script src="parts/previews-b5.js"></script>
+<script src="parts/previews-b6.js"></script>
+<script src="parts/previews-b7.js"></script>
+<script src="parts/previews-b8.js"></script>
+<script src="parts/previews-b9.js"></script>
+<script src="parts/previews-b10.js"></script>
+<script src="parts/previews-b11.js"></script>
+<script src="parts/previews-b12.js"></script>
+<script src="parts/previews-b13.js"></script>
+<script src="parts/previews-b14.js"></script>
+<script src="parts/previews-b15.js"></script>
+<script src="parts/previews-b16.js"></script>
+<script src="parts/catalog.js"></script>
+
+</body></html>

@@ -1,0 +1,56 @@
+/* part:page.style.kit.canvas */
+/* Kit css: canvas    kit version 0.1.1    pairs with kit/canvas.js
+   Canvas manager bar, surface and its svg/html layers, text, sticky, label and ref elements, text editor, tool rail, swatches, selection bar, zoom, hint, and the empty-board .onboard screen.
+   Needs from the board: --canvas --dot --panel --rule --rule-2 --sunk --accent --accent-soft --accent-ink --ink --ink-2 --shadow --sticky-ink --f-ui --f-hand --f-mono --f-display;
+   the board also supplies .tint-<name> backgrounds for its sticky tints and --c-<name> for its pen colours (kit/canvas.js config).
+   Lifted from: Journey Whiteboard app.css (canvas). */
+.cv { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.cv-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px max(14px, env(safe-area-inset-right, 0px)) 8px max(14px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--rule); background: var(--panel); }
+.cv-bar .select { width: auto; max-width: 240px; padding: 4px 8px; }
+.surface { position: relative; overflow: hidden; background-color: var(--canvas); touch-action: none; user-select: none; -webkit-user-select: none; outline: none; }
+.surface.t-hand { cursor: grab; } .surface.panning { cursor: grabbing; }
+.surface.t-pen, .surface.t-marker, .surface.t-rect, .surface.t-ellipse, .surface.t-diamond, .surface.t-line, .surface.t-arrow { cursor: crosshair; }
+.surface.t-text { cursor: text; } .surface.t-sticky { cursor: copy; } .surface.t-eraser { cursor: cell; }
+.layer { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.layer.html { transform-origin: 0 0; inset: auto; left: 0; top: 0; width: 0; height: 0; }
+svg.layer { width: 100%; height: 100%; }
+.el { position: absolute; }
+.el-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.3; font-family: var(--f-ui); }
+.el-text.f-hand { font-family: var(--f-hand); }
+.el-text.f-mono { font-family: var(--f-mono); line-height: 1.5; }
+.el-text.f-display { font-family: var(--f-display); font-weight: 700; }
+.el-sticky { padding: 12px 14px; font: 400 17px/1.35 var(--f-hand); color: var(--sticky-ink); white-space: pre-wrap; overflow-wrap: anywhere; box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 8px 16px -8px rgba(0,0,0,.35); border-radius: 2px; }
+.el-label { display: grid; place-items: center; text-align: center; padding: 8px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.3; font-weight: 500; }
+.el-ref { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 9px 11px; display: grid; gap: 6px; box-shadow: 0 1px 0 var(--rule-2), 0 6px 14px -10px rgba(0,0,0,.4); }
+.el-ref .t { font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.el-ref .meta { display: flex; flex-wrap: wrap; gap: 4px; }
+.el-ref.k { box-shadow: inset 0 3px 0 var(--kc), 0 6px 14px -10px rgba(0,0,0,.4); }
+.el.erasing { opacity: .25; }
+.ed { position: absolute; pointer-events: auto; border: 2px solid var(--accent); border-radius: 4px; background: var(--panel); color: var(--ink); padding: 6px 8px; resize: none; outline: none; line-height: 1.3; z-index: 3; }
+.ed.on-sticky { color: var(--sticky-ink); font-family: var(--f-hand); }
+.toolrail { position: absolute; z-index: 4; left: max(12px, env(safe-area-inset-left, 0px)); top: 12px; display: grid; gap: 2px; background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 5px; box-shadow: var(--shadow); }
+.toolrail button { width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; display: grid; place-items: center; color: var(--ink-2); position: relative; }
+.toolrail button:hover { background: var(--sunk); color: var(--ink); }
+.toolrail button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.toolrail svg { width: 18px; height: 18px; }
+.toolrail hr { border: 0; border-top: 1px solid var(--rule-2); margin: 3px 4px; }
+.swatches { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 3px; }
+.sw { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--rule); padding: 0; }
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--accent); }
+@media (max-width: 760px) {
+  .toolrail { top: auto; bottom: max(12px, env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); grid-auto-flow: column; max-width: calc(100vw - 24px); overflow-x: auto; }
+  .toolrail hr { border-top: 0; border-left: 1px solid var(--rule-2); margin: 4px 3px; }
+  .swatches { grid-template-columns: repeat(6, 1fr); align-items: center; }
+}
+.selbar { position: absolute; z-index: 4; top: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 4px 6px; box-shadow: var(--shadow); max-width: calc(100% - 120px); overflow-x: auto; }
+.selbar .n { font: 500 12px var(--f-mono); color: var(--ink-2); padding: 0 6px; white-space: nowrap; }
+@media (max-width: 760px) { .selbar { left: 12px; right: 12px; transform: none; max-width: none; } }
+.zoom { position: absolute; z-index: 4; right: max(12px, env(safe-area-inset-right, 0px)); bottom: max(12px, env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; box-shadow: var(--shadow); }
+.zoom button { border: 0; background: transparent; height: 32px; min-width: 32px; padding: 0 8px; font: 500 12px var(--f-mono); color: var(--ink-2); border-radius: 8px; }
+.zoom button:hover { background: var(--sunk); }
+@media (max-width: 760px) { .zoom { bottom: 74px; } }
+.hint { position: absolute; z-index: 3; left: 50%; bottom: 16px; transform: translateX(-50%); font-size: 12px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--rule-2); border-radius: 8px; padding: 4px 10px; white-space: nowrap; pointer-events: none; }
+@media (max-width: 760px) { .hint { display: none; } }
+.onboard { height: 100%; display: grid; place-content: center; gap: 12px; padding: 24px; text-align: center; max-width: 520px; margin: 0 auto; }
+.onboard h1 { font-size: 26px; }
+/* /part:page.style.kit.canvas */

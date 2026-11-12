@@ -1,0 +1,133 @@
+{
+ "note": "Invented.",
+ "hero": {
+  "stamp": "Draft for review",
+  "title": "The spring firings ran inside plan",
+  "lede": "Twelve firings between March and May. Nine reached cone 6 on the first run; three needed a second firing for a glaze fault.",
+  "chips": [
+   {
+    "value": "12",
+    "label": "firings"
+   },
+   {
+    "value": "3",
+    "label": "re-fired"
+   },
+   {
+    "value": "0",
+    "label": "cracked shelves"
+   }
+  ],
+  "items": [
+   {
+    "value": 12,
+    "label": "Firings",
+    "count": true
+   },
+   {
+    "value": 9,
+    "label": "Reached cone 6 first time",
+    "count": true,
+    "hot": true
+   },
+   {
+    "value": 3,
+    "label": "Second firing needed",
+    "count": true
+   },
+   {
+    "value": 11.2,
+    "label": "Average firing time",
+    "unit": "hours"
+   }
+  ]
+ },
+ "grid": [
+  {
+   "value": 184,
+   "label": "Pots fired",
+   "count": true
+  },
+  {
+   "value": 171,
+   "label": "Passed inspection",
+   "count": true,
+   "hot": true
+  },
+  {
+   "value": 13,
+   "label": "Seconds",
+   "count": true
+  },
+  {
+   "value": 92.9,
+   "label": "Pass rate",
+   "unit": "%"
+  }
+ ],
+ "tiles": [
+  {
+   "label": "Kiln A",
+   "value": "Ready",
+   "note": "Cooled to 40 °C at 06:10",
+   "tone": "ok"
+  },
+  {
+   "label": "Kiln B",
+   "value": "Firing",
+   "note": "Ramp 3 of 5, 940 °C",
+   "tone": "info"
+  },
+  {
+   "label": "Vent fan",
+   "value": "Slow",
+   "note": "Airflow card barely lifts",
+   "tone": "warn"
+  },
+  {
+   "label": "Shelf stock",
+   "value": "Short",
+   "note": "2 of 8 shelves left",
+   "tone": "danger"
+  }
+ ],
+ "strip": [
+  {
+   "label": "Where we are",
+   "value": "Nine of twelve first time",
+   "note": "Three loads needed a second firing."
+  },
+  {
+   "label": "What went wrong",
+   "value": "One glaze, three times",
+   "note": "The celadon ran at the foot on every re-fire."
+  },
+  {
+   "label": "What next",
+   "value": "Test tiles first",
+   "note": "Fire a tile of every new glaze before it goes near a load."
+  }
+ ],
+ "facts": [
+  {
+   "label": "Longest firing",
+   "value": "13.5 hours",
+   "note": "Slow schedule, full load"
+  },
+  {
+   "label": "Shortest firing",
+   "value": "8.0 hours",
+   "note": "Fast bisque, half load"
+  },
+  {
+   "label": "Cones used",
+   "value": "36",
+   "note": "Three per firing"
+  },
+  {
+   "label": "Power",
+   "value": "412 kWh",
+   "note": "Metered, all firings"
+  }
+ ]
+}

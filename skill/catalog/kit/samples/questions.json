@@ -1,0 +1,35 @@
+{
+  "component": "questions",
+  "file": "kit/patterns/questions.js",
+  "about": "Four invented questions about a bakery's ordering page; the first two are already answered.",
+  "collection": "answers",
+  "questions": [
+    { "id": "confirm", "title": "How should an order be confirmed?", "why": "Customers ask whether the order went through. The answer decides what we build first.",
+      "facts": ["Most orders come in between 6 and 8 in the morning.", "Text messages cost a small amount per order."],
+      "options": [
+        { "id": "email", "label": "Email only", "detail": "Free, but some people never open it before pickup." },
+        { "id": "both", "label": "Email and a text", "detail": "The text arrives within a minute." },
+        { "id": "screen", "label": "On the screen only", "detail": "Nothing to send, and nothing to look back at." } ],
+      "recommended": "both", "reason": "The text is what people check at 7 am, and the cost is small next to a missed pickup." },
+    { "id": "slots", "title": "How long is a pickup window?", "why": "Shorter windows spread the queue but make the day's grid longer to fill.",
+      "facts": ["The counter handles about 12 pickups an hour."],
+      "options": [ { "id": "30", "label": "30 minutes", "detail": "Six slots over the busy morning." }, { "id": "15", "label": "15 minutes", "detail": "Twelve slots over the busy morning." } ],
+      "recommended": "15", "reason": "It matches the counter's real pace." },
+    { "id": "soldout", "title": "What does a sold-out loaf look like?", "why": "A hidden loaf leaves people wondering; a visible one invites a second choice.",
+      "facts": ["Rye and seeded sell out most Saturdays.", "A waiting list needs a way to tell people when more is baked."],
+      "options": [
+        { "id": "hide", "label": "Hide it" },
+        { "id": "show", "label": "Show it as sold out", "detail": "Greyed, with the next bake day." },
+        { "id": "wait", "label": "Offer a waiting list", "detail": "Asks for an email address." } ],
+      "recommended": "show", "reason": "It is the least work and keeps the menu honest.", "allowOther": true },
+    { "id": "editors", "title": "Who may change the weekly menu?", "why": "Edits go live at once, so a wrong price shows up for every customer.",
+      "options": [ { "id": "owner", "label": "The owner only" }, { "id": "staff", "label": "Any staff member", "detail": "With the owner told after each change." } ],
+      "recommended": "owner", "reason": "Two people have asked to help; they can ask the owner for now." }
+  ],
+  "answers": {
+    "confirm": { "q": "confirm", "choice": "both", "label": "Email and a text", "note": "", "agoMin": 180 },
+    "slots": { "q": "slots", "choice": "30", "label": "30 minutes", "note": "Start with 30 and look at the first month.", "agoMin": 95,
+      "claude": "Built with 30 minute windows; the length is one setting, so changing it later is a one-line edit.", "claudeAgoMin": 40,
+      "log": [ { "agoMin": 95, "by": "you", "what": "chose 30 minutes" }, { "agoMin": 40, "by": "claude", "what": "applied it to the order page" } ] }
+  }
+}

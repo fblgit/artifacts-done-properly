@@ -1,0 +1,47 @@
+/* part:page.style.kit.row-actions */
+/* Kit css: row with a main action and a menu, and quick-action pills    kit version 0.1.0    pairs with kit/patterns/row-actions.js
+   .kit-ra-rows > .kit-ra-row (bead, text, state chip and chips, .kit-ra-acts: the main button and .kit-ra-wrap with the kebab and its .kit-ra-menu). A menu opens downward, or upward with .kit-ra-up.
+   .kit-ra-host is a positioned card; .kit-ra-pills are round buttons at its top right that show on hover or focus inside the host, and always on touch screens and under 480px.
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-mono, optional --seam --shadow --glz-r-m, kit/glaze-surfaces.css, kit/vocab.css */
+.kit-ra { min-width: 0; font: 15px/1.5 var(--f-ui); color: var(--ink); }
+.kit-ra-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.kit-ra-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; min-width: 0; padding: 10px 12px; border-radius: var(--glz-r-m, 16px); background: var(--sunk); border: 1px solid var(--rule); box-shadow: inset 0 1px 0 var(--rim, transparent); }
+.kit-ra-lead { flex: none; display: inline-flex; }
+.kit-ra-tx { flex: 1 1 12rem; min-width: 0; display: grid; gap: 1px; }
+.kit-ra-t { font: 700 15px/1.3 var(--f-ui); overflow-wrap: anywhere; } .kit-ra-s { color: var(--ink-2); font-size: 13.5px; line-height: 1.4; overflow-wrap: anywhere; }
+.kit-ra-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+.kit-ra-chip { padding: 1px 9px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); font: 500 12.5px/1.6 var(--f-mono); color: var(--ink-2); }
+.kit-ra-acts { display: inline-flex; align-items: center; gap: 6px; flex: none; margin-left: auto; }
+.kit-ra-wrap, .kit-ra-more { position: relative; display: inline-flex; }
+.kit-ra-ico { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.kit-ra-menu { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 12rem; max-width: min(18rem, 80vw); display: grid; gap: 2px; padding: 6px; border-radius: 16px; background: var(--panel); border: 1px solid var(--rule-2);
+  box-shadow: inset 0 1px 0 var(--rim, transparent), var(--shadow, 0 14px 32px -12px color-mix(in srgb, var(--ink) 45%, transparent)); animation: kit-ra-in .14s ease-out both; }
+.kit-ra-menu.kit-ra-up { top: auto; bottom: calc(100% + 6px); }
+@keyframes kit-ra-in { from { opacity: 0; transform: translateY(-4px); } }
+.kit-ra-menu[hidden] { display: none; }
+.kit-ra-mi { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 38px; padding: 6px 12px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: 600 14.5px/1.3 var(--f-ui); text-align: left; cursor: pointer; }
+.kit-ra-mi:hover, .kit-ra-mi:focus { background: var(--sunk); outline: 0; }
+.kit-ra-mi:focus-visible { box-shadow: inset 0 0 0 2px var(--seam, var(--accent)); }
+.kit-ra-mi.kit-ra-danger { color: var(--danger-ink, var(--danger)); } .kit-ra-mi.kit-ra-danger:hover, .kit-ra-mi.kit-ra-danger:focus { background: var(--danger-soft, var(--sunk)); }
+
+/* quick-action pills */
+.kit-ra-host { position: relative; }
+.kit-ra-pills { position: absolute; z-index: 2; top: 12px; right: 12px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; max-width: calc(100% - 24px); opacity: 0; transform: translateY(-5px) scale(.97); pointer-events: none; transition: opacity .18s, transform .22s; }
+.kit-ra-host:hover > .kit-ra-pills, .kit-ra-host:focus-within > .kit-ra-pills, .kit-ra-pills:focus-within { opacity: 1; transform: none; pointer-events: auto; }
+.kit-ra-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink-2); cursor: pointer;
+  box-shadow: inset 0 1px 0 var(--rim, transparent), 0 2px 6px -2px color-mix(in srgb, var(--ink) 30%, transparent); font: 700 13.5px/1 var(--f-ui); }
+.kit-ra-pill b { max-width: 0; overflow: hidden; opacity: 0; white-space: nowrap; font-weight: inherit; transition: max-width .3s, opacity .2s, margin .3s; }
+.kit-ra-pill:hover, .kit-ra-pill:focus-visible { color: var(--ink); border-color: var(--seam, var(--accent)); }
+.kit-ra-pill:hover b, .kit-ra-pill:focus-visible b { max-width: 8rem; opacity: 1; margin: 0 4px 0 8px; }
+.kit-ra-pill:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-ra-pill.kit-ra-danger:hover, .kit-ra-pill.kit-ra-danger:focus-visible { color: var(--danger-ink, var(--danger)); border-color: var(--danger); }
+.kit-ra-pill.kit-ra-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.kit-ra-pills.kit-ra-inline { position: static; opacity: 1; transform: none; pointer-events: auto; justify-content: flex-start; max-width: none; }
+@media (hover: none) { .kit-ra-pills { opacity: 1; transform: none; pointer-events: auto; } .kit-ra-pill b { max-width: 8rem; opacity: 1; margin: 0 4px 0 8px; } }
+@media (max-width: 480px) {
+  .kit-ra-pills { position: static; opacity: 1; transform: none; pointer-events: auto; justify-content: flex-start; max-width: none; margin-top: 12px; }
+  .kit-ra-pill b { max-width: 8rem; opacity: 1; margin: 0 4px 0 8px; }
+  .kit-ra-acts { margin-left: 0; width: 100%; justify-content: flex-start; } .kit-ra-menu { right: auto; left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .kit-ra-menu, .kit-ra-pills, .kit-ra-pill b { animation: none !important; transition: none !important; } }
+/* /part:page.style.kit.row-actions */

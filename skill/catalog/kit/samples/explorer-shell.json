@@ -1,0 +1,150 @@
+{
+ "note": "Invented: the working files of a repair-cafe season.",
+ "groups": [
+  {
+   "label": "season",
+   "files": [
+    {
+     "id": "overview",
+     "name": "overview",
+     "ext": "md"
+    },
+    {
+     "id": "budget",
+     "name": "budget",
+     "ext": "csv"
+    },
+    {
+     "id": "rota",
+     "name": "rota",
+     "ext": "csv"
+    }
+   ]
+  },
+  {
+   "label": "docs",
+   "files": [
+    {
+     "id": "rules",
+     "name": "house-rules",
+     "ext": "md"
+    },
+    {
+     "id": "checklist",
+     "name": "closing-checklist",
+     "ext": "sh"
+    },
+    {
+     "id": "notes",
+     "name": "meeting-notes",
+     "ext": "md"
+    }
+   ]
+  }
+ ],
+ "pipeline": {
+  "label": "Season pipeline",
+  "stages": [
+   {
+    "id": "p1",
+    "name": "Prepare",
+    "state": "done"
+   },
+   {
+    "id": "p2",
+    "name": "Recruit",
+    "state": "running"
+   },
+   {
+    "id": "p3",
+    "name": "First night",
+    "state": "queued"
+   },
+   {
+    "id": "p4",
+    "name": "Look back",
+    "state": "queued"
+   }
+  ],
+  "words": {
+   "done": "passed",
+   "running": "running",
+   "queued": "queued"
+  }
+ },
+ "status": {
+  "items": [
+   {
+    "label": "waiting on you",
+    "count": 3,
+    "tone": "attention"
+   },
+   {
+    "label": "to read",
+    "count": 2,
+    "tone": "review"
+   },
+   {
+    "label": "running",
+    "count": 1,
+    "tone": "active"
+   },
+   {
+    "label": "blocked",
+    "count": 0,
+    "tone": "danger"
+   }
+  ],
+  "note": "Last read by Claude 4 min ago"
+ },
+ "sections": [
+  {
+   "id": "overview",
+   "title": "overview.md",
+   "lines": [
+    "Six repairers, one hall, the first Saturday of every month from October.",
+    "The season runs in four stages: prepare the hall, find the repairers, run the first night and look back."
+   ]
+  },
+  {
+   "id": "budget",
+   "title": "budget.csv",
+   "lines": [
+    "Hall hire: 40 per night. Tea and biscuits: 12. Parts fund: whatever the raffle jar holds.",
+    "The season is planned to cost 312 across six nights, paid from the co-op account."
+   ]
+  },
+  {
+   "id": "rota",
+   "title": "rota.csv",
+   "lines": [
+    "Door: Lena, then Tomasz. Electrics: Ravi. Bikes: Marcus and Anya. Sewing: Odile. Tea: whoever arrives first.",
+    "Swaps are agreed in the group chat and written here the same night."
+   ]
+  },
+  {
+   "id": "rules",
+   "title": "house-rules.md",
+   "lines": [
+    "Show, do not take over. Test anything mains-powered before it leaves. Turn away gas and medical equipment kindly.",
+    "The full clauses are drafted as numbered rules in the margin-notes layout."
+   ]
+  },
+  {
+   "id": "checklist",
+   "title": "closing-checklist.sh",
+   "lines": [
+    "Wipe the benches. Count the log. Return the urn washed. Lock the side door, then the front.",
+    "Photograph the whiteboard before it is wiped."
+   ]
+  },
+  {
+   "id": "notes",
+   "title": "meeting-notes.md",
+   "lines": [
+    "5 Oct: agreed one item each when more than twelve are waiting.",
+    "19 Oct: Odile confirmed for sewing; the second bike stand is still to be found."
+   ]
+  }
+ ]
+}

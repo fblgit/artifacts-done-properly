@@ -1,0 +1,54 @@
+/* part:page.style.kit.viz.seal */
+/* Kit css: lifetime seal    kit version 0.1.0    pairs with kit/viz/seal.js
+   .kit-sl-wrap (the seal, its label and its actions)  .kit-sl (the medallion; a button when it opens something)  .kit-sl-t (number .kit-sl-d, unit .kit-sl-u)
+   .kit-sl-arc-box (the action fan) with .kit-sl-q (a round action, --a its angle)   .kit-sl-mini (the ring in a row)
+   The ring, the crackle and the glyph take the tone of the state: [data-vo-tone] on .kit-sl-wrap sets --vo-c (kit/vocab.css). --vo-c is the plain meaning colour, 3:1 on the panel; the number
+   and the unit are --ink and --ink-2. Size: --kit-sl-size on the wrap (124px).
+   Depth: with theme.glaze-depth the disc is lit and pooled; every depth token has a flat fallback built from the contract, so other themes draw a plain disc.
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-display, optional --shadow --pebble-hi --rim --pool --glz-sh-1 --glz-sh-2 --edge-gold --seam */
+.kit-sl-wrap { --kit-sl-size: 124px; --sl-c: var(--vo-c, var(--ink-2)); --sl-edge: var(--edge-gold, var(--seam, var(--accent)));
+  position: relative; display: grid; justify-items: center; align-content: start; width: calc(var(--kit-sl-size) + 26px); padding-top: 48px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-sl { position: relative; display: grid; place-items: center; width: var(--kit-sl-size); height: var(--kit-sl-size); padding: 0; border: 0; border-radius: 50%; color: inherit; font: inherit;
+  background: radial-gradient(circle at 34% 26%, var(--pebble-hi, var(--panel)), var(--panel) 55%, var(--sunk));
+  box-shadow: inset 0 2px 0 var(--rim, transparent), inset 0 -16px 20px -14px var(--pool, transparent), var(--glz-sh-1, 0 1px 3px color-mix(in srgb, var(--ink) 28%, transparent)), 0 0 0 1px var(--rule);
+  transition: transform .25s cubic-bezier(.3, .8, .3, 1), box-shadow .25s; }
+button.kit-sl { cursor: pointer; }
+button.kit-sl:hover { transform: translateY(-3px) scale(1.03); box-shadow: inset 0 2px 0 var(--rim, transparent), inset 0 -16px 20px -14px var(--pool, transparent), var(--glz-sh-2, 0 6px 14px color-mix(in srgb, var(--ink) 25%, transparent)), 0 0 0 1px var(--sl-edge); }
+.kit-sl:focus-visible, .kit-sl-q:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 3px; }
+.kit-sl svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.kit-sl-track { fill: none; stroke: var(--rule); stroke-width: 7; }
+.kit-sl-arc { fill: none; stroke: var(--sl-c); stroke-width: 7; stroke-linecap: round; }
+.kit-sl-crk { fill: none; stroke: var(--ink-3); stroke-width: .55; stroke-linecap: round; }
+.kit-sl-t { position: relative; display: grid; justify-items: center; gap: 2px; max-width: 70%; text-align: center; }
+.kit-sl-d { font: 600 1.75rem/1 var(--f-display, var(--f-ui)); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--ink); }
+.kit-sl-u { font: 600 .72rem/1.15 var(--f-ui); color: var(--ink-2); overflow-wrap: anywhere; }
+[data-state="unknown"] .kit-sl-d, [data-state="replaced"] .kit-sl-d { color: var(--ink-2); }
+.kit-sl-label { max-width: calc(var(--kit-sl-size) + 20px); margin-top: 10px; text-align: center; font: 600 .84rem/1.25 var(--f-ui); overflow-wrap: anywhere; }
+
+/* the action fan: hidden buttons gather at the seal's centre and open out along an arc above it */
+.kit-sl-arc-box { position: absolute; left: 50%; top: calc(48px + var(--kit-sl-size) / 2); width: 0; height: 0; }
+.kit-sl-q { position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1.25px solid var(--edge, var(--rule)); border-radius: 50%;
+  background: var(--sunk-2, var(--sunk)); color: var(--ink-2); cursor: pointer; opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(.6);
+  box-shadow: inset 0 1px 0 var(--rim, transparent), 0 1px 2px var(--shade, color-mix(in srgb, var(--ink) 22%, transparent));
+  transition: opacity .18s, transform .28s cubic-bezier(.3, .8, .3, 1), color .15s, border-color .15s, background .15s; transition-delay: calc(var(--i, 0) * 30ms); }
+.kit-sl-q .kit-sl-ico { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transform: none; position: static; }
+.kit-sl-wrap:hover .kit-sl-q, .kit-sl-wrap:focus-within .kit-sl-q { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) rotate(var(--a)) translateX(calc(var(--kit-sl-size) / 2 + 28px)) rotate(calc(-1 * var(--a))); }
+.kit-sl-wrap:hover .kit-sl-q:hover, .kit-sl-wrap:focus-within .kit-sl-q:focus-visible { transform: translate(-50%, -50%) rotate(var(--a)) translateX(calc(var(--kit-sl-size) / 2 + 28px)) rotate(calc(-1 * var(--a))) scale(1.12); }
+.kit-sl-q:hover, .kit-sl-q:focus-visible { color: var(--ink); border-color: var(--sl-edge); background: var(--panel); }
+.kit-sl-q.kit-bad:hover, .kit-sl-q.kit-bad:focus-visible { color: var(--danger-ink, var(--danger)); border-color: var(--danger); background: var(--danger-soft, var(--panel)); }
+/* touch and narrow screens have no hover: the actions sit in a row beneath */
+@media (max-width: 480px), (hover: none) {
+  .kit-sl-wrap[data-acts]:not([data-acts="0"]) { padding-top: 0; padding-bottom: 46px; }
+  .kit-sl-arc-box { top: auto; bottom: 0; left: 0; width: 100%; height: 36px; display: flex; justify-content: center; gap: 6px; }
+  .kit-sl-q, .kit-sl-wrap:hover .kit-sl-q, .kit-sl-wrap:focus-within .kit-sl-q, .kit-sl-wrap:hover .kit-sl-q:hover { position: static; opacity: 1; pointer-events: auto; transform: none; width: 32px; height: 32px; transition-delay: 0s; }
+}
+
+/* mini seal: the ring and a short number, for a row */
+.kit-sl-mini { --sl-c: var(--vo-c, var(--ink-2)); position: relative; display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 50%; vertical-align: middle;
+  background: radial-gradient(circle at 34% 26%, var(--pebble-hi, var(--panel)), var(--panel) 60%, var(--sunk)); box-shadow: 0 0 0 1px var(--rule); }
+.kit-sl-mini svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.kit-sl-mini .kit-sl-track, .kit-sl-mini .kit-sl-arc { stroke-width: 3.6; }
+.kit-sl-mini b { position: relative; font: 700 .78rem/1 var(--f-ui); color: var(--ink); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .kit-sl, .kit-sl-q { transition: none !important; transition-delay: 0s !important; } button.kit-sl:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) and (min-width: 481px) and (hover: hover) { .kit-sl-wrap:hover .kit-sl-q:hover { transform: translate(-50%, -50%) rotate(var(--a)) translateX(calc(var(--kit-sl-size) / 2 + 28px)) rotate(calc(-1 * var(--a))); } }
+/* /part:page.style.kit.viz.seal */

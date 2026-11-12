@@ -1,0 +1,101 @@
+{
+ "note": "Invented firing figures.",
+ "unit": "firings",
+ "bars": [
+  {
+   "label": "Mon",
+   "value": 3,
+   "title": "Monday",
+   "rows": [
+    [
+     "Firings",
+     "3"
+    ],
+    [
+     "Pieces",
+     "46"
+    ],
+    [
+     "Kiln",
+     "A"
+    ]
+   ]
+  },
+  {
+   "label": "Tue",
+   "value": 5,
+   "title": "Tuesday",
+   "rows": [
+    [
+     "Firings",
+     "5"
+    ],
+    [
+     "Pieces",
+     "71"
+    ],
+    [
+     "Kiln",
+     "A and B"
+    ]
+   ]
+  },
+  {
+   "label": "Wed",
+   "value": 2,
+   "title": "Wednesday",
+   "rows": [
+    [
+     "Firings",
+     "2"
+    ],
+    [
+     "Pieces",
+     "30"
+    ],
+    [
+     "Kiln",
+     "B"
+    ]
+   ]
+  },
+  {
+   "label": "Thu",
+   "value": 6,
+   "title": "Thursday",
+   "rows": [
+    [
+     "Firings",
+     "6"
+    ],
+    [
+     "Pieces",
+     "88"
+    ],
+    [
+     "Kiln",
+     "A and B"
+    ]
+   ]
+  },
+  {
+   "label": "Fri",
+   "value": 4,
+   "title": "Friday",
+   "rows": [
+    [
+     "Firings",
+     "4"
+    ],
+    [
+     "Pieces",
+     "52"
+    ],
+    [
+     "Kiln",
+     "A"
+    ]
+   ]
+  }
+ ]
+}

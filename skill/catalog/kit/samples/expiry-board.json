@@ -1,0 +1,650 @@
+{
+ "note": "Invented: thirty certificates and keys of a made-up company, Brindle and Oak. Days left count from the day the page loads. Every name is a device or a job.",
+ "title": "Brindle and Oak: certificates and keys",
+ "lead": "What is live, what runs out next and who signed it.",
+ "lanes": [
+  {
+   "key": "server",
+   "label": "Server certificates"
+  },
+  {
+   "key": "client",
+   "label": "Client certificates"
+  },
+  {
+   "key": "host",
+   "label": "Host keys"
+  },
+  {
+   "key": "user",
+   "label": "User keys"
+  }
+ ],
+ "authorities": [
+  {
+   "id": "root",
+   "name": "Brindle Root CA R1",
+   "parent": null,
+   "sub": "Signs two authorities, nothing else",
+   "glyph": "diamond",
+   "state": "ok",
+   "life": 0.98,
+   "left": "20 years left",
+   "caps": [
+    "certsign",
+    "crlsign"
+   ],
+   "short": "Root",
+   "facts": [
+    [
+     "Made",
+     "1 Mar 2026",
+     "read"
+    ],
+    [
+     "Valid until",
+     "1 Mar 2046",
+     "read"
+    ],
+    [
+     "Path length",
+     "1: may sign one level of authorities",
+     "design"
+    ],
+    [
+     "Key lives in",
+     "Hardware key slot 82, on both keys",
+     "design"
+    ],
+    [
+     "Fingerprint (SHA-256)",
+     "7c:21:9e:04:b8:d1:63:fa",
+     "read",
+     true
+    ]
+   ]
+  },
+  {
+   "id": "web",
+   "name": "Brindle Web CA 1",
+   "parent": "root",
+   "sub": "Server certificates only",
+   "glyph": "pulse",
+   "state": "ok",
+   "life": 0.9,
+   "left": "4 years left",
+   "caps": [
+    "certsign",
+    "crlsign",
+    "server"
+   ],
+   "short": "Web",
+   "facts": [
+    [
+     "Made",
+     "1 Mar 2026",
+     "read"
+    ],
+    [
+     "Valid until",
+     "1 Mar 2031",
+     "read"
+    ],
+    [
+     "Path length",
+     "0: cannot make more authorities",
+     "design"
+    ],
+    [
+     "Key lives in",
+     "Hardware key slot 83, on both keys",
+     "design"
+    ],
+    [
+     "May only vouch for",
+     "names under brindle.example",
+     "design"
+    ]
+   ]
+  },
+  {
+   "id": "staff",
+   "name": "Brindle Staff CA 1",
+   "parent": "root",
+   "sub": "Staff and device certificates only",
+   "glyph": "hand",
+   "state": "ok",
+   "life": 0.9,
+   "left": "4 years left",
+   "caps": [
+    "certsign",
+    "crlsign",
+    "client",
+    "email"
+   ],
+   "short": "Staff",
+   "facts": [
+    [
+     "Made",
+     "1 Mar 2026",
+     "read"
+    ],
+    [
+     "Valid until",
+     "1 Mar 2031",
+     "read"
+    ],
+    [
+     "Path length",
+     "0: cannot make more authorities",
+     "design"
+    ],
+    [
+     "Key lives in",
+     "Hardware key slot 84, on both keys",
+     "design"
+    ]
+   ]
+  },
+  {
+   "id": "shell",
+   "name": "Brindle Shell CA 1",
+   "parent": null,
+   "sub": "Signs shell keys directly",
+   "glyph": "eye",
+   "state": "ok",
+   "life": 0.98,
+   "left": "20 years left",
+   "ghost": "It signs shell keys itself.",
+   "caps": [
+    "shellhost",
+    "shelluser"
+   ],
+   "short": "Shell",
+   "facts": [
+    [
+     "Made",
+     "1 Mar 2026",
+     "read"
+    ],
+    [
+     "Valid until",
+     "1 Mar 2046",
+     "read"
+    ],
+    [
+     "Path length",
+     "Not a certificate chain",
+     "design"
+    ],
+    [
+     "Key type",
+     "ecdsa-sha2-nistp384",
+     "read"
+    ],
+    [
+     "Key lives in",
+     "Hardware key slot 85, on both keys",
+     "design"
+    ]
+   ]
+  }
+ ],
+ "kinds": {
+  "server": {
+   "label": "Who can sign server certificates",
+   "short": "Server certificate",
+   "plural": "server certificates",
+   "mark": "dot",
+   "glyph": "pulse",
+   "authority": "web",
+   "caps": [
+    "server",
+    "sign"
+   ],
+   "limits": [
+    "Only under brindle.example",
+    "Only private addresses",
+    "Cannot create more authorities (path length 0)",
+    "Up to 397 days",
+    "Needs a hardware key: PIN and touch"
+   ]
+  },
+  "client": {
+   "label": "Who can sign client certificates",
+   "short": "Client certificate",
+   "plural": "client certificates",
+   "mark": "ring",
+   "glyph": "hand",
+   "authority": "staff",
+   "caps": [
+    "client",
+    "sign"
+   ],
+   "limits": [
+    "Only under brindle.example",
+    "Cannot create more authorities (path length 0)",
+    "365 days by default, some made longer",
+    "Needs a hardware key: PIN and touch"
+   ]
+  },
+  "host": {
+   "label": "Who can sign shell host keys",
+   "short": "Shell host key",
+   "plural": "shell host keys",
+   "mark": "square",
+   "glyph": "diamond",
+   "authority": "shell",
+   "caps": [
+    "shellhost"
+   ],
+   "limits": [
+    "Host names are written into each one",
+    "397 days is the usual length",
+    "Key sits in slot 85: PIN once and touch"
+   ]
+  },
+  "user": {
+   "label": "Who can sign shell user keys",
+   "short": "Shell user key",
+   "plural": "shell user keys",
+   "mark": "diamond",
+   "glyph": "eye",
+   "authority": "shell",
+   "caps": [
+    "shelluser"
+   ],
+   "limits": [
+    "The login name is written into each one",
+    "From 12 hours up to 5 years",
+    "Key sits in slot 85: PIN once and touch"
+   ]
+  }
+ },
+ "groups": [
+  {
+   "id": "shops",
+   "label": "Shops",
+   "sub": "Front of house and the stockroom",
+   "glyph": "ring"
+  },
+  {
+   "id": "tills",
+   "label": "Tills and scanners",
+   "sub": "The devices at the counter",
+   "glyph": "hand"
+  },
+  {
+   "id": "office",
+   "label": "Office",
+   "sub": "Back office machines and people",
+   "glyph": "eye"
+  },
+  {
+   "id": "vehicles",
+   "label": "Vehicles",
+   "sub": "Delivery vans and drivers",
+   "glyph": "play"
+  }
+ ],
+ "items": [
+  {
+   "id": "b1",
+   "label": "kiosk-3",
+   "sub": "Shop floor kiosk",
+   "kind": "server",
+   "authority": "web",
+   "group": "shops",
+   "subject": "kiosk-3",
+   "state": "urgent",
+   "left": 9,
+   "life": 0.023
+  },
+  {
+   "id": "b2",
+   "label": "depot",
+   "sub": "Stockroom web page",
+   "kind": "server",
+   "authority": "web",
+   "group": "shops",
+   "subject": "depot",
+   "state": "soon",
+   "left": 41,
+   "life": 0.103
+  },
+  {
+   "id": "b3",
+   "label": "orders",
+   "sub": "Order desk",
+   "kind": "server",
+   "authority": "web",
+   "group": "office",
+   "subject": "orders",
+   "state": "ok",
+   "left": 188,
+   "life": 0.474
+  },
+  {
+   "id": "b4",
+   "label": "shop",
+   "sub": "Online shop",
+   "kind": "server",
+   "authority": "web",
+   "group": "shops",
+   "subject": "shop",
+   "state": "ok",
+   "left": 361,
+   "life": 0.909
+  },
+  {
+   "id": "b5",
+   "label": "staff",
+   "sub": "Staff rota",
+   "kind": "server",
+   "authority": "web",
+   "group": "office",
+   "subject": "staff",
+   "state": "ok",
+   "left": 910,
+   "life": 1
+  },
+  {
+   "id": "b6",
+   "label": "till-old",
+   "sub": "Replaced till, still listed",
+   "kind": "server",
+   "authority": "web",
+   "group": "tills",
+   "subject": "till-old",
+   "state": "expired",
+   "left": 0,
+   "life": 0.0
+  },
+  {
+   "id": "b7",
+   "label": "till-1",
+   "sub": "Till",
+   "kind": "client",
+   "authority": "staff",
+   "group": "tills",
+   "subject": "till-1",
+   "state": "ok",
+   "left": 70,
+   "life": 0.192
+  },
+  {
+   "id": "b8",
+   "label": "till-2",
+   "sub": "Till",
+   "kind": "client",
+   "authority": "staff",
+   "group": "tills",
+   "subject": "till-2",
+   "state": "ok",
+   "left": 72,
+   "life": 0.197
+  },
+  {
+   "id": "b9",
+   "label": "till-3",
+   "sub": "Till",
+   "kind": "client",
+   "authority": "staff",
+   "group": "tills",
+   "subject": "till-3",
+   "state": "ok",
+   "left": 75,
+   "life": 0.205
+  },
+  {
+   "id": "b10",
+   "label": "till-4",
+   "sub": "Till",
+   "kind": "client",
+   "authority": "staff",
+   "group": "tills",
+   "subject": "till-4",
+   "state": "ok",
+   "left": 78,
+   "life": 0.214
+  },
+  {
+   "id": "b11",
+   "label": "scanner-a",
+   "sub": "Hand scanner",
+   "kind": "client",
+   "authority": "staff",
+   "group": "tills",
+   "subject": "scanner-a",
+   "state": "soon",
+   "left": 80,
+   "life": 0.219
+  },
+  {
+   "id": "b12",
+   "label": "scanner-b",
+   "sub": "Hand scanner",
+   "kind": "client",
+   "authority": "staff",
+   "group": "tills",
+   "subject": "scanner-b",
+   "state": "ok",
+   "left": 83,
+   "life": 0.227
+  },
+  {
+   "id": "b13",
+   "label": "scanner-c",
+   "sub": "Hand scanner",
+   "kind": "client",
+   "authority": "staff",
+   "group": "tills",
+   "subject": "scanner-c",
+   "state": "ok",
+   "left": 86,
+   "life": 0.236
+  },
+  {
+   "id": "b14",
+   "label": "van-tablet",
+   "sub": "Delivery van",
+   "kind": "client",
+   "authority": "staff",
+   "group": "vehicles",
+   "subject": "van-tablet",
+   "state": "ok",
+   "left": 260,
+   "life": 0.712
+  },
+  {
+   "id": "b15",
+   "label": "office-laptop",
+   "sub": "Back office",
+   "kind": "client",
+   "authority": "staff",
+   "group": "office",
+   "subject": "office-laptop",
+   "state": "ok",
+   "left": 640,
+   "life": 1
+  },
+  {
+   "id": "b16",
+   "label": "owner-phone",
+   "sub": "Owner",
+   "kind": "client",
+   "authority": "staff",
+   "group": "office",
+   "subject": "owner-phone",
+   "state": "ok",
+   "left": 1100,
+   "life": 1
+  },
+  {
+   "id": "b17",
+   "label": "temp-ipad",
+   "sub": "Christmas market",
+   "kind": "client",
+   "authority": "staff",
+   "group": "shops",
+   "subject": "temp-ipad",
+   "state": "urgent",
+   "left": 14,
+   "life": 0.038
+  },
+  {
+   "id": "b18",
+   "label": "cold-store",
+   "sub": "Cold room controller",
+   "kind": "host",
+   "authority": "shell",
+   "group": "shops",
+   "subject": "cold-store",
+   "state": "ok",
+   "left": 120,
+   "life": 0.302
+  },
+  {
+   "id": "b19",
+   "label": "back-office",
+   "sub": "Back office server",
+   "kind": "host",
+   "authority": "shell",
+   "group": "office",
+   "subject": "back-office",
+   "state": "ok",
+   "left": 335,
+   "life": 0.844
+  },
+  {
+   "id": "b20",
+   "label": "gateway",
+   "sub": "Shop gateway",
+   "kind": "host",
+   "authority": "shell",
+   "group": "office",
+   "subject": "gateway",
+   "state": "ok",
+   "left": 800,
+   "life": 1
+  },
+  {
+   "id": "b21",
+   "label": "print-room",
+   "sub": "Label printer host",
+   "kind": "host",
+   "authority": "shell",
+   "group": "office",
+   "subject": "print-room",
+   "state": "soon",
+   "left": 55,
+   "life": 0.139
+  },
+  {
+   "id": "b22",
+   "label": "night-shift",
+   "sub": "Night shift lead",
+   "kind": "user",
+   "authority": "shell",
+   "group": "office",
+   "subject": "night-shift",
+   "state": "urgent",
+   "left": 3,
+   "life": 0.004
+  },
+  {
+   "id": "b23",
+   "label": "bookkeeper",
+   "sub": "Bookkeeper",
+   "kind": "user",
+   "authority": "shell",
+   "group": "office",
+   "subject": "bookkeeper",
+   "state": "ok",
+   "left": 220,
+   "life": 0.301
+  },
+  {
+   "id": "b24",
+   "label": "owner",
+   "sub": "Owner",
+   "kind": "user",
+   "authority": "shell",
+   "group": "office",
+   "subject": "owner",
+   "state": "ok",
+   "left": 1400,
+   "life": 1
+  },
+  {
+   "id": "b25",
+   "label": "stock-check",
+   "sub": "Short stock check",
+   "kind": "user",
+   "authority": "shell",
+   "group": "shops",
+   "subject": "stock-check",
+   "state": "urgent",
+   "left": 2,
+   "life": 0.003
+  },
+  {
+   "id": "b26",
+   "label": "temp-cover",
+   "sub": "Holiday cover, over",
+   "kind": "user",
+   "authority": "shell",
+   "group": "office",
+   "subject": "temp-cover",
+   "state": "ended",
+   "left": null
+  },
+  {
+   "id": "b27",
+   "label": "baker",
+   "sub": "Head baker",
+   "kind": "user",
+   "authority": "shell",
+   "group": "shops",
+   "subject": "baker",
+   "state": "ok",
+   "left": 95,
+   "life": 0.13
+  },
+  {
+   "id": "b28",
+   "label": "driver",
+   "sub": "Delivery driver",
+   "kind": "user",
+   "authority": "shell",
+   "group": "vehicles",
+   "subject": "driver",
+   "state": "ok",
+   "left": 300,
+   "life": 0.411
+  },
+  {
+   "id": "b29",
+   "label": "scale-room",
+   "sub": "Revoked after a move",
+   "kind": "host",
+   "authority": "shell",
+   "group": "shops",
+   "subject": "scale-room",
+   "state": "revoked",
+   "left": null
+  },
+  {
+   "id": "b30",
+   "label": "archive",
+   "sub": "Old orders archive",
+   "kind": "server",
+   "authority": "web",
+   "group": "office",
+   "subject": "archive",
+   "state": "ok",
+   "left": 1500,
+   "life": 1
+  }
+ ]
+}

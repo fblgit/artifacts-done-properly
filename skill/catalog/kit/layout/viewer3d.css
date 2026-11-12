@@ -1,0 +1,43 @@
+/* part:page.style.kit.viewer3d */
+/* Kit css: 3D viewer with parameters    kit version 0.1.0    pairs with kit/layout/viewer3d.js
+   .kit-v3 (the root: a grid of view and sidebar, as tall as --kit-v3-h, default 560px; narrow under 760px of its own width: the script sets data-narrow), .kit-v3-view (the focusable viewport), .kit-v3-canvas, .kit-v3-hud (the hint line),
+   .kit-v3-tools (zoom and reset buttons), .kit-v3-fail (the message when there is nothing to draw), .kit-v3-side (the sidebar, scrolls on its own), .kit-v3-sec (a titled group),
+   .kit-v3-row (label and control), .kit-v3-num (a number field), .kit-v3-dl (a list of figures; dd.ok and dd.bad carry a mark and a hidden word), .kit-v3-legend (swatches).
+   Above 760px of the root's own width the sidebar is 310px on the right; below it, it goes under the view and the whole root grows to fit.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --rule-2 --ok --danger --accent --f-ui --f-mono; optional --seam */
+.kit-v3 { display: grid; grid-template-columns: minmax(0, 1fr) 310px; height: var(--kit-v3-h, 560px); min-height: 0; min-width: 0;
+  border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; background: var(--bg); color: var(--ink); font: 13px/1.45 var(--f-ui); position: relative; }
+.kit-v3-view { position: relative; min-width: 0; min-height: 0; touch-action: none; cursor: grab; background: radial-gradient(120% 90% at 50% 20%, var(--panel), var(--bg)); }
+.kit-v3-view:active { cursor: grabbing; }
+.kit-v3-view:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: -3px; }
+.kit-v3-canvas { display: block; width: 100%; height: 100%; }
+.kit-v3-hud { position: absolute; left: 12px; bottom: 10px; right: 120px; margin: 0; font: 11.5px/1.4 var(--f-mono); color: var(--ink-2); pointer-events: none; }
+.kit-v3-tools { position: absolute; right: 10px; bottom: 8px; display: flex; gap: 4px; }
+.kit-v3-tools button { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); font: 600 17px/1 var(--f-ui); cursor: pointer; }
+.kit-v3-tools button:hover { border-color: var(--ink-2); }
+.kit-v3-tools button:focus-visible, .kit-v3-side input:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-v3-fail { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; text-align: center; color: var(--ink-2); font: 14px/1.5 var(--f-ui); }
+.kit-v3-fail[hidden] { display: none; }
+.kit-v3-side { min-width: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 18px; padding: 16px; background: var(--panel); border-left: 1px solid var(--rule); }
+.kit-v3-title { margin: 0; font: 700 15px/1.3 var(--f-ui); text-wrap: balance; }
+.kit-v3-note { margin: 6px 0 0; color: var(--ink-2); line-height: 1.5; }
+.kit-v3-sec { min-width: 0; }
+.kit-v3-sec > h3 { margin: 0 0 6px; font: 600 12.5px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-v3-ctl { display: grid; gap: 2px; }
+.kit-v3-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 3px 0; min-height: 32px; }
+.kit-v3-row label { min-width: 0; overflow-wrap: anywhere; }
+.kit-v3-row input[type="range"] { width: 120px; max-width: 100%; accent-color: var(--accent); }
+.kit-v3-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+.kit-v3-num { width: 78px; padding: 5px 7px; border: 1px solid var(--rule); border-radius: 6px; background: var(--sunk); color: var(--ink); font: 12.5px var(--f-mono); font-variant-numeric: tabular-nums; }
+.kit-v3-dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; font-family: var(--f-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.kit-v3-dl dt { color: var(--ink-2); min-width: 0; overflow-wrap: anywhere; }
+.kit-v3-dl dd { margin: 0; text-align: right; }
+.kit-v3-dl dd.ok { color: color-mix(in srgb, var(--ok) 80%, var(--ink)); }
+.kit-v3-dl dd.bad { color: color-mix(in srgb, var(--danger) 80%, var(--ink)); font-weight: 700; }
+.kit-v3-mk { display: inline-block; width: 1.1em; font-weight: 700; }
+.kit-v3-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.kit-v3-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.kit-v3-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); box-shadow: 0 0 0 1px var(--rule); }
+  .kit-v3[data-narrow] { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(320px, 55vh) auto; height: auto; }
+  .kit-v3[data-narrow] .kit-v3-side { border-left: 0; border-top: 1px solid var(--rule); overflow: visible; }
+/* /part:page.style.kit.viewer3d */

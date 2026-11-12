@@ -1,0 +1,59 @@
+{
+ "note": "Invented tracks and counts.",
+ "active": "8A",
+ "tracks": [
+  {
+   "id": "t1",
+   "label": "Salt Lamp",
+   "key": "8A",
+   "name": "A minor",
+   "x": 62,
+   "y": 38
+  },
+  {
+   "id": "t2",
+   "label": "Dry Run",
+   "key": "9A",
+   "name": "E minor",
+   "x": 30,
+   "y": 71
+  },
+  {
+   "id": "t3",
+   "label": "Slow Tide",
+   "key": "8B",
+   "name": "C major",
+   "x": 84,
+   "y": 26
+  },
+  {
+   "id": "t4",
+   "label": "Night Shift",
+   "key": "7A",
+   "name": "D minor",
+   "x": 18,
+   "y": 55
+  },
+  {
+   "id": "t5",
+   "label": "Open Door",
+   "key": "3B",
+   "name": "Eb major",
+   "x": 71,
+   "y": 82
+  }
+ ],
+ "counts": {
+  "8A": 6,
+  "9A": 4,
+  "7A": 3,
+  "8B": 5,
+  "3B": 2,
+  "1A": 1,
+  "5B": 2,
+  "10A": 3,
+  "11B": 1,
+  "12A": 2,
+  "4A": 1
+ }
+}

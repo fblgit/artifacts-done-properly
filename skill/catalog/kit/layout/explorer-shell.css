@@ -1,0 +1,47 @@
+/* part:page.style.kit.explorer-shell */
+/* Kit css: explorer shell    kit version 0.1.0    pairs with kit/layout/explorer-shell.js
+   .kit-ex (the container) > .kit-ex-frame (grid: tree | main, status bar underneath) > nav.kit-ex-tree (.kit-ex-grp > .kit-ex-gl + a.kit-ex-file > .kit-ex-ico .kit-ex-fn .kit-ex-fx)
+   + .kit-ex-main (.kit-ex-pipe > ol.kit-ex-stages > li.kit-ex-stage; .kit-ex-secs > section.kit-ex-sec > h2.kit-ex-st + .kit-ex-sb) + .kit-ex-status (.kit-ex-sl > .kit-ex-sbc, .kit-ex-note)
+   Answers its own width (a container query): under 40rem the tree becomes a row of chips.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --f-ui --f-mono, optional --seam --radius */
+.kit-ex { container-type: inline-size; min-width: 0; max-width: 100%; }
+.kit-ex-frame { display: grid; grid-template-columns: minmax(10.5rem, 14rem) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; height: var(--kit-ex-h, 36rem); min-width: 0; border: 1px solid var(--rule); border-radius: var(--radius-lg, 8px); overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--f-ui); }
+.kit-ex-tree { grid-row: 1; overflow-y: auto; display: grid; gap: 14px; align-content: start; padding: 12px 8px; background: var(--sunk); border-right: 1px solid var(--rule); }
+.kit-ex-grp { display: grid; gap: 1px; }
+.kit-ex-gl { padding: 2px 8px 4px; font: 600 11.5px/1.3 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.kit-ex-file { display: flex; align-items: center; gap: 7px; min-height: 30px; padding: 4px 8px; border-radius: var(--radius, 5px); color: var(--ink); text-decoration: none; font: 13.5px/1.2 var(--f-ui); }
+.kit-ex-file:hover { background: var(--accent-soft); }
+.kit-ex-file:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: -2px; }
+.kit-ex-file[aria-current] { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); font-weight: 600; }
+.kit-ex-ico { flex: none; display: grid; color: var(--ink-2); }
+.kit-ex-fn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kit-ex-fx { margin-left: auto; padding: 1px 5px; border: 1px solid var(--rule); border-radius: 4px; font: 500 11px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-ex-main { grid-row: 1; grid-column: 2; overflow-y: auto; display: grid; align-content: start; gap: 18px; padding: 14px 16px 24px; min-width: 0; scroll-padding-top: 8px; }
+.kit-ex-main:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: -3px; }
+.kit-ex-stages { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.kit-ex-stage { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border: 1px solid var(--rule); border-left: 3px solid var(--vo-c, var(--ink-3)); border-radius: var(--radius, 5px); background: var(--panel); font: 13px/1.2 var(--f-ui); }
+.kit-ex-stage:not(:last-child)::after { content: ""; position: absolute; left: 100%; top: 50%; width: 22px; border-top: 2px solid var(--rule); }
+.kit-ex-sg { display: grid; color: var(--vo-c, var(--ink-2)); } .kit-ex-sg .kit-vo-g { width: 14px; height: 14px; }
+.kit-ex-sw { font: 500 12px/1 var(--f-mono); color: var(--ink-2); }
+.kit-ex-stage[data-state="queued"] { border-style: dashed; }
+.kit-ex-secs { display: grid; gap: 22px; min-width: 0; }
+.kit-ex-sec { display: grid; gap: 8px; min-width: 0; padding-top: 4px; }
+.kit-ex-st { margin: 0; padding-bottom: 5px; border-bottom: 1px solid var(--rule-2); font: 600 15px/1.3 var(--f-ui); letter-spacing: .01em; }
+.kit-ex-st:focus { outline: none; } .kit-ex-st:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 3px; }
+.kit-ex-sb { display: grid; gap: 8px; min-width: 0; font: 14px/1.5 var(--f-ui); color: var(--ink); }
+.kit-ex-sb p { margin: 0; }
+.kit-ex-status { grid-row: 2; grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; min-height: 28px; padding: 4px 14px; background: var(--accent); color: var(--accent-ink); font: 500 12.5px/1.3 var(--f-mono); }
+.kit-ex-sl { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.kit-ex-sbc b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.kit-ex-sbc[data-vo-tone="danger"], .kit-ex-sbc[data-vo-tone="attention"] { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+@container (max-width: 40rem) {
+  .kit-ex-frame { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+  .kit-ex-tree { grid-row: 1; display: flex; gap: 6px 14px; overflow-x: auto; overflow-y: hidden; padding: 8px; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .kit-ex-grp { display: flex; align-items: center; gap: 4px; flex: none; }
+  .kit-ex-gl { padding: 0 4px; }
+  .kit-ex-file { flex: none; border: 1px solid var(--rule); background: var(--panel); }
+  .kit-ex-file[aria-current] { box-shadow: none; border-color: var(--accent); }
+  .kit-ex-main { grid-row: 2; grid-column: 1; }
+  .kit-ex-status { grid-row: 3; }
+}
+/* /part:page.style.kit.explorer-shell */

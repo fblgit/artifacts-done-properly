@@ -1,0 +1,182 @@
+/* part:page.style.kit.theme.kanban */
+/* Kit theme: Kanban    kit version 0.1.0
+   Cool slate neutrals, IDE blue, a syntax purple; the dense look, for boards people move cards on.
+   Character: compared with Long page (the other cool grey and blue): Kanban is dense and tool-like. 14px Geist on 1.45, 8px control padding, 5px controls and 8px panels, hairline 1px rules, a lifted shadow only on hover, a dark terminal ground (--code-bg, --code-ink) for code. Long page is the reading one: 15px on 1.6, 14px padding, 10 and 14px corners, soft tints.
+   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --code-bg and --code-ink (the terminal ground).
+   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+   Fonts: https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap
+   From: the hub's Kanban skin (columns, explorer, status bar, terminal ground) and an earlier board's slate-editor skin. */
+/* Layout: none; a palette, type and a feel for any page. */
+:root {
+  color-scheme: light;
+  --bg: #f4f6f9;
+  --panel: #ffffff;
+  --sunk: #eef1f5;
+  --ink: #18202c;
+  --ink-2: #5a6476;
+  --ink-3: #626c7c;
+  --rule: #c5cdd9;
+  --rule-2: #d8dee7;
+  --accent: #1f5fd6;
+  --accent-ink: #ffffff;
+  --accent-soft: #e3ecfc;
+  --seam: #7b3fd1;
+  --gold-leaf: linear-gradient(90deg, #e3d6fa, #7b3fd1 45%, #4a1f94 75%, #b08ae8);
+  --focus: #7b3fd1;
+  --danger-soft: #fbe4e8;
+  --danger: #c0263d;
+  --ok-soft: #e0f2e6;
+  --ok: #1b7a3a;
+  --warn-soft: #fcecdc;
+  --warn: #a65307;
+  --info-soft: #e3ecfc;
+  --info: #1f5fd6;
+  --wait-soft: #efe7fb;
+  --wait: #7b3fd1;
+  --k-problem: #c0263d;
+  --k-solution: #1b7a3a;
+  --k-idea: #a65307;
+  --k-question: #1f5fd6;
+  --k-decision: #7b3fd1;
+  --k-task: #5a6476;
+  --c-ink: #18202c;
+  --c-blue: #1f5fd6;
+  --c-red: #c0263d;
+  --c-green: #1b7a3a;
+  --c-amber: #a65307;
+  --c-violet: #7b3fd1;
+  --st-yellow: #f1e9cb;
+  --st-blue: #cbd9f2;
+  --st-pink: #f1cbd8;
+  --st-green: #cbf2d8;
+  --sticky-ink: #18202c;
+  --canvas: #fafafc;
+  --dot: rgba(24, 32, 44, 0.12);
+  --shadow: 0 4px 14px rgba(20, 30, 50, .10);
+  --f-display: "Geist", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --f-ui: "Geist", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --f-hand: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --outline: #c5cdd9;
+  --bg-image: none;
+  --code-bg: #0f1620;
+  --code-ink: #d7e2f0;
+  --radius: 5px;
+  --radius-lg: 8px;
+  --edge-w: 1px;
+  --text-size: 14px;
+  --leading: 1.45;
+  --measure: 80ch;
+  --pad: 8px;
+  --label-case: none;
+  --label-caps: normal;
+  --head-case: none;
+  --bg-size: auto;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e131a;
+    --panel: #151b24;
+    --sunk: #10151d;
+    --ink: #dce3ed;
+    --ink-2: #95a1b3;
+    --ink-3: #77839a;
+    --rule: #2f3a4a;
+    --rule-2: #232c39;
+    --accent: #7cb0ff;
+    --accent-ink: #0b1220;
+    --accent-soft: #16264a;
+    --seam: #c7a4ff;
+    --gold-leaf: linear-gradient(90deg, #4a2a8a, #c7a4ff 45%, #e6d6ff 70%, #9a74e0);
+    --focus: #c7a4ff;
+    --danger-soft: #3e1820;
+    --danger: #ff8595;
+    --ok-soft: #12301c;
+    --ok: #62d67f;
+    --warn-soft: #3a2614;
+    --warn: #f3ab62;
+    --info-soft: #16264a;
+    --info: #7cb0ff;
+    --wait-soft: #2a1f45;
+    --wait: #c7a4ff;
+    --k-problem: #ff8595;
+    --k-solution: #62d67f;
+    --k-idea: #f3ab62;
+    --k-question: #7cb0ff;
+    --k-decision: #c7a4ff;
+    --k-task: #95a1b3;
+    --c-ink: #dce3ed;
+    --c-blue: #7cb0ff;
+    --c-red: #ff8595;
+    --c-green: #62d67f;
+    --c-amber: #f3ab62;
+    --c-violet: #c7a4ff;
+    --st-yellow: #c6b782;
+    --st-blue: #809bc7;
+    --st-pink: #c6819a;
+    --st-green: #80c79a;
+    --sticky-ink: #0e131a;
+    --canvas: #12171f;
+    --dot: rgba(220, 227, 237, 0.09);
+    --shadow: 0 6px 18px rgba(0, 0, 0, .45);
+    --outline: #2f3a4a;
+    --bg-image: none;
+    --code-bg: #0f1620;
+    --code-ink: #d7e2f0;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e131a;
+  --panel: #151b24;
+  --sunk: #10151d;
+  --ink: #dce3ed;
+  --ink-2: #95a1b3;
+  --ink-3: #77839a;
+  --rule: #2f3a4a;
+  --rule-2: #232c39;
+  --accent: #7cb0ff;
+  --accent-ink: #0b1220;
+  --accent-soft: #16264a;
+  --seam: #c7a4ff;
+  --gold-leaf: linear-gradient(90deg, #4a2a8a, #c7a4ff 45%, #e6d6ff 70%, #9a74e0);
+  --focus: #c7a4ff;
+  --danger-soft: #3e1820;
+  --danger: #ff8595;
+  --ok-soft: #12301c;
+  --ok: #62d67f;
+  --warn-soft: #3a2614;
+  --warn: #f3ab62;
+  --info-soft: #16264a;
+  --info: #7cb0ff;
+  --wait-soft: #2a1f45;
+  --wait: #c7a4ff;
+  --k-problem: #ff8595;
+  --k-solution: #62d67f;
+  --k-idea: #f3ab62;
+  --k-question: #7cb0ff;
+  --k-decision: #c7a4ff;
+  --k-task: #95a1b3;
+  --c-ink: #dce3ed;
+  --c-blue: #7cb0ff;
+  --c-red: #ff8595;
+  --c-green: #62d67f;
+  --c-amber: #f3ab62;
+  --c-violet: #c7a4ff;
+  --st-yellow: #c6b782;
+  --st-blue: #809bc7;
+  --st-pink: #c6819a;
+  --st-green: #80c79a;
+  --sticky-ink: #0e131a;
+  --canvas: #12171f;
+  --dot: rgba(220, 227, 237, 0.09);
+  --shadow: 0 6px 18px rgba(0, 0, 0, .45);
+  --outline: #2f3a4a;
+  --bg-image: none;
+  --code-bg: #0f1620;
+  --code-ink: #d7e2f0;
+}
+/* /part:page.style.kit.theme.kanban */

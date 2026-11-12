@@ -1,0 +1,43 @@
+/* part:page.style.kit.template.doc */
+/* Kit css: document template    kit version 0.1.0    pairs with kit/templates/doc.html.txt
+   Sits on the document shell (kit/layout/doc-shell.css), the callout (kit/callout.css) and the data table (kit/table.css); it styles only what they do not.
+   .kit-tdoc (the article), .kit-tdoc-head (title block: .kit-tdoc-kind, h1, .kit-tdoc-sub, .kit-tdoc-meta, .kit-tdoc-prov),
+   .kit-tdoc-shell (the shell's counter: every .kit-tdoc-sec gets its number in the heading, so sections renumber when you add or remove one),
+   .kit-tdoc-part (a part head between groups of sections: .kit-tdoc-part-n, h2, .kit-tdoc-part-intent), .kit-tdoc-ex (a worked example, dashed; .kit-tdoc-tag names it, .kit-tdoc-src says where it came from),
+   .kit-tdoc-fill (a slot still to be written), .kit-tdoc-check (a checklist the writer ticks off).
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --rule-2 --warn --f-ui --f-display --f-mono; optional --seam --gold-leaf */
+.kit-tdoc { --tdoc-measure: 65ch; display: grid; gap: 28px; min-width: 0; color: var(--ink); font: 16px/1.62 var(--f-ui);
+  padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1120px; margin-inline: auto; }
+.kit-tdoc-head { display: grid; gap: 10px; padding-bottom: 22px; border-bottom: 1px solid var(--rule); position: relative; max-width: calc(var(--tdoc-measure) + 268px); margin-inline: auto; width: 100%; min-width: 0; }
+.kit-tdoc-head::after { content: ""; position: absolute; left: 0; bottom: -1.5px; width: 96px; height: 2px; border-radius: 2px; background: var(--gold-leaf, var(--seam, var(--ink-2))); }
+.kit-tdoc-kind { margin: 0; font: 600 13px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-tdoc-head h1 { margin: 0; font: 600 clamp(30px, 5vw, 44px)/1.08 var(--f-display); letter-spacing: -.015em; text-wrap: balance; }
+.kit-tdoc-sub { margin: 0; max-width: var(--tdoc-measure); font: 400 18px/1.55 var(--f-display); color: var(--ink-2); text-wrap: pretty; }
+.kit-tdoc-meta { margin: 6px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 1px; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--rule); }
+.kit-tdoc-meta > div { background: var(--panel); padding: 9px 14px; min-width: 0; }
+.kit-tdoc-meta dt { font: 600 12px/1.4 var(--f-mono); color: var(--ink-2); }
+.kit-tdoc-meta dd { margin: 1px 0 0; font: 600 15px/1.35 var(--f-ui); overflow-wrap: anywhere; }
+.kit-tdoc-prov { margin: 0; font: 12.5px/1.5 var(--f-mono); color: var(--ink-2); }
+.kit-tdoc-shell { counter-reset: kit-tdoc-sec; }
+.kit-tdoc-sec > .kit-doc-body { display: grid; gap: 12px; align-content: start; }
+.kit-tdoc-sec > .kit-doc-body > * { margin: 0; min-width: 0; }
+.kit-tdoc-sec > .kit-doc-body > h2::before { counter-increment: kit-tdoc-sec; content: counter(kit-tdoc-sec); display: inline-block; min-width: 1.35em; margin-right: .3em;
+  font: italic 500 .92em var(--f-display); font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.kit-tdoc-sec ul, .kit-tdoc-sec ol { padding-left: 1.25em; display: grid; gap: 4px; }
+.kit-tdoc-sec li::marker { color: var(--ink-2); }
+.kit-tdoc-part { display: grid; gap: 6px; padding: 12px 16px 14px; border-radius: 14px; background: var(--sunk); border: 1px solid var(--rule); position: relative; overflow: hidden; min-width: 0; }
+.kit-tdoc-part::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 5px; background: var(--seam, var(--ink-2)); }
+.kit-tdoc-part-head { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.kit-tdoc-part-n { font: 600 13px/1 var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; flex: none; padding: 4px 7px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); }
+.kit-tdoc-part h2 { margin: 0; font: 600 21px/1.2 var(--f-display); text-wrap: balance; }
+.kit-tdoc-part-intent { margin: 0; font: 14.5px/1.5 var(--f-ui); color: var(--ink-2); max-width: 60ch; padding-right: 10px; }
+.kit-tdoc-ex { margin: 0; display: grid; gap: 6px; padding: 12px 16px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--ink-2) 55%, var(--panel)); background: var(--panel); font: 15px/1.55 var(--f-ui); }
+.kit-tdoc-ex > * { margin: 0; min-width: 0; }
+.kit-tdoc-tag { font: 600 12px/1.4 var(--f-mono); color: var(--ink-2); }
+.kit-tdoc-src { font: italic 13.5px/1.45 var(--f-display); color: var(--ink-2); }
+.kit-tdoc-fill { display: inline; padding: 0 6px; border-radius: 6px; background: color-mix(in srgb, var(--warn) 12%, var(--panel)); border: 1px dashed color-mix(in srgb, var(--warn) 55%, var(--panel)); color: var(--ink); font-style: normal; }
+.kit-tdoc-check { list-style: none; padding-left: 0 !important; }
+.kit-tdoc-check li { display: flex; gap: 10px; align-items: baseline; }
+.kit-tdoc-check li::before { content: ""; flex: none; width: 13px; height: 13px; border: 1.5px solid var(--ink-2); border-radius: 4px; transform: translateY(2px); }
+@media (max-width: 520px) { .kit-tdoc-part-head { flex-wrap: wrap; gap: 6px 10px; } .kit-tdoc-sub { font-size: 17px; } }
+/* /part:page.style.kit.template.doc */

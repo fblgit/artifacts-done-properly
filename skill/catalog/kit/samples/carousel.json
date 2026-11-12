@@ -1,0 +1,16 @@
+{
+ "note": "Invented phases of a cabinet-making project.",
+ "phases": [
+  { "n": 1, "title": "Measure the alcove", "text": "Three heights and three widths; the wall is out of true by 6 mm.", "state": "done" },
+  { "n": 2, "title": "Cut the carcass", "text": "18 mm birch ply, nested on two sheets with 4 mm kerf.", "state": "done" },
+  { "n": 3, "title": "Dry fit", "text": "Dominos in every joint, clamped without glue for a day.", "state": "running" },
+  { "n": 4, "title": "Glue up", "text": "Two people, one open time of twelve minutes.", "state": "queued" },
+  { "n": 5, "title": "Hang the doors", "text": "Concealed hinges, 2 mm reveal all round.", "state": "queued" },
+  { "n": 6, "title": "Oil the fronts", "text": "Two coats, a day apart, rubbed back between.", "state": "queued" },
+  { "n": 7, "title": "Fit and scribe", "text": "Scribe the end panel to the wall with a compass.", "state": "waiting" }
+ ],
+ "few": [
+  { "n": 1, "title": "Order the ply", "text": "Two sheets, delivered Thursday.", "state": "done" },
+  { "n": 2, "title": "Book the van", "text": "Saturday morning, two hours.", "state": "queued" }
+ ]
+}

@@ -1,0 +1,32 @@
+/* part:page.style.kit.lease-graph */
+/* Kit css: lease and waiter graph    kit version 0.1.0    pairs with kit/viz/lease-graph.js
+   .kit-ls-list > .kit-ls-node   one held resource (or a lone denial); .kit-ls-card the framed article, tinted by its state tone through [data-vo-tone] (kit/vocab.css)
+   .kit-ls-wait                  the waiters on its release; .kit-ls-denials > .kit-ls-edge the denied requests nested under it, joined to it by a line
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --danger --f-ui --f-mono, optional --rim --pool --glz-r-l --glz-sh-1 */
+.kit-ls { display: grid; gap: 10px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-ls-sum { margin: 0; font: 500 13px var(--f-mono); color: var(--ink-2); }
+.kit-ls-list, .kit-ls-denials, .kit-ls-wait ul { list-style: none; margin: 0; padding: 0; }
+.kit-ls-list { display: grid; gap: 14px; min-width: 0; }
+.kit-ls-node { display: grid; gap: 0; min-width: 0; }
+.kit-ls-card { display: grid; gap: 8px; padding: 12px 14px; min-width: 0; background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--vo-c, var(--rule)); border-radius: var(--glz-r-l, 12px);
+  box-shadow: inset 0 1px 0 var(--rim, transparent), inset 0 -14px 16px -18px var(--pool, transparent), var(--glz-sh-1, none); }
+.kit-ls-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; min-width: 0; }
+.kit-ls-res { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.kit-ls code { font: 600 13.5px var(--f-mono); overflow-wrap: anywhere; }
+.kit-ls-who { display: flex; flex-wrap: wrap; gap: 4px 20px; min-width: 0; }
+.kit-ls-f { display: inline-flex; gap: 6px; align-items: baseline; min-width: 0; font-size: 14px; }
+.kit-ls-k { font: 600 12px var(--f-mono); letter-spacing: .03em; color: var(--ink-2); }
+.kit-ls-v { overflow-wrap: anywhere; font-weight: 600; }
+.kit-ls-until { font-variant-numeric: tabular-nums; }
+.kit-ls-wait { display: grid; gap: 5px; padding-top: 8px; border-top: 1px dashed var(--rule); }
+.kit-ls-wait ul { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-ls-wait li { display: inline-flex; align-items: center; gap: 8px; padding: 3px 9px; border: 1px solid var(--rule-2); border-radius: 8px; background: var(--sunk); font-size: 13.5px; }
+.kit-ls-denials { display: grid; gap: 8px; margin: 0 0 0 18px; padding: 8px 0 0 18px; border-left: 2px solid var(--rule); min-width: 0; }
+.kit-ls-edge { position: relative; min-width: 0; }
+.kit-ls-edge::before { content: ""; position: absolute; left: -18px; top: 22px; width: 16px; border-top: 2px solid var(--rule); }
+.kit-ls-denial { border-left-color: var(--vo-c, var(--warn)); background: var(--sunk); box-shadow: none; }
+.kit-ls-denial { --vo-c: var(--warn); }
+.kit-ls-note { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+.kit-ls-empty { padding: 16px; border: 1px dashed var(--rule); border-radius: 12px; color: var(--ink-2); text-align: center; font-size: 14px; }
+@media (max-width: 480px) { .kit-ls-denials { margin-left: 8px; padding-left: 12px; } .kit-ls-edge::before { left: -12px; width: 10px; } }
+/* /part:page.style.kit.lease-graph */

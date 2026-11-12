@@ -1,0 +1,29 @@
+{
+ "note": "Six invented disks.",
+ "unit": "GiB",
+ "units": [
+  { "id": "d1", "name": "disk-1", "sub": "SSD, system", "capacity": 500, "chips": [{ "text": "Healthy", "tone": "ok" }],
+    "segments": [
+     { "id": "s1", "label": "boot", "size": 1, "used": 0.4 },
+     { "id": "s2", "label": "system", "size": 120, "used": 84 },
+     { "id": "s3", "label": "home", "size": 330, "used": 301, "note": "Over 90% used" },
+     { "id": "s4", "label": "free", "size": 49, "kind": "free" } ] },
+  { "id": "d2", "name": "disk-2", "sub": "HDD, archive", "capacity": 2000, "chips": [{ "text": "Spare at 80%", "tone": "warn" }],
+    "segments": [
+     { "id": "s5", "label": "archive", "size": 1400, "used": 1210 },
+     { "id": "s6", "label": "backups", "size": 400, "used": 395, "flag": "Only copy of the 2024 photos" },
+     { "id": "s7", "label": "unallocated", "size": 200, "kind": "free" } ] },
+  { "id": "d3", "name": "disk-3", "sub": "SSD, scratch", "capacity": 250, "chips": [{ "text": "Healthy", "tone": "ok" }],
+    "segments": [
+     { "id": "s8", "label": "scratch", "size": 200, "used": 40 },
+     { "id": "s9", "label": "free", "size": 50, "kind": "free" } ] },
+  { "id": "d4", "name": "disk-4", "sub": "HDD, media", "capacity": 1000, "chips": [{ "text": "Read errors", "tone": "danger" }],
+    "segments": [
+     { "id": "s10", "label": "media", "size": 960, "used": 700, "flag": "Reallocated sectors rising" },
+     { "id": "s11", "label": "free", "size": 40, "kind": "free" } ] },
+  { "id": "d5", "name": "disk-5", "sub": "USB stick", "capacity": 64, "chips": [{ "text": "Not mounted", "tone": "muted" }],
+    "segments": [{ "id": "s12", "label": "transfer", "size": 64, "used": 12 }] },
+  { "id": "d6", "name": "disk-6", "sub": "SD card", "capacity": 32, "chips": [{ "text": "Healthy", "tone": "ok" }],
+    "segments": [{ "id": "s13", "label": "camera", "size": 30, "used": 29 }, { "id": "s14", "label": "free", "size": 2, "kind": "free" }] }
+ ]
+}

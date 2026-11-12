@@ -1,0 +1,157 @@
+/* part:page.style.kit.theme.glaze */
+/* Kit theme: Glaze    kit version 0.1.0
+   Porcelain by day, tenmoku by night, gold seams: moon-white panels on a blue-grey ground, a kiln-dark night, five glazes for meaning.
+   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the gold seam: rules, current-item marks, focus),
+   --gold-leaf (a gradient for one hairline per page), --focus, --info and --wait (cobalt and peach bloom), and a -soft tint for each meaning.
+   Text pairs (--ink, --ink-2, --ok, --warn, --danger, --info, --accent on --panel, --sunk and --bg) are 4.5:1 or more in both themes; --seam is 3:1 or more on --panel.
+   Fonts: https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Kalam:wght@400;700&display=swap
+   From: the Control panel's Glaze skin as two documents carried it (moon-white porcelain and tenmoku tokens; the serif display and rounded body of the second). */
+/* Layout: none; a palette and type for any page. */
+:root {
+  color-scheme: light;
+  --bg: #e4eaec;
+  --panel: #f9fbfb;
+  --sunk: #edf2f3;
+  --ink: #172024;
+  --ink-2: #455760;
+  --ink-3: #5e6f76;
+  --rule: #c3cfd3;
+  --rule-2: #d9e2e5;
+  --accent: #1a2226;
+  --accent-ink: #f5f9f9;
+  --accent-soft: #d5dfe2;
+  --seam: #a2740f;
+  --gold-leaf: linear-gradient(90deg, #f6e1a0, #c99528 40%, #8b6213 70%, #e8c360);
+  --focus: #a2740f;
+  --danger: #a4192f;
+  --ok: #2c6448;
+  --warn: #a3410c;
+  --info: #2b52b8;
+  --wait: #8f2442;
+  --danger-soft: #f5d6da;
+  --ok-soft: #dceadf;
+  --warn-soft: #ffe2d1;
+  --info-soft: #dae3f6;
+  --wait-soft: #fadde3;
+  --k-problem: #a4192f;
+  --k-solution: #2c6448;
+  --k-idea: #6f4f08;
+  --k-question: #2b52b8;
+  --k-decision: #8f2442;
+  --k-task: #455760;
+  --c-ink: #172024;
+  --c-blue: #2b52b8;
+  --c-red: #a4192f;
+  --c-green: #2c6448;
+  --c-amber: #a2740f;
+  --c-violet: #8f2442;
+  --st-yellow: #f6e1a0;
+  --st-blue: #dae3f6;
+  --st-pink: #fadde3;
+  --st-green: #dceadf;
+  --sticky-ink: #172024;
+  --canvas: #f3f6f7;
+  --dot: rgba(23, 32, 36, .12);
+  --shadow: 0 1px 2px rgba(24, 52, 62, .22), 0 12px 28px -14px rgba(24, 52, 62, .30);
+  --f-display: "Newsreader", "New York", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --f-ui: "Nunito", ui-rounded, "SF Pro Rounded", "Avenir Next", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --f-hand: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #130e0c;
+    --panel: #211815;
+    --sunk: #2c201b;
+    --ink: #f3eadf;
+    --ink-2: #cdbbab;
+    --ink-3: #9b8776;
+    --rule: #4a3830;
+    --rule-2: #33261f;
+    --accent: #f0e6da;
+    --accent-ink: #1a120f;
+    --accent-soft: #43322a;
+    --seam: #efc25e;
+    --gold-leaf: linear-gradient(90deg, #8b6213, #efc25e 45%, #f7dc9a 70%, #c99528);
+    --focus: #efc25e;
+    --danger: #f6788b;
+    --ok: #a8d2b1;
+    --warn: #ff9a62;
+    --info: #94b2f7;
+    --wait: #f58ba5;
+    --danger-soft: #451620;
+    --ok-soft: #1f2b1e;
+    --warn-soft: #3f2112;
+    --info-soft: #17274d;
+    --wait-soft: #43182a;
+    --k-problem: #f6788b;
+    --k-solution: #a8d2b1;
+    --k-idea: #efc25e;
+    --k-question: #94b2f7;
+    --k-decision: #f58ba5;
+    --k-task: #cdbbab;
+    --c-ink: #f3eadf;
+    --c-blue: #94b2f7;
+    --c-red: #f6788b;
+    --c-green: #a8d2b1;
+    --c-amber: #efc25e;
+    --c-violet: #f58ba5;
+    --st-yellow: #e9cf7e;
+    --st-blue: #a9c0f0;
+    --st-pink: #efb3c3;
+    --st-green: #b5d8bc;
+    --sticky-ink: #1a120f;
+    --canvas: #1a1311;
+    --dot: rgba(243, 234, 223, .09);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .55), 0 12px 28px -14px rgba(0, 0, 0, .7);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #130e0c;
+  --panel: #211815;
+  --sunk: #2c201b;
+  --ink: #f3eadf;
+  --ink-2: #cdbbab;
+  --ink-3: #9b8776;
+  --rule: #4a3830;
+  --rule-2: #33261f;
+  --accent: #f0e6da;
+  --accent-ink: #1a120f;
+  --accent-soft: #43322a;
+  --seam: #efc25e;
+  --gold-leaf: linear-gradient(90deg, #8b6213, #efc25e 45%, #f7dc9a 70%, #c99528);
+  --focus: #efc25e;
+  --danger: #f6788b;
+  --ok: #a8d2b1;
+  --warn: #ff9a62;
+  --info: #94b2f7;
+  --wait: #f58ba5;
+  --danger-soft: #451620;
+  --ok-soft: #1f2b1e;
+  --warn-soft: #3f2112;
+  --info-soft: #17274d;
+  --wait-soft: #43182a;
+  --k-problem: #f6788b;
+  --k-solution: #a8d2b1;
+  --k-idea: #efc25e;
+  --k-question: #94b2f7;
+  --k-decision: #f58ba5;
+  --k-task: #cdbbab;
+  --c-ink: #f3eadf;
+  --c-blue: #94b2f7;
+  --c-red: #f6788b;
+  --c-green: #a8d2b1;
+  --c-amber: #efc25e;
+  --c-violet: #f58ba5;
+  --st-yellow: #e9cf7e;
+  --st-blue: #a9c0f0;
+  --st-pink: #efb3c3;
+  --st-green: #b5d8bc;
+  --sticky-ink: #1a120f;
+  --canvas: #1a1311;
+  --dot: rgba(243, 234, 223, .09);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .55), 0 12px 28px -14px rgba(0, 0, 0, .7);
+}
+/* /part:page.style.kit.theme.glaze */

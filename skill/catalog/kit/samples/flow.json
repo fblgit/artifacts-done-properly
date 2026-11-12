@@ -1,0 +1,13 @@
+{
+ "note": "An invented upload pipeline.",
+ "stages": [
+  [{ "id": "src", "kind": "source", "title": "Upload", "text": "A file arrives from a member." }],
+  [{ "id": "scan", "title": "Scan", "text": "Checks the type and the size.", "tag": { "text": "Automatic", "tone": "ok" } }],
+  [{ "id": "review", "kind": "human", "title": "Review", "text": "A person reads anything the scan flags." }],
+  { "link": "ok", "nodes": [
+    { "id": "store", "kind": "sink", "title": "Library", "text": "Stored and searchable." },
+    { "id": "arch", "kind": "sink", "title": "Archive", "text": "Kept for seven years." }
+  ] },
+  { "link": "blocked", "linkLabel": "never", "nodes": [{ "id": "pub", "kind": "blocked", "title": "Public site", "text": "Nothing leaves without a second sign-off." }] }
+ ]
+}

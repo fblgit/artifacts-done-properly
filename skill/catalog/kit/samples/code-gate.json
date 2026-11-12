@@ -1,0 +1,8 @@
+{
+  "component": "code-gate",
+  "file": "kit/code-gate.js",
+  "about": "An invented six digit code from the stand-in generator, on a 30 second ring.",
+  "label": "Join code",
+  "note": "Read this to the person joining the counter tablet. It stops working when the ring empties.",
+  "periods": [ { "s": 30, "label": "30 seconds" }, { "s": 8, "label": "8 seconds, to watch it change" } ]
+}

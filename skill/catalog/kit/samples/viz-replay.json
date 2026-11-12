@@ -1,0 +1,305 @@
+{
+ "$sample": {
+  "board": "Journey Whiteboard",
+  "space": "journey-whiteboard",
+  "title": "Journey Whiteboard · its own journey",
+  "note": "Real records from the board's own space, as cached on 2026-10-20. Created stamps are as recorded."
+ },
+ "kinds": {
+  "problem": {
+   "label": "Problem",
+   "prefix": "P",
+   "tone": "red"
+  },
+  "solution": {
+   "label": "Solution",
+   "prefix": "S",
+   "tone": "green"
+  },
+  "idea": {
+   "label": "Idea",
+   "prefix": "I",
+   "tone": "amber"
+  },
+  "question": {
+   "label": "Question",
+   "prefix": "Q",
+   "tone": "blue"
+  },
+  "decision": {
+   "label": "Decision",
+   "prefix": "D",
+   "tone": "violet"
+  },
+  "task": {
+   "label": "Task",
+   "prefix": "T",
+   "tone": "ink"
+  },
+  "page": {
+   "label": "Page",
+   "prefix": "PG",
+   "tone": "accent"
+  }
+ },
+ "events": [
+  {
+   "id": "mzfakc9k3ysgmgxfnvf4",
+   "t": 1792344352426,
+   "kind": "decision",
+   "label": "How do we check it in a real browser: Playwright pass in this session"
+  },
+  {
+   "id": "maafxm8c9hmtgw1z5jo6",
+   "t": 1792344491265,
+   "kind": "decision",
+   "label": "Should the guide ever apply without asking: Always a preview; one click keeps it"
+  },
+  {
+   "id": "gjx8wqaijm6pa4r9lf9l",
+   "t": 1792344636182,
+   "kind": "decision",
+   "label": "Who weighs an alternative by default: Both, by availability: Claude in the page always, plus the session when one is listening"
+  },
+  {
+   "id": "wgv6bc6tslmzbapnrxrt",
+   "t": 1792344654898,
+   "kind": "decision",
+   "label": "Who weighs an alternative by default: The Claude Code session"
+  },
+  {
+   "id": "p-unclear",
+   "t": 1792390002000,
+   "kind": "problem",
+   "label": "The owner could not see how the hub gets installed and updated"
+  },
+  {
+   "id": "p-answer",
+   "t": 1792390003000,
+   "kind": "problem",
+   "label": "v1 had no way to answer a question, see its paths, challenge or add input"
+  },
+  {
+   "id": "p-iterate",
+   "t": 1792390004000,
+   "kind": "problem",
+   "label": "No fast chat-and-iterate loop from the board itself"
+  },
+  {
+   "id": "p-prioritise",
+   "t": 1792390005000,
+   "kind": "problem",
+   "label": "Nothing to prioritise with"
+  },
+  {
+   "id": "p-estimate",
+   "t": 1792390006000,
+   "kind": "problem",
+   "label": "Work entering the plan was not estimated"
+  },
+  {
+   "id": "p-outcomes",
+   "t": 1792390007000,
+   "kind": "problem",
+   "label": "Outcomes were not actionable"
+  },
+  {
+   "id": "p-draw",
+   "t": 1792390008000,
+   "kind": "problem",
+   "label": "Not a whiteboard: no place to write, diagram or paint"
+  },
+  {
+   "id": "p-reuse",
+   "t": 1792390009000,
+   "kind": "problem",
+   "label": "It had to outlive one session"
+  },
+  {
+   "id": "s-model",
+   "t": 1792390010000,
+   "kind": "solution",
+   "label": "Items with kinds and statuses; questions carry paths; choosing a path records a decision"
+  },
+  {
+   "id": "s-threads",
+   "t": 1792390011000,
+   "kind": "solution",
+   "label": "A thread on every item: challenge, support, input, answer, and \"Ask Claude to weigh in\""
+  },
+  {
+   "id": "s-lanes",
+   "t": 1792390012000,
+   "kind": "solution",
+   "label": "Two Claude lanes: quick in the page, deep to the Claude Code session"
+  },
+  {
+   "id": "s-moscow",
+   "t": 1792390013000,
+   "kind": "solution",
+   "label": "MoSCoW board with drag, and a background estimate on entering Must, Should or Could"
+  },
+  {
+   "id": "s-pages",
+   "t": 1792390014000,
+   "kind": "solution",
+   "label": "Pages of any type, drafted by Claude from the items they come from"
+  },
+  {
+   "id": "s-canvas",
+   "t": 1792390015000,
+   "kind": "solution",
+   "label": "Canvases: pen, highlighter, shapes, bound arrows, text, stickies and cards of items or pages"
+  },
+  {
+   "id": "s-spaces",
+   "t": 1792390016000,
+   "kind": "solution",
+   "label": "Spaces: new, clone, save as template, reset, export and import JSON"
+  },
+  {
+   "id": "t-useS",
+   "t": 1792390017000,
+   "kind": "task",
+   "label": "Fix: views stopped updating after the first change"
+  },
+  {
+   "id": "t-notes",
+   "t": 1792390018000,
+   "kind": "task",
+   "label": "Carry the v1 notes over, pinned to their versions"
+  },
+  {
+   "id": "p-tree",
+   "t": 1792390019000,
+   "kind": "problem",
+   "label": "No tree of the journey: problems, branches, paths, decisions"
+  },
+  {
+   "id": "p-preview",
+   "t": 1792390020000,
+   "kind": "problem",
+   "label": "Clicking a move showed no preview of its problems, the move, and what it changes"
+  },
+  {
+   "id": "p-alt",
+   "t": 1792390021000,
+   "kind": "problem",
+   "label": "No way to say \"what about this other way?\" and see the impact first"
+  },
+  {
+   "id": "p-new",
+   "t": 1792390022000,
+   "kind": "problem",
+   "label": "The eventhub journey was traced by hand; a new one has no fast path"
+  },
+  {
+   "id": "s-about",
+   "t": 1792390023000,
+   "kind": "solution",
+   "label": "One more link, \"about\": questions, tasks and decisions hang under the move they shape"
+  },
+  {
+   "id": "s-tree",
+   "t": 1792390024000,
+   "kind": "solution",
+   "label": "Tree view: problem → move → question → path → decision → page"
+  },
+  {
+   "id": "s-preview",
+   "t": 1792390025000,
+   "kind": "solution",
+   "label": "Move preview, and a dry run that shows any proposal on the tree before it lands"
+  },
+  {
+   "id": "s-alt",
+   "t": 1792390026000,
+   "kind": "solution",
+   "label": "\"What about another way?\" box on every node"
+  },
+  {
+   "id": "s-guide",
+   "t": 1792390027000,
+   "kind": "solution",
+   "label": "Guide with Claude: six stages from nothing to written outcomes"
+  },
+  {
+   "id": "q-browser",
+   "t": 1792390028000,
+   "kind": "question",
+   "label": "How do we check it in a real browser?"
+  },
+  {
+   "id": "q-guide-auto",
+   "t": 1792390029000,
+   "kind": "question",
+   "label": "Should the guide ever apply without asking?"
+  },
+  {
+   "id": "q-alt-lane",
+   "t": 1792390030000,
+   "kind": "question",
+   "label": "Who weighs an alternative by default?"
+  },
+  {
+   "id": "q-shared",
+   "t": 1792390031000,
+   "kind": "question",
+   "label": "A move that solves several problems: draw it once or under each?"
+  },
+  {
+   "id": "d-shared",
+   "t": 1792390032000,
+   "kind": "decision",
+   "label": "A move that solves several problems: Once, under its first problem, with dashed edges to the others"
+  },
+  {
+   "id": "d-preview",
+   "t": 1792390033000,
+   "kind": "decision",
+   "label": "Claude’s changes are previews; nothing lands until someone keeps it"
+  },
+  {
+   "id": "t-browser",
+   "t": 1792390034000,
+   "kind": "task",
+   "label": "Real-browser pass: tree, MoSCoW drag, canvas drawing, phone width, dark mode"
+  },
+  {
+   "id": "t-supersede",
+   "t": 1792390040000,
+   "kind": "task",
+   "label": "Choosing a second path supersedes the first path's decision"
+  },
+  {
+   "id": "t-alt-both",
+   "t": 1792390041000,
+   "kind": "task",
+   "label": "Alternatives: quick answer always, plus the session's checked answer when one is listening"
+  },
+  {
+   "id": "page:pg-story",
+   "t": 1792390041000,
+   "kind": "page",
+   "label": "How this board was built"
+  },
+  {
+   "id": "t-moscow-kinds",
+   "t": 1792390042000,
+   "kind": "task",
+   "label": "MoSCoW and decisions: show them on the board or stop Claude from bucketing them"
+  },
+  {
+   "id": "page:pg-sop",
+   "t": 1792390042000,
+   "kind": "page",
+   "label": "Start a new journey with the guide"
+  }
+ ],
+ "words": {
+  "now": "now",
+  "play": "Replay",
+  "pause": "Pause",
+  "steps": "steps"
+ }
+}

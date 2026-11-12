@@ -1,0 +1,681 @@
+{
+ "note": "Forty invented records of an invented studio. The state is the life enum that kit/viz/seal.js defines: urgent is 14 days or less, soon is 60 days or less.",
+ "stateEnum": "life",
+ "records": [
+  {
+   "id": "r01",
+   "title": "Kiln exhaust permit",
+   "kind": "permit",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 412,
+   "total": 365,
+   "sub": "Ends in 412 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r02",
+   "title": "Fire safety certificate",
+   "kind": "permit",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 9,
+   "total": 365,
+   "sub": "Ends in 9 days, shop, Dev",
+   "state": "urgent"
+  },
+  {
+   "id": "r03",
+   "title": "Street sign licence",
+   "kind": "permit",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 190,
+   "total": 365,
+   "sub": "Ends in 190 days, warehouse, Ines",
+   "state": "ok"
+  },
+  {
+   "id": "r04",
+   "title": "Waste carrier registration",
+   "kind": "permit",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 28,
+   "total": 365,
+   "sub": "Ends in 28 days, online, Teo",
+   "state": "soon"
+  },
+  {
+   "id": "r05",
+   "title": "Food stall permit",
+   "kind": "permit",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 640,
+   "total": 365,
+   "sub": "Ends in 640 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r06",
+   "title": "Class hire licence",
+   "kind": "permit",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 75,
+   "total": 365,
+   "sub": "Ends in 75 days, shop, Dev",
+   "state": "ok"
+  },
+  {
+   "id": "r07",
+   "title": "Noise exemption",
+   "kind": "permit",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 3,
+   "total": 365,
+   "sub": "Ends in 3 days, warehouse, Ines",
+   "state": "urgent"
+  },
+  {
+   "id": "r08",
+   "title": "Gas installation check",
+   "kind": "permit",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 1040,
+   "total": 365,
+   "sub": "Ends in 1040 days, online, Teo",
+   "state": "ok"
+  },
+  {
+   "id": "r09",
+   "title": "Clay supplier agreement",
+   "kind": "contract",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 365,
+   "total": 730,
+   "sub": "Ends in 365 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r10",
+   "title": "Courier account",
+   "kind": "contract",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 14,
+   "total": 730,
+   "sub": "Ends in 14 days, shop, Dev",
+   "state": "urgent"
+  },
+  {
+   "id": "r11",
+   "title": "Cleaning service",
+   "kind": "contract",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 88,
+   "total": 730,
+   "sub": "Ends in 88 days, warehouse, Ines",
+   "state": "ok"
+  },
+  {
+   "id": "r12",
+   "title": "Card reader lease",
+   "kind": "contract",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 520,
+   "total": 730,
+   "sub": "Ends in 520 days, online, Teo",
+   "state": "ok"
+  },
+  {
+   "id": "r13",
+   "title": "Accountant retainer",
+   "kind": "contract",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 200,
+   "total": 730,
+   "sub": "Ends in 200 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r14",
+   "title": "Packaging supply",
+   "kind": "contract",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 47,
+   "total": 730,
+   "sub": "Ends in 47 days, shop, Dev",
+   "state": "soon"
+  },
+  {
+   "id": "r15",
+   "title": "Pottery wheel service plan",
+   "kind": "contract",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 700,
+   "total": 730,
+   "sub": "Ends in 700 days, warehouse, Ines",
+   "state": "ok"
+  },
+  {
+   "id": "r16",
+   "title": "Waste pickup",
+   "kind": "contract",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 22,
+   "total": 730,
+   "sub": "Ends in 22 days, online, Teo",
+   "state": "soon"
+  },
+  {
+   "id": "r17",
+   "title": "Building cover",
+   "kind": "insurance",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 300,
+   "total": 365,
+   "sub": "Ends in 300 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r18",
+   "title": "Public liability",
+   "kind": "insurance",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 12,
+   "total": 365,
+   "sub": "Ends in 12 days, shop, Dev",
+   "state": "urgent"
+  },
+  {
+   "id": "r19",
+   "title": "Stock in transit",
+   "kind": "insurance",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 160,
+   "total": 365,
+   "sub": "Ends in 160 days, warehouse, Ines",
+   "state": "ok"
+  },
+  {
+   "id": "r20",
+   "title": "Kiln breakdown cover",
+   "kind": "insurance",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 33,
+   "total": 365,
+   "sub": "Ends in 33 days, online, Teo",
+   "state": "soon"
+  },
+  {
+   "id": "r21",
+   "title": "Tools and equipment",
+   "kind": "insurance",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 480,
+   "total": 365,
+   "sub": "Ends in 480 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r22",
+   "title": "Class participants",
+   "kind": "insurance",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 61,
+   "total": 365,
+   "sub": "Ends in 61 days, shop, Dev",
+   "state": "ok"
+  },
+  {
+   "id": "r23",
+   "title": "studio-shop domain",
+   "kind": "domain",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 940,
+   "total": 730,
+   "sub": "Ends in 940 days, warehouse, Ines",
+   "state": "ok"
+  },
+  {
+   "id": "r24",
+   "title": "classes domain",
+   "kind": "domain",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 5,
+   "total": 730,
+   "sub": "Ends in 5 days, online, Teo",
+   "state": "urgent"
+  },
+  {
+   "id": "r25",
+   "title": "mail domain",
+   "kind": "domain",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 250,
+   "total": 730,
+   "sub": "Ends in 250 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r26",
+   "title": "old brand domain",
+   "kind": "domain",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 0,
+   "total": 730,
+   "sub": "Ended today, shop, Dev",
+   "state": "expired"
+  },
+  {
+   "id": "r27",
+   "title": "gift card domain",
+   "kind": "domain",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 120,
+   "total": 730,
+   "sub": "Ends in 120 days, warehouse, Ines",
+   "state": "ok"
+  },
+  {
+   "id": "r28",
+   "title": "blog domain",
+   "kind": "domain",
+   "site": "Online",
+   "owner": "Teo",
+   "left": -12,
+   "total": 730,
+   "sub": "Ended 12 days ago, online, Teo",
+   "state": "expired"
+  },
+  {
+   "id": "r29",
+   "title": "Kiln 1 warranty",
+   "kind": "warranty",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 800,
+   "total": 1095,
+   "sub": "Ends in 800 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r30",
+   "title": "Kiln 2 warranty",
+   "kind": "warranty",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 18,
+   "total": 1095,
+   "sub": "Ends in 18 days, shop, Dev",
+   "state": "soon"
+  },
+  {
+   "id": "r31",
+   "title": "Slab roller warranty",
+   "kind": "warranty",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 410,
+   "total": 1095,
+   "sub": "Ends in 410 days, warehouse, Ines",
+   "state": "ok"
+  },
+  {
+   "id": "r32",
+   "title": "Extruder warranty",
+   "kind": "warranty",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 66,
+   "total": 1095,
+   "sub": "Ends in 66 days, online, Teo",
+   "state": "ok"
+  },
+  {
+   "id": "r33",
+   "title": "Air filter warranty",
+   "kind": "warranty",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 95,
+   "total": 1095,
+   "sub": "Ends in 95 days, studio, Mara",
+   "state": "ok"
+  },
+  {
+   "id": "r34",
+   "title": "Pug mill warranty",
+   "kind": "warranty",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 330,
+   "total": 1095,
+   "sub": "Ends in 330 days, shop, Dev",
+   "state": "ok"
+  },
+  {
+   "id": "r35",
+   "title": "Shelf racking warranty",
+   "kind": "warranty",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": -40,
+   "total": 1095,
+   "sub": "Ended 40 days ago, warehouse, Ines",
+   "state": "expired"
+  },
+  {
+   "id": "r36",
+   "title": "Till warranty",
+   "kind": "warranty",
+   "site": "Online",
+   "owner": "Teo",
+   "left": 150,
+   "total": 1095,
+   "sub": "Ends in 150 days, online, Teo",
+   "state": "ok"
+  },
+  {
+   "id": "r37",
+   "title": "Label printer warranty",
+   "kind": "warranty",
+   "site": "Studio",
+   "owner": "Mara",
+   "left": 26,
+   "total": 1095,
+   "sub": "Ends in 26 days, studio, Mara",
+   "state": "soon"
+  },
+  {
+   "id": "r38",
+   "title": "Scale warranty",
+   "kind": "warranty",
+   "site": "Shop",
+   "owner": "Dev",
+   "left": 580,
+   "total": 1095,
+   "sub": "Ends in 580 days, shop, Dev",
+   "state": "ok"
+  },
+  {
+   "id": "r39",
+   "title": "Dehumidifier warranty",
+   "kind": "warranty",
+   "site": "Warehouse",
+   "owner": "Ines",
+   "left": 11,
+   "total": 1095,
+   "sub": "Ends in 11 days, warehouse, Ines",
+   "state": "urgent"
+  },
+  {
+   "id": "r40",
+   "title": "Tablet warranty",
+   "kind": "warranty",
+   "site": "Online",
+   "owner": "Teo",
+   "left": null,
+   "total": 1095,
+   "sub": "No end date on record, online, Teo",
+   "state": "unknown"
+  }
+ ],
+ "facets": [
+  {
+   "key": "state",
+   "label": "State",
+   "field": "state",
+   "tiles": true,
+   "allLabel": "All",
+   "options": [
+    {
+     "value": "ok",
+     "label": "Fine"
+    },
+    {
+     "value": "soon",
+     "label": "Ends soon",
+     "tone": "warn"
+    },
+    {
+     "value": "urgent",
+     "label": "Urgent",
+     "tone": "danger"
+    },
+    {
+     "value": "expired",
+     "label": "Expired"
+    }
+   ]
+  },
+  {
+   "key": "kind",
+   "label": "Kind",
+   "field": "kind",
+   "options": [
+    {
+     "value": "permit",
+     "label": "Permit"
+    },
+    {
+     "value": "contract",
+     "label": "Contract"
+    },
+    {
+     "value": "insurance",
+     "label": "Insurance"
+    },
+    {
+     "value": "domain",
+     "label": "Domain"
+    },
+    {
+     "value": "warranty",
+     "label": "Warranty"
+    }
+   ]
+  },
+  {
+   "key": "days",
+   "label": "Days left",
+   "field": "left",
+   "options": [
+    {
+     "value": "30",
+     "label": "30 days or less",
+     "gte": 1,
+     "lte": 30
+    },
+    {
+     "value": "90",
+     "label": "90 days or less",
+     "gte": 1,
+     "lte": 90
+    },
+    {
+     "value": "365",
+     "label": "Within a year",
+     "gte": 1,
+     "lte": 365
+    },
+    {
+     "value": "far",
+     "label": "More than a year",
+     "gte": 366
+    }
+   ]
+  },
+  {
+   "key": "site",
+   "label": "Site",
+   "field": "site",
+   "options": [
+    {
+     "value": "Studio",
+     "label": "Studio"
+    },
+    {
+     "value": "Shop",
+     "label": "Shop"
+    },
+    {
+     "value": "Warehouse",
+     "label": "Warehouse"
+    },
+    {
+     "value": "Online",
+     "label": "Online"
+    }
+   ]
+  },
+  {
+   "key": "owner",
+   "label": "Owner",
+   "field": "owner",
+   "options": [
+    {
+     "value": "Mara",
+     "label": "Mara"
+    },
+    {
+     "value": "Teo",
+     "label": "Teo"
+    },
+    {
+     "value": "Ines",
+     "label": "Ines"
+    },
+    {
+     "value": "Dev",
+     "label": "Dev"
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "key": "kind",
+   "label": "Kind",
+   "field": "kind",
+   "order": [
+    "permit",
+    "contract",
+    "insurance",
+    "domain",
+    "warranty"
+   ]
+  },
+  {
+   "key": "site",
+   "label": "Site",
+   "field": "site"
+  },
+  {
+   "key": "owner",
+   "label": "Owner",
+   "field": "owner"
+  },
+  {
+   "key": "expiry",
+   "label": "Expiry",
+   "field": "left",
+   "none": "No end date",
+   "bands": [
+    {
+     "label": "Ended",
+     "lte": 0
+    },
+    {
+     "label": "Within 30 days",
+     "lte": 30
+    },
+    {
+     "label": "1 to 3 months",
+     "lte": 90
+    },
+    {
+     "label": "3 to 12 months",
+     "lte": 365
+    },
+    {
+     "label": "More than a year"
+    }
+   ]
+  }
+ ],
+ "sorts": [
+  {
+   "key": "left",
+   "label": "Days left",
+   "field": "left",
+   "dir": "asc"
+  },
+  {
+   "key": "title",
+   "label": "Name",
+   "field": "title",
+   "dir": "asc"
+  },
+  {
+   "key": "kind",
+   "label": "Kind",
+   "field": "kind",
+   "dir": "asc"
+  }
+ ],
+ "actions": [
+  {
+   "key": "renew",
+   "label": "Renew"
+  },
+  {
+   "key": "remind",
+   "label": "Remind the owner"
+  },
+  {
+   "key": "retire",
+   "label": "Retire",
+   "danger": true
+  }
+ ],
+ "runway": [
+  {
+   "label": "Show the 6 that end within 30 days",
+   "ids": [
+    "r02",
+    "r04",
+    "r07",
+    "r10",
+    "r16",
+    "r18",
+    "r24",
+    "r30",
+    "r37",
+    "r39"
+   ]
+  }
+ ]
+}

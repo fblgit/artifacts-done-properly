@@ -1,0 +1,734 @@
+{
+ "$sample": {
+  "board": "Journey Whiteboard",
+  "space": "journey-whiteboard",
+  "title": "Journey Whiteboard · its own journey",
+  "note": "Real records from the board's own space, as cached on 2026-10-20. Created stamps are as recorded."
+ },
+ "kinds": {
+  "problem": {
+   "label": "Problem",
+   "prefix": "P",
+   "tone": "red"
+  },
+  "solution": {
+   "label": "Solution",
+   "prefix": "S",
+   "tone": "green"
+  },
+  "idea": {
+   "label": "Idea",
+   "prefix": "I",
+   "tone": "amber"
+  },
+  "question": {
+   "label": "Question",
+   "prefix": "Q",
+   "tone": "blue"
+  },
+  "decision": {
+   "label": "Decision",
+   "prefix": "D",
+   "tone": "violet"
+  },
+  "task": {
+   "label": "Task",
+   "prefix": "T",
+   "tone": "ink"
+  },
+  "page": {
+   "label": "Page",
+   "prefix": "PG",
+   "tone": "accent"
+  }
+ },
+ "statuses": {
+  "open": "warn",
+  "todo": "warn",
+  "proposed": "warn",
+  "doing": "accent",
+  "answered": "ok",
+  "accepted": "ok",
+  "done": "ok",
+  "solved": "ok",
+  "promoted": "ok",
+  "draft": "muted",
+  "rejected": "danger",
+  "dropped": "danger",
+  "superseded": "muted"
+ },
+ "rank": {
+  "problem": 0,
+  "solution": 1,
+  "idea": 1,
+  "task": 2,
+  "question": 2,
+  "decision": 3,
+  "page": 9
+ },
+ "rootKinds": [
+  "problem"
+ ],
+ "nodes": [
+  {
+   "id": "mzfakc9k3ysgmgxfnvf4",
+   "code": "D1",
+   "kind": "decision",
+   "status": "proposed",
+   "label": "How do we check it in a real browser: Playwright pass in this session",
+   "body": "What changes: Needs a browser download and the owner’s OK.\n\nWhat it leads to: Screenshots at desktop and phone width; real pointer drag on MoSCoW and the canvas.",
+   "bucket": null,
+   "parents": [
+    "q-browser::a"
+   ],
+   "order": 1792344352426
+  },
+  {
+   "id": "maafxm8c9hmtgw1z5jo6",
+   "code": "D2",
+   "kind": "decision",
+   "status": "proposed",
+   "label": "Should the guide ever apply without asking: Always a preview; one click keeps it",
+   "body": "What changes: What it does today. Every stage costs one click.\n\nWhat it leads to: Nothing lands that nobody looked at.",
+   "bucket": null,
+   "parents": [
+    "q-guide-auto::a"
+   ],
+   "order": 1792344491265
+  },
+  {
+   "id": "gjx8wqaijm6pa4r9lf9l",
+   "code": "D3",
+   "kind": "decision",
+   "status": "proposed",
+   "label": "Who weighs an alternative by default: Both, by availability: Claude in the page always, plus the session when one is listening",
+   "body": "What changes: The page already knows whether a session is listening (the same check the deep lane uses before delivering). Every alternative gets the quick verdict in seconds; when a session is listening it is also sent there, and its checked answer is added to the same alternative. Two answers can disagree, so the session's answer should be marked as the checked one.\n\nWhat it leads to: One \"Preview the impact\" button instead of two. Uses session time whenever a session is listening, including for alternatives that don't need code. Needs a small change: the alternative card shows a second, later answer.",
+   "bucket": "should",
+   "parents": [
+    "q-alt-lane::b"
+   ],
+   "order": 1792344636182
+  },
+  {
+   "id": "wgv6bc6tslmzbapnrxrt",
+   "code": "D4",
+   "kind": "decision",
+   "status": "proposed",
+   "label": "Who weighs an alternative by default: The Claude Code session",
+   "body": "What changes: Can read the repo before judging; needs a watching session and takes longer.\n\nWhat it leads to: Alternatives about code get checked answers.",
+   "bucket": "wont",
+   "parents": [
+    "q-alt-lane::b"
+   ],
+   "order": 1792344654898
+  },
+  {
+   "id": "p-unclear",
+   "code": "P1",
+   "kind": "problem",
+   "status": "open",
+   "label": "The owner could not see how the hub gets installed and updated",
+   "body": "Owner, 2026-10-18: \"i dont understand how the hub gets installed and how it gets updated, maybe we make a step back and back to the whiteboard.\" The answer needed a picture and a place to argue, not a chat reply.",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390002000
+  },
+  {
+   "id": "p-answer",
+   "code": "P2",
+   "kind": "problem",
+   "status": "open",
+   "label": "v1 had no way to answer a question, see its paths, challenge or add input",
+   "body": "Owner on v1: \"first a way to actually answer to the question but also what are the paths of that, neither a way to challenge or provide inputs for the ideas.\"",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390003000
+  },
+  {
+   "id": "p-iterate",
+   "code": "P3",
+   "kind": "problem",
+   "status": "open",
+   "label": "No fast chat-and-iterate loop from the board itself",
+   "body": "Asked for \"an interactive mechanism for fast chat<>iterating from the board itself\", using the artifact database or another capability such as rooms.",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390004000
+  },
+  {
+   "id": "p-prioritise",
+   "code": "P4",
+   "kind": "problem",
+   "status": "open",
+   "label": "Nothing to prioritise with",
+   "body": "Asked for \"a MOSCOW approach interactive draggable system\".",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390005000
+  },
+  {
+   "id": "p-estimate",
+   "code": "P5",
+   "kind": "problem",
+   "status": "open",
+   "label": "Work entering the plan was not estimated",
+   "body": "\"when transitioning a task it should be estimated in background by another agent.\"",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390006000
+  },
+  {
+   "id": "p-outcomes",
+   "code": "P6",
+   "kind": "problem",
+   "status": "open",
+   "label": "Outcomes were not actionable",
+   "body": "Outcomes should become pages: \"an ADR, SOP, Design, or a simple decision record\", case by case and not limited to those types.",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390007000
+  },
+  {
+   "id": "p-draw",
+   "code": "P7",
+   "kind": "problem",
+   "status": "open",
+   "label": "Not a whiteboard: no place to write, diagram or paint",
+   "body": "\"a whiteboard is a place where oneself can write/diagram/paint/compose itself\", with several canvases to choose from, almost any element sendable to a canvas, and the first canvas created lazily and prepopulated with the discussion.",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390008000
+  },
+  {
+   "id": "p-reuse",
+   "code": "P8",
+   "kind": "problem",
+   "status": "open",
+   "label": "It had to outlive one session",
+   "body": "\"a long lasting artifact that can be reused/reset/cloned as a template/reference for other sessions/projects/tasks.\"",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390009000
+  },
+  {
+   "id": "s-model",
+   "code": "S1",
+   "kind": "solution",
+   "status": "done",
+   "label": "Items with kinds and statuses; questions carry paths; choosing a path records a decision",
+   "body": "Problem, solution, idea, question, decision, task. Each path says what changes if taken and where it leads. Choosing one answers the question and creates a proposed decision.",
+   "bucket": null,
+   "parents": [
+    "p-answer",
+    "p-outcomes"
+   ],
+   "order": 1792390010000
+  },
+  {
+   "id": "s-threads",
+   "code": "S2",
+   "kind": "solution",
+   "status": "done",
+   "label": "A thread on every item: challenge, support, input, answer, and \"Ask Claude to weigh in\"",
+   "body": "Claude reads the board and the thread, replies, and proposes actions that people apply one by one.",
+   "bucket": null,
+   "parents": [
+    "p-answer",
+    "p-iterate"
+   ],
+   "order": 1792390011000
+  },
+  {
+   "id": "s-lanes",
+   "code": "S3",
+   "kind": "solution",
+   "status": "done",
+   "label": "Two Claude lanes: quick in the page, deep to the Claude Code session",
+   "body": "Quick uses the sample capability and proposes board actions. Deep writes a request doc and sends it as a comment to the session that built the board, which answers on the board.",
+   "bucket": null,
+   "parents": [
+    "p-iterate"
+   ],
+   "order": 1792390012000
+  },
+  {
+   "id": "s-moscow",
+   "code": "S4",
+   "kind": "solution",
+   "status": "done",
+   "label": "MoSCoW board with drag, and a background estimate on entering Must, Should or Could",
+   "body": "Pointer drag on desktop, drag by the grip on touch, a select as fallback. The estimator returns size, days, confidence, rationale, risks and a first step, and is redone when the item text changes.",
+   "bucket": null,
+   "parents": [
+    "p-prioritise",
+    "p-estimate"
+   ],
+   "order": 1792390013000
+  },
+  {
+   "id": "s-pages",
+   "code": "S5",
+   "kind": "solution",
+   "status": "done",
+   "label": "Pages of any type, drafted by Claude from the items they come from",
+   "body": "ADR, SOP, Design, Decision record, Runbook or a type you name. Revise with Claude; the previous version can be restored.",
+   "bucket": null,
+   "parents": [
+    "p-outcomes"
+   ],
+   "order": 1792390014000
+  },
+  {
+   "id": "s-canvas",
+   "code": "S6",
+   "kind": "solution",
+   "status": "done",
+   "label": "Canvases: pen, highlighter, shapes, bound arrows, text, stickies and cards of items or pages",
+   "body": "A selector switches canvases. The first is created when something is first sent to a canvas; the eventhub space was seeded with an overview canvas.",
+   "bucket": null,
+   "parents": [
+    "p-draw"
+   ],
+   "order": 1792390015000
+  },
+  {
+   "id": "s-spaces",
+   "code": "S7",
+   "kind": "solution",
+   "status": "done",
+   "label": "Spaces: new, clone, save as template, reset, export and import JSON",
+   "body": "Everything lives in the artifact database under spaces/{id} and s/{space}/…, so the board outlives the session.",
+   "bucket": null,
+   "parents": [
+    "p-reuse"
+   ],
+   "order": 1792390016000
+  },
+  {
+   "id": "t-useS",
+   "code": "T1",
+   "kind": "task",
+   "status": "done",
+   "label": "Fix: views stopped updating after the first change",
+   "body": "Listeners subscribed after mount and missed updates emitted before it. The store hook now catches up on a version counter.",
+   "bucket": null,
+   "parents": [
+    "s-model"
+   ],
+   "order": 1792390017000
+  },
+  {
+   "id": "t-notes",
+   "code": "T2",
+   "kind": "task",
+   "status": "done",
+   "label": "Carry the v1 notes over, pinned to their versions",
+   "body": "Two v1 notes had been moved by hand since they were written, so the first delete was refused. Re-read, kept their content (one became an idea), then deleted at the right versions.",
+   "bucket": null,
+   "parents": [
+    "s-spaces"
+   ],
+   "order": 1792390018000
+  },
+  {
+   "id": "p-tree",
+   "code": "P9",
+   "kind": "problem",
+   "status": "open",
+   "label": "No tree of the journey: problems, branches, paths, decisions",
+   "body": "Owner on v2: \"we are missing a tree hierarchy view of the journey.\"",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390019000
+  },
+  {
+   "id": "p-preview",
+   "code": "P10",
+   "kind": "problem",
+   "status": "open",
+   "label": "Clicking a move showed no preview of its problems, the move, and what it changes",
+   "body": "\"the clickable moves needs a preview and a visualization of the problem card and the solution plus it changes.\"",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390020000
+  },
+  {
+   "id": "p-alt",
+   "code": "P11",
+   "kind": "problem",
+   "status": "open",
+   "label": "No way to say \"what about this other way?\" and see the impact first",
+   "body": "\"an interactive box where i can say hey what about doing it this other way, and then u receive that and provides a preview of the possible impact.\"",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390021000
+  },
+  {
+   "id": "p-new",
+   "code": "P12",
+   "kind": "problem",
+   "status": "open",
+   "label": "The eventhub journey was traced by hand; a new one has no fast path",
+   "body": "\"how about the journey of a new thing? how we reach the eventhub sample state? in a coherent fast process, its like you talking thru that interface, and evolving the state.\"",
+   "bucket": null,
+   "parents": [],
+   "order": 1792390022000
+  },
+  {
+   "id": "s-about",
+   "code": "S8",
+   "kind": "solution",
+   "status": "done",
+   "label": "One more link, \"about\": questions, tasks and decisions hang under the move they shape",
+   "body": "With \"solves\" and \"from\" it gives every item a place in the tree. Clone, import, delete and Claude all know it. Claude can add several linked items at once by naming them \"$key\".",
+   "bucket": null,
+   "parents": [
+    "p-tree",
+    "p-new"
+   ],
+   "order": 1792390023000
+  },
+  {
+   "id": "s-tree",
+   "code": "S9",
+   "kind": "solution",
+   "status": "done",
+   "label": "Tree view: problem → move → question → path → decision → page",
+   "body": "Each node is drawn once under its first parent; other parents get a dashed edge. Selecting a node lights its whole lineage. Branches fold. A replay scrubber rebuilds the board in the order things were added.",
+   "bucket": null,
+   "parents": [
+    "p-tree",
+    "p-new"
+   ],
+   "order": 1792390024000
+  },
+  {
+   "id": "s-preview",
+   "code": "S10",
+   "kind": "solution",
+   "status": "done",
+   "label": "Move preview, and a dry run that shows any proposal on the tree before it lands",
+   "body": "The pane shows the problem cards a move hangs from, the move, and what it changes: coverage, open forks, decisions, pages. Proposals are projected onto a copy of the board: new nodes dashed, changed ones amber, lost coverage red.",
+   "bucket": null,
+   "parents": [
+    "p-preview",
+    "p-alt"
+   ],
+   "order": 1792390025000
+  },
+  {
+   "id": "s-alt",
+   "code": "S11",
+   "kind": "solution",
+   "status": "done",
+   "label": "\"What about another way?\" box on every node",
+   "body": "Claude judges the alternative against the move (better, worse, mixed), lists gains and costs, and expresses it as board changes. Keep it, keep it only as an idea, ask Claude Code instead, or discard.",
+   "bucket": null,
+   "parents": [
+    "p-alt"
+   ],
+   "order": 1792390026000
+  },
+  {
+   "id": "s-guide",
+   "code": "S12",
+   "kind": "solution",
+   "status": "done",
+   "label": "Guide with Claude: six stages from nothing to written outcomes",
+   "body": "Frame, Problems, Moves, Forks, Decisions, Outcomes. Each turn Claude proposes the stage as a preview on the tree and asks one question; \"Keep all\" applies it and moves on. \"Take the next step for me\" works from the board alone.",
+   "bucket": null,
+   "parents": [
+    "p-new"
+   ],
+   "order": 1792390027000
+  },
+  {
+   "id": "q-browser",
+   "code": "Q1",
+   "kind": "question",
+   "status": "answered",
+   "label": "How do we check it in a real browser?",
+   "body": "Tested so far in jsdom with a stub database and stub Claude: every view, the tree, previews, alternatives, the guide, clone. Layout, drag and drawing have not been seen in a real browser.",
+   "bucket": null,
+   "parents": [
+    "s-tree"
+   ],
+   "order": 1792390028000
+  },
+  {
+   "id": "q-browser::a",
+   "shape": "pill",
+   "label": "Playwright pass in this session",
+   "parents": [
+    "q-browser"
+   ],
+   "state": "chosen",
+   "order": 1792390028000,
+   "body": "Needs a browser download and the owner’s OK."
+  },
+  {
+   "id": "q-browser::b",
+   "shape": "pill",
+   "label": "The owner tries it by hand",
+   "parents": [
+    "q-browser"
+   ],
+   "state": "closed",
+   "order": 1792390028000,
+   "body": "No setup; findings come back as comments or board items."
+  },
+  {
+   "id": "q-guide-auto",
+   "code": "Q2",
+   "kind": "question",
+   "status": "answered",
+   "label": "Should the guide ever apply without asking?",
+   "body": "",
+   "bucket": null,
+   "parents": [
+    "s-guide"
+   ],
+   "order": 1792390029000
+  },
+  {
+   "id": "q-guide-auto::a",
+   "shape": "pill",
+   "label": "Always a preview; one click keeps it",
+   "parents": [
+    "q-guide-auto"
+   ],
+   "state": "chosen",
+   "order": 1792390029000,
+   "body": "What it does today. Every stage costs one click."
+  },
+  {
+   "id": "q-guide-auto::b",
+   "shape": "pill",
+   "label": "An \"apply as we go\" switch per space",
+   "parents": [
+    "q-guide-auto"
+   ],
+   "state": "closed",
+   "order": 1792390029000,
+   "body": "Faster for a solo first draft."
+  },
+  {
+   "id": "q-alt-lane",
+   "code": "Q3",
+   "kind": "question",
+   "status": "answered",
+   "label": "Who weighs an alternative by default?",
+   "body": "",
+   "bucket": null,
+   "parents": [
+    "s-alt"
+   ],
+   "order": 1792390030000
+  },
+  {
+   "id": "q-alt-lane::a",
+   "shape": "pill",
+   "label": "Claude in the page",
+   "parents": [
+    "q-alt-lane"
+   ],
+   "state": "closed",
+   "order": 1792390030000,
+   "body": "Answers in seconds; cannot read code or run checks."
+  },
+  {
+   "id": "q-alt-lane::b",
+   "shape": "pill",
+   "label": "The Claude Code session",
+   "parents": [
+    "q-alt-lane"
+   ],
+   "state": "chosen",
+   "order": 1792390030000,
+   "body": "Can read the repo before judging; needs a watching session and takes longer."
+  },
+  {
+   "id": "q-alt-lane::c",
+   "shape": "pill",
+   "label": "Both, by availability: Claude in the page always, plus the session when one is listening",
+   "parents": [
+    "q-alt-lane"
+   ],
+   "state": "closed",
+   "order": 1792390030000,
+   "body": "The page already knows whether a session is listening (the same check the deep lane uses before delivering). Every alternative gets the quick verdict in seconds; when a session is listening it is also sent there, and its checked answer is added to the same alternative. Two answers can disagree, so the session's answer should be marked as the checked one."
+  },
+  {
+   "id": "q-shared",
+   "code": "Q4",
+   "kind": "question",
+   "status": "answered",
+   "label": "A move that solves several problems: draw it once or under each?",
+   "body": "",
+   "bucket": null,
+   "parents": [
+    "s-tree"
+   ],
+   "order": 1792390031000
+  },
+  {
+   "id": "q-shared::a",
+   "shape": "pill",
+   "label": "Once, under its first problem, with dashed edges to the others",
+   "parents": [
+    "q-shared"
+   ],
+   "state": "chosen",
+   "order": 1792390031000,
+   "body": "Counts stay honest; the \"solves several\" moves stand out by their dashed edges."
+  },
+  {
+   "id": "q-shared::b",
+   "shape": "pill",
+   "label": "Repeat it under each problem",
+   "parents": [
+    "q-shared"
+   ],
+   "state": "closed",
+   "order": 1792390031000,
+   "body": "Every branch reads alone; the same move shows up several times."
+  },
+  {
+   "id": "d-shared",
+   "code": "D5",
+   "kind": "decision",
+   "status": "proposed",
+   "label": "A move that solves several problems: Once, under its first problem, with dashed edges to the others",
+   "body": "Chosen while building v3. Waiting on the owner.",
+   "bucket": "should",
+   "parents": [
+    "q-shared::a"
+   ],
+   "order": 1792390032000
+  },
+  {
+   "id": "d-preview",
+   "code": "D6",
+   "kind": "decision",
+   "status": "proposed",
+   "label": "Claude’s changes are previews; nothing lands until someone keeps it",
+   "body": "Applies to chat, threads, alternatives and the guide. Follows the owner’s ask for \"a preview of the possible impact\".",
+   "bucket": null,
+   "parents": [
+    "s-preview",
+    "s-alt",
+    "s-guide"
+   ],
+   "order": 1792390033000
+  },
+  {
+   "id": "t-browser",
+   "code": "T3",
+   "kind": "task",
+   "status": "todo",
+   "label": "Real-browser pass: tree, MoSCoW drag, canvas drawing, phone width, dark mode",
+   "body": "",
+   "bucket": "must",
+   "parents": [
+    "s-tree"
+   ],
+   "order": 1792390034000
+  },
+  {
+   "id": "t-supersede",
+   "code": "T4",
+   "kind": "task",
+   "status": "todo",
+   "label": "Choosing a second path supersedes the first path's decision",
+   "body": "Q3 was answered twice (path c, then path b). Each choice created a decision, so D3 and D4 now both stand as proposed and contradict each other. Choosing again should mark the earlier decision from that question superseded, and the button should read \"Switch to this path\" once a question is answered.",
+   "bucket": "must",
+   "parents": [
+    "s-model"
+   ],
+   "order": 1792390040000
+  },
+  {
+   "id": "t-alt-both",
+   "code": "T5",
+   "kind": "task",
+   "status": "todo",
+   "label": "Alternatives: quick answer always, plus the session's checked answer when one is listening",
+   "body": "The work behind D3 (Q3 path c). The alternative card keeps the in-page verdict and gains a second, later answer from the Claude Code session, marked as checked. Only if Q3 stays on path c.",
+   "bucket": "should",
+   "parents": [
+    "s-alt",
+    "p-alt"
+   ],
+   "order": 1792390041000
+  },
+  {
+   "id": "t-moscow-kinds",
+   "code": "T6",
+   "kind": "task",
+   "status": "todo",
+   "label": "MoSCoW and decisions: show them on the board or stop Claude from bucketing them",
+   "body": "Claude moved D3, D4 and D5 into Should and Won't, but the MoSCoW board lists only tasks, solutions and ideas, so those moves are invisible there and decisions get estimated as if they were work.",
+   "bucket": "should",
+   "parents": [
+    "s-moscow",
+    "p-prioritise"
+   ],
+   "order": 1792390042000
+  },
+  {
+   "id": "page:pg-story",
+   "kind": "page",
+   "status": "accepted",
+   "label": "How this board was built",
+   "chips": [
+    "Note"
+   ],
+   "body": "## Where it started\nOn 2026-10-18 a worktree cleanup and the review of `build-m` showed two hub directories with disagreeing defaults. The owner asked to step back to the whiteboard. That design lives in the space **eventhub · multi-hub instances**.\n\n## v1\nA page with the proposal and a board of notes.\n\n## v2\nThe owner asked for answers with paths, challenges and inputs, a fast chat loop, MoSCoW with background estimates, pages as outcomes, real canvases, and reuse across sessions. Built as one artifact on the shared database, with Claude in the page (quick lane) and this Claude Code session (deep lane).\nTwo bugs found on the way: views stopped updating after the first change (fixed in the store hook), and two v1 notes had moved since they were written, so their deletes were pinned to fresh versions.\n\n## v3\nThe owner asked for a tree of the journey, a preview of each move and what it changes, an \"other way?\" box with a preview of its impact, a fast path for a new journey, and this space.\n\n## Not yet verified\nReal-browser rendering, MoSCoW drag and canvas drawing by hand, and real Claude calls from the page. See the open questions.\n",
+   "parents": [
+    "p-unclear",
+    "p-tree"
+   ],
+   "order": 1792390041000
+  },
+  {
+   "id": "page:pg-sop",
+   "kind": "page",
+   "status": "draft",
+   "label": "Start a new journey with the guide",
+   "chips": [
+    "SOP"
+   ],
+   "body": "## Purpose\nGo from an empty space to problems, moves, forks, decisions and pages in one sitting.\n\n## Steps\n1. Space menu → **New blank space…**, name it, keep **Start guided with Claude** ticked.\n2. **Frame:** say what you are building and why now. Claude proposes a name and a description.\n3. **Problems:** say what hurts, as things you have seen. Each answer comes back as a preview on the tree.\n4. **Moves:** Claude proposes moves that solve several problems at once. Change them in words or **Keep all**.\n5. **Forks:** questions under each move, each with paths that say what changes.\n6. **Decisions:** answer the forks; choosing a path records a decision.\n7. **Outcomes:** pages that record what was decided.\n\n## Check it worked\nOn the tree every problem has a move, and the Journey header shows no unsolved problems.\n\n## Roll back\nNothing lands without **Keep**. After keeping, edit or delete items from their panel.\n",
+   "parents": [
+    "d-preview",
+    "s-guide"
+   ],
+   "order": 1792390042000
+  }
+ ],
+ "words": {
+  "loose": "Not linked to a problem yet"
+ },
+ "legend": [
+  [
+   "solid",
+   "hangs under"
+  ],
+  [
+   "dash",
+   "also solves / also under"
+  ],
+  [
+   "new",
+   "proposed"
+  ],
+  [
+   "change",
+   "would change"
+  ],
+  [
+   "loss",
+   "would lose or drop"
+  ]
+ ]
+}

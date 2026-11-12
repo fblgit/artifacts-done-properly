@@ -1,0 +1,63 @@
+/* part:page.style.kit.chrome */
+/* Kit css: chrome primitives    kit version 0.1.1    pairs with kit/chrome.js
+   Buttons, inputs, labels, chips (base), dot, spinner, popover menu, title input, segmented control, empty note, modal scrim and dialog, toast, busy overlay, .mono (used by chrome.js).
+   Text uses --ink and --ink-2 only (each 4.5:1 or more on --panel and --sunk in both boards' themes); --ink-3 marks borders and dots.
+   Needs from the board: --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-ink --accent-soft --danger --ok --warn --shadow --f-ui --f-mono --f-display
+   Lifted from: Journey Whiteboard app.css (controls, popover, modal, toast, busy). */
+/* ---------- controls ---------- */
+.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); background: var(--panel); border-radius: 7px; padding: 5px 10px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.btn:hover { border-color: var(--ink-3); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.ghost { border-color: transparent; background: transparent; }
+.btn.ghost:hover { background: var(--sunk); }
+.btn.danger { color: var(--danger); }
+.btn.danger.armed { background: var(--danger); border-color: var(--danger); color: var(--panel); }
+.btn.sm { padding: 3px 8px; font-size: 12px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn svg { width: 15px; height: 15px; flex: none; }
+.input, .select, .textarea { border: 1px solid var(--rule); background: var(--panel); border-radius: 7px; padding: 6px 9px; width: 100%; min-width: 0; }
+.textarea { resize: vertical; line-height: 1.45; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.label { font: 500 11px/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.muted { color: var(--ink-2); }
+.faint { color: var(--ink-2); }
+.mono { font-family: var(--f-mono); font-size: 12.5px; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font: 500 11px/1 var(--f-mono); padding: 4px 6px; border-radius: 5px; background: var(--sunk); color: var(--ink-2); white-space: nowrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); display: inline-block; flex: none; }
+.dot.on { background: var(--ok); }
+.dot.off { background: var(--danger); }
+.spin { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; display: inline-block; flex: none; }
+@media (prefers-reduced-motion: no-preference) { .spin { animation: spin .8s linear infinite; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+/* ---------- popover menu ---------- */
+.pop { position: absolute; z-index: 40; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; box-shadow: var(--shadow); padding: 6px; min-width: 240px; max-width: calc(100vw - 32px); max-height: 70vh; overflow: auto; }
+.pop .mi { display: flex; width: 100%; align-items: center; gap: 8px; text-align: left; border: 0; background: transparent; padding: 7px 9px; border-radius: 6px; font-size: 13px; }
+.pop .mi:hover, .pop .mi:focus-visible { background: var(--sunk); outline: none; }
+.pop .mi.cur { font-weight: 600; }
+.pop .mi.danger { color: var(--danger); }
+.pop hr { border: 0; border-top: 1px solid var(--rule-2); margin: 5px 2px; }
+.pop .sec { padding: 6px 9px 3px; }
+.title-input { font: 700 19px/1.25 var(--f-display); border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 4px 6px; margin: -4px -6px; width: calc(100% + 12px); resize: none; overflow: hidden; }
+.title-input:hover { border-color: var(--rule); }
+.title-input:focus { border-color: var(--accent); outline: none; background: var(--panel); }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; background: var(--sunk); padding: 2px; border-radius: 7px; }
+.seg button { border: 0; background: transparent; padding: 3px 8px; border-radius: 5px; font-size: 12px; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.empty-note { color: var(--ink-2); font-size: 13px; padding: 10px; border: 1px dashed var(--rule); border-radius: 9px; }
+/* ---------- modal, toast, busy ---------- */
+.scrim { position: fixed; inset: 0; z-index: 70; background: rgba(10, 12, 16, .42); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.dialog { background: var(--panel); border-radius: 14px; box-shadow: var(--shadow); width: min(520px, 100%); max-height: 100%; overflow: auto; padding: 18px; display: grid; gap: 14px; }
+.dialog h2 { font-size: 19px; }
+.dialog .fields { display: grid; gap: 12px; }
+.dialog label.f { display: grid; gap: 5px; }
+.dialog .checks { display: grid; gap: 4px; max-height: 220px; overflow: auto; border: 1px solid var(--rule); border-radius: 8px; padding: 6px; }
+.dialog .checks label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; padding: 3px 4px; }
+.toast { position: fixed; z-index: 80; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--panel); padding: 9px 14px; border-radius: 9px; box-shadow: var(--shadow); max-width: calc(100vw - 32px); font-size: 13px; display: flex; gap: 10px; align-items: center; }
+.toast.warn { background: var(--danger); }
+.busy { position: fixed; z-index: 75; inset: 0; background: rgba(10, 12, 16, .3); display: grid; place-items: center; }
+.busy > div { background: var(--panel); border-radius: 12px; padding: 16px 20px; display: grid; gap: 8px; min-width: 260px; box-shadow: var(--shadow); }
+.bar { height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+/* /part:page.style.kit.chrome */

@@ -1,0 +1,36 @@
+{
+ "name": "assistant",
+ "base": "starter",
+ "summary": "A page with Claude capabilities enabled out of the box: a Work with Claude pane (pick a block, say what you want, send it to a watching Claude Code session or ask now), a Requests view that follows every request, and a line saying whether a session is watching.",
+ "use_when": "Any shared artifact where people should be able to point at a part of the page and have Claude change it, answer about it or fix it, without leaving the page.",
+ "capabilities": {
+  "db": {
+   "rules": [
+    {"path": "", "read": "view", "write": "admin"},
+    {"path": "ns/shared", "read": "view", "write": "interact"},
+    {"path": "ns/users/{self}", "read": "view", "write": "interact"},
+    {"path": "requests", "read": "view", "write": "interact"},
+    {"path": "conversations", "read": "view", "write": "interact"},
+    {"path": "presence", "read": "view", "write": "interact"}
+   ]
+  },
+  "user": {},
+  "comments": {"customAnchors": true}, "artifact": {},
+  "downloads": true,
+  "sample": {}
+ },
+ "take": [
+  "kit.dom",
+  "kit.tokens",
+  "kit.vocab",
+  "kit.keep-state",
+  "pattern.settings",
+  "pattern.inbox",
+  "pattern.namespaces",
+  "pattern.assist",
+  "pattern.block-picker",
+  "pattern.request-card",
+  "pattern.presence",
+  "pattern.assist-panel"
+ ]
+}

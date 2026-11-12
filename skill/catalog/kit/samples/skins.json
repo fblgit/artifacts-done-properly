@@ -1,0 +1,19 @@
+{
+ "note": "Invented page text. The three skins are the stage themes, read from their theme json files (light and dark token maps).",
+ "key": "kit-skins-demo",
+ "default": "glaze",
+ "skins": [
+  { "name": "glaze", "label": "Glaze", "json": "kit/themes/glaze.json" },
+  { "name": "adr", "label": "ADR table", "json": "kit/themes/adr-drafting-table.json" },
+  { "name": "whiteboard", "label": "Whiteboard", "json": "kit/themes/journey-whiteboard.json" }
+ ],
+ "page": {
+  "title": "Autumn firing plan",
+  "lead": "Three kilns, one booking sheet. Choose a skin and a light or dark mode; the choice stays for the next visit.",
+  "rows": [
+   { "name": "East kiln", "when": "Thursday", "state": "Booked" },
+   { "name": "West kiln", "when": "Friday", "state": "Free" },
+   { "name": "Raku pit", "when": "Saturday", "state": "Booked" }
+  ]
+ }
+}

@@ -1,0 +1,38 @@
+/* part:page.style.kit.patterns.options */
+/* Kit css: options and the pick    kit version 0.1.0    CSS only; the table half is kit/table.js with highlight
+   Option cards: <div class="kit-options"> <article class="kit-option" [data-pick]> <p class="kit-option-k">Option B</p> <h4>Name</h4> <p>What it is.</p>
+       <ul class="kit-option-pc"><li data-pc="pro">Fast</li><li data-pc="con">Costs more</li></ul> </article> … </div>
+     data-pick marks the chosen one: a full seam outline and the word "Picked" in the corner, so the choice survives without colour. Also use it on principle cards (leave the pro/con list out).
+   Tier cards: <div class="kit-tiers"> <article class="kit-tier" data-tier="1|2|3"> <p class="kit-tier-l">Strongest</p> <h4>Name</h4> <p>Why.</p> </article> </div>
+     The level word is the label; the dots repeat it (one filled for tier 3, three for tier 1).
+   Option table: render the options with Kit.table.render({highlight: row => row.picked && "picked"}) and put .kit-pill in a cell for a verdict word (data-tone ok|warn|danger|muted).
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-soft --ok --warn --danger --f-ui --f-mono --f-display; optional --seam */
+.kit-options, .kit-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; margin: 0; padding: 0; min-width: 0; }
+.kit-option, .kit-tier { position: relative; display: grid; gap: 6px; align-content: start; min-width: 0; padding: 14px 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); color: var(--ink); font: 15px/1.5 var(--f-ui); }
+.kit-option > *, .kit-tier > * { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.kit-option h4, .kit-tier h4 { font: 600 1.15rem/1.25 var(--f-display); color: var(--ink); }
+.kit-option p:not(.kit-option-k), .kit-tier p:not(.kit-tier-l) { color: var(--ink-2); font-size: 14.5px; }
+.kit-option-k, .kit-tier-l { font: 600 12px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-option[data-pick] { border-color: var(--seam, var(--accent)); box-shadow: 0 0 0 1px var(--seam, var(--accent)), var(--shadow); background: color-mix(in srgb, var(--accent-soft) 35%, var(--panel)); }
+.kit-option[data-pick]::after { content: "Picked"; position: absolute; top: 12px; right: 14px; font: 700 11.5px/1.5 var(--f-mono); color: var(--accent-ink, var(--panel)); background: var(--accent); padding: 0 9px; border-radius: 999px; }
+.kit-option[data-pick] .kit-option-k { padding-right: 64px; }
+.kit-option-pc { list-style: none; margin: 4px 0 0; padding: 8px 0 0; border-top: 1px dashed var(--rule); display: grid; gap: 4px; font-size: 14px; color: var(--ink); }
+.kit-option-pc li { position: relative; padding-left: 22px; }
+.kit-option-pc li::before { position: absolute; left: 0; top: 0; width: 16px; text-align: center; font: 700 14px/1.5 var(--f-mono); }
+.kit-option-pc li[data-pc="pro"]::before { content: "+"; color: color-mix(in srgb, var(--ok) 80%, var(--ink)); }
+.kit-option-pc li[data-pc="con"]::before { content: "\2212"; color: color-mix(in srgb, var(--danger) 80%, var(--ink)); }
+
+.kit-tier-l { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.kit-tier-l::after { content: "\25CF\25CF\25CF"; content: "\25CF\25CF\25CF" / ""; letter-spacing: 1px; font-size: 10px; color: var(--ink); }
+.kit-tier[data-tier="1"] { border-color: var(--ink-2); }
+.kit-tier[data-tier="2"] .kit-tier-l::after { content: "\25CF\25CF\25CB"; content: "\25CF\25CF\25CB" / ""; }
+.kit-tier[data-tier="3"] { border-style: dashed; }
+.kit-tier[data-tier="3"] .kit-tier-l::after { content: "\25CF\25CB\25CB"; content: "\25CF\25CB\25CB" / ""; }
+
+.kit-pill { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; font: 600 11.5px/1.5 var(--f-mono); padding: 0 8px 0 7px; border-radius: 999px; --tone: var(--ink-2);
+  color: color-mix(in srgb, var(--tone) 78%, var(--ink)); background: color-mix(in srgb, var(--tone) 10%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--panel)); }
+.kit-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.kit-pill[data-tone="ok"] { --tone: var(--ok); }
+.kit-pill[data-tone="warn"] { --tone: var(--warn); }
+.kit-pill[data-tone="danger"] { --tone: var(--danger); }
+/* /part:page.style.kit.patterns.options */

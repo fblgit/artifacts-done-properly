@@ -1,0 +1,56 @@
+/* part:page.style.kit.expand-card */
+/* Kit css: expandable work card    kit version 0.1.0    pairs with kit/patterns/expand-card.js
+   details.kit-xc-card   one card; its summary holds .kit-xc-ti (number, name, pills), .kit-xc-mx (the status matrix) and .kit-xc-oc (the outcome line)
+   .kit-xc-cell          a status cell: a dimension letter and a symbol with a word, [data-tone] ok warn danger accent muted; the dashed edge marks "not verified" and the dotted one "not applicable"
+   .hl / .dim            highlighted (outlined) and dimmed (faded, still readable) cards, set from outside
+   .kit-xc-body          the opened card: .kit-xc-sec sections with h4, ul, dl, tag rows (.kit-xc-tags, .kit-xc-tag)
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, optional --seam */
+.kit-xc { display: grid; gap: 10px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-xc [data-tone] { --tone: var(--ink-2); }
+.kit-xc [data-tone="ok"] { --tone: var(--ok); }
+.kit-xc [data-tone="warn"] { --tone: var(--warn); }
+.kit-xc [data-tone="danger"] { --tone: var(--danger); }
+.kit-xc [data-tone="accent"] { --tone: var(--accent); }
+.kit-xc-status { margin: 0; font: 500 13px var(--f-mono); color: var(--ink-2); }
+.kit-xc-status:empty { display: none; }
+.kit-xc-list { display: grid; gap: 10px; min-width: 0; }
+.kit-xc-empty { margin: 0; padding: 18px; text-align: center; color: var(--ink-2); border: 1px dashed var(--rule); border-radius: 12px; }
+.kit-xc-card { background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; min-width: 0; }
+.kit-xc-card.dim { opacity: .62; }
+.kit-xc-card.hl { border-color: var(--seam, var(--accent)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--seam, var(--accent)) 35%, transparent); }
+.kit-xc-card > summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; align-items: start; padding: 11px 14px 11px 38px; cursor: pointer; list-style: none; position: relative; }
+.kit-xc-card > summary::-webkit-details-marker { display: none; }
+.kit-xc-card > summary::before { content: ""; position: absolute; left: 16px; top: 18px; width: 7px; height: 7px; border: solid var(--ink-2); border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform .15s; }
+.kit-xc-card[open] > summary::before { transform: rotate(45deg); top: 16px; }
+.kit-xc-card > summary:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; border-radius: 12px; }
+.kit-xc-ti { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; min-width: 0; font-weight: 600; font-size: 15px; line-height: 1.35; }
+.kit-xc-no { font: 500 12px var(--f-mono); color: var(--ink-2); }
+.kit-xc-name { min-width: 0; overflow-wrap: anywhere; }
+.kit-xc-pill { font: 600 11.5px/1.5 var(--f-mono); padding: 0 7px; border-radius: 999px; white-space: nowrap; color: color-mix(in srgb, var(--tone) 78%, var(--ink)); background: color-mix(in srgb, var(--tone) 10%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 45%, var(--panel)); }
+.kit-xc-oc { grid-column: 1 / -1; margin: 0; font-size: 14px; color: var(--ink-2); max-width: 72ch; }
+.kit-xc-mx { display: grid; grid-template-columns: repeat(4, auto); gap: 4px; }
+.kit-xc-cell { display: flex; flex-direction: column; align-items: center; min-width: 66px; padding: 2px 6px; border-radius: 6px; font-size: 12px; line-height: 1.3; border: 1px solid color-mix(in srgb, var(--tone) 50%, var(--panel));
+  background: color-mix(in srgb, var(--tone) 10%, var(--panel)); color: color-mix(in srgb, var(--tone) 78%, var(--ink)); }
+.kit-xc-cell b { font: 600 10.5px var(--f-mono); letter-spacing: .04em; }
+.kit-xc-cell span { font-weight: 600; white-space: nowrap; }
+.kit-xc-cell[data-state="nv"] { border-style: dashed; }
+.kit-xc-cell[data-state="na"] { border-style: dotted; background: transparent; }
+.kit-xc-cell.inline { flex-direction: row; min-width: 0; padding: 1px 8px; }
+.kit-xc-legend { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-xc-body { display: grid; gap: 12px; padding: 4px 14px 14px 38px; border-top: 1px solid var(--rule-2); font-size: 14px; line-height: 1.55; min-width: 0; }
+.kit-xc-sec { min-width: 0; }
+.kit-xc-sec h4 { margin: 8px 0 4px; font: 600 12px var(--f-mono); color: var(--ink-2); }
+.kit-xc-sec p { margin: 0; }
+.kit-xc-sec ul { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; }
+.kit-xc-sec ul.kit-xc-warn { list-style: none; padding-left: 1.2em; }
+.kit-xc-sec ul.kit-xc-warn li { position: relative; }
+.kit-xc-sec ul.kit-xc-warn li::before { content: "!"; position: absolute; left: -1.2em; font-weight: 800; color: color-mix(in srgb, var(--warn) 78%, var(--ink)); }
+.kit-xc-dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; margin: 0; }
+.kit-xc-dl dt { font: 500 12.5px var(--f-mono); color: var(--ink-2); }
+.kit-xc-dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.kit-xc-tags { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; }
+.kit-xc-lbl { font: 600 12px var(--f-mono); color: var(--ink-2); margin-right: 2px; }
+.kit-xc-tag { font: 12px var(--f-mono); padding: 0 6px; border-radius: 4px; border: 1px solid var(--rule); background: var(--sunk); }
+@media (max-width: 520px) { .kit-xc-card > summary { grid-template-columns: minmax(0, 1fr); } .kit-xc-mx { grid-template-columns: repeat(4, minmax(0, 1fr)); } .kit-xc-cell { min-width: 0; } .kit-xc-cell span { white-space: normal; text-align: center; } .kit-xc-body { padding-left: 14px; } }
+@media (prefers-reduced-motion: reduce) { .kit-xc-card > summary::before { transition: none; } }
+/* /part:page.style.kit.expand-card */

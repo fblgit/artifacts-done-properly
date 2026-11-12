@@ -1,0 +1,21 @@
+{
+  "note": "Invented requests on an invented allotment planting plan. Uids are made up; times are relative to now in the preview. No real people, places or products.",
+  "now": "2026-10-26T09:30:00Z",
+  "me": "u-ines",
+  "names": {"u-ines": "Ines", "u-tomas": "Tomas"},
+  "titles": {"beds.north": "North beds", "calendar.sowing": "Sowing calendar", "home.welcome": "Welcome"},
+  "requests": [
+    {"id": "r-1793001000000-k2p9", "lane": "task", "scope": {"kind": "part", "id": "calendar.sowing", "label": "Sowing calendar", "hash": "3f2a9c1d0e4b"},
+      "text": "Add a row for broad beans: sow in late October, harvest from May.", "quote": "Sowing calendar. Garlic: October to November. Onion sets: March. Peas: March to June.",
+      "by": "u-ines", "at": "2026-10-26T09:12:00Z", "status": "done", "state": "working", "ackBy": "dev-session", "ackAt": "2026-10-26T09:12:40Z",
+      "progress": [{"at": "2026-10-26T09:13:10Z", "text": "Read the sowing calendar and its rows."}, {"at": "2026-10-26T09:14:05Z", "text": "Added broad beans between garlic and onion sets."}, {"at": "2026-10-26T09:15:30Z", "text": "Published version 1793001330-ab12."}],
+      "response": "Added **broad beans** to the sowing calendar: sow late October to November, harvest from May. The row sits after garlic so the autumn sowings read together.",
+      "doneAt": "2026-10-26T09:15:40Z", "changed": ["calendar.sowing"], "version": "1793001330-ab12",
+      "turns": [{"id": "0001", "by": "u-ines", "at": "2026-10-26T09:20:00Z", "text": "Thanks. Can the row say they need a cloche in a cold spell?"}, {"id": "0002", "by": "claude", "at": "2026-10-26T09:22:30Z", "text": "Done: the broad beans row now ends with *cover with a cloche below −5 °C*."}]},
+    {"id": "r-1793002000000-x7q1", "lane": "fix", "scope": {"kind": "part", "id": "beds.north", "label": "North beds", "hash": "91be04c2aa10"},
+      "text": "Bed 3 says 2.4 m but it is 2.1 m long.", "by": "u-tomas", "at": "2026-10-26T09:26:00Z", "status": "open", "state": "working", "ackBy": "dev-session",
+      "progress": [{"at": "2026-10-26T09:27:00Z", "text": "Found bed 3 in the north beds table."}, {"at": "2026-10-26T09:28:20Z", "text": "Changing the length and the area it feeds."}], "response": "", "changed": []},
+    {"id": "r-1793003000000-m4d8", "lane": "design", "scope": {"kind": "part", "id": "home.welcome", "label": "Welcome", "hash": "07c1d9e3b5f2"},
+      "text": "The welcome block is hard to read on a phone; the plot map pushes the text off the screen.", "by": "u-ines", "at": "2026-10-26T09:22:00Z", "status": "open", "state": null, "progress": [], "response": "", "changed": []}
+  ]
+}

@@ -1,0 +1,177 @@
+{
+ "note": "Three scripted jobs of an invented studio. The preview plays them from memory; no server is called.",
+ "jobs": {
+  "fire": {
+   "title": "Fire kiln 2 to cone 6",
+   "leases": [
+    "kiln 2",
+    "gas line"
+   ],
+   "end": {
+    "t": 13,
+    "status": "done"
+   },
+   "events": [
+    {
+     "t": 0,
+     "log": [
+      "Checking the vent"
+     ]
+    },
+    {
+     "t": 2,
+     "log": [
+      {
+       "text": "Vent open",
+       "tone": "ok"
+      },
+      "Lighting the burners"
+     ]
+    },
+    {
+     "t": 4,
+     "log": [
+      "Ramp 110 per hour"
+     ]
+    },
+    {
+     "t": 6,
+     "log": [
+      "600 degrees"
+     ]
+    },
+    {
+     "t": 8,
+     "log": [
+      "900 degrees"
+     ]
+    },
+    {
+     "t": 10,
+     "log": [
+      {
+       "text": "Near the peak, slowing the ramp",
+       "tone": "dim"
+      }
+     ]
+    },
+    {
+     "t": 12,
+     "log": [
+      {
+       "text": "Peak reached: 1,222",
+       "tone": "ok"
+      }
+     ]
+    }
+   ]
+  },
+  "rinse": {
+   "title": "Rinse the glaze tank",
+   "leases": [
+    "glaze tank"
+   ],
+   "end": {
+    "t": 9,
+    "status": "paused",
+    "waiting": "Open the tank lid so the hose reaches the bottom, then press Continue."
+   },
+   "events": [
+    {
+     "t": 0,
+     "log": [
+      "Draining to the sump"
+     ]
+    },
+    {
+     "t": 2,
+     "log": [
+      "First rinse"
+     ]
+    },
+    {
+     "t": 3,
+     "banner": "The lid is closed. Open it so the hose can reach the bottom.",
+     "log": [
+      {
+       "text": "Waiting for the lid",
+       "tone": "wait"
+      }
+     ]
+    }
+   ],
+   "resume": {
+    "title": "Rinse the glaze tank",
+    "end": {
+     "t": 5,
+     "status": "done"
+    },
+    "events": [
+     {
+      "t": 0,
+      "log": [
+       "Hose in place"
+      ]
+     },
+     {
+      "t": 2,
+      "log": [
+       "Second rinse"
+      ]
+     },
+     {
+      "t": 4,
+      "log": [
+       {
+        "text": "Water runs clear",
+        "tone": "ok"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "dry": {
+   "title": "Dry the test tile shelf",
+   "leases": [
+    "shelf C"
+   ],
+   "end": {
+    "t": 7,
+    "status": "failed"
+   },
+   "events": [
+    {
+     "t": 0,
+     "log": [
+      "Warming the shelf"
+     ]
+    },
+    {
+     "t": 3,
+     "log": [
+      "40 degrees"
+     ]
+    },
+    {
+     "t": 5,
+     "log": [
+      {
+       "text": "Humidity sensor out of range",
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "t": 6,
+     "log": [
+      {
+       "text": "Heater switched off for safety",
+       "tone": "bad"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

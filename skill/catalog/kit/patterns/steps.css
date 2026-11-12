@@ -1,0 +1,43 @@
+/* part:page.style.kit.patterns.steps */
+/* Kit css: numbered steps    kit version 0.1.0    pairs with kit/patterns/steps.js (the list works without it, minus the checkboxes)
+   <ol class="kit-steps"> <li class="kit-step" data-step="id" [data-gate]> <div class="kit-step-body"> <h4 class="kit-step-t">Title <span class="kit-step-ids"><code>T1.2</code></span></h4>
+       <p>What to do.</p> <p class="kit-step-done"><b>Done when</b> the check passes.</p> </div> </li> </ol>
+   The number is a CSS counter in the display face, so the order is the markup's. A gate step (data-gate) carries a ringed number and the word Gate: it is a check that stops the line.
+   .kit-steps-phase groups a list under a header with its own count and a thin progress bar. A done step (.is-done) is struck through and muted; the checkbox, not colour, says so.
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display; optional --seam (the gate ring, the bar fill, focus; falls back to --accent) */
+.kit-steps { counter-reset: kit-s; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.kit-step { counter-increment: kit-s; position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 0 14px; padding: 16px 0 16px; border-top: 1px solid var(--rule-2); min-width: 0; }
+.kit-step:first-child { border-top: 0; padding-top: 4px; }
+.kit-step::before { content: counter(kit-s); font: 600 1.9rem/1 var(--f-display); font-variant-numeric: tabular-nums lining-nums; color: var(--ink-2); text-align: right; padding-top: 1px; }
+.kit-step-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0; }
+.kit-step-body > * { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.kit-step-t { font: 700 1.02rem/1.3 var(--f-ui); color: var(--ink); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.kit-step-body p { font: 15px/1.55 var(--f-ui); color: var(--ink-2); max-width: 68ch; }
+.kit-step-body p b, .kit-step-body p strong { color: var(--ink); }
+.kit-step-body code { font: .88em var(--f-mono); color: var(--ink); background: var(--sunk); padding: 1px 5px; border-radius: 5px; }
+.kit-step-done { padding: 7px 11px; border-radius: 9px; background: var(--sunk); font-size: 13.5px !important; justify-self: start; max-width: 68ch; }
+.kit-step-done b { font: 600 12px var(--f-mono); margin-right: 6px; }
+.kit-step-ids { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.kit-step-ids code, .kit-step-ids span { font: 600 11px/1.5 var(--f-mono); color: var(--ink-2); background: none; padding: 0 6px; border-radius: 999px; border: 1px solid var(--rule); }
+.kit-step-gate { font: 600 11px/1.5 var(--f-mono); color: var(--ink); border: 1.5px solid var(--seam, var(--accent)); border-radius: 999px; padding: 0 8px; }
+.kit-step[data-gate]::before { color: var(--ink); text-decoration: underline; text-decoration-color: var(--seam, var(--accent)); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.kit-step-chk { justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; min-height: 28px; font: 500 12.5px var(--f-mono); color: var(--ink-2); cursor: pointer; }
+.kit-step-chk input { width: 17px; height: 17px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+.kit-step-chk:has(input:focus-visible) { outline: 2px solid var(--seam, var(--accent)); outline-offset: 3px; border-radius: 6px; }
+.kit-step.is-done .kit-step-t > :first-child, .kit-step.is-done .kit-step-title { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+
+.kit-steps-phase { display: grid; gap: 4px; padding: 6px 18px 12px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); min-width: 0; }
+.kit-steps-phase + .kit-steps-phase { margin-top: 14px; }
+.kit-phase-h { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 2px 14px; padding: 12px 0 8px; }
+.kit-phase-h h3 { margin: 0; font: 600 1.3rem/1.2 var(--f-display); color: var(--ink); }
+.kit-phase-t { grid-column: 1; font: 13.5px/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-progress { grid-row: 1; grid-column: 2; font: 500 12.5px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.kit-progress-bar { grid-column: 1 / -1; height: 4px; border-radius: 4px; background: var(--sunk); overflow: hidden; box-shadow: inset 0 0 0 1px var(--rule-2); margin-top: 6px; }
+.kit-progress-bar > i { display: block; height: 100%; width: var(--p, 0%); background: var(--seam, var(--accent)); border-radius: 4px; }
+.kit-steps-tools { display: flex; justify-content: flex-end; margin-top: 8px; }
+.kit-steps-reset { font: 600 12px var(--f-ui); color: var(--ink-2); background: none; border: 1px solid var(--rule); border-radius: 999px; padding: 5px 12px; min-height: 28px; cursor: pointer; }
+.kit-steps-reset:hover { color: var(--ink); border-color: var(--ink-2); }
+.kit-steps-reset:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .kit-progress-bar > i { transition: width .25s ease; } }
+@media (max-width: 480px) { .kit-step { grid-template-columns: 32px minmax(0, 1fr); gap: 0 10px; } .kit-step::before { font-size: 1.5rem; } .kit-steps-phase { padding-inline: 14px; } }
+/* /part:page.style.kit.patterns.steps */

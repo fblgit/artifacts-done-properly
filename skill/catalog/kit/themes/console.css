@@ -1,0 +1,182 @@
+/* part:page.style.kit.theme.console */
+/* Kit theme: Console    kit version 0.1.0
+   A green phosphor screen at night, a teletype printout by day; one monospaced voice, square-ish corners and state as a glyph plus a word.
+   Character: all monospace (JetBrains Mono over IBM Plex Mono), 13.5px on 1.6, corners 2 to 4px, dashed rules in the components. At night --scan lays a faint scanline over the ground (--bg-image) and --glow is a text-shadow for the one phosphor accent; in light both are none. Keep --glow off body text.
+   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --glow (a text-shadow, night only), --scan (the scanline image, night only).
+   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+   Fonts: https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap
+   From: the hub's Console skin (tokens, glow, scanline) and an earlier board's terminal skin. */
+/* Layout: none; a palette, type and a feel for any page. */
+:root {
+  color-scheme: light;
+  --bg: #e9e8e1;
+  --panel: #f4f3ee;
+  --sunk: #dfddd4;
+  --ink: #15180f;
+  --ink-2: #575b50;
+  --ink-3: #5e6057;
+  --rule: #a9a597;
+  --rule-2: #c9c6ba;
+  --accent: #0b6a30;
+  --accent-ink: #e9e8e1;
+  --accent-soft: #d5e6d6;
+  --seam: #0a5c82;
+  --gold-leaf: linear-gradient(90deg, #cfe7f0, #0a5c82 45%, #063a54 75%, #5db4d6);
+  --focus: #0a5c82;
+  --danger-soft: #f3d7d2;
+  --danger: #b0201a;
+  --ok-soft: #d5e6d6;
+  --ok: #0b6a30;
+  --warn-soft: #f1dfc0;
+  --warn: #8a4a00;
+  --info-soft: #d3e3ea;
+  --info: #0a5c82;
+  --wait-soft: #e2dcf2;
+  --wait: #5a3eae;
+  --k-problem: #b0201a;
+  --k-solution: #0b6a30;
+  --k-idea: #8a4a00;
+  --k-question: #0a5c82;
+  --k-decision: #5a3eae;
+  --k-task: #575b50;
+  --c-ink: #15180f;
+  --c-blue: #0a5c82;
+  --c-red: #b0201a;
+  --c-green: #0b6a30;
+  --c-amber: #8a4a00;
+  --c-violet: #5a3eae;
+  --st-yellow: #f0e7c8;
+  --st-blue: #c9d7ef;
+  --st-pink: #f0c9d6;
+  --st-green: #c9f0d6;
+  --sticky-ink: #15180f;
+  --canvas: #eeeee8;
+  --dot: rgba(21, 24, 15, 0.12);
+  --shadow: 0 1px 0 #c9c6ba, 0 10px 24px -14px rgba(21, 24, 15, .45);
+  --f-display: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --f-ui: "IBM Plex Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --f-hand: "IBM Plex Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --outline: #a9a597;
+  --bg-image: none;
+  --glow: none;
+  --scan: none;
+  --radius: 3px;
+  --radius-lg: 4px;
+  --edge-w: 1px;
+  --text-size: 13.5px;
+  --leading: 1.6;
+  --measure: 78ch;
+  --pad: 10px;
+  --label-case: uppercase;
+  --label-caps: normal;
+  --head-case: none;
+  --bg-size: auto;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #060807;
+    --panel: #0b0f0d;
+    --sunk: #111815;
+    --ink: #d3f2dc;
+    --ink-2: #82a08e;
+    --ink-3: #678874;
+    --rule: #2d4237;
+    --rule-2: #1d2a24;
+    --accent: #46e38a;
+    --accent-ink: #060807;
+    --accent-soft: #0f2b1c;
+    --seam: #63d2ff;
+    --gold-leaf: linear-gradient(90deg, #0f4a66, #63d2ff 45%, #bdeaff 70%, #3aa6d0);
+    --focus: #63d2ff;
+    --danger-soft: #331310;
+    --danger: #ff6b5e;
+    --ok-soft: #0f2b1c;
+    --ok: #46e38a;
+    --warn-soft: #2e2108;
+    --warn: #ffb43d;
+    --info-soft: #0b2633;
+    --info: #63d2ff;
+    --wait-soft: #1f1838;
+    --wait: #b9a2ff;
+    --k-problem: #ff6b5e;
+    --k-solution: #46e38a;
+    --k-idea: #ffb43d;
+    --k-question: #63d2ff;
+    --k-decision: #b9a2ff;
+    --k-task: #82a08e;
+    --c-ink: #d3f2dc;
+    --c-blue: #63d2ff;
+    --c-red: #ff6b5e;
+    --c-green: #46e38a;
+    --c-amber: #ffb43d;
+    --c-violet: #b9a2ff;
+    --st-yellow: #c5b580;
+    --st-blue: #7f99c5;
+    --st-pink: #c58097;
+    --st-green: #7fc597;
+    --sticky-ink: #060807;
+    --canvas: #080c0a;
+    --dot: rgba(211, 242, 220, 0.09);
+    --shadow: 0 0 0 1px #1d2a24, 0 12px 30px -12px rgba(0, 0, 0, .8);
+    --outline: #2d4237;
+    --bg-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 3px);
+    --glow: 0 0 8px rgba(70, 227, 138, .35);
+    --scan: repeating-linear-gradient(0deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 3px);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #060807;
+  --panel: #0b0f0d;
+  --sunk: #111815;
+  --ink: #d3f2dc;
+  --ink-2: #82a08e;
+  --ink-3: #678874;
+  --rule: #2d4237;
+  --rule-2: #1d2a24;
+  --accent: #46e38a;
+  --accent-ink: #060807;
+  --accent-soft: #0f2b1c;
+  --seam: #63d2ff;
+  --gold-leaf: linear-gradient(90deg, #0f4a66, #63d2ff 45%, #bdeaff 70%, #3aa6d0);
+  --focus: #63d2ff;
+  --danger-soft: #331310;
+  --danger: #ff6b5e;
+  --ok-soft: #0f2b1c;
+  --ok: #46e38a;
+  --warn-soft: #2e2108;
+  --warn: #ffb43d;
+  --info-soft: #0b2633;
+  --info: #63d2ff;
+  --wait-soft: #1f1838;
+  --wait: #b9a2ff;
+  --k-problem: #ff6b5e;
+  --k-solution: #46e38a;
+  --k-idea: #ffb43d;
+  --k-question: #63d2ff;
+  --k-decision: #b9a2ff;
+  --k-task: #82a08e;
+  --c-ink: #d3f2dc;
+  --c-blue: #63d2ff;
+  --c-red: #ff6b5e;
+  --c-green: #46e38a;
+  --c-amber: #ffb43d;
+  --c-violet: #b9a2ff;
+  --st-yellow: #c5b580;
+  --st-blue: #7f99c5;
+  --st-pink: #c58097;
+  --st-green: #7fc597;
+  --sticky-ink: #060807;
+  --canvas: #080c0a;
+  --dot: rgba(211, 242, 220, 0.09);
+  --shadow: 0 0 0 1px #1d2a24, 0 12px 30px -12px rgba(0, 0, 0, .8);
+  --outline: #2d4237;
+  --bg-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 3px);
+  --glow: 0 0 8px rgba(70, 227, 138, .35);
+  --scan: repeating-linear-gradient(0deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 3px);
+}
+/* /part:page.style.kit.theme.console */

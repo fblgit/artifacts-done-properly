@@ -1,0 +1,11 @@
+{
+ "note": "Invented regions of a community garden page.",
+ "regions": [
+  { "num": 1, "eyebrow": "This week", "title": "Watering rota", "lede": "Who waters which bed, and when the hose is free.", "icon": "clock",
+    "panel": { "label": "Beds", "count": 4, "items": [["North bed", "Odile, Mon and Thu"], ["Herb spiral", "Ravi, Tue"], ["Bean wall", "Tomasz, Wed and Sat"], ["Pond edge", "Maria, Fri"]] } },
+  { "num": 2, "eyebrow": "Tools", "title": "Shed log", "lede": "What came out of the shed and has not come back.", "icon": "list",
+    "empty": { "icon": "check", "title": "Everything is back in the shed.", "text": "When someone borrows a tool, add it here so the next person knows where it went.", "action": "Log a borrowed tool" } },
+  { "eyebrow": "Seeds", "title": "Swap table", "lede": "Bring labelled packets; take what you will plant.", "icon": "heart",
+    "panel": { "label": "Wanted", "count": 0, "items": [] } }
+ ]
+}

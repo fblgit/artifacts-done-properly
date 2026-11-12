@@ -1,0 +1,37 @@
+/* part:page.style.kit.work-card */
+/* Kit css: work card with stamps    kit version 0.1.0    pairs with kit/patterns/work-card.js
+   .kit-wks            the list of cards (a responsive grid);  .kit-wk one card, tinted by its state tone through [data-vo-tone] (kit/vocab.css)
+   .kit-wk-outcome     the outcome stamp: a pill and what it ended onto;  .kit-wk-ans the answered stamp;  .kit-wk-prov the provenance badge row
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, optional --rim --pool --glz-r-l --glz-sh-1 --seam */
+.kit-wks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; align-items: start; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-wk-empty { grid-column: 1 / -1; margin: 0; padding: 16px; border: 1px dashed var(--rule); border-radius: 12px; color: var(--ink-2); text-align: center; font-size: 14px; }
+.kit-wk { display: grid; gap: 10px; min-width: 0; padding: 14px; background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--vo-c, var(--rule)); border-radius: var(--glz-r-l, 12px); color: var(--ink); font-family: var(--f-ui);
+  box-shadow: inset 0 1px 0 var(--rim, transparent), inset 0 -16px 18px -18px var(--pool, transparent), var(--glz-sh-1, none); }
+.kit-wk-head { display: flex; gap: 8px; align-items: baseline; }
+.kit-wk-id { font: 700 12.5px var(--f-mono); color: var(--ink-2); }
+.kit-wk-ver { margin-left: auto; font: 500 12px var(--f-mono); color: var(--ink-2); }
+.kit-wk-title { margin: 0; font: 700 16px/1.35 var(--f-display, var(--f-ui)); overflow-wrap: anywhere; }
+.kit-wk-open { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+.kit-wk-open:hover { text-decoration-color: var(--seam, var(--accent)); }
+.kit-wk-open:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; border-radius: 4px; }
+.kit-wk-raw { margin: -4px 0 0; font-size: 12.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-wk-raw q { font-style: italic; }
+.kit-wk-states { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; min-width: 0; }
+.kit-wk-outcome { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.kit-wk-rk { font-size: 13px; color: var(--ink-2); }
+.kit-wk code { font: 12.5px var(--f-mono); padding: 1px 6px; border-radius: 5px; background: var(--sunk); border: 1px solid var(--rule-2); overflow-wrap: anywhere; }
+.kit-wk-id.kit-wk-id { background: none; border: 0; padding: 0; }
+.kit-wk-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 13.5px; min-width: 0; }
+.kit-wk-own { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.kit-wk-own i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--rule); background: var(--sunk); font: 700 10.5px var(--f-mono); font-style: normal; color: var(--ink); }
+.kit-wk-asks { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; }
+.kit-wk-asks .kit-vo-g { width: 1.15em; height: 1.15em; color: var(--warn); }
+.kit-wk-holds { display: inline-flex; align-items: baseline; gap: 6px; }
+.kit-wk-holds i { font-style: normal; font-size: 12px; color: var(--ink-2); }
+.kit-wk-ans { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--rule-2); border-radius: 10px; background: var(--sunk); font-size: 13.5px; min-width: 0; }
+.kit-wk-ans q { font-style: italic; overflow-wrap: anywhere; }
+.kit-wk-by { font-size: 12.5px; color: var(--ink-2); }
+.kit-wk-by time, time.kit-wk-by { font: 12.5px var(--f-mono); color: var(--ink-2); }
+.kit-wk-prov { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; padding-top: 8px; border-top: 1px dashed var(--rule); min-width: 0; }
+.kit-wk-vs { font: 500 12px var(--f-mono); color: var(--ink-2); }
+/* /part:page.style.kit.work-card */

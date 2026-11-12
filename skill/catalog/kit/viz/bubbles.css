@@ -1,0 +1,44 @@
+/* part:page.style.kit.viz.bubbles */
+/* Kit css: bubble pictures    kit version 0.1.0    pairs with kit/viz/bubbles.js
+   .kit-bb (figure + lens)  .kit-bb-fig (the picture)  svg parts: .kit-bb-pool .kit-bb-ring .kit-bb-seam .kit-bb-tick .kit-bb-gl-t (labels; .kit-bb-sub the second line) and the bubble
+   .kit-bb-b with .kit-bb-halo .kit-bb-bub .kit-bb-gloss .kit-bb-gl (the record's glyph) .kit-bb-mk (the state's mark); .dim is a record the filter leaves out, .sel the picked one.
+   The lens line: .kit-bb-lens with .kit-bb-lt (text), .kit-bb-la (actions) .kit-bb-act.
+   A bubble's ring takes the state's tone from [data-vo-tone] (--vo-c, kit/vocab.css) and carries a small glyph of the state; the lens and the tip say it in words.
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui, optional --seam --seam-0..4 --hi --pebble-hi --rim --pool --sunk-2 --edge */
+.kit-bb { display: grid; gap: 10px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-bb-fig { min-width: 0; padding: 14px 14px 16px; overflow-x: auto; border-radius: var(--glz-r-l, 16px); background: var(--panel); border: 1px solid var(--rule);
+  box-shadow: inset 0 1.5px 0 var(--rim, transparent), inset 0 -22px 26px -24px var(--pool, transparent); }
+.kit-bb-svg { display: block; width: 100%; min-width: 640px; height: auto; overflow: visible; }
+.kit-bb-pool { fill: var(--sunk); }
+.kit-bb-ring { fill: none; stroke: var(--seam, var(--accent)); stroke-width: 1.8; stroke-linecap: round; stroke-dasharray: .1 8.5; opacity: .9; }
+.kit-bb-orb { stroke-width: 1.4; }
+.kit-bb-seam { fill: none; stroke-width: 2.4; stroke-linecap: round; opacity: .85; }
+.kit-bb-tick { fill: var(--seam, var(--accent)); }
+.kit-bb-gl-t { fill: var(--ink); font: 700 18px var(--f-ui); }
+.kit-bb-sub { fill: var(--ink-2); font: 500 16px var(--f-ui); }
+.kit-bb-lane { text-anchor: start; font-size: 18px; } .kit-bb-lane.kit-bb-sub { font-size: 16px; }
+.kit-bb-core { fill: var(--pebble-hi, var(--panel)); stroke: var(--rule); stroke-width: 2; }
+.kit-bb-core-t { fill: var(--ink); font: 700 13px var(--f-ui); }
+.kit-bb-b { --c: var(--vo-c, var(--ink-3)); cursor: pointer; outline: none; transition: opacity .2s; }
+.kit-bb-bub { fill: var(--panel); stroke: var(--c); stroke-width: 3.4; }
+.kit-bb-halo { fill: var(--c); opacity: 0; transition: opacity .2s; }
+.kit-bb-gloss { fill: var(--hi, var(--panel)); opacity: .55; }
+.kit-bb-gl { fill: none; stroke: var(--ink); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.kit-bb-mk circle { fill: var(--c); stroke: var(--panel); stroke-width: 1.6; }
+.kit-bb-mk .kit-vo-g { fill: none; stroke: var(--on-state, var(--panel)); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.kit-bb-b:hover .kit-bb-halo, .kit-bb-b:focus-visible .kit-bb-halo { opacity: .22; }
+.kit-bb-b:focus-visible .kit-bb-bub { stroke-width: 4.2; stroke: var(--seam, var(--accent)); }
+.kit-bb-b.dim { opacity: .22; cursor: default; }
+.kit-bb-b.sel .kit-bb-bub { stroke: var(--seam, var(--accent)); stroke-width: 4.4; }
+.kit-bb-b.sel .kit-bb-halo { fill: var(--seam, var(--accent)); opacity: .35; }
+.kit-bb-lens { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; min-height: 62px; padding: 10px 14px; border-radius: var(--glz-r-m, 14px); background: var(--sunk); box-shadow: inset 0 1px 0 var(--rim, transparent); }
+.kit-bb-lt { display: grid; gap: 1px; min-width: 0; flex: 1 1 220px; }
+.kit-bb-lt b { font: 700 1rem/1.3 var(--f-ui); overflow-wrap: anywhere; }
+.kit-bb-ls { font: 500 .85rem/1.4 var(--f-ui); color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-bb-hint { font: 500 .9rem/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-bb-la { display: flex; flex-wrap: wrap; gap: 7px; }
+.kit-bb-act { min-height: 32px; padding: 0 13px; border: 1.25px solid var(--edge, var(--rule)); border-radius: 999px; background: var(--sunk-2, var(--panel)); color: var(--ink); font: 600 .8rem/1 var(--f-ui); cursor: pointer; }
+.kit-bb-act:hover { border-color: var(--edge-gold, var(--seam, var(--accent))); } .kit-bb-act:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-bb-act.kit-bad:hover { color: var(--danger-ink, var(--danger)); border-color: var(--danger); }
+@media (prefers-reduced-motion: reduce) { .kit-bb-b, .kit-bb-halo { transition: none; } }
+/* /part:page.style.kit.viz.bubbles */

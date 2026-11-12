@@ -1,0 +1,35 @@
+/* part:page.style.kit.viz.topology */
+/* Kit css: clickable topology    kit version 0.1.0    pairs with kit/viz/topology.js
+   .kit-topo (figure + detail panel)  .kit-topo-fig (scrolls inside itself)  svg parts: .kit-topo-zone .kit-topo-link .kit-topo-node .kit-topo-state
+   A picked node is filled with --accent and carries a dot, so the pick is not colour alone. Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam */
+.kit-topo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 14px; align-items: start; min-width: 0; font: 13px/1.45 var(--f-ui); color: var(--ink); }
+@media (max-width: 760px) { .kit-topo { grid-template-columns: minmax(0, 1fr); } }
+.kit-topo-fig { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); }
+.kit-topo-fig:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-topo-fig svg { display: block; width: 100%; height: auto; }
+.kit-topo-zone { fill: var(--sunk); stroke: var(--rule); stroke-width: 1; } .kit-topo-zone.outline { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.kit-topo-zt { font: 600 12.5px var(--f-ui); fill: var(--ink); } .kit-topo-zs { font: 11.5px var(--f-mono); fill: var(--ink-2); }
+.kit-topo-link { fill: none; stroke: var(--ink-2); stroke-width: 1.6; } .kit-topo-link.dashed { stroke-dasharray: 3 5; }
+.kit-topo-arrow { fill: var(--ink-2); }
+.kit-topo-ll, .kit-topo-note { font: 11.5px var(--f-ui); fill: var(--ink-2); paint-order: stroke; stroke: var(--panel); stroke-width: 4px; stroke-linejoin: round; }
+.kit-topo-node { cursor: pointer; outline: none; }
+.kit-topo-node .b { fill: var(--panel); stroke: var(--ink-2); stroke-width: 1.4; }
+.kit-topo-node .n { font: 600 14px var(--f-ui); fill: var(--ink); } .kit-topo-node .s { font: 11.5px var(--f-ui); fill: var(--ink-2); }
+.kit-topo-node:hover .b { stroke: var(--ink); stroke-width: 2; }
+.kit-topo-node:focus-visible .b { stroke: var(--seam, var(--accent)); stroke-width: 3; }
+.kit-topo-node[aria-pressed="true"] .b { fill: var(--accent); stroke: var(--accent); }
+.kit-topo-node[aria-pressed="true"] .n, .kit-topo-node[aria-pressed="true"] .s, .kit-topo-picked { fill: var(--accent-ink); }
+.kit-topo-picked { font: 11px var(--f-ui); }
+.kit-topo-state circle { stroke: var(--panel); stroke-width: 2; } .kit-topo-state text { font: 700 12px var(--f-mono); fill: var(--panel); }
+.kit-topo-s-ok circle { fill: var(--ok); } .kit-topo-s-warn circle { fill: var(--warn); } .kit-topo-s-danger circle { fill: var(--danger); }
+.kit-topo-side { border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); padding: 12px 14px; display: grid; gap: 6px; min-width: 0; }
+.kit-topo-side h4 { margin: 0; font: 600 17px/1.2 var(--f-display, var(--f-ui)); } .kit-topo-side h5 { margin: 8px 0 0; font: 600 12px var(--f-mono); color: var(--ink-2); }
+.kit-topo-kick { font: 500 11.5px var(--f-mono); color: var(--ink-2); } .kit-topo-sub { margin: 0; color: var(--ink-2); }
+.kit-topo-side dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; margin: 4px 0 0; }
+.kit-topo-side dt { color: var(--ink-2); font-size: 12.5px; } .kit-topo-side dd { margin: 0; font-family: var(--f-mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.kit-topo-side ul { margin: 0; padding-left: 1.1em; color: var(--ink-2); }
+.kit-topo-tags { display: flex; flex-wrap: wrap; gap: 5px; } .kit-topo-tags span { font: 500 11.5px var(--f-mono); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--rule); color: var(--ink-2); }
+.kit-topo-tags span.on { color: var(--ink); border-color: var(--ink-2); background: var(--sunk); }
+.kit-topo-empty { margin: 0; color: var(--ink-2); }
+.kit-topo-cap { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-2); }
+/* /part:page.style.kit.viz.topology */

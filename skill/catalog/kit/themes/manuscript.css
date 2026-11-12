@@ -1,0 +1,176 @@
+/* part:page.style.kit.theme.manuscript */
+/* Kit theme: Manuscript    kit version 0.1.0
+   A sheet of paper on a desk: blue ink for the reader, red pen for what is open, one serif voice.
+   Character: Source Serif 4 for everything but code, 17px on 1.6 inside a 36rem measure, labels in small caps (--label-caps: all-small-caps, no capitals), near-square 2 and 4px corners, rules do the structure (hairlines, heavy --ink rules over title blocks). Colour never fills a pill: use --label-caps and a word. The review tone (--wait) is a plum added here so review and open are not both red; the skin itself read review as blue.
+   Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
+   --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
+   Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
+   --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
+   Fonts: https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap
+   From: the hub's Manuscript skin (small caps, heavy rules, clause numbering, 36rem measure) and an earlier board's spec-document skin. */
+/* Layout: none; a palette, type and a feel for any page. */
+:root {
+  color-scheme: light;
+  --bg: #e7e2d7;
+  --panel: #fffdf7;
+  --sunk: #f8f4ea;
+  --ink: #1b1c20;
+  --ink-2: #47474d;
+  --ink-3: #636268;
+  --rule: #c4bba8;
+  --rule-2: #e2dbcc;
+  --accent: #1d3c8f;
+  --accent-ink: #fffdf7;
+  --accent-soft: #edf1fa;
+  --seam: #ab2a1f;
+  --gold-leaf: linear-gradient(90deg, #fbeeea, #ab2a1f 45%, #6e150e 75%, #d97a70);
+  --focus: #ab2a1f;
+  --danger-soft: #fbeeea;
+  --danger: #ab2a1f;
+  --ok-soft: #e6f0e7;
+  --ok: #2b6a3a;
+  --warn-soft: #f8ecd8;
+  --warn: #8f4a00;
+  --info-soft: #edf1fa;
+  --info: #1d3c8f;
+  --wait-soft: #f0e8f5;
+  --wait: #6a3a8a;
+  --k-problem: #ab2a1f;
+  --k-solution: #2b6a3a;
+  --k-idea: #8f4a00;
+  --k-question: #1d3c8f;
+  --k-decision: #6a3a8a;
+  --k-task: #47474d;
+  --c-ink: #1b1c20;
+  --c-blue: #1d3c8f;
+  --c-red: #ab2a1f;
+  --c-green: #2b6a3a;
+  --c-amber: #8f4a00;
+  --c-violet: #6a3a8a;
+  --st-yellow: #f0e6c7;
+  --st-blue: #c9d7ee;
+  --st-pink: #f0c8d4;
+  --st-green: #c9efd4;
+  --sticky-ink: #1b1c20;
+  --canvas: #f3f0e7;
+  --dot: rgba(27, 28, 32, 0.12);
+  --shadow: 0 1px 2px rgba(60, 48, 20, .08), 0 18px 48px -18px rgba(60, 48, 20, .28);
+  --f-display: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --f-ui: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --f-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
+  --f-hand: "Courier Prime", "Courier New", ui-monospace, monospace;
+  --outline: #c4bba8;
+  --bg-image: none;
+  --radius: 2px;
+  --radius-lg: 4px;
+  --edge-w: 1px;
+  --text-size: 17px;
+  --leading: 1.6;
+  --measure: 36rem;
+  --pad: 14px;
+  --label-case: none;
+  --label-caps: all-small-caps;
+  --head-case: none;
+  --bg-size: auto;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e0f11;
+    --panel: #1a1b1e;
+    --sunk: #212226;
+    --ink: #ebe6db;
+    --ink-2: #c7c2b7;
+    --ink-3: #a29d93;
+    --rule: #4a4a50;
+    --rule-2: #2e2f34;
+    --accent: #a7bcff;
+    --accent-ink: #1a1b1e;
+    --accent-soft: #1e2436;
+    --seam: #ff9488;
+    --gold-leaf: linear-gradient(90deg, #6e2a24, #ff9488 45%, #ffd6d0 70%, #d9695e);
+    --focus: #ff9488;
+    --danger-soft: #36201d;
+    --danger: #ff9488;
+    --ok-soft: #1a2a1e;
+    --ok: #93d3a2;
+    --warn-soft: #33260f;
+    --warn: #e8b070;
+    --info-soft: #1e2436;
+    --info: #a7bcff;
+    --wait-soft: #2c2038;
+    --wait: #cfa8e8;
+    --k-problem: #ff9488;
+    --k-solution: #93d3a2;
+    --k-idea: #e8b070;
+    --k-question: #a7bcff;
+    --k-decision: #cfa8e8;
+    --k-task: #c7c2b7;
+    --c-ink: #ebe6db;
+    --c-blue: #a7bcff;
+    --c-red: #ff9488;
+    --c-green: #93d3a2;
+    --c-amber: #e8b070;
+    --c-violet: #cfa8e8;
+    --st-yellow: #c6b681;
+    --st-blue: #809ac6;
+    --st-pink: #c68199;
+    --st-green: #80c699;
+    --sticky-ink: #0e0f11;
+    --canvas: #141518;
+    --dot: rgba(235, 230, 219, 0.09);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 18px 48px -18px rgba(0, 0, 0, .8);
+    --outline: #4a4a50;
+    --bg-image: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e0f11;
+  --panel: #1a1b1e;
+  --sunk: #212226;
+  --ink: #ebe6db;
+  --ink-2: #c7c2b7;
+  --ink-3: #a29d93;
+  --rule: #4a4a50;
+  --rule-2: #2e2f34;
+  --accent: #a7bcff;
+  --accent-ink: #1a1b1e;
+  --accent-soft: #1e2436;
+  --seam: #ff9488;
+  --gold-leaf: linear-gradient(90deg, #6e2a24, #ff9488 45%, #ffd6d0 70%, #d9695e);
+  --focus: #ff9488;
+  --danger-soft: #36201d;
+  --danger: #ff9488;
+  --ok-soft: #1a2a1e;
+  --ok: #93d3a2;
+  --warn-soft: #33260f;
+  --warn: #e8b070;
+  --info-soft: #1e2436;
+  --info: #a7bcff;
+  --wait-soft: #2c2038;
+  --wait: #cfa8e8;
+  --k-problem: #ff9488;
+  --k-solution: #93d3a2;
+  --k-idea: #e8b070;
+  --k-question: #a7bcff;
+  --k-decision: #cfa8e8;
+  --k-task: #c7c2b7;
+  --c-ink: #ebe6db;
+  --c-blue: #a7bcff;
+  --c-red: #ff9488;
+  --c-green: #93d3a2;
+  --c-amber: #e8b070;
+  --c-violet: #cfa8e8;
+  --st-yellow: #c6b681;
+  --st-blue: #809ac6;
+  --st-pink: #c68199;
+  --st-green: #80c699;
+  --sticky-ink: #0e0f11;
+  --canvas: #141518;
+  --dot: rgba(235, 230, 219, 0.09);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 18px 48px -18px rgba(0, 0, 0, .8);
+  --outline: #4a4a50;
+  --bg-image: none;
+}
+/* /part:page.style.kit.theme.manuscript */

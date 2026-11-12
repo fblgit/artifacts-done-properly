@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>YouTuner Uplift</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Instrument+Sans:wght@400;500;600&family=Anybody:wdth,wght@50..150,500..900&family=Public+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap">
+<meta name="adp:build" content="14">
+<link rel="stylesheet" href="styles/page.css">
+<link rel="stylesheet" href="styles/app.css">
+
+<!-- part:page.header -->
+<header class="top" data-part="page.header" data-comment-target>
+  <div class="wrap">
+    <div>
+      <h1>YouTuner uplift</h1>
+      <p class="sub">Before and after for desktop triage: same keys, same screens, same data. Built from your library as it was on 24 Oct 2026.</p>
+    </div>
+    <div class="ctrls">
+      <span><span class="ctl-label">Direction</span><span class="seg" id="dirSeg"><button type="button" data-dir="a" aria-pressed="true">Hot Cue</button><button type="button" data-dir="b" aria-pressed="false">White Label</button></span></span>
+      <label class="tg" for="pinsT"><input type="checkbox" id="pinsT" checked> Shortcut markers</label>
+    </div>
+    <!-- part:page.changes -->
+    <details class="wc" id="wc" data-part="page.changes" data-comment-target hidden>
+      <summary><span>What changed</span><span class="wc-n" id="wcN"></span></summary>
+      <div class="wc-body">
+        <section><h3>Latest changes</h3><ol class="wc-list" id="wcChanges"></ol></section>
+        <section><h3>Owner decisions in force</h3><ul class="wc-list wc-dec" id="wcDecisions"></ul></section>
+      </div>
+    </details>
+    <!-- /part:page.changes -->
+  </div>
+</header>
+<!-- /part:page.header -->
+<!-- part:page.tabs --><nav class="tabs" aria-label="Screens" data-part="page.tabs" data-comment-target><div class="wrap" id="tabs"></div></nav><!-- /part:page.tabs -->
+<main class="views"><div class="wrap" id="views"></div></main>
+
+<script src="adp.js"></script>
+<script src="data.js"></script>
+<script src="content.js"></script>
+<script src="parts/base.js"></script>
+<script src="parts/app.js"></script>
+<script src="parts/views.js"></script>
+<script src="parts/mount.js"></script>
+
+</body></html>

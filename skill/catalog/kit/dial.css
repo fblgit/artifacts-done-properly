@@ -1,0 +1,24 @@
+/* part:page.style.kit.dial */
+/* Kit css: segmented dial and inline marks    kit version 0.1.0    pairs with kit/dial.js
+   .kit-dial (label and control side by side, stacked when narrow), .kit-dial-seg (the pill), .kit-dial-thumb (the sliding chosen shape), .kit-dial-b (a segment; aria-checked),
+   .kit-id[data-v] (an inline identifier: clear, fine = dotted underline, redact = a bar of block characters, held = boxed with a filled square).
+   Each mark differs in shape as well as colour. The chosen segment is --accent-ink on --accent. At phone width the pill fills the row and the segments share it.
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui --f-mono; optional --seam
+   Lifted from: a share-readiness sheet's audience dial and inline identifier marks. */
+.kit-dial { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-width: 0; font: 14px/1.3 var(--f-ui); color: var(--ink); }
+.kit-dial-l { font: 600 13px/1.2 var(--f-mono); color: var(--ink-2); }
+.kit-dial-seg { position: relative; display: inline-flex; max-width: 100%; padding: 3px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--rule); isolation: isolate; }
+.kit-dial-thumb { position: absolute; left: 0; top: 0; z-index: 0; border-radius: 999px; background: var(--accent); pointer-events: none; }
+.kit-dial[data-motion="on"] .kit-dial-thumb { transition: transform .22s cubic-bezier(.2, .7, .2, 1), width .22s cubic-bezier(.2, .7, .2, 1); }
+.kit-dial-b { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 6px 15px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2); font: 600 14px/1.2 var(--f-ui); cursor: pointer; }
+.kit-dial-b:hover { color: var(--ink); }
+.kit-dial-b[aria-checked="true"] { color: var(--accent-ink); }
+.kit-dial-b:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-dial-b kbd { font: 500 12px/1 var(--f-mono); }
+@media (max-width: 560px) { .kit-dial-seg { display: flex; width: 100%; } .kit-dial-b { flex: 1 1 0; min-width: 0; padding: 6px 6px; font-size: 13px; } .kit-dial-b kbd { display: none; } }
+.kit-id { font-family: var(--f-mono); font-size: .92em; border-radius: 3px; overflow-wrap: anywhere; }
+.kit-id[data-v="fine"] { text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--ok); }
+.kit-id[data-v="redact"] { color: var(--ink); letter-spacing: -.06em; user-select: none; }
+.kit-id[data-v="held"] { padding: .05em .35em; border: 1px solid var(--ink); white-space: nowrap; }
+.kit-id[data-v="held"]::before { content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .4em; background: var(--ink); border-radius: 1px; vertical-align: -.02em; }
+/* /part:page.style.kit.dial */

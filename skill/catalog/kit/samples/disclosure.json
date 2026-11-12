@@ -1,0 +1,101 @@
+{
+ "note": "Invented studio tasks.",
+ "items": [
+  {
+   "id": "t1",
+   "title": "Check the kiln elements",
+   "when": "weekly",
+   "steps": [
+    "Switch the kiln off at the wall and let it cool below 50 degrees.",
+    "Look at each element for blisters or sagging coils.",
+    "Note any fault in the kiln log and tell the studio lead before the next firing."
+   ],
+   "open": true
+  },
+  {
+   "id": "t2",
+   "title": "Sieve the glaze buckets",
+   "when": "daily",
+   "steps": [
+    "Stir from the bottom until no sediment is left.",
+    "Pour through an 80-mesh sieve into a clean bucket.",
+    "Check the specific gravity: 1.45 for most glazes."
+   ]
+  },
+  {
+   "id": "t3",
+   "title": "Replace the studio filter",
+   "when": "every three months",
+   "steps": [
+    "Order the filter by the 20th of the month before.",
+    "Swap it with the extraction fan off.",
+    "Write the date on the new filter frame."
+   ]
+  },
+  {
+   "id": "t4",
+   "title": "Test the emergency shutoff",
+   "when": "monthly",
+   "steps": [
+    "Run the kiln at low power.",
+    "Press the shutoff and check the power drops.",
+    "Reset and log the test."
+   ]
+  }
+ ],
+ "letters": [
+  {
+   "id": "l1",
+   "title": "From the clay supplier, 12 October",
+   "body": [
+    "Your order of 100 kg porcelain ships on Monday. The batch has a slightly higher iron content than usual, so expect a warmer white.",
+    "If the colour is outside what you need, tell us within seven days."
+   ]
+  },
+  {
+   "id": "l2",
+   "title": "From the market organiser, 15 October",
+   "body": [
+    "Your stall is confirmed for the first Saturday of November. Setup opens at 7:00 and the hall closes at 17:00."
+   ]
+  }
+ ],
+ "clauses": [
+  {
+   "id": "c1",
+   "num": "4.1",
+   "norm": "Every kiln firing is logged before the kiln is switched on.",
+   "title": "Reasoning",
+   "fields": [
+    {
+     "label": "Why",
+     "text": "A missing log hides a problem until a whole load is lost."
+    },
+    {
+     "label": "Prevents",
+     "text": "Repeating a schedule that already failed."
+    },
+    {
+     "label": "In practice",
+     "text": "Fill in clay, glaze, cone and start time on the sheet by the door."
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "num": "4.2",
+   "norm": "Glaze buckets are labelled with the recipe and the date mixed.",
+   "title": "Reasoning",
+   "fields": [
+    {
+     "label": "Why",
+     "text": "Two white glazes look the same wet and fire very differently."
+    },
+    {
+     "label": "Prevents",
+     "text": "Using the wrong glaze on a finished order."
+    }
+   ]
+  }
+ ]
+}

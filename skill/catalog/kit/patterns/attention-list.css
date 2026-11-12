@@ -1,0 +1,32 @@
+/* part:page.style.kit.attention-list */
+/* Kit css: needs-you list    kit version 0.1.0    pairs with kit/patterns/attention-list.js
+   .kit-al > .kit-al-head (the sentence; data-tone = the worst item's tone) + .kit-al-card (title, count, .kit-al-rows of .kit-al-row, or .kit-al-empty). A row is a bead, two lines and one button.
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --warn --danger --ok --f-ui --f-display, optional --wait --rim --pool --glz-r-l --glz-r-m, kit/vocab.css, kit/glaze-surfaces.css */
+.kit-al { display: grid; gap: 16px; min-width: 0; font: 15px/1.5 var(--f-ui); color: var(--ink); }
+.kit-al-head { display: grid; gap: 4px; padding-left: 14px; border-left: 4px solid var(--rule); }
+.kit-al-head[data-tone="wait"] { border-left-color: var(--wait, var(--warn)); }
+.kit-al-head[data-tone="bad"] { border-left-color: var(--danger); }
+.kit-al-head[data-tone="warn"] { border-left-color: var(--warn); }
+.kit-al-head[data-tone="ok"] { border-left-color: var(--ok); }
+.kit-al-head[data-tone="info"] { border-left-color: var(--accent); }
+.kit-al-title { margin: 0; font: 600 clamp(1.5rem, 4vw, 2.1rem)/1.1 var(--f-display, var(--f-ui)); letter-spacing: -.015em; text-wrap: balance; }
+.kit-al-lede { margin: 0; color: var(--ink-2); max-width: 62ch; }
+.kit-al-card { display: grid; gap: 12px; min-width: 0; padding: 18px; border-radius: var(--glz-r-l, 22px); background: var(--panel); border: 1px solid var(--rule-2);
+  box-shadow: inset 0 1.5px 0 var(--rim, transparent), inset 0 -22px 26px -24px var(--pool, transparent); }
+.kit-al-top { display: flex; align-items: center; gap: 10px; }
+.kit-al-h { margin: 0; font: 700 1.05rem/1.2 var(--f-ui); }
+.kit-al-count { min-width: 26px; padding: 1px 9px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--rule); font: 700 13px/1.6 var(--f-mono); text-align: center; font-variant-numeric: tabular-nums; }
+.kit-al-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.kit-al-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-width: 0; padding: 11px 14px 11px 12px; border-radius: var(--glz-r-m, 16px); background: var(--sunk); border: 1px solid var(--rule);
+  box-shadow: inset 0 1px 0 var(--rim, transparent); border-left: 4px solid var(--vo-c, var(--rule)); }
+.kit-al-lead { flex: none; display: inline-flex; }
+.kit-al-tx { flex: 1 1 14rem; min-width: 0; display: grid; gap: 1px; }
+.kit-al-t { font: 700 15px/1.3 var(--f-ui); overflow-wrap: anywhere; }
+.kit-al-s { color: var(--ink-2); font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.kit-al-row .kit-btn { flex: none; }
+.kit-al-empty { display: grid; justify-items: center; gap: 6px; padding: 28px 16px; text-align: center; border-radius: var(--glz-r-m, 16px); background: var(--sunk); color: var(--ink-2); }
+.kit-al-empty b { color: var(--ink); font: 600 1.15rem/1.25 var(--f-display, var(--f-ui)); }
+.kit-al-ok { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: var(--ok-soft, var(--panel)); color: var(--ok-ink, var(--ok)); border: 2px solid var(--ok); }
+.kit-al-ok svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 480px) { .kit-al-card { padding: 14px; } .kit-al-row .kit-btn { width: 100%; } }
+/* /part:page.style.kit.attention-list */

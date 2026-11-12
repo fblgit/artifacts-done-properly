@@ -1,0 +1,25 @@
+{
+ "note": "Invented.",
+ "flow": {
+  "title": "A glaze firing",
+  "meta": "Left to right; scrolls sideways at phone width",
+  "label": "A glaze firing, from bisque to inspection",
+  "src": "flowchart LR\n  B[Bisque ware] --> G[Dip in glaze]\n  G --> W{Feet wiped?}\n  W -- no --> G\n  W -- yes --> L[Load the kiln]\n  L --> F[Fire to cone 6]\n  F --> C[Cool closed]\n  C --> I[Inspect]\n  I -->|crazing| G\n  class I done\n  class F hot\n  classDef done fill:%ok/18%,stroke:%ok%,color:%ink%\n  classDef hot fill:%warn/18%,stroke:%warn%,color:%ink%"
+ },
+ "seq": {
+  "title": "The controller during a firing",
+  "meta": "A sequence diagram",
+  "label": "Potter, kiln controller and log during a firing",
+  "src": "sequenceDiagram\n  autonumber\n  participant P as Potter\n  participant K as Kiln controller\n  participant L as Firing log\n  P->>K: Start schedule (cone 6, hold 10 min)\n  K-->>P: Ramping at 150 °C an hour\n  Note over K: Hold at 1222 °C\n  K->>L: Peak and hold reached\n  P->>L: Cone pack result"
+ },
+ "legend": [
+  [
+   "ok",
+   "Done"
+  ],
+  [
+   "warn",
+   "In the kiln"
+  ]
+ ]
+}

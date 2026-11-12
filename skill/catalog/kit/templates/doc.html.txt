@@ -1,0 +1,104 @@
+<!-- part:kit.template.doc -->
+<!-- Kit template: document (template.doc)    kit version 0.1.0
+     What it is: the body of a long document, taken as text. A title block (kind, title, subtitle, meta strip, provenance), then the document shell's contents rail and
+     reading column, with numbered sections, guide and example blocks, a part head for grouping, a fill-in slot and a checklist. Copy it into your own page,
+     replace the invented proposal, delete what you do not use. The same pieces make the other two shapes:
+       a postmortem keeps the title block and swaps the sections for: summary, impact, timeline (a kit-table), what went well, what went badly, action items (.kit-tdoc-check);
+       a fill-in form keeps every .kit-tdoc-fill and gives each section a guide (.kit-callout) and an example (.kit-tdoc-ex), so the next writer sees what good looks like.
+     Take also, by reference (the server copies them; this file is taken as text):  kit/templates/doc.css, kit/layout/doc-shell.css and .js, kit/callout.css, kit/table.css
+     Load in the head: your theme (kit/themes/glaze.css or your own tokens), then the four css files in the order of the links below.
+     Load before the script at the end: kit/layout/doc-shell.js
+     Needs from the board: tokens --bg --panel --sunk --ink --ink-2 --rule --rule-2 --warn --f-ui --f-display --f-mono (optional --seam, --gold-leaf); no db.
+     Section ids are bare tokens; the contents rail is filled from them. Sections number themselves (CSS counter): add or delete one and the rest renumber.
+     Lifted from: a proposal, a postmortem guide, a fill-in template shell, a numbered-section page and a part-head page. -->
+<link rel="stylesheet" href="kit/layout/doc-shell.css">
+<link rel="stylesheet" href="kit/callout.css">
+<link rel="stylesheet" href="kit/table.css">
+<link rel="stylesheet" href="kit/templates/doc.css">
+
+<article class="kit-tdoc" id="doc">
+  <header class="kit-tdoc-head">
+    <p class="kit-tdoc-kind">Proposal</p>
+    <h1>Replace the kiln room extraction</h1>
+    <p class="kit-tdoc-sub">One page for the people who sign it off: what is wrong, what we would do, what it costs and what could go wrong.</p>
+    <dl class="kit-tdoc-meta">
+      <div><dt>Owner</dt><dd>Ines Varga</dd></div>
+      <div><dt>Reviewers</dt><dd>Tomas, Priya</dd></div>
+      <div><dt>Decision by</dt><dd>14 November</dd></div>
+      <div><dt>Status</dt><dd>Draft 2</dd></div>
+    </dl>
+    <p class="kit-tdoc-prov">Invented example, written for a studio committee. Figures are quotes, not invoices.</p>
+  </header>
+
+  <div class="kit-doc kit-tdoc-shell" id="doc-shell">
+    <nav class="kit-doc-toc" aria-label="Contents"></nav>
+    <div class="kit-doc-main">
+
+      <section class="kit-doc-sec kit-tdoc-sec" id="summary" data-group="The case">
+        <div class="kit-doc-body">
+          <h2>Summary</h2>
+          <p>The extraction fan moves 40 per cent less air than when it was fitted. Glaze fumes now reach the packing bench on firing days. We propose replacing the fan and the 6 m of ducting for <b>4,200 euros</b>, fitted over one closed weekend.</p>
+          <aside class="kit-callout" data-tone="note"><p class="kit-callout-k">Guide</p><p>Two or three sentences. Say what you want decided, the cost and the date. Someone who reads only this section should know what they are being asked.</p></aside>
+        </div>
+      </section>
+
+      <section class="kit-doc-sec kit-tdoc-sec" id="problem">
+        <div class="kit-doc-body">
+          <h2>The problem</h2>
+          <p>Airflow measured at the hood was 310 m³/h in September against 520 m³/h on the commissioning sheet. <span class="kit-tdoc-fill">Describe who is affected and since when.</span></p>
+          <div class="kit-tdoc-ex"><span class="kit-tdoc-tag">Example</span><p>Since June, three members have asked to move their firing days because of the smell at the packing bench.</p><span class="kit-tdoc-src">From the members' request book, June to September.</span></div>
+        </div>
+      </section>
+
+      <div class="kit-tdoc-part">
+        <div class="kit-tdoc-part-head"><span class="kit-tdoc-part-n">Part B</span><h2>Options and cost</h2></div>
+        <p class="kit-tdoc-part-intent">What we looked at, what each costs and what we would pick. The sections below are compared on the same figures.</p>
+      </div>
+
+      <section class="kit-doc-sec kit-tdoc-sec" id="options" data-group="Options and cost">
+        <div class="kit-doc-body">
+          <h2>Options compared</h2>
+          <div class="kit-table-box" role="region" aria-label="Options compared" tabindex="0">
+            <table class="kit-table">
+              <thead><tr><th>Option</th><th class="num">Cost</th><th class="num">Airflow</th><th>Downtime</th></tr></thead>
+              <tbody>
+                <tr><td>Clean the existing fan</td><td class="num">380</td><td class="num">380 m³/h</td><td>None</td></tr>
+                <tr class="kit-hl"><td>New fan and ducting<span class="kit-tag">proposed</span></td><td class="num">4,200</td><td class="num">540 m³/h</td><td>One weekend</td></tr>
+                <tr><td>Hood with side-draught</td><td class="num">7,900</td><td class="num">620 m³/h</td><td>Two weekends</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="kit-table-note">Costs in euros, from three quotes. Airflow is the supplier's figure at the hood.</p>
+        </div>
+      </section>
+
+      <section class="kit-doc-sec kit-tdoc-sec" id="risks">
+        <div class="kit-doc-body">
+          <h2>Risks and what we do about them</h2>
+          <ul>
+            <li>The weekend slips: the fitter holds a second weekend free at no charge.</li>
+            <li>The new duct clashes with the kiln vent: the supplier visits and measures first.</li>
+          </ul>
+          <aside class="kit-callout" data-tone="warn"><p class="kit-callout-k">Check first</p><p>Name the risk that would stop the work, not every risk you can think of.</p></aside>
+        </div>
+      </section>
+
+      <section class="kit-doc-sec kit-tdoc-sec" id="before-sign-off" data-group="Sign-off">
+        <div class="kit-doc-body">
+          <h2>Before sign-off</h2>
+          <ul class="kit-tdoc-check">
+            <li>Supplier confirms the fan curve in writing</li>
+            <li>Committee agrees the closed weekend</li>
+            <li>Insurance told about the new ducting</li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</article>
+
+<script>
+  Kit.docShell.mount(document.getElementById('doc-shell'));
+</script>
+<!-- /part:kit.template.doc -->

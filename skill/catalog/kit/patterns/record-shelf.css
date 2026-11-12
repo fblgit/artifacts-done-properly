@@ -1,0 +1,29 @@
+/* part:page.style.kit.record-shelf */
+/* Kit css: record shelf    kit version 0.1.0    pairs with kit/patterns/record-shelf.js
+   .kit-rs the root;  .kit-rs-list the cards;  .kit-rs-card one collection (a button when the board opens views): .kit-rs-path its db name, .kit-rs-fig the figure, .kit-rs-st the state
+   (.kit-rs-st-good, -note, -bad, -none), .kit-rs-line one line, .kit-rs-go the view it opens; [aria-current] the card in view;  .kit-rs-miss records not passed in
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, optional --f-display --seam --radius */
+.kit-rs { --kit-rs-seam: var(--seam, var(--accent)); min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-rs *, .kit-rs *::before, .kit-rs *::after { box-sizing: border-box; }
+.kit-rs-wrap { container-type: inline-size; }
+.kit-rs-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@container (min-width: 30rem) { .kit-rs-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 46rem) { .kit-rs-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (min-width: 90rem) { .kit-rs-list { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.kit-rs-it { display: grid; min-width: 0; }
+.kit-rs-card { position: relative; display: grid; align-content: start; gap: 6px; width: 100%; min-width: 0; padding: 14px 16px 14px; border: 1px solid var(--rule); border-radius: var(--radius, 12px); background: var(--panel); color: var(--ink); font: inherit; text-align: left; }
+button.kit-rs-card { cursor: pointer; }
+button.kit-rs-card:hover { background: var(--sunk); }
+.kit-rs-card[aria-current="true"] { border-color: var(--kit-rs-seam); box-shadow: inset 0 3px 0 var(--kit-rs-seam); }
+.kit-rs-card:focus-visible { outline: 3px solid var(--kit-rs-seam); outline-offset: 2px; }
+.kit-rs-path { font: 600 12.5px var(--f-mono); color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-rs-fig { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.kit-rs-num { font: 500 28px/1.05 var(--f-display, var(--f-ui)); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.kit-rs-unit { font-size: 14px; color: var(--ink-2); }
+.kit-rs-st { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; }
+.kit-rs-g { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.kit-rs-st-good { color: var(--ok); } .kit-rs-st-note { color: var(--warn); } .kit-rs-st-bad { color: var(--danger); } .kit-rs-st-none { color: var(--ink-2); }
+.kit-rs-line { font-size: 13.5px; line-height: 1.45; color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-rs-miss { background: transparent; border-style: dashed; }
+.kit-rs-go { margin-top: 2px; font-size: 13px; font-weight: 700; color: var(--ink); text-decoration: underline; text-decoration-color: var(--kit-rs-seam); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+/* /part:page.style.kit.record-shelf */

@@ -1,0 +1,14 @@
+{
+ "note": "Invented: decisions for a pottery studio's autumn plan.",
+ "cards": [
+  { "id": "d1", "question": "Which glaze set should the autumn class use?", "why": "The order has to go in by Friday to arrive before the first lesson.",
+    "answer": "The cone 6 satin set", "answeredBy": "Marta", "answeredAt": "2026-10-21T09:12:00Z", "prompt": "Decision d1: Marta chose the cone 6 satin set. Order it and add it to the supplies list.",
+    "ack": { "by": "Planner", "at": "2026-10-21T09:13:40Z", "text": "Ordered 12 kg of the satin set. It arrives on the 28th and is on the supplies list." } },
+  { "id": "d2", "question": "Open the studio on Sunday mornings?", "why": "Two members asked for it. A volunteer would have to unlock and close.",
+    "answer": "Yes, from November", "answeredBy": "Marta", "answeredAt": "2026-10-22T16:40:00Z", "prompt": "Decision d2: Marta said yes to Sunday mornings from November.",
+    "ack": { "by": "Planner", "at": "2026-10-22T16:41:10Z", "text": "Drafted the rota with two volunteers. Who holds the second key?", "asks": true } },
+  { "id": "d3", "question": "Keep the old wheel or replace it?", "why": "The motor runs hot after an hour. A new wheel is quoted at 640.",
+    "answer": "Replace it next spring", "answeredBy": "Marta", "answeredAt": "2026-10-23T11:05:00Z", "prompt": "Decision d3: Marta wants the wheel replaced next spring.", "ack": null },
+  { "id": "d4", "question": "Print the spring workshop flyers in colour?", "why": "Colour costs three times as much as black and white.", "answer": null }
+ ]
+}

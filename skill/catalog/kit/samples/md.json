@@ -1,0 +1,8 @@
+{
+  "component": "md",
+  "file": "kit/md.js",
+  "about": "Markdown to sanitized HTML with the defaults, links opened in a new tab.",
+  "md": { "externalLinks": true },
+  "input": "# Title\n\nSome **bold** text and a [link](https://example.com).\n\n- one\n- two\n",
+  "expect": { "selectors": [ ".md h1", ".md strong", ".md a[target=_blank]", ".md li" ] }
+}

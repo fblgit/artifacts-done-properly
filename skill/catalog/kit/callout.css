@@ -1,0 +1,36 @@
+/* part:page.style.kit.callout */
+/* Kit css: callouts and marks    kit version 0.1.0    extends kit/chrome.css (a new file; chrome.css is unchanged)
+   Callout: <aside class="kit-callout" data-tone="note|ok|warn|danger|pending"><p class="kit-callout-k">Kicker</p><p>Body…</p></aside>
+     The kicker names the tone in words (Note, Verified, Check first, Stop, Waiting on you), so meaning never rides on colour alone.
+     A pending callout is the owner-input box: a dashed edge and a list (ul) of what is still needed.
+   Mark: <span class="kit-mark" data-mark="inference">my inference</span> or data-mark="verified" | "unverified" | "estimate", inline in a sentence.
+   Every tint is color-mix of a meaning token into --panel; text stays --ink; kickers and marks take the tone mixed 78% with --ink, 4.5:1 or more on their tint in the kit's three themes.
+   Needs from the board: --panel --ink --ink-2 --rule --accent --ok --warn --danger --f-ui --f-mono; optional --seam (the note tone's edge; falls back to --accent)
+   Lifted from: three-tone callouts with a mono kicker, a Glaze note with an orb, the verified/inference marker, and a pending-input box, across four documents. */
+.kit-callout { --tone: var(--accent); --edge: var(--seam, var(--accent));
+  position: relative; display: grid; gap: 4px; margin: 0;
+  padding: 13px 16px 13px 39px; border-radius: 14px; color: var(--ink); font: 15px/1.55 var(--f-ui);
+  background: color-mix(in srgb, var(--tone) 8%, var(--panel)); border: 1px solid color-mix(in srgb, var(--edge) 34%, var(--panel)); }
+.kit-callout[data-tone="ok"] { --tone: var(--ok); --edge: var(--ok); }
+.kit-callout[data-tone="warn"] { --tone: var(--warn); --edge: var(--warn); }
+.kit-callout[data-tone="danger"] { --tone: var(--danger); --edge: var(--danger); }
+.kit-callout[data-tone="pending"] { --tone: var(--ink-2); --edge: var(--ink-2); background: var(--panel); border-style: dashed; border-color: color-mix(in srgb, var(--ink-2) 55%, var(--panel)); }
+.kit-callout::before { content: ""; position: absolute; left: 16px; top: 18px; width: 11px; height: 11px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--tone) 35%, var(--panel)) 0 14%, var(--tone) 55%, color-mix(in srgb, var(--tone) 70%, var(--ink))); }
+.kit-callout[data-tone="pending"]::before { background: transparent; border: 1.5px dashed var(--tone); width: 10px; height: 10px; }
+.kit-callout > * { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.kit-callout .kit-callout-k { font: 600 12px/1.4 var(--f-mono); letter-spacing: .02em; color: color-mix(in srgb, var(--tone) 78%, var(--ink)); }
+.kit-callout[data-tone="note"] .kit-callout-k, .kit-callout:not([data-tone]) .kit-callout-k { color: var(--ink); }
+.kit-callout ul, .kit-callout ol { padding-left: 1.2em; display: grid; gap: 3px; }
+.kit-callout a { color: inherit; text-underline-offset: 3px; }
+.kit-callout code { font-family: var(--f-mono); font-size: .88em; }
+
+.kit-mark { --tone: var(--warn); display: inline-flex; align-items: center; gap: 5px; vertical-align: .08em; white-space: nowrap;
+  font: 600 11.5px/1.5 var(--f-mono); color: color-mix(in srgb, var(--tone) 78%, var(--ink)); padding: 0 7px 0 6px; border-radius: 999px;
+  background: color-mix(in srgb, var(--tone) 9%, var(--panel)); border: 1px dashed color-mix(in srgb, var(--tone) 60%, var(--panel)); }
+.kit-mark::before { content: ""; width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid currentColor; flex: none; }
+.kit-mark[data-mark="verified"] { --tone: var(--ok); border-style: solid; }
+.kit-mark[data-mark="verified"]::before { background: currentColor; }
+.kit-mark[data-mark="unverified"] { --tone: var(--danger); }
+.kit-mark[data-mark="estimate"] { --tone: var(--ink-2); }
+/* /part:page.style.kit.callout */

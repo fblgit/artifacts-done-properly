@@ -1,0 +1,19 @@
+/* part:page.style.kit.viz.slider-chart */
+/* Kit css: what-if slider chart    kit version 0.1.0    pairs with kit/viz/slider-chart.js (the chart itself is kit/viz/bars.css)
+   .kit-sc-in (label, range, value)  .kit-sc-read (readout tiles)  .kit-sc-chart  .kit-sc-note (live line)
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, optional --seam */
+.kit-sc { display: grid; gap: 12px; min-width: 0; padding: 14px; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); font: 13px/1.4 var(--f-ui); color: var(--ink); }
+.kit-sc-title { margin: 0; font: 600 15px var(--f-display, var(--f-ui)); }
+.kit-sc-ctl { display: grid; gap: 8px; }
+.kit-sc-in { display: grid; grid-template-columns: minmax(80px, auto) minmax(120px, 1fr) minmax(54px, auto); gap: 4px 12px; align-items: center; }
+.kit-sc-in label { font-weight: 600; } .kit-sc-in output { font: 600 14px var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.kit-sc-in input[type="range"] { width: 100%; min-height: 28px; accent-color: var(--accent); margin: 0; }
+.kit-sc-in input[type="range"]:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 3px; border-radius: 4px; }
+@media (max-width: 420px) { .kit-sc-in { grid-template-columns: minmax(0, 1fr) auto; } .kit-sc-in input { grid-column: 1 / -1; grid-row: 2; } }
+.kit-sc-read { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); gap: 8px; margin: 0; }
+.kit-sc-tile { border: 1px solid var(--rule-2); border-radius: 9px; background: var(--sunk); padding: 7px 10px; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.kit-sc-tile dt { order: 2; font-size: 12px; color: var(--ink-2); } .kit-sc-tile dd { order: 1; margin: 0; font: 700 22px/1.1 var(--f-display, var(--f-ui)); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kit-sc-tile dd.kit-sc-sub { font: 12px var(--f-mono); color: var(--ink-2); order: 3; }
+.kit-sc-chart { min-width: 0; }
+.kit-sc-note { margin: 0; color: var(--ink-2); font-size: 13px; max-width: 70ch; }
+/* /part:page.style.kit.viz.slider-chart */
