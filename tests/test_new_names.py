@@ -1,4 +1,4 @@
-import os, subprocess, sys, tempfile, unittest
+import json, os, re, subprocess, sys, tempfile, unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ADP = os.path.join(ROOT, 'skill', 'scripts', 'adp.py')
@@ -44,11 +44,46 @@ class NewWritesRealNames(unittest.TestCase):
 
     def test_publish_points_at_files_that_exist(self):
         d = os.path.join(tempfile.mkdtemp(), 'out')
-        import json
         out = json.loads(run('new', 'starter', d).stdout)
         self.assertTrue(os.path.isfile(out['publish']['file_path']))
         for p in out['publish']['files']:
             self.assertTrue(os.path.isfile(os.path.join(d, p)), p)
+
+
+class BaseChain(unittest.TestCase):
+    def test_chain_is_base_first(self):
+        self.assertEqual(adp.base_chain('default'), ['starter', 'assistant', 'default'])
+        self.assertEqual(adp.base_chain('starter'), ['starter'])
+
+    def test_loop_refused(self):
+        old = adp.tmeta
+        adp.tmeta = lambda n: {'base': 'b' if n == 'a' else 'a'}
+        try:
+            with self.assertRaises(SystemExit):
+                adp.base_chain('a')
+        finally:
+            adp.tmeta = old
+
+
+class ProjectIsComplete(unittest.TestCase):
+    def files(self, *args):
+        d = os.path.join(tempfile.mkdtemp(), 'out')
+        r = run('new', *args, d)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return d, {os.path.relpath(os.path.join(b, n), d) for b, _, ns in os.walk(d) for n in ns}
+
+    def test_default_has_every_file_of_assistant(self):
+        _, a = self.files('assistant')
+        _, dflt = self.files('--tier', 'default')
+        self.assertEqual(sorted(a - dflt), [])
+
+    def test_local_files_index_links_exist(self):
+        # kit/ files come from the catalog by reference; every other file the page links is the project's own
+        for args in (('starter',), ('assistant',), ('--tier', 'default')):
+            d, _ = self.files(*args)
+            html = open(os.path.join(d, 'index.html'), encoding='utf-8').read()
+            refs = [r for r in re.findall(r'(?:src|href)="([^"]+)"', html) if not re.match(r'(?:[a-z]+:|#|//)', r) and not r.startswith('kit/')]
+            self.assertEqual([r for r in refs if not os.path.isfile(os.path.join(d, r))], [], args)
 
 
 if __name__ == '__main__':
