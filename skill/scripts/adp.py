@@ -1048,6 +1048,12 @@ def ref_version(skill_md):
     return None
 
 
+def tree_files(d):
+    """{relative path: bytes} of every file under d, __pycache__ excluded."""
+    return {os.path.relpath(os.path.join(r, f), d): open(os.path.join(r, f), 'rb').read()
+            for r, ds, fs in os.walk(d) if not ds.__setitem__(slice(None), [x for x in ds if x != '__pycache__']) for f in fs}
+
+
 def setup_cmd(a):
     scope = opt(a, '--scope', 'user'); dry, yes = '--dry-run' in a, '--yes' in a
     if scope not in ('user', 'project', 'local'): sys.exit('setup: --scope user|project|local')
@@ -1061,9 +1067,13 @@ def setup_cmd(a):
     print(f'setup {scope}{" (dry run)" if dry else ""}: {len(names)} skills ({", ".join(names)}) -> {skills}; skill_root {HERE}')
     print(f'config: {cfg}' + ('' if scope == 'user' else f'; registry {os.path.join(ADP_HOME, "projects")}/<name>/config.json (path {cwd})')); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
+    modified = [os.path.join(skills, n) for n in names if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
+    for m in modified: print(f'modified {m}: differs from the packaged skill, left untouched')
     if dry: return 0
     for n in names:
-        t = os.path.join(skills, n); shutil.rmtree(t, ignore_errors=True)
+        t = os.path.join(skills, n)
+        if t in modified: continue
+        shutil.rmtree(t, ignore_errors=True)
         shutil.copytree(os.path.join(refs, n), t, ignore=shutil.ignore_patterns('__pycache__'))
     os.makedirs(os.path.dirname(cfg), exist_ok=True)
     c = json.load(open(cfg)) if os.path.isfile(cfg) else {}
