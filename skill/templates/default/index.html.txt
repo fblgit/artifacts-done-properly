@@ -1,0 +1,175 @@
+<title>{{title}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="adp:build" content="1">
+<meta name="adp:db-rules" content='[{"path":"","read":"view","write":"admin"},{"path":"ns/shared","read":"view","write":"interact"},{"path":"ns/users/{self}","read":"view","write":"interact"},{"path":"requests","read":"view","write":"interact"},{"path":"conversations","read":"view","write":"interact"},{"path":"presence","read":"view","write":"interact"}]'>
+<link rel="stylesheet" href="styles/page.css">
+<link rel="stylesheet" href="kit/vocab.css">
+<link rel="stylesheet" href="kit/patterns/settings.css">
+<link rel="stylesheet" href="kit/patterns/inbox.css">
+<link rel="stylesheet" href="kit/patterns/namespaces.css">
+<link rel="stylesheet" href="kit/patterns/block-picker.css">
+<link rel="stylesheet" href="kit/patterns/request-card.css">
+<link rel="stylesheet" href="kit/patterns/presence.css">
+<link rel="stylesheet" href="kit/patterns/assist-panel.css">
+<link rel="stylesheet" href="kit/type-roles.css">
+<link rel="stylesheet" href="kit/chrome.css">
+<link rel="stylesheet" href="kit/save-status.css">
+<link rel="stylesheet" href="kit/tabs.css">
+<link rel="stylesheet" href="kit/table.css">
+<link rel="stylesheet" href="kit/tooltip.css">
+<link rel="stylesheet" href="kit/callout.css">
+<link rel="stylesheet" href="kit/copy.css">
+<link rel="stylesheet" href="kit/drawer.css">
+<link rel="stylesheet" href="kit/dial.css">
+<link rel="stylesheet" href="kit/palette.css">
+<link rel="stylesheet" href="kit/md.css">
+<link rel="stylesheet" href="kit/mermaid.css">
+<link rel="stylesheet" href="kit/canvas.css">
+<link rel="stylesheet" href="kit/layout/viewer3d.css">
+<link rel="stylesheet" href="kit/layout/topbar.css">
+<link rel="stylesheet" href="kit/layout/app-shell.css">
+<link rel="stylesheet" href="kit/layout/doc-shell.css">
+<link rel="stylesheet" href="kit/layout/carousel.css">
+<link rel="stylesheet" href="kit/layout/stack.css">
+<link rel="stylesheet" href="kit/layout/margin-notes.css">
+<link rel="stylesheet" href="kit/patterns/master-detail.css">
+<link rel="stylesheet" href="kit/patterns/filter-table.css">
+<link rel="stylesheet" href="kit/patterns/status-columns.css">
+<link rel="stylesheet" href="kit/patterns/count-filters.css">
+<link rel="stylesheet" href="kit/patterns/work-card.css">
+<link rel="stylesheet" href="kit/patterns/expand-card.css">
+<link rel="stylesheet" href="kit/patterns/decisions.css">
+<link rel="stylesheet" href="kit/patterns/ledger.css">
+<link rel="stylesheet" href="kit/patterns/event-log.css">
+<link rel="stylesheet" href="kit/glaze-surfaces.css">
+<link rel="stylesheet" href="kit/patterns/row-actions.css">
+<link rel="stylesheet" href="kit/patterns/attention-list.css">
+<link rel="stylesheet" href="kit/patterns/disclosure.css">
+<link rel="stylesheet" href="kit/patterns/questions.css">
+<link rel="stylesheet" href="kit/patterns/options.css">
+<link rel="stylesheet" href="kit/patterns/next-steps.css">
+<link rel="stylesheet" href="kit/patterns/steps.css">
+<link rel="stylesheet" href="kit/patterns/region-frame.css">
+<link rel="stylesheet" href="kit/patterns/figures.css">
+<link rel="stylesheet" href="kit/patterns/findings.css">
+<link rel="stylesheet" href="kit/patterns/verdict.css">
+<link rel="stylesheet" href="kit/patterns/report-cards.css">
+<link rel="stylesheet" href="kit/viz/viz.css">
+<link rel="stylesheet" href="kit/viz/bars.css">
+<link rel="stylesheet" href="kit/viz/timeline.css">
+<link rel="stylesheet" href="kit/viz/flow.css">
+<link rel="stylesheet" href="kit/viz/sparkline.css">
+<link rel="stylesheet" href="kit/viz/topology.css">
+<link rel="stylesheet" href="kit/viz/dotgrid.css">
+<link rel="stylesheet" href="kit/viz/dial-meter.css">
+<link rel="stylesheet" href="styles/assist.css">
+
+<div class="layout" id="layout">
+<div class="col">
+<!-- part:page.header -->
+<header class="top" data-part="page.header" data-comment-target>
+  <div class="wrap top-in">
+    <div>
+      <h1>{{title}}</h1>
+      <!-- part:page.lead --><p class="lead" data-part="page.lead" data-comment-target></p><!-- /part:page.lead -->
+    </div>
+    <div class="top-tools">
+      <div class="top-presence" id="presence" data-assist-ui></div>
+      <button type="button" class="assist-btn" id="assistBtn" aria-expanded="false" aria-controls="assist" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Work with Claude</span></button>
+      <button type="button" class="gear" id="gear" aria-label="Settings" title="Settings" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/><circle cx="12" cy="12" r="6.5"/></svg></button>
+    <!-- part:page.changes -->
+    <details class="wc" id="wc" data-part="page.changes" data-comment-target hidden>
+      <summary><span>What changed</span><span class="wc-n" id="wcN"></span></summary>
+      <div class="wc-body">
+        <section><h3>Latest changes</h3><ol class="wc-list" id="wcChanges"></ol></section>
+        <section><h3>Owner decisions in force</h3><ul class="wc-list wc-dec" id="wcDecisions"></ul></section>
+      </div>
+    </details>
+    <!-- /part:page.changes -->
+    </div>
+  </div>
+</header>
+<!-- /part:page.header -->
+<!-- part:page.tabs --><nav class="tabs" aria-label="Views" data-part="page.tabs" data-comment-target><div class="wrap tabs-in" id="tabs"></div></nav><!-- /part:page.tabs -->
+<main class="wrap views" id="views"></main>
+</div>
+<div class="assist-scrim" id="assistScrim" hidden></div>
+<!-- part:page.assist -->
+<aside class="assist" id="assist" data-part="page.assist" data-assist-ui aria-label="Work with Claude" hidden>
+  <button type="button" class="assist-close" id="assistClose" aria-label="Close Work with Claude">Close</button>
+  <div id="assistBody"><p class="muted">Loading.</p></div>
+</aside>
+<!-- /part:page.assist -->
+</div>
+
+<script src="adp.js"></script>
+<script src="content.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script src="kit/dom.js"></script>
+<script src="kit/tokens.js"></script>
+<script src="kit/vocab.js"></script>
+<script src="kit/keep-state.js"></script>
+<script src="kit/patterns/settings.js"></script>
+<script src="kit/patterns/inbox.js"></script>
+<script src="kit/patterns/namespaces.js"></script>
+<script src="kit/patterns/assist.js"></script>
+<script src="kit/patterns/block-picker.js"></script>
+<script src="kit/patterns/request-card.js"></script>
+<script src="kit/patterns/presence.js"></script>
+<script src="kit/patterns/assist-panel.js"></script>
+<script src="kit/store.js"></script>
+<script src="kit/chrome.js"></script>
+<script src="kit/icons.js"></script>
+<script src="kit/save-status.js"></script>
+<script src="kit/tabs.js"></script>
+<script src="kit/table.js"></script>
+<script src="kit/tooltip.js"></script>
+<script src="kit/copy.js"></script>
+<script src="kit/drawer.js"></script>
+<script src="kit/dial.js"></script>
+<script src="kit/palette.js"></script>
+<script src="kit/md.js"></script>
+<script src="kit/mermaid.js"></script>
+<script src="kit/canvas.js"></script>
+<script src="kit/layout/viewer3d.js"></script>
+<script src="kit/layout/topbar.js"></script>
+<script src="kit/layout/app-shell.js"></script>
+<script src="kit/layout/doc-shell.js"></script>
+<script src="kit/layout/carousel.js"></script>
+<script src="kit/layout/stack.js"></script>
+<script src="kit/layout/margin-notes.js"></script>
+<script src="kit/patterns/master-detail.js"></script>
+<script src="kit/patterns/filter-table.js"></script>
+<script src="kit/patterns/status-columns.js"></script>
+<script src="kit/patterns/count-filters.js"></script>
+<script src="kit/patterns/work-card.js"></script>
+<script src="kit/patterns/expand-card.js"></script>
+<script src="kit/patterns/decisions.js"></script>
+<script src="kit/patterns/ledger.js"></script>
+<script src="kit/patterns/event-log.js"></script>
+<script src="kit/glaze-surfaces.js"></script>
+<script src="kit/patterns/row-actions.js"></script>
+<script src="kit/patterns/attention-list.js"></script>
+<script src="kit/patterns/disclosure.js"></script>
+<script src="kit/patterns/questions.js"></script>
+<script src="kit/patterns/next-steps.js"></script>
+<script src="kit/patterns/steps.js"></script>
+<script src="kit/patterns/region-frame.js"></script>
+<script src="kit/patterns/figures.js"></script>
+<script src="kit/patterns/findings.js"></script>
+<script src="kit/patterns/report-cards.js"></script>
+<script src="kit/viz/core.js"></script>
+<script src="kit/viz/bars.js"></script>
+<script src="kit/viz/timeline.js"></script>
+<script src="kit/viz/tree.js"></script>
+<script src="kit/viz/flow.js"></script>
+<script src="kit/viz/sparkline.js"></script>
+<script src="kit/viz/stepper.js"></script>
+<script src="kit/viz/matrix.js"></script>
+<script src="kit/viz/buckets.js"></script>
+<script src="kit/viz/topology.js"></script>
+<script src="kit/viz/dotgrid.js"></script>
+<script src="kit/viz/dial-meter.js"></script>
+<script src="parts/app.js"></script>
