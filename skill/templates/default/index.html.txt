@@ -36,8 +36,9 @@ THIS PAGE
 <link rel="stylesheet" href="kit/patterns/request-card.css">
 <link rel="stylesheet" href="kit/patterns/presence.css">
 <link rel="stylesheet" href="kit/patterns/assist-panel.css">
-<link rel="stylesheet" href="kit/type-roles.css">
 <link rel="stylesheet" href="kit/chrome.css">
+<link rel="stylesheet" href="kit/canvas.css">
+<link rel="stylesheet" href="kit/type-roles.css">
 <link rel="stylesheet" href="kit/save-status.css">
 <link rel="stylesheet" href="kit/tabs.css">
 <link rel="stylesheet" href="kit/table.css">
@@ -49,7 +50,6 @@ THIS PAGE
 <link rel="stylesheet" href="kit/palette.css">
 <link rel="stylesheet" href="kit/md.css">
 <link rel="stylesheet" href="kit/mermaid.css">
-<link rel="stylesheet" href="kit/canvas.css">
 <link rel="stylesheet" href="kit/layout/viewer3d.css">
 <link rel="stylesheet" href="kit/layout/topbar.css">
 <link rel="stylesheet" href="kit/layout/app-shell.css">
@@ -87,6 +87,7 @@ THIS PAGE
 <link rel="stylesheet" href="kit/viz/topology.css">
 <link rel="stylesheet" href="kit/viz/dotgrid.css">
 <link rel="stylesheet" href="kit/viz/dial-meter.css">
+<link rel="stylesheet" href="styles/canvas.css">
 <link rel="stylesheet" href="styles/assist.css">
 
 <div class="layout" id="layout">
@@ -146,6 +147,7 @@ THIS PAGE
 <script src="kit/patterns/assist-panel.js"></script>
 <script src="kit/store.js"></script>
 <script src="kit/chrome.js"></script>
+<script src="kit/canvas.js"></script>
 <script src="kit/icons.js"></script>
 <script src="kit/save-status.js"></script>
 <script src="kit/tabs.js"></script>
@@ -157,7 +159,6 @@ THIS PAGE
 <script src="kit/palette.js"></script>
 <script src="kit/md.js"></script>
 <script src="kit/mermaid.js"></script>
-<script src="kit/canvas.js"></script>
 <script src="kit/layout/viewer3d.js"></script>
 <script src="kit/layout/topbar.js"></script>
 <script src="kit/layout/app-shell.js"></script>

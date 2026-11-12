@@ -31,6 +31,16 @@ const VIEWS = {
     </section>`,
   },
   /* /part:requests */
+  /* part:canvas */
+  canvas: {
+    label: 'Canvas',
+    parts: ['canvas', 'canvas.intro', 'canvas.board'],
+    html: () => `<section class="view canvas-view" data-part="canvas" data-comment-target aria-label="Canvas">
+      <!-- part:canvas.intro --><div class="card" data-part="canvas.intro" data-comment-target></div><!-- /part:canvas.intro -->
+      <!-- part:canvas.board --><div class="canvas-host" data-part="canvas.board" data-comment-target aria-label="Canvas board"></div><!-- /part:canvas.board -->
+    </section>`,
+  },
+  /* /part:canvas */
   /* part:settings */
   settings: {
     label: 'Settings', hidden: true,      // reached from the gear and by #settings, not from the tabs
@@ -46,6 +56,7 @@ const VIEWS = {
 };
 const TITLES = {'page.header': 'Header', 'page.lead': 'Lead', 'page.tabs': 'Views', 'page.changes': 'What changed', 'page.assist': 'Work with Claude',
   requests: 'Requests', 'requests.intro': 'Requests intro', 'requests.list': 'Request list',
+  canvas: 'Canvas', 'canvas.intro': 'Canvas intro', 'canvas.board': 'Canvas board',
   home: 'Home', 'home.welcome': 'Welcome', 'home.next': 'Next steps', 'home.about': 'How this page works',
   settings: 'Settings', 'settings.intro': 'Settings intro', 'settings.switches': 'Switches', 'settings.inbox': 'Incoming', 'settings.namespaces': 'Namespaces'};
 const COPY = new Set(Object.keys(window.ADP_CONTENT || {}));   // parts whose inner HTML is copy
@@ -124,6 +135,66 @@ function mountRequests(){
   const off = list.on(paint); paint(list.get());
   mounted.push({destroy(){ off(); cards.forEach(c => c.m.destroy()); }});
 }
+/* The Canvas view. Its modes are CANVAS_MODES: one entry each, {id, label, mount(host) -> {destroy()}}; a second entry adds a mode switch above the board.
+   Nothing here talks to the db until the view is first opened. The paint mode is kit.canvas (catalog) wired as the catalog's preview wires it, on ns/shared/{name}. */
+let paintKit = null;
+function paintStack(){
+  if (paintKit) return paintKit;
+  const Kit = window.Kit, colors = ['ink', 'blue', 'red', 'green', 'amber', 'violet'], tints = ['yellow', 'blue', 'pink', 'green'];
+  const cfg = {colors, tints, scopeSlot: 'scopeId'};
+  const store = Kit.store.create({lsPrefix: 'adp-canvas', state: Object.assign({conn: '', canWrite: false, me: null, scopeId: 'shared', modal: null, toast: null, busy: null}, Kit.canvas.slots(cfg))});
+  const chrome = Kit.chrome.create({store});
+  const db = Kit.db.create({store, toast: chrome.toast, pathTemplate: 'ns/shared/{name}', scopeSlot: 'scopeId'});
+  const applySnap = (name, snap) => { for (const ch of snap.docChanges()) { if (ch.type === 'removed') delete store.S[name][ch.doc.id]; else store.S[name][ch.doc.id] = ch.doc.data(); } store.emit(); };
+  const cv = Kit.canvas.create(Object.assign({store, db, chrome, applySnap}, cfg));
+  return (paintKit = {store, chrome, db, cv, applySnap, connected: null});
+}
+function mountPaint(host){
+  const Kit = window.Kit || {};
+  if (!window.htmPreact || !Kit.store || !Kit.db || !Kit.chrome || !Kit.canvas) { host.innerHTML = '<p class="muted canvas-note">The canvas kit is not installed.</p>'; return {destroy(){}}; }
+  const k = paintStack(), S = k.store.S;
+  let dead = false, off = null;
+  if (!k.connected) k.connected = k.db.connect();
+  k.connected.then(ok => {
+    if (dead) return;
+    if (!ok) { host.innerHTML = '<p class="muted canvas-note">A database is needed to keep canvases, and there is none here.</p>'; return; }
+    const {html, render} = window.htmPreact;
+    render(html`<div class="cv-root"><${k.cv.CanvasView}/><${k.chrome.Modal}/><${k.chrome.Toast}/><${k.chrome.Busy}/></div>`, host);
+    off = k.db.col('canvases').onSnapshot(snap => {
+      const first = !Object.keys(S.canvases).length;
+      k.applySnap('canvases', snap);
+      const last = k.store.ls.get('canvas:' + S.scopeId);
+      if (first && last && S.canvases[last] && !S.canvasId) k.cv.openCanvas(last);
+    }, k.db.subErr);
+  }).catch(() => { if (!dead) host.innerHTML = '<p class="muted canvas-note">The canvas could not start.</p>'; });
+  return {destroy(){
+    dead = true;
+    if (off) off();
+    k.cv.closeCanvas(); S.canvasId = null; S.els = {}; S.canvases = {};
+    if (window.htmPreact) window.htmPreact.render(null, host);
+  }};
+}
+const CANVAS_MODES = [{id: 'paint', label: 'Paint', mount: mountPaint}];
+function mountCanvas(){
+  const host = $('[data-part="canvas.board"]');
+  if (!host) return;
+  let cur = null, box = null;
+  const pick = id => {
+    if (cur) cur.destroy();
+    const m = CANVAS_MODES.find(x => x.id === id) || CANVAS_MODES[0];
+    host.querySelectorAll('[data-canvas-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.canvasMode === m.id)));
+    box.replaceChildren(); cur = m.mount(box);
+  };
+  if (CANVAS_MODES.length > 1) {
+    const bar = document.createElement('div'); bar.className = 'canvas-modes'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Canvas mode');
+    bar.innerHTML = CANVAS_MODES.map(m => `<button type="button" class="tab" data-canvas-mode="${m.id}">${m.label}</button>`).join('');
+    bar.addEventListener('click', e => { const b = e.target.closest('[data-canvas-mode]'); if (b) pick(b.dataset.canvasMode); });
+    host.append(bar);
+  }
+  box = document.createElement('div'); box.className = 'canvas-mode-box'; host.append(box);
+  pick(CANVAS_MODES[0].id);
+  mounted.push({destroy(){ if (cur) cur.destroy(); }});
+}
 function reveal(id){
   const v = owner(id); if (v && v !== view) show(v);
   setTimeout(() => { const t = document.querySelector('[data-part="' + String(id).split(':')[0] + '"]'); if (t) { t.scrollIntoView({block: 'center'}); t.setAttribute('data-assist-ring', ''); setTimeout(() => t.removeAttribute('data-assist-ring'), 1800); } }, 80);
@@ -138,6 +209,7 @@ function show(v){
   const gear = $('#gear'); if (gear) gear.setAttribute('aria-pressed', String(v === 'settings'));
   if (v === 'settings') mountSettings();
   else if (v === 'requests') { ready.then(mountRequests); }
+  else if (v === 'canvas') mountCanvas();
   else if (window.ADP && ADP.config) { const c = $('[data-part="home.about"]'); if (c) c.hidden = !ADP.config.get('page.show-about'); }
   if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
 }

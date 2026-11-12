@@ -31,6 +31,9 @@
   "pattern.block-picker",
   "pattern.request-card",
   "pattern.presence",
-  "pattern.assist-panel"
+  "pattern.assist-panel",
+  "kit.store",
+  "kit.chrome",
+  "kit.canvas"
  ]
 }

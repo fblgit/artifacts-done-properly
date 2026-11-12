@@ -36,6 +36,9 @@ THIS PAGE
 <link rel="stylesheet" href="kit/patterns/request-card.css">
 <link rel="stylesheet" href="kit/patterns/presence.css">
 <link rel="stylesheet" href="kit/patterns/assist-panel.css">
+<link rel="stylesheet" href="kit/chrome.css">
+<link rel="stylesheet" href="kit/canvas.css">
+<link rel="stylesheet" href="styles/canvas.css">
 <link rel="stylesheet" href="styles/assist.css">
 
 <div class="layout" id="layout">
@@ -78,6 +81,7 @@ THIS PAGE
 
 <script src="adp.js"></script>
 <script src="content.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
 <script src="kit/dom.js"></script>
 <script src="kit/tokens.js"></script>
 <script src="kit/vocab.js"></script>
@@ -90,4 +94,7 @@ THIS PAGE
 <script src="kit/patterns/request-card.js"></script>
 <script src="kit/patterns/presence.js"></script>
 <script src="kit/patterns/assist-panel.js"></script>
+<script src="kit/store.js"></script>
+<script src="kit/chrome.js"></script>
+<script src="kit/canvas.js"></script>
 <script src="parts/app.js"></script>
