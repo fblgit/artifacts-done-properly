@@ -1,9 +1,12 @@
-# pip install pre-commit && pre-commit install
+# pip install pre-commit && pre-commit install   (installs the commit and the push hooks)
+default_install_hook_types: [pre-commit, pre-push]
 repos:
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.24.3          # same version CI runs
     hooks:
       - id: gitleaks
+        stages: [pre-push]          # secrets are checked on push: the whole history, rules and allowlist in .gitleaks.toml
+        entry: gitleaks git --redact --verbose
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.9
     hooks:
