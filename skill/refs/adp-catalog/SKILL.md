@@ -17,7 +17,7 @@ The catalog is a published artifact whose files are kit entries, listed in its `
 
 ## Find
 
-- `ADP suggest CATALOG --for "free words" [--n 3] [--kind K]`: ranked by tag and summary overlap, no model call.
+- `ADP suggest CATALOG --for "free words" [--n 3] [--kind K]`: ranked by overlap with tags, name, summary, id, provides and about (the `why` field says which matched), no model call.
 - `ADP kit list [CATALOG] [--kind K] [--tag T]`: one JSON line per entry. The kind is the id prefix (`viz`, `theme`, `layout`, `kit`, `pattern`, `runtime`, `template`, `guide`).
 - `ADP kit show ID [CATALOG]`: name, summary, about, tags, files, requires, provides.
 - `ADP kit describe ID [CATALOG]`: the mount signature: needs, provides, requires, file paths, the sample path.

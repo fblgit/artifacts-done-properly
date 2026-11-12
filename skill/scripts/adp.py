@@ -39,7 +39,7 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
                                                     skipped (skipped_empty). --batches: the same docs as ArtifactData batches instead, for
                                                     an agent that writes them itself; --dry-run: counts only
   adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]
-                                                    catalog entries ranked by tag/summary overlap, grouped by kind prefix (no model call)
+                                                    catalog entries ranked by overlap with tags, name, summary, id, provides and about, grouped by kind prefix (no model call)
   adp.py kit list [CATALOG] [--kind K] [--tag T]    one JSON line per entry; CATALOG defaults to - (the saved catalog)
   adp.py kit show ID [CATALOG]                      name, summary, about, tags, files, requires, provides
   adp.py kit describe ID [CATALOG]                  the mount signature: needs, provides, requires, file paths, the sample path
@@ -506,21 +506,22 @@ def index_of(src, a):
 
 
 WORD = re.compile(r'[a-z0-9]+')
+STOP = {'a', 'an', 'and', 'or', 'the', 'of', 'to', 'in', 'on', 'for', 'with', 'between', 'by', 'is', 'it', 'as', 'at', 'my', 'that', 'this', 'from'}
 
 
 def suggest(a):
     pos, words, n = bare(a[1:]), opt(a, '--for'), int(opt(a, '--n', 3))
     if len(pos) != 1 or not words: sys.exit('usage: adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]')
-    cat, warn = index_of(pos[0], a); want = set(WORD.findall(words.lower())); want |= {w[:-1] for w in want if len(w) > 3 and w.endswith('s')}
+    cat, warn = index_of(pos[0], a); want = set(WORD.findall(words.lower())); want |= {w[:-1] for w in want if len(w) > 3 and w.endswith('s')}; want -= STOP
     groups = {}
     for e in cat['entries']:
         kind = e['id'].split('.')[0]
         if opt(a, '--kind') and kind != opt(a, '--kind'): continue
-        tags = {t.lower(): t for t in e.get('tags', [])}
         hit = [t for t in e.get('tags', []) if want & set(WORD.findall(t.lower()))]
-        sw = want & set(WORD.findall((e.get('summary', '') + ' ' + e.get('name', '')).lower()))
-        score = 3 * len(hit) + len(sw)
-        if score: groups.setdefault(kind, []).append((score, e['id'], {'id': e['id'], 'kind': kind, 'why': 'tags: ' + ', '.join(hit or sorted(sw)),
+        fields = {'name/summary': e.get('name', '') + ' ' + e.get('summary', ''), 'id': e['id'], 'provides': ' '.join(e.get('provides', [])), 'about': e.get('about') or e.get('details') or ''}
+        seen = {f: want & set(WORD.findall(v.lower())) for f, v in fields.items()}
+        score = 3 * len(hit) + len(seen['name/summary']) + len(seen['id']) + 2 * len(seen['provides']) + len(seen['about'])
+        if score: groups.setdefault(kind, []).append((score, e['id'], {'id': e['id'], 'kind': kind, 'why': '; '.join(([f"tags: {', '.join(hit)}"] if hit else []) + [f"{f}: {', '.join(sorted(w))}" for f, w in seen.items() if w]),
                   'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') != 'sample'])}))
     out = [x[2] for k in sorted(groups) for x in sorted(groups[k], key=lambda t: (-t[0], t[1]))[:n]]
     if warn: sys.stderr.write('warning: ' + warn + '\n')
