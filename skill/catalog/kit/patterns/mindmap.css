@@ -1,4 +1,4 @@
-/* part:page.style.kit.patterns.mindmap */
+/* part:page.style.kit.mindmap */
 /* Kit css: mind map    kit version 0.1.0    pairs with kit/patterns/mindmap.js
    .kit-mm        the root;  [data-ro] marks a read-only map;  .kit-mm-dragging while a node is dragged
    .kit-mm-bar    the toolbar (.kit-mm-btn);  .kit-mm-ask the inline delete question;  .kit-mm-err the one line shown for malformed data
@@ -43,4 +43,4 @@
 .kit-mm-item:hover { background: var(--sunk); }
 .kit-mm-live { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) { .kit-mm * { transition: none !important; scroll-behavior: auto !important; } }
-/* /part:page.style.kit.patterns.mindmap */
+/* /part:page.style.kit.mindmap */

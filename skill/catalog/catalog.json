@@ -14336,14 +14336,14 @@
     {
      "path": "kit/patterns/mindmap.js",
      "role": "script",
-     "sha256": "7a92f5bccf6d2f0a578633a37e43f183c57789d4df29198c0c3b24413fb5cc0f",
-     "bytes": 30423
+     "sha256": "229d6fbd5ede3a6295a068b3fd93d9aa5a2bb20214a1f8d2a6147e3d7c70b59c",
+     "bytes": 30405
     },
     {
      "path": "kit/patterns/mindmap.css",
      "role": "style",
-     "sha256": "daedcdb1d4cab3230aa6fa3e77d83ac5e6d1ea070aa9f56c773b9e5369ec0702",
-     "bytes": 5843
+     "sha256": "c6313d9d4c69b52af027a878c15307b8f4c010156744f205f974a603d3fa4a90",
+     "bytes": 5825
     },
     {
      "path": "kit/samples/mindmap.json",
@@ -14404,7 +14404,7 @@
     }
    ],
    "changed": [],
-   "hash": "66cdaad83c42",
+   "hash": "aa1b020923a1",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-sonnet-5-5"
   }

@@ -1,4 +1,4 @@
-/* part:page.script.kit.patterns.mindmap */
+/* part:page.script.kit.mindmap */
 /**
  * Mind map
  * A mind-map you make and arrange with drag and drop: a tidy tree from left to right, the root at the left, pills for the nodes, smooth curves for the connectors. The component holds no storage: data goes in, every user change comes out whole through onChange, and the page saves it.
@@ -432,4 +432,4 @@ function mount(root, opts) {
 }
 Kit.mindmap = Object.freeze({ mount });
 })();
-/* /part:page.script.kit.patterns.mindmap */
+/* /part:page.script.kit.mindmap */
