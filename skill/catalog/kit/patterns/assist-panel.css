@@ -1,0 +1,72 @@
+/* part:page.style.kit.assist-panel */
+/* Kit css: assist panel    kit version 0.1.0    pairs with kit/patterns/assist-panel.js
+   .kit-ap                 the panel: header with presence, the composer (.kit-ap-form), the feed (.kit-ap-feed)
+   .kit-ap-lane            a lane as a radio pill (the radio stays real and focusable); .kit-ap-chip the picked block, joined to the words by a seam on its left
+   .kit-ap-why[data-blocked]   why a send is not possible, in words;  .kit-ap-item[data-flash] a request just sent;  .kit-ap-msg[data-role] a conversation message
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --warn --f-ui --f-mono, optional --seam --f-display */
+.kit-ap { display: grid; gap: 14px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-ap p { margin: 0; }
+.kit-ap-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.kit-ap-head { display: grid; gap: 8px; }
+.kit-ap-ttl { margin: 0; font: 600 20px/1.2 var(--f-display, var(--f-ui)); text-wrap: balance; }
+.kit-ap-form { display: grid; gap: 10px; padding: 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); min-width: 0; }
+.kit-ap-lanes { border: 0; margin: 0; padding: 0; display: grid; gap: 6px; min-width: 0; }
+.kit-ap-lanes legend { padding: 0; margin-bottom: 6px; font: 600 13px var(--f-ui); color: var(--ink-2); }
+.kit-ap-lrow { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-ap-lane { position: relative; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--sunk); font: 600 14px var(--f-ui); cursor: pointer; }
+.kit-ap-lane input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.kit-ap-lane .kit-vo-g { width: 16px; height: 16px; }
+.kit-ap-lane:has(input:checked) { background: var(--accent); border-color: var(--accent); color: var(--accent-ink, var(--panel)); }
+.kit-ap-lane:has(input:checked)::after { content: "✓"; font-size: 12px; }
+.kit-ap-lane:has(input:focus-visible) { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-ap-help { font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+.kit-ap-scope { display: grid; gap: 6px; min-width: 0; }
+.kit-ap-scope > .kit-ap-k { font-size: 13px; color: var(--ink-2); }
+.kit-ap-k { font-size: 12.5px; color: var(--ink-2); }
+.kit-ap kbd { font: 600 12px var(--f-mono); padding: 1px 6px; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 5px; background: var(--panel); color: var(--ink); }
+.kit-ap-pick { justify-self: start; min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px dashed var(--seam, var(--accent)); background: var(--panel); color: var(--ink); font: 700 14px var(--f-ui); cursor: pointer; }
+.kit-ap-chip { display: grid; gap: 6px; padding: 8px 10px; border-left: 3px solid var(--seam, var(--accent)); background: var(--sunk); border-radius: 0 10px 10px 0; min-width: 0; }
+.kit-ap-about { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; min-width: 0; font-size: 14px; }
+.kit-ap-about b { overflow-wrap: anywhere; }
+.kit-ap-about code { font: 12px var(--f-mono); color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-ap-quote { margin: 0; font-size: 13px; line-height: 1.45; color: var(--ink-2); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.kit-ap-mini { min-height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); font: 600 13px var(--f-ui); cursor: pointer; }
+.kit-ap-tl { font: 600 13px var(--f-ui); }
+.kit-ap-ta { width: 100%; box-sizing: border-box; min-height: 5.5em; padding: 9px 11px; border: 1px solid var(--rule); border-radius: 10px; background: var(--panel); color: var(--ink); font: 15px/1.5 var(--f-ui); resize: vertical; }
+.kit-ap-foot { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.kit-ap-why { flex: 1 1 14rem; font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+.kit-ap-why[data-blocked="true"] { color: var(--ink); font-weight: 600; padding-left: 8px; border-left: 3px solid var(--warn); }
+.kit-ap-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.kit-ap-count { font: 12px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-ap-send, .kit-ap-copy { min-height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink, var(--panel)); font: 700 14.5px var(--f-ui); cursor: pointer; }
+.kit-ap-copy { background: var(--panel); color: var(--ink); border-color: var(--rule); }
+.kit-ap-send[aria-disabled="true"] { background: var(--sunk); color: var(--ink-2); border-color: var(--rule); cursor: not-allowed; }
+.kit-ap-send:disabled { cursor: progress; opacity: .75; }
+.kit-ap button:focus-visible, .kit-ap-ta:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-ap-feed { display: grid; gap: 10px; min-width: 0; }
+.kit-ap-tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
+.kit-ap-tab { min-height: 34px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); font: 600 14px var(--f-ui); cursor: pointer; }
+.kit-ap-tab[aria-pressed="true"] { color: var(--ink); background: var(--accent-soft); box-shadow: inset 0 -2px 0 var(--seam, var(--accent)); }
+.kit-ap-fil { margin-left: auto; min-height: 30px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 600 12.5px var(--f-ui); cursor: pointer; }
+.kit-ap-list, .kit-ap-msgs { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
+.kit-ap-item { min-width: 0; border-radius: 13px; transition: box-shadow .4s ease; }
+.kit-ap-item[data-flash] { box-shadow: 0 0 0 3px var(--seam, var(--accent)); }
+.kit-ap-empty { padding: 14px; border: 1px dashed var(--rule); border-radius: 12px; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+.kit-ap-conv { display: grid; gap: 10px; min-width: 0; }
+.kit-ap-msg { display: grid; gap: 3px; padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--rule-2); min-width: 0; }
+.kit-ap-msg[data-role="user"] { background: var(--sunk); margin-left: 12%; }
+.kit-ap-msg[data-role="assistant"] { border-left: 3px solid var(--seam, var(--accent)); margin-right: 6%; }
+.kit-ap-msg b { font-size: 12.5px; color: var(--ink-2); }
+.kit-ap-mb { font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-wrap; }
+.kit-ap-mb.md { white-space: normal; }
+.kit-ap-convs { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; justify-items: start; }
+.kit-ap-convs .kit-ap-mini { text-align: left; overflow-wrap: anywhere; max-width: 100%; }
+.kit-ap-crow { display: flex; flex-wrap: wrap; gap: 6px; }
+@media (max-width: 40rem) {
+  .kit-ap-form { padding: 12px; }
+  .kit-ap-lane { flex: 1 1 calc(50% - 6px); justify-content: center; }
+  .kit-ap-acts, .kit-ap-send, .kit-ap-copy { flex: 1 1 100%; }
+  .kit-ap-msg[data-role="user"], .kit-ap-msg[data-role="assistant"] { margin-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .kit-ap * { transition: none !important; } }
+/* /part:page.style.kit.assist-panel */

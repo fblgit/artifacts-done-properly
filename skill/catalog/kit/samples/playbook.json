@@ -1,0 +1,121 @@
+{
+ "note": "Invented.",
+ "label": "Studio playbooks",
+ "playbooks": [
+  {
+   "id": "load",
+   "title": "Load a bisque",
+   "count": 3,
+   "steps": [
+    {
+     "title": "Check the schedule",
+     "body": "The controller keeps the last schedule. Confirm it is the slow bisque.",
+     "cmd": "kiln schedule show\nkiln schedule load bisque-slow"
+    },
+    {
+     "title": "Arm the vent",
+     "body": "Run the vent for two minutes before the first ramp.",
+     "cmd": "kiln vent on --minutes 2"
+    },
+    {
+     "title": "Start the firing",
+     "body": "Start, then write the time in the log.",
+     "cmd": "kiln start --note \"bisque, shelf B\""
+    }
+   ]
+  },
+  {
+   "id": "abort",
+   "title": "Halt a firing",
+   "count": 2,
+   "steps": [
+    {
+     "title": "Cut the elements",
+     "body": "This ends heating and leaves the vent on.",
+     "cmd": "kiln halt --keep-vent"
+    },
+    {
+     "title": "Wait for 100 °C",
+     "body": "Do not open the lid before the display reads 100 °C or less.",
+     "cmd": "kiln watch --until 100"
+    }
+   ]
+  },
+  {
+   "id": "cones",
+   "title": "Read the cones",
+   "count": 2,
+   "steps": [
+    {
+     "title": "Photograph the pack",
+     "body": "Take the picture through the peep hole with the flash off."
+    },
+    {
+     "title": "Log what bent",
+     "body": "Cone 6 should be bent to the shelf; cone 7 should be upright.",
+     "cmd": "kiln log cones --bent 6 --upright 7"
+    }
+   ]
+  }
+ ],
+ "pipeline": {
+  "label": "Firing stages",
+  "steps": [
+   {
+    "id": "load",
+    "title": "Load",
+    "sub": "kiln room",
+    "heading": "Load the kiln",
+    "body": "Pots on the shelves, test tiles on the top shelf, cones in the pack.",
+    "bullets": [
+     "Keep 2 cm between pots and the elements.",
+     "Wad anything that sits on glaze."
+    ]
+   },
+   {
+    "id": "check",
+    "title": "Check",
+    "sub": "vent and lid",
+    "kind": "gate",
+    "heading": "Check the vent and the lid",
+    "body": "The vent fan must run and the lid must seal before the schedule starts.",
+    "bullets": [
+     "The controller refuses to start with the vent off.",
+     "A lit seam means a bad seal."
+    ]
+   },
+   {
+    "id": "fire",
+    "title": "Fire",
+    "sub": "11 hours",
+    "kind": "risk",
+    "heading": "Run the schedule",
+    "body": "The kiln climbs to cone 6 and holds. A power cut here ruins the load.",
+    "bullets": [
+     "Peek at the first ramp after 30 minutes.",
+     "Never open the lid above 200 °C."
+    ]
+   },
+   {
+    "id": "cool",
+    "title": "Cool",
+    "sub": "to 100 °C",
+    "heading": "Let it cool",
+    "body": "The cooling takes about as long as the firing. Opening early cracks glaze.",
+    "bullets": [
+     "The controller shows 100 °C when it is safe."
+    ]
+   },
+   {
+    "id": "unload",
+    "title": "Unload",
+    "sub": "and log",
+    "heading": "Unload and write it up",
+    "body": "Photograph the cones, note the results in the log and label each shelf.",
+    "bullets": [
+     "One line per shelf is enough."
+    ]
+   }
+  ]
+ }
+}

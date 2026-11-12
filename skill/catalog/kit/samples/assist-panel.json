@@ -1,0 +1,104 @@
+{
+ "note": "Invented data for the assist panel preview: an allotment planting plan, two requests and one conversation, seeded into the engine's in-memory store. Nothing leaves the page.",
+ "now": "2026-10-26T09:30:00Z",
+ "me": "u-ines",
+ "titles": {
+  "home.welcome": "Welcome",
+  "beds.north": "North beds",
+  "calendar.sowing": "Sowing calendar"
+ },
+ "artifactUrl": "https://claude.example/artifact/allotment-plan",
+ "seed": {
+  "requests/r-1793001000000-k2p9": {
+   "lane": "task",
+   "scope": {
+    "kind": "part",
+    "id": "calendar.sowing",
+    "label": "Sowing calendar",
+    "hash": "3f2a9c1d0e4b"
+   },
+   "project": "",
+   "text": "Add a row for broad beans: sow in late October, harvest from May.",
+   "quote": "Garlic: October to November. Onion sets: March.",
+   "by": "u-ines",
+   "at": "2026-10-26T09:12:00Z",
+   "status": "done",
+   "state": "working",
+   "ackBy": "dev-session",
+   "ackAt": "2026-10-26T09:12:40Z",
+   "progress": [
+    {
+     "at": "2026-10-26T09:13:10Z",
+     "text": "Read the sowing calendar."
+    },
+    {
+     "at": "2026-10-26T09:15:30Z",
+     "text": "Published version 1793001330-ab12."
+    }
+   ],
+   "response": "Added **broad beans** to the sowing calendar, after garlic.",
+   "doneAt": "2026-10-26T09:15:40Z",
+   "changed": [
+    "calendar.sowing"
+   ],
+   "version": "1793001330-ab12",
+   "estimate": null,
+   "actual": null
+  },
+  "requests/r-1793002000000-x7q1": {
+   "lane": "fix",
+   "scope": {
+    "kind": "part",
+    "id": "beds.north",
+    "label": "North beds",
+    "hash": "91be04c2aa10"
+   },
+   "project": "",
+   "text": "Bed 3 says 2.4 m but it is 2.1 m long.",
+   "quote": "",
+   "by": "u-ines",
+   "at": "2026-10-26T09:26:00Z",
+   "status": "open",
+   "state": "ack",
+   "ackBy": "dev-session",
+   "ackAt": "2026-10-26T09:26:30Z",
+   "progress": [],
+   "response": "",
+   "doneAt": "",
+   "changed": [],
+   "version": "",
+   "estimate": null,
+   "actual": null
+  },
+  "presence/dev-session": {
+   "at": "2026-10-26T09:29:00Z",
+   "doing": "",
+   "session": "dev-session"
+  },
+  "conversations/c-1793000000000-a1b2": {
+   "title": "Which beds get the most sun?",
+   "by": "u-ines",
+   "at": "2026-10-26T09:05:00Z",
+   "scope": {
+    "kind": "part",
+    "id": "home.welcome",
+    "label": "Welcome",
+    "hash": "07c1d9e3b5f2"
+   },
+   "project": ""
+  },
+  "conversations/c-1793000000000-a1b2/messages/0001": {
+   "role": "user",
+   "by": "u-ines",
+   "at": "2026-10-26T09:05:00Z",
+   "text": "Which beds get the most sun?"
+  },
+  "conversations/c-1793000000000-a1b2/messages/0002": {
+   "role": "assistant",
+   "by": "claude",
+   "at": "2026-10-26T09:05:04Z",
+   "text": "From the plan, the south beds: nothing shades them and the welcome block says the north row sits by the hedge."
+  }
+ },
+ "answer": "From the plan: bed 6 is fallow under cardboard until spring, so it is free for a winter sowing of broad beans."
+}

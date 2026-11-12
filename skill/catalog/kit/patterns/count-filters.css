@@ -1,0 +1,36 @@
+/* part:page.style.kit.count-filters */
+/* Kit css: count tiles as filters    kit version 0.1.0    pairs with kit/patterns/count-filters.js
+   .kit-cf               the root; .sticky keeps it at the top of the scroll area (below --kit-topbar-h) on the page colour
+   .kit-cf-tiles         a grid of tiles that fills the width and wraps (3 across at phone width)
+   .kit-cf-tile          one count and its name; [aria-pressed="true"] is outlined, filled with --sunk and shows a check mark
+   .kit-cf-strip         chip groups and the search box; .kit-cf-chip is a toggle chip, .kit-cf-lbl a group's name
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam, --kit-topbar-h */
+.kit-cf { display: grid; gap: 8px; min-width: 0; font-family: var(--f-ui); color: var(--ink); padding-block: 4px; }
+.kit-cf.sticky { position: sticky; top: var(--kit-topbar-h, 0px); z-index: 5; background: var(--bg, var(--panel)); }
+.kit-cf [data-tone] { --tone: var(--ink-2); }
+.kit-cf [data-tone="ok"] { --tone: var(--ok); }
+.kit-cf [data-tone="warn"] { --tone: var(--warn); }
+.kit-cf [data-tone="danger"] { --tone: var(--danger); }
+.kit-cf [data-tone="accent"] { --tone: var(--accent); }
+.kit-cf-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 118px), 1fr)); gap: 8px; }
+.kit-cf-tile { display: grid; gap: 3px; align-content: start; min-width: 0; padding: 9px 11px; text-align: left; border: 1px solid var(--rule); border-radius: 10px; background: var(--panel); color: var(--ink); font: inherit; cursor: pointer; }
+.kit-cf-tile[data-tone] { background-image: linear-gradient(var(--tone), var(--tone)); background-size: 100% 3px; background-repeat: no-repeat; background-position: top; }
+.kit-cf-tile:hover { background: var(--sunk); }
+.kit-cf-tile[aria-pressed="true"] { background: var(--sunk); border-color: var(--seam, var(--accent)); box-shadow: inset 0 0 0 1px var(--seam, var(--accent)); }
+.kit-cf-top { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+.kit-cf-count { font: 500 24px/1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.kit-cf-check { width: 14px; height: 14px; flex: none; border-radius: 50%; border: 1.5px solid var(--rule); box-sizing: border-box; }
+.kit-cf-tile[aria-pressed="true"] .kit-cf-check { background: var(--seam, var(--accent)); border-color: var(--seam, var(--accent)); position: relative; }
+.kit-cf-tile[aria-pressed="true"] .kit-cf-check::after { content: ""; position: absolute; left: 3.5px; top: 1.5px; width: 3px; height: 6px; border: solid var(--accent-ink); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+.kit-cf-label { font-size: 13px; line-height: 1.3; color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-cf-label small { font-size: 12px; }
+.kit-cf-strip { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; min-width: 0; }
+.kit-cf-grp { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; min-width: 0; }
+.kit-cf-lbl { font: 600 12px var(--f-mono); color: var(--ink-2); margin-right: 2px; }
+.kit-cf-chip { min-height: 30px; padding: 2px 11px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 500 13px var(--f-ui); cursor: pointer; }
+.kit-cf-chip:hover { background: var(--sunk); }
+.kit-cf-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.kit-cf-q { flex: 1 1 200px; min-width: 0; box-sizing: border-box; min-height: 34px; padding: 5px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 14px var(--f-ui); }
+.kit-cf-q::placeholder { color: var(--ink-2); opacity: 1; }
+.kit-cf-tile:focus-visible, .kit-cf-chip:focus-visible, .kit-cf-q:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+/* /part:page.style.kit.count-filters */

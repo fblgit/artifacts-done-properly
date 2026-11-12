@@ -1,0 +1,183 @@
+{
+ "note": "Invented glaze test tiles.",
+ "caption": "Glaze test tiles",
+ "rows": [
+  {
+   "name": "Celadon on porcelain, thin dip",
+   "cone": "cone 6",
+   "result": "pass",
+   "absorption": 0.4,
+   "grams": 182,
+   "note": "Even green, no crazing after three cycles"
+  },
+  {
+   "name": "Celadon on porcelain, thick dip",
+   "cone": "cone 6",
+   "result": "warn",
+   "absorption": 0.4,
+   "grams": 196,
+   "note": "Pools in the foot ring"
+  },
+  {
+   "name": "Tenmoku on stoneware",
+   "cone": "cone 10",
+   "result": "pass",
+   "absorption": 0.8,
+   "grams": 241,
+   "note": "Breaks to rust on the rim"
+  },
+  {
+   "name": "Tenmoku, double dip",
+   "cone": "cone 10",
+   "result": "fail",
+   "absorption": 0.8,
+   "grams": 252,
+   "note": "Ran onto the shelf"
+  },
+  {
+   "name": "Shino over iron slip",
+   "cone": "cone 10",
+   "result": "warn",
+   "absorption": 1.2,
+   "grams": 230,
+   "note": "Carbon trap is uneven"
+  },
+  {
+   "name": "Clear over white slip",
+   "cone": "cone 6",
+   "result": "pass",
+   "absorption": 0.3,
+   "grams": 175,
+   "note": "Clean and glossy"
+  },
+  {
+   "name": "Clear over red clay",
+   "cone": "cone 04",
+   "result": "pass",
+   "absorption": 5.1,
+   "grams": 160,
+   "note": "Low fire, holds water"
+  },
+  {
+   "name": "Matte white, brush on",
+   "cone": "cone 6",
+   "result": "warn",
+   "absorption": 1.9,
+   "grams": 168,
+   "note": "Streaks where the brush paused"
+  },
+  {
+   "name": "Matte white, spray",
+   "cone": "cone 6",
+   "result": "pass",
+   "absorption": 1.1,
+   "grams": 171,
+   "note": "Smooth, even coat"
+  },
+  {
+   "name": "Copper red, reduction",
+   "cone": "cone 10",
+   "result": "fail",
+   "absorption": 0.6,
+   "grams": 222,
+   "note": "Went brown, kiln was not in reduction"
+  },
+  {
+   "name": "Copper red, light reduction",
+   "cone": "cone 10",
+   "result": "warn",
+   "absorption": 0.6,
+   "grams": 219,
+   "note": "Pink blush only"
+  },
+  {
+   "name": "Ash glaze, birch",
+   "cone": "cone 10",
+   "result": "pass",
+   "absorption": 0.9,
+   "grams": 236,
+   "note": "Runny green pools, good on vertical walls"
+  },
+  {
+   "name": "Ash glaze, birch, thin",
+   "cone": "cone 10",
+   "result": "warn",
+   "absorption": 0.9,
+   "grams": 233,
+   "note": "Dry in places"
+  },
+  {
+   "name": "Blue celadon over stoneware",
+   "cone": "cone 6",
+   "result": "pass",
+   "absorption": 0.5,
+   "grams": 205,
+   "note": "Deep, no crawling"
+  },
+  {
+   "name": "Blue celadon over speckled clay",
+   "cone": "cone 6",
+   "result": "warn",
+   "absorption": 0.5,
+   "grams": 208,
+   "note": "Speckles show through the glaze"
+  },
+  {
+   "name": "Satin black, two coats",
+   "cone": "cone 6",
+   "result": "pass",
+   "absorption": 0.7,
+   "grams": 190,
+   "note": "Food safe on the leach test"
+  },
+  {
+   "name": "Satin black, three coats",
+   "cone": "cone 6",
+   "result": "fail",
+   "absorption": 0.7,
+   "grams": 201,
+   "note": "Blistered"
+  },
+  {
+   "name": "Honey crystalline",
+   "cone": "cone 9",
+   "result": "warn",
+   "absorption": 1.4,
+   "grams": 244,
+   "note": "Crystals small, long cool needed"
+  },
+  {
+   "name": "Oatmeal wash",
+   "cone": "cone 6",
+   "result": "pass",
+   "absorption": 1.6,
+   "grams": 166,
+   "note": "Neutral, good under slip"
+  },
+  {
+   "name": "Chun blue, thin",
+   "cone": "cone 9",
+   "result": "pass",
+   "absorption": 0.8,
+   "grams": 226,
+   "note": "Soft opalescent blue"
+  }
+ ],
+ "options": [
+  {
+   "value": "pass",
+   "label": "Pass",
+   "tone": "ok"
+  },
+  {
+   "value": "warn",
+   "label": "Watch",
+   "tone": "warn"
+  },
+  {
+   "value": "fail",
+   "label": "Fail",
+   "tone": "danger"
+  }
+ ]
+}

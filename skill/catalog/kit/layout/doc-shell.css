@@ -1,0 +1,52 @@
+/* part:page.style.kit.doc-shell */
+/* Kit css: document shell with sticky contents    kit version 0.1.0    pairs with kit/layout/doc-shell.js
+   .kit-doc (the grid: rail 220px, column up to --kit-doc-measure, default 65ch), .kit-doc-toc (sticky under --kit-topbar-h), .kit-doc-list (the links;
+   li.kit-doc-group labels a group), .kit-doc-main (the column), .kit-doc-sec (a section; scroll-margin clears the bar), .kit-doc-note (marginalia beside the body),
+   [data-narrow] (set by the script under 640px of the shell's own width: the rail becomes a sticky "Contents" menu at the top of the column),
+   [data-tight] (under 920px: marginalia sit above their section's body).
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display; optional --seam (the current mark; falls back to --accent) */
+.kit-doc { --kit-doc-measure: 65ch; --kit-doc-top: calc(var(--kit-topbar-h, 0px) + 16px);
+  display: grid; grid-template-columns: 220px minmax(0, var(--kit-doc-measure)); gap: 0 48px; align-items: start; justify-content: center; min-width: 0; color: var(--ink); }
+.kit-doc.has-notes { grid-template-columns: 220px minmax(0, calc(var(--kit-doc-measure) + 168px)); }
+.kit-doc-toc { position: sticky; top: var(--kit-doc-top); max-height: calc(100vh - var(--kit-doc-top) - 16px); overflow: auto; padding-block: 4px; scrollbar-width: thin; z-index: 2; }
+.kit-doc-menu > summary { display: none; }
+.kit-doc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; border-left: 1px solid var(--rule); }
+.kit-doc-list li { margin: 0; }
+.kit-doc-group { padding: 14px 0 4px 15px; font: 600 12px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-doc-group:first-child { padding-top: 0; }
+.kit-doc-toc a { position: relative; display: block; padding: 5px 8px 5px 15px; margin-left: -1px; border-left: 2px solid transparent;
+  font: 500 14px/1.35 var(--f-ui); color: var(--ink-2); text-decoration: none; overflow-wrap: anywhere; }
+.kit-doc-toc a:hover { color: var(--ink); border-left-color: var(--rule); }
+.kit-doc-toc a[aria-current] { color: var(--ink); font-weight: 700; border-left-color: var(--seam, var(--accent)); }
+.kit-doc-toc a:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: -2px; border-radius: 4px; }
+.kit-doc-main { min-width: 0; display: grid; gap: 40px; }
+.kit-doc-sec { scroll-margin-top: var(--kit-doc-top); min-width: 0; }
+.kit-doc-sec:focus, .kit-doc-sec :focus:not(:focus-visible) { outline: none; }
+.kit-doc-body { min-width: 0; font: 16px/1.62 var(--f-ui); }
+.kit-doc-body > :first-child { margin-top: 0; }
+.kit-doc-body h2 { font: 600 clamp(24px, 3.2vw, 30px)/1.15 var(--f-display); letter-spacing: -.01em; text-wrap: balance; margin: 0 0 10px; }
+.kit-doc-body h3 { font: 700 16px/1.3 var(--f-ui); margin: 22px 0 6px; }
+.kit-doc-body p, .kit-doc-body ul, .kit-doc-body ol { margin: 0 0 12px; }
+.kit-doc-sec:has(> .kit-doc-note) { display: grid; grid-template-columns: 144px minmax(0, 1fr); gap: 0 24px; }
+.kit-doc-note { position: sticky; top: var(--kit-doc-top); padding-top: 9px; font: 12px/1.6 var(--f-mono); color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-doc-note b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.kit-doc[data-narrow] { grid-template-columns: minmax(0, 1fr); }
+.kit-doc[data-narrow] .kit-doc-toc { position: sticky; top: var(--kit-topbar-h, 0px); max-height: none; overflow: visible; margin: 0 0 18px; padding: 0; background: var(--bg); }
+.kit-doc[data-narrow] .kit-doc-menu { border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); }
+.kit-doc[data-narrow] .kit-doc-menu > summary { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 14px; cursor: pointer; list-style: none; }
+.kit-doc[data-narrow] .kit-doc-menu > summary::-webkit-details-marker { display: none; }
+.kit-doc[data-narrow] .kit-doc-menu > summary::after { content: ""; margin-left: auto; width: 7px; height: 7px; border: solid var(--ink-2); border-width: 0 1.5px 1.5px 0; transform: translateY(-2px) rotate(45deg); flex: none; }
+.kit-doc[data-narrow] .kit-doc-menu[open] > summary::after { transform: translateY(2px) rotate(-135deg); }
+.kit-doc[data-narrow] .kit-doc-menu > summary:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; border-radius: 12px; }
+.kit-doc-menu-l { font: 600 12px var(--f-mono); color: var(--ink-2); flex: none; }
+.kit-doc-now { font: 700 14px/1.3 var(--f-ui); color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kit-doc[data-narrow] .kit-doc-list { border-left: 0; border-top: 1px solid var(--rule); padding: 6px 4px 8px; max-height: 60vh; overflow: auto; }
+.kit-doc[data-narrow] .kit-doc-toc a { border-left: 0; border-radius: 8px; padding: 9px 12px; }
+.kit-doc[data-narrow] .kit-doc-toc a[aria-current] { background: var(--sunk); }
+.kit-doc[data-narrow] .kit-doc-group { padding-left: 12px; }
+.kit-doc[data-tight] .kit-doc-sec:has(> .kit-doc-note) { grid-template-columns: minmax(0, 1fr); }
+.kit-doc[data-tight] .kit-doc-note { position: static; padding: 0 0 6px; }
+.kit-doc[data-tight] { column-gap: 32px; }
+.kit-doc[data-tight]:not([data-narrow]).has-notes { grid-template-columns: 200px minmax(0, var(--kit-doc-measure)); }
+@media (prefers-reduced-motion: no-preference) { .kit-doc-toc a { transition: color .15s, border-color .15s; } }
+/* /part:page.style.kit.doc-shell */

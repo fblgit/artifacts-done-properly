@@ -1,0 +1,33 @@
+/* part:page.style.kit.claude-lane */
+/* Kit css: Claude lane    kit version 0.1.1    pairs with kit/claude-lane.js
+   Listener hint, request card with its step bar, progress line and response, queue strip. The classes .q-<step> and .req.<step> follow the step names (default queue, ack, pending, done).
+   Needs from the board: --rule --panel --accent --accent-soft --ok --warn --sunk --ink --ink-2 --danger
+   Text is 4.5:1 or more in both boards' themes: counts read --ink-2, a waiting count --ink on its --warn tint, the listening line --ink beside its green dot.
+   Lifted from: Journey Whiteboard app.css (deep lane status). */
+/* ---------- deep lane status ---------- */
+.listen { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink-2); }
+.listen.on { color: var(--ink); }
+.reqs { display: grid; gap: 6px; }
+.req { border: 1px solid var(--rule); border-radius: 8px; padding: 7px 9px; display: grid; gap: 5px; font-size: 13px; background: var(--panel); }
+.req.answered { border-color: color-mix(in srgb, var(--ok) 45%, var(--rule)); }
+.req-steps { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+.req-steps b { margin-left: 4px; font-weight: 600; }
+.req-steps .faint { margin-left: auto; }
+.rs { width: 14px; height: 4px; border-radius: 2px; background: var(--rule); }
+.rs.past { background: color-mix(in srgb, var(--accent) 55%, var(--rule)); }
+.rs.now { background: var(--accent); }
+.req.answered .rs { background: var(--ok); }
+.req-text { color: var(--ink-2); overflow-wrap: anywhere; }
+.req-prog { display: flex; gap: 6px; align-items: center; color: var(--accent); font-size: 12.5px; }
+.req-resp { background: var(--sunk); border-radius: 6px; padding: 6px 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: no-preference) { .req.working .rs.now, .req.picked-up .rs.now { animation: pulse 1.2s ease-in-out infinite; } }
+@keyframes pulse { 50% { opacity: .35; } }
+.qstrip { display: inline-flex; gap: 2px; border: 1px solid var(--rule); background: var(--panel); border-radius: 8px; padding: 2px; font-size: 11.5px; }
+.qstrip .q { padding: 2px 6px; border-radius: 6px; color: var(--ink-2); white-space: nowrap; }
+.qstrip .q b { font-family: var(--f-mono); }
+.qstrip .q-queue.has { color: var(--ink); background: color-mix(in srgb, var(--warn) 18%, transparent); }
+.qstrip .q-ack.has { color: var(--accent); background: var(--accent-soft); }
+.qstrip .q-pending.has { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.qstrip .q-done.has { color: var(--ok); }
+@media (max-width: 760px) { .qstrip .q-done { display: none; } }
+/* /part:page.style.kit.claude-lane */

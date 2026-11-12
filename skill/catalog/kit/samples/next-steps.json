@@ -1,0 +1,20 @@
+{
+  "component": "next-steps",
+  "file": "kit/patterns/next-steps.js",
+  "about": "Five invented next steps for a bakery's ordering page, and four folders for the command variant.",
+  "items": [
+    { "id": "menu", "title": "Enter this week's menu", "sub": "Eleven loaves and three pastries.", "ref": "menu" },
+    { "id": "slots", "title": "Set the pickup windows", "sub": "Weekdays 6 to 10, Saturdays 7 to 12.", "ref": "slots" },
+    { "id": "sold", "title": "Show sold-out loaves", "sub": "Greyed, with the next bake day.", "ref": "sold-out" },
+    { "id": "text", "title": "Send a confirmation text", "sub": "Needs the sender number from the owner.", "ref": "text" },
+    { "id": "print", "title": "Print the bake sheet each night", "sub": "One page, sorted by pickup time." }
+  ],
+  "state": { "done": { "menu": true }, "picked": { "slots": true, "text": true }, "notes": { "text": "Use the shop's number, not a personal one." }, "order": [], "extras": [] },
+  "folders": [
+    { "id": "drafts", "title": "drafts", "sub": "Unfinished menu copy." },
+    { "id": "menu", "title": "menu", "sub": "This week's loaves and prices." },
+    { "id": "invoices", "title": "invoices", "sub": "Supplier invoices, personal to the owner." },
+    { "id": "photos", "title": "photos", "sub": "Product photos for the page." }
+  ],
+  "foldersState": { "done": {}, "picked": { "menu": true, "photos": true }, "notes": {}, "order": [], "extras": [] }
+}

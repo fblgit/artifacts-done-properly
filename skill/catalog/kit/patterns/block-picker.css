@@ -1,0 +1,31 @@
+/* part:page.style.kit.block-picker */
+/* Kit css: block picker    kit version 0.1.0    pairs with kit/patterns/block-picker.js
+   html.kit-bp-on        while picking: every [data-part] shows a faint dashed edge and a crosshair
+   .kit-bp-lens          a ring around the current block whose shadow dims the rest of the page (pointer-events none)
+   .kit-bp-tag           the block's name beside it;  .kit-bp-bar the bottom bar (name, place, Previous, Next, Pick, Cancel), clear of the safe areas
+   Needs from the board: --panel --ink --ink-2 --rule --accent --accent-ink --f-ui --f-mono, optional --seam --shadow */
+html.kit-bp-on [data-part] { cursor: crosshair; outline: 1px dashed color-mix(in srgb, var(--ink-2) 45%, transparent); outline-offset: 2px; }
+html.kit-bp-on [data-part].kit-bp-cur { outline-color: transparent; }
+.kit-bp-lens { position: fixed; z-index: 2147483000; pointer-events: none; border-radius: 10px; border: 3px solid var(--seam, var(--accent));
+  box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--ink) 32%, transparent); transition: top .14s ease, left .14s ease, width .14s ease, height .14s ease; }
+.kit-bp-tag { position: fixed; z-index: 2147483001; pointer-events: none; max-width: min(240px, 70vw); padding: 2px 9px; border-radius: 6px; background: var(--panel);
+  border: 2px solid var(--seam, var(--accent)); color: var(--ink); font: 700 13px/1.5 var(--f-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kit-bp-bar { position: fixed; z-index: 2147483002; left: 50%; transform: translateX(-50%); bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  width: min(560px, calc(100vw - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px))); box-sizing: border-box;
+  display: grid; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
+  box-shadow: var(--shadow, 0 10px 30px color-mix(in srgb, var(--ink) 22%, transparent)); font-family: var(--f-ui); }
+.kit-bp-bar p { margin: 0; }
+.kit-bp-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; min-width: 0; }
+.kit-bp-ttl { font-size: 13px; color: var(--ink-2); }
+.kit-bp-name { font-size: 15px; overflow-wrap: anywhere; min-width: 0; }
+.kit-bp-pos { font: 12.5px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; margin-left: auto; }
+.kit-bp-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-bp-btn { min-height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); font: 700 14px var(--f-ui); cursor: pointer; }
+.kit-bp-btn.go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink, var(--panel)); order: -1; }
+.kit-bp-btn:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-bp-keys { font-size: 12.5px; color: var(--ink-2); }
+.kit-bp-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (pointer: coarse) { .kit-bp-keys { display: none; } }
+@media (max-width: 40rem) { .kit-bp-btn { flex: 1 1 auto; } .kit-bp-btn.go { flex-basis: 100%; } }
+@media (prefers-reduced-motion: reduce) { .kit-bp-lens { transition: none; } }
+/* /part:page.style.kit.block-picker */

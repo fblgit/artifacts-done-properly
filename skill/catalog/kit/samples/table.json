@@ -1,0 +1,50 @@
+{
+ "note": "Invented figures.",
+ "caption": "Studio budget, third quarter",
+ "sub": "Planned against spent, in euros. Difference is planned minus spent.",
+ "rows": [
+  {
+   "group": "Materials",
+   "item": "Porcelain clay, 100 kg",
+   "planned": 240,
+   "spent": 228
+  },
+  {
+   "group": "Materials",
+   "item": "Glaze materials",
+   "planned": 180,
+   "spent": 214.5
+  },
+  {
+   "group": "Materials",
+   "item": "Pyrometric cones",
+   "planned": 36,
+   "spent": 36
+  },
+  {
+   "group": "Firing",
+   "item": "Electricity",
+   "planned": 420,
+   "spent": 465.2,
+   "flag": "over"
+  },
+  {
+   "group": "Firing",
+   "item": "Kiln shelves and posts",
+   "planned": 150,
+   "spent": 0
+  },
+  {
+   "group": "Studio",
+   "item": "Rent share",
+   "planned": 600,
+   "spent": 600
+  },
+  {
+   "group": "Studio",
+   "item": "Vent fan service",
+   "planned": 90,
+   "spent": 72
+  }
+ ]
+}

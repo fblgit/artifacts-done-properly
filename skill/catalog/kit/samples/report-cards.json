@@ -1,0 +1,37 @@
+{
+  "note": "Nine invented reports from one small build, one of each kind. Times are UTC.",
+  "labels": { "done": { "ref": "Commit", "ref2": "Branch" }, "handoff": { "ref": "Branch", "ref2": "Commit" } },
+  "reports": [
+    { "kind": "done", "subject": "T-41", "by": "Mara", "at": "2026-10-22T09:58:00Z", "ref": "a41c9e2", "ref2": "chart-rounding",
+      "body": {
+        "tests": [{ "command": "npm test -- chart", "passed": 38, "failed": 0, "skipped": 2 }, { "command": "npm run lint", "passed": 12, "failed": 1, "skipped": 0 }],
+        "diverged": [
+          { "asked": "Round every height to the nearest centimetre", "did": "Rounded to the nearest centimetre; heights under 10 cm keep one decimal so small tides stay readable" },
+          { "asked": "Update the chart legend", "did": "Left the legend as it is; it already reads in metres" }
+        ],
+        "unverified": ["The chart on a 320 px screen", "Negative tide heights in the southern stations"],
+        "summary": "Heights now round on the way in, so the chart and the table agree.\n\nOne lint rule still fails on an old file I did not touch."
+      } },
+    { "kind": "blocked", "subject": "T-37", "by": "Priya", "at": "2026-10-22T10:20:00Z",
+      "body": { "reason": "resource-held", "on": { "kind": "cache", "name": "lint-cache" }, "detail": "The glossary build needs the lint cache, which Wen holds until 11:20. I stopped rather than clear it." } },
+    { "kind": "decision", "subject": "T-40", "by": "Tobias", "at": "2026-10-21T09:30:00Z",
+      "body": { "decision": "The offline mode is called Harbour Offline.", "alternatives": ["Slack Water: lovely, but nobody would guess what it does", "Dry Dock: reads as a repair state"], "consequences": ["The copy deck and the store listing change today", "The icon is a lantern with a small cross"] } },
+    { "kind": "handoff", "subject": "T-44", "by": "Mara", "at": "2026-10-21T15:40:00Z", "ref": "unit-toggle", "ref2": "9d03f17",
+      "body": { "to": "Ines", "nextStep": "Check the toggle with a screen reader.\n\nThe feet and metres labels are still placeholders." } },
+    { "kind": "ask", "subject": "T-45", "by": "Ines", "at": "2026-10-22T10:12:00Z",
+      "body": { "question": "May I publish the release notes before Sol has finished the photo credits?" } },
+    { "kind": "question", "subject": "T-40", "by": "Mara", "at": "2026-10-22T10:02:00Z",
+      "body": { "to": "Tobias", "question": "Where should the offline icon sit on the tide chart header?", "options": ["Left of the station name", "Right of the date", "In a floating badge over the chart"] } },
+    { "kind": "feedback", "subject": "T-38", "by": "Ines", "at": "2026-10-19T11:48:00Z",
+      "body": { "items": [
+        { "kind": "fix", "where": "tokens/lantern.css", "line": 14, "note": "The muted text colour is under 4.5 to 1 on the panel" },
+        { "kind": "nit", "where": "tokens/lantern.css", "line": 31, "note": "One token name has a typo" },
+        { "kind": "question", "where": "tokens/index.json", "note": "Is the dark set meant to ship with this release?" },
+        { "kind": "praise", "note": "The spacing scale reads very clearly" }
+      ] } },
+    { "kind": "fault", "subject": "T-42", "by": "Wen", "at": "2026-10-18T13:41:00Z",
+      "body": { "severity": "medium", "component": "weather-sync", "expected": "The sync finishes in under 5 seconds on a slow network.", "observed": "It times out at 5 seconds on three of ten runs.", "evidence": ["run 2026-10-18-1305", "run 2026-10-18-1322", "run 2026-10-18-1341"] } },
+    { "kind": "status", "subject": "T-37", "by": "Priya", "at": "2026-10-22T09:34:00Z",
+      "body": { "progress": "nearly", "summary": "Chapter 3 is drafted and the photos are placed. The glossary and the final read-through are left." } }
+  ]
+}

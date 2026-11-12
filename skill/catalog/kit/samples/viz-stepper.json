@@ -1,0 +1,80 @@
+{
+ "$sample": {
+  "board": "Journey Whiteboard",
+  "space": "journey-whiteboard",
+  "title": "Journey Whiteboard · its own journey",
+  "note": "Real records from the board's own space, as cached on 2026-10-20. Created stamps are as recorded."
+ },
+ "track": {
+  "steps": [
+   "queue",
+   "ack",
+   "pending",
+   "done"
+  ],
+  "hints": {
+   "queue": "waiting for a Claude Code session to acknowledge it",
+   "ack": "acknowledged: the work will show up here",
+   "pending": "being worked on",
+   "done": "answered"
+  },
+  "requests": [
+   {
+    "text": "Alternative to weigh: Can it be both upon availability?",
+    "at": "done",
+    "delivered": true,
+    "created": 1792344566606,
+    "response": "Yes, it can. Added it to Q3 as path “Both, by availability”: Claude in the page answers every alternative right away, and when a Claude Code session is listening the alternative also goes there, and its checked answer is added under the qui"
+   },
+   {
+    "text": "Alternative to weigh: Can be both ?",
+    "at": "queue",
+    "delivered": true,
+    "created": 1792344608853,
+    "response": ""
+   },
+   {
+    "text": "can you then compose the MOSCOW ?\nClaude\nProposed MoSCoW for the open work. Must: T3, the real-browser pass, because layout, drag and drawing have never been seen outside jsdom. Should: D3 and D4 conf",
+    "at": "done",
+    "delivered": true,
+    "created": 1792344833681,
+    "response": "MoSCoW composed from work items (the MoSCoW board shows tasks, not decisions). Must: T3 real-browser pass (you chose Playwright on Q1), T4 choosing a second path supersedes the first decision (the bug behind D3 and D4). Should: T5 the 'both"
+   }
+  ]
+ },
+ "stages": {
+  "current": "record",
+  "steps": [
+   {
+    "id": "frame",
+    "label": "Frame",
+    "count": 1
+   },
+   {
+    "id": "problems",
+    "label": "Problems",
+    "count": 12
+   },
+   {
+    "id": "moves",
+    "label": "Moves",
+    "count": 12
+   },
+   {
+    "id": "forks",
+    "label": "Forks",
+    "count": 4
+   },
+   {
+    "id": "decide",
+    "label": "Decisions",
+    "count": 6
+   },
+   {
+    "id": "record",
+    "label": "Outcomes",
+    "count": 2
+   }
+  ]
+ }
+}

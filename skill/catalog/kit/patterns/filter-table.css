@@ -1,0 +1,44 @@
+/* part:page.style.kit.filter-table */
+/* Kit css: filter, search and sort table    kit version 0.1.0    pairs with kit/patterns/filter-table.js; the table itself is kit/table.css
+   .kit-ft            the pattern's root: a bar (chips, search), a status line, then the table frame
+   .kit-ft-chip       a toggle button with a tone dot, a word and a count; [aria-pressed="true"] is the active one (filled, so state is not colour alone)
+   .kit-ft-search     the search field; .kit-ft-count the status line
+   .kit-ft-sort       a column head button; th[aria-sort] carries the direction and .kit-ft-arrow repeats it as an arrow
+   .kit-ft-st         a status word with a tone ([data-tone="ok|warn|danger|accent|muted"]); .kit-ft-minibar a thin bar under a number
+   Every tint is a color-mix of a meaning token into --panel; text on a tint is the tone mixed 78% into --ink, 4.5:1 or more in the kit's three themes.
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono, optional --seam (focus and sort edge) */
+.kit-ft { display: grid; gap: 10px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-ft [data-tone] { --tone: var(--ink-2); }
+.kit-ft [data-tone="ok"] { --tone: var(--ok); }
+.kit-ft [data-tone="warn"] { --tone: var(--warn); }
+.kit-ft [data-tone="danger"] { --tone: var(--danger); }
+.kit-ft [data-tone="accent"] { --tone: var(--accent); }
+.kit-ft-bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; min-width: 0; }
+.kit-ft-chips { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.kit-ft-chip { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); font: 600 13px/1.2 var(--f-ui); cursor: pointer; }
+.kit-ft-chip:hover { background: var(--sunk); }
+.kit-ft-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.kit-ft-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tone, var(--ink-2)); flex: none; }
+.kit-ft-chip[aria-pressed="true"] .kit-ft-dot { box-shadow: 0 0 0 2px var(--accent-ink); }
+.kit-ft-n { font: 500 12px var(--f-mono); font-variant-numeric: tabular-nums; opacity: .85; }
+.kit-ft-search { flex: 1 1 200px; min-width: 0; display: block; }
+.kit-ft-search input { width: 100%; box-sizing: border-box; min-height: 36px; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 14px var(--f-ui); }
+.kit-ft-search input::placeholder { color: var(--ink-2); opacity: 1; }
+.kit-ft-chip:focus-visible, .kit-ft-search input:focus-visible, .kit-ft-sort:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-ft-count { margin: 0; font: 500 13px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-ft-cap { text-align: left; }
+.kit-ft-sort { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; white-space: nowrap; }
+.kit-ft-sort:hover { color: var(--ink); }
+.kit-ft-arrow { display: inline-block; min-width: 1ch; color: var(--ink); }
+.kit-ft-table th[aria-sort="ascending"], .kit-ft-table th[aria-sort="descending"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--seam, var(--accent)); }
+.kit-ft-table th.num .kit-ft-sort { justify-content: flex-end; }
+.kit-ft-table td, .kit-ft-table th { overflow-wrap: break-word; }
+.kit-ft-table td:first-child { min-width: 15ch; }
+.kit-ft-fig { display: block; }
+.kit-ft-minibar { display: block; height: 4px; margin: 4px 0 0 auto; border-radius: 2px; background: var(--tone, var(--ink-2)); }
+.kit-ft-table td.num .kit-ft-minibar { background: color-mix(in srgb, var(--ink-2) 70%, var(--panel)); }
+.kit-ft-st { display: inline-block; font: 600 12px/1.6 var(--f-mono); padding: 0 8px; border-radius: 999px; white-space: nowrap;
+  color: color-mix(in srgb, var(--tone) 78%, var(--ink)); background: color-mix(in srgb, var(--tone) 10%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 45%, var(--panel)); }
+.kit-ft-none { color: var(--ink-2); text-align: center; padding: 22px 14px; }
+@media (max-width: 520px) { .kit-ft-search { flex-basis: 100%; } }
+/* /part:page.style.kit.filter-table */

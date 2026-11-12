@@ -1,0 +1,37 @@
+/* part:page.style.kit.viz.shelf */
+/* Kit css: to-scale capacity shelf    kit version 0.1.0    pairs with kit/viz/shelf.js
+   .kit-shelf-unit (id column + body)  .kit-shelf-bar (as long as the unit's capacity share)  .kit-shelf-seg (.is-alloc hatched with a solid .kit-shelf-fill, .is-free dashed and empty, .is-flag ringed)
+   Text is --ink or --ink-2; the pen sets only the marks. Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --ok --warn --danger --f-ui --f-mono --c-blue --c-amber --c-violet --c-green --c-red, optional --seam */
+.kit-shelf { display: grid; gap: 16px; min-width: 0; font: 13px/1.4 var(--f-ui); color: var(--ink); }
+.kit-shelf .kit-t-blue { --kc: var(--c-blue); } .kit-shelf .kit-t-amber { --kc: var(--c-amber); } .kit-shelf .kit-t-violet { --kc: var(--c-violet); } .kit-shelf .kit-t-green { --kc: var(--c-green); } .kit-shelf .kit-t-red { --kc: var(--c-red); }
+.kit-shelf .kit-t-ok { --kc: var(--ok); } .kit-shelf .kit-t-warn { --kc: var(--warn); } .kit-shelf .kit-t-danger { --kc: var(--danger); } .kit-shelf .kit-t-accent { --kc: var(--accent); } .kit-shelf .kit-t-muted { --kc: var(--ink-2); }
+.kit-shelf-unit { display: grid; grid-template-columns: minmax(110px, 190px) minmax(0, 1fr); gap: 6px 20px; align-items: start; }
+.kit-shelf-id { display: grid; gap: 2px; min-width: 0; }
+.kit-shelf-id b { font: 600 14px var(--f-mono); overflow-wrap: anywhere; }
+.kit-shelf-id span { color: var(--ink-2); font-size: 12.5px; }
+.kit-shelf-cap { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.kit-shelf-body { display: grid; gap: 7px; min-width: 0; }
+.kit-shelf-track { height: 34px; }
+.kit-shelf-bar { display: flex; gap: 2px; height: 100%; min-width: 6px; }
+.kit-shelf-seg { position: relative; height: 100%; min-width: 3px; overflow: hidden; border-radius: 3px; cursor: default; }
+.kit-shelf-seg:first-child { border-radius: 7px 3px 3px 7px; } .kit-shelf-seg:last-child { border-radius: 3px 7px 7px 3px; } .kit-shelf-seg:only-child { border-radius: 7px; }
+.kit-shelf-seg.is-alloc, .kit-shelf-sw.alloc { background: repeating-linear-gradient(135deg, var(--kc, var(--c-blue)) 0 2px, transparent 2px 6px); box-shadow: inset 0 0 0 1.5px var(--kc, var(--c-blue)); }
+.kit-shelf-seg.is-free, .kit-shelf-sw.free { background: none; border: 1.5px dashed var(--ink-2); box-sizing: border-box; }
+.kit-shelf-fill { position: absolute; inset: 0 auto 0 0; background: var(--kc, var(--c-blue)); }
+.kit-shelf-sw.used { background: var(--c-blue); }
+.kit-shelf-sw.alloc { --kc: var(--c-blue); }
+.kit-shelf-seg.is-flag, .kit-shelf-sw.flag { outline: 2px solid var(--danger); outline-offset: 1px; overflow: visible; z-index: 1; }
+.kit-shelf-seg.is-flag .kit-shelf-fill { border-radius: inherit; }
+.kit-shelf-sw.flag { background: var(--c-blue); }
+.kit-shelf-seg:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; z-index: 2; }
+.kit-shelf-names { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: 12.5px; color: var(--ink-2); }
+.kit-shelf-names b { color: var(--ink); font-weight: 600; } .kit-shelf-names .is-flag b { color: var(--danger); }
+.kit-shelf-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-shelf-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px 2px 3px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); font-size: 12.5px; }
+.kit-shelf-chip i { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--kc); color: var(--panel); font: 700 11px var(--f-mono); font-style: normal; }
+.kit-shelf-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--ink-2); }
+.kit-shelf-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.kit-shelf-sw { width: 18px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
+.kit-shelf-cap2 { margin: 0; font-size: 12.5px; color: var(--ink-2); }
+@media (max-width: 520px) { .kit-shelf-unit { grid-template-columns: minmax(0, 1fr); } .kit-shelf-id { grid-auto-flow: column; justify-content: start; gap: 4px 12px; align-items: baseline; flex-wrap: wrap; } }
+/* /part:page.style.kit.viz.shelf */

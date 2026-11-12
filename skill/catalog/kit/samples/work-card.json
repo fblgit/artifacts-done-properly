@@ -1,0 +1,17 @@
+{
+  "note": "Four invented work items. Times are UTC.",
+  "items": [
+    { "id": "T-40", "title": "Pick a name for the offline mode", "rawTitle": "need name for offline thing", "state": "running", "verdict": "none", "owner": "Mara", "expects": "reply", "openAsks": 1,
+      "holds": { "kind": "doc", "name": "release-notes" }, "version": 6,
+      "authored": { "by": "Priya", "kind": "polished", "at": "2026-10-22T09:10:00Z", "version": 6 } },
+    { "id": "T-38", "title": "Review the lantern colour tokens", "state": "review", "verdict": "changes", "owner": "Ines", "expects": "review", "openAsks": 0, "version": 9,
+      "authored": { "by": "Mara", "kind": "agent", "at": "2026-10-21T16:25:00Z", "version": 9 } },
+    { "id": "T-41", "title": "Round tide heights to the nearest centimetre", "state": "done", "verdict": "approved", "owner": "Mara", "expects": "nothing", "openAsks": 0, "version": 12,
+      "outcome": { "kind": "landed", "ref": { "type": "commit", "value": "a41c9e2" } },
+      "answered": { "answer": "Looks right, ship it", "state": "read", "by": "Mara", "at": "2026-10-20T16:08:00Z" },
+      "authored": { "by": "Mara", "kind": "agent", "at": "2026-10-20T15:40:00Z", "version": 12 } },
+    { "id": "T-45", "title": "Publish the release notes", "rawTitle": "release notes pls", "state": "blocked", "verdict": "none", "owner": "Priya", "expects": "reply", "openAsks": 2,
+      "holds": { "kind": "doc", "name": "release-notes" }, "version": 8,
+      "authored": { "by": "Priya", "kind": "polished", "at": "2026-10-21T08:30:00Z", "version": 5 } }
+  ]
+}

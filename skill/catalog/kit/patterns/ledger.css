@@ -1,0 +1,52 @@
+/* part:page.style.kit.ledger */
+/* Kit css: settled ledger    kit version 0.1.0    pairs with kit/patterns/ledger.js
+   .kit-lg              the root; .kit-lg-bar holds the filter chips and Open all / Close all; .kit-lg-count is the status line
+   .kit-lg-g            a group (h3.kit-lg-h with .kit-lg-range, then ul.kit-lg-list); li.kit-lg-row > details > summary
+   summary parts        .kit-lg-num (reference), .kit-lg-tag ([data-tone]), .kit-lg-when (date), .kit-lg-title, .kit-lg-mark (closing note)
+   .kit-lg-detail       the opened row: .kit-lg-kv blocks, each a .kit-lg-k label and a body; [data-tone="warn"] boxes a block
+   The row opens by the native details control; the chevron is drawn in css and turns by transform (no motion when the reader asks for none).
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam */
+.kit-lg { display: grid; gap: 10px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-lg [data-tone] { --tone: var(--ink-2); }
+.kit-lg [data-tone="ok"] { --tone: var(--ok); }
+.kit-lg [data-tone="warn"] { --tone: var(--warn); }
+.kit-lg [data-tone="danger"] { --tone: var(--danger); }
+.kit-lg [data-tone="accent"] { --tone: var(--accent); }
+.kit-lg-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+.kit-lg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-lg-chip { display: inline-flex; gap: 7px; align-items: center; min-height: 36px; padding: 4px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 600 13px var(--f-ui); cursor: pointer; }
+.kit-lg-chip:hover { background: var(--sunk); }
+.kit-lg-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.kit-lg-n { font: 500 12px var(--f-mono); font-variant-numeric: tabular-nums; opacity: .85; }
+.kit-lg-ex { display: inline-flex; gap: 14px; }
+.kit-lg-link { padding: 6px 2px; border: 0; background: transparent; color: var(--ink); font: 600 13px var(--f-ui); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.kit-lg-chip:focus-visible, .kit-lg-link:focus-visible, .kit-lg-row summary:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-lg-count { margin: 0; font: 500 13px var(--f-mono); color: var(--ink-2); }
+.kit-lg-groups { display: grid; gap: 16px; min-width: 0; }
+.kit-lg-g { display: grid; gap: 6px; min-width: 0; }
+.kit-lg-g[hidden], .kit-lg-row[hidden] { display: none; }
+.kit-lg-h { margin: 0; font: 600 14px/1.3 var(--f-ui); color: var(--ink-2); }
+.kit-lg-range { font: 500 12px var(--f-mono); }
+.kit-lg-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--panel); }
+.kit-lg-row + .kit-lg-row:not([hidden]) { border-top: 1px solid var(--rule-2); }
+.kit-lg-row summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 9px 12px 9px 34px; min-height: 40px; cursor: pointer; list-style: none; position: relative; }
+.kit-lg-row summary::-webkit-details-marker { display: none; }
+.kit-lg-row summary::before { content: ""; position: absolute; left: 14px; top: 15px; width: 7px; height: 7px; border: solid var(--ink-2); border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform .15s; }
+.kit-lg-row details[open] > summary::before { transform: rotate(45deg); top: 13px; }
+.kit-lg-row details[open] > summary { background: var(--sunk); }
+.kit-lg-num { flex: none; min-width: 2ch; font: 600 13px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-lg-tag { flex: none; font: 600 11.5px/1.6 var(--f-mono); padding: 0 8px; border-radius: 999px; white-space: nowrap;
+  color: color-mix(in srgb, var(--tone) 78%, var(--ink)); background: color-mix(in srgb, var(--tone) 10%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 45%, var(--panel)); }
+.kit-lg-when { flex: none; font: 500 12.5px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-lg-title { flex: 1 1 14ch; min-width: 0; font-size: 14.5px; line-height: 1.4; overflow-wrap: anywhere; }
+.kit-lg-mark { flex: none; font: 500 12.5px var(--f-mono); color: var(--ink-2); }
+.kit-lg-detail { display: grid; gap: 10px; padding: 10px 14px 14px 34px; font-size: 14px; line-height: 1.55; border-top: 1px solid var(--rule-2); }
+.kit-lg-kv { display: grid; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
+.kit-lg-kv > * { margin: 0; }
+.kit-lg-kv ul { padding-left: 1.1em; display: grid; gap: 2px; }
+.kit-lg-kv[data-tone="warn"] { padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--warn) 9%, var(--panel)); border: 1px solid color-mix(in srgb, var(--warn) 40%, var(--panel)); }
+.kit-lg-k { font: 600 12px var(--f-mono); color: var(--ink-2); }
+.kit-lg-kv[data-tone="warn"] .kit-lg-k { color: color-mix(in srgb, var(--warn) 78%, var(--ink)); }
+@media (max-width: 520px) { .kit-lg-mark { flex-basis: 100%; } .kit-lg-detail { padding-left: 14px; } }
+@media (prefers-reduced-motion: reduce) { .kit-lg-row summary::before { transition: none; } }
+/* /part:page.style.kit.ledger */

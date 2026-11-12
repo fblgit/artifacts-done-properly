@@ -1,0 +1,14 @@
+{
+  "component": "save-status",
+  "file": "kit/save-status.js",
+  "about": "A stand-in doc and a text box; the scenarios set how the stand-in db answers.",
+  "lsKey": "catalog-preview:save-status",
+  "path": "board/state",
+  "doc": { "text": "Order two seeded loaves for Saturday." },
+  "scenarios": [
+    { "id": "shared", "label": "The db saves it" },
+    { "id": "none", "label": "No db" },
+    { "id": "refused", "label": "The db refuses writes" },
+    { "id": "offline", "label": "Offline" }
+  ]
+}

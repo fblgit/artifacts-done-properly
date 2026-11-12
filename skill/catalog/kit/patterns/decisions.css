@@ -1,0 +1,43 @@
+/* part:page.style.kit.decisions */
+/* Kit css: owner decision cards    kit version 0.1.0    pairs with kit/patterns/decisions.js
+   .kit-d (a card; data-state is open, pending or recorded), .kit-d-opts (the option buttons), .kit-d-other (the free-text line), .kit-d-done (the recorded answer),
+   .kit-d-claude (where Claude is with it: four pips and a sentence; data-step is queue, ack, pending or done), .kit-d-btn.
+   The state is always in words too: the summary line, "Recorded <date>", and the Claude sentence. Text is --ink or --ink-2, or a meaning colour mixed into --ink.
+   Needs from the board: --panel --bg --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono --f-display; optional --seam
+   Lifted from: a proposal page's owner decision cards; a register's open, sent and done pills. */
+.kit-d-root { display: grid; gap: 12px; min-width: 0; color: var(--ink); font: 15px/1.55 var(--f-ui); }
+.kit-d-sum { margin: 0; font: 600 13px/1.4 var(--f-mono); color: var(--ink-2); }
+.kit-d-sum[data-open="0"] { color: color-mix(in srgb, var(--ok) 78%, var(--ink)); }
+.kit-d-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; }
+.kit-d-list { display: grid; gap: 12px; min-width: 0; }
+.kit-d { display: grid; gap: 8px; min-width: 0; padding: 14px 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); }
+.kit-d[data-state="recorded"] { border-color: color-mix(in srgb, var(--ok) 50%, var(--rule)); }
+.kit-d[data-state="pending"] { border-style: dashed; }
+.kit-d-title { margin: 0; font: 600 16.5px/1.35 var(--f-display, var(--f-ui)); text-wrap: balance; }
+.kit-d-why { margin: 0; color: var(--ink-2); font-size: 14px; max-width: 66ch; }
+.kit-d-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.kit-d-btn { min-height: 44px; max-width: 100%; padding: 6px 14px; border-radius: 10px; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); font: 600 14px/1.25 var(--f-ui); text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+.kit-d-btn:hover:not(:disabled) { border-color: var(--ink-3); }
+.kit-d-btn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.kit-d-btn.pri { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.kit-d-btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.kit-d-btn:disabled { opacity: .55; cursor: not-allowed; }
+.kit-d-btn:focus-visible, .kit-d-other input:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-d-other { display: flex; flex-wrap: wrap; gap: 8px; }
+.kit-d-other[hidden] { display: none; }
+.kit-d-other input { flex: 1 1 220px; min-width: 0; min-height: 44px; padding: 4px 12px; border-radius: 10px; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); font: 14.5px var(--f-ui); }
+.kit-d-done { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.kit-d-ans { font-weight: 600; color: color-mix(in srgb, var(--ok) 78%, var(--ink)); overflow-wrap: anywhere; }
+.kit-d-meta { margin: 0; font-size: 13px; color: var(--ink-2); }
+.kit-d-msg { margin: 0; font-size: 13.5px; font-weight: 600; color: color-mix(in srgb, var(--warn) 78%, var(--ink)); }
+.kit-d-claude { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding-top: 8px; border-top: 1px solid var(--rule); font-size: 13.5px; }
+.kit-d-pips { display: inline-flex; gap: 3px; }
+.kit-d-pips i { width: 14px; height: 4px; border-radius: 2px; background: var(--rule); }
+.kit-d-pips i.past { background: color-mix(in srgb, var(--accent) 55%, var(--rule)); }
+.kit-d-pips i.now { background: var(--accent); }
+.kit-d-claude[data-step="done"] .kit-d-pips i { background: var(--ok); }
+.kit-d-claude b { font-weight: 600; }
+.kit-d-resp { flex-basis: 100%; color: var(--ink-2); overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: no-preference) { .kit-d-claude[data-step="pending"] .kit-d-pips i.now { animation: kit-d-pulse 1.2s ease-in-out infinite; } }
+@keyframes kit-d-pulse { 50% { opacity: .35; } }
+/* /part:page.style.kit.decisions */

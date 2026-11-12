@@ -1,0 +1,150 @@
+{
+ "note": "Invented: a community bike co-op fitting out its first workshop.",
+ "lanes": [
+  {
+   "id": "priya",
+   "label": "Priya",
+   "sub": "co-op lead"
+  },
+  {
+   "id": "marcus",
+   "label": "Marcus",
+   "sub": "workshop build"
+  },
+  {
+   "id": "lena",
+   "label": "Lena",
+   "sub": "volunteers and stock"
+  }
+ ],
+ "phases": [
+  {
+   "id": "plan",
+   "label": "Plan"
+  },
+  {
+   "id": "fit",
+   "label": "Fit-out"
+  },
+  {
+   "id": "stock",
+   "label": "Stock"
+  },
+  {
+   "id": "open",
+   "label": "Open"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "W-1",
+   "title": "Agree the floor plan",
+   "lane": "priya",
+   "phase": "plan",
+   "state": "done"
+  },
+  {
+   "id": "W-2",
+   "title": "Order workbenches",
+   "lane": "marcus",
+   "phase": "plan",
+   "state": "done",
+   "after": [
+    "W-1"
+   ]
+  },
+  {
+   "id": "W-3",
+   "title": "Build the bench rails",
+   "lane": "marcus",
+   "phase": "fit",
+   "state": "running",
+   "after": [
+    "W-2"
+   ]
+  },
+  {
+   "id": "W-4",
+   "title": "Wire the lighting",
+   "lane": "marcus",
+   "phase": "fit",
+   "state": "blocked",
+   "after": [
+    "W-1"
+   ]
+  },
+  {
+   "id": "W-5",
+   "title": "Print the safety signs",
+   "lane": "lena",
+   "phase": "fit",
+   "state": "done",
+   "after": [
+    "W-1"
+   ]
+  },
+  {
+   "id": "W-6",
+   "title": "Sort donated tools",
+   "lane": "lena",
+   "phase": "stock",
+   "state": "running",
+   "after": [
+    "W-3"
+   ]
+  },
+  {
+   "id": "W-7",
+   "title": "Stock inner tubes",
+   "lane": "priya",
+   "phase": "stock",
+   "state": "queued",
+   "after": [
+    "W-3",
+    "W-6"
+   ]
+  },
+  {
+   "id": "W-8",
+   "title": "Open day",
+   "lane": "priya",
+   "phase": "open",
+   "state": "queued",
+   "after": [
+    "W-4",
+    "W-5",
+    "W-7"
+   ]
+  }
+ ],
+ "filters": [
+  {
+   "id": "all",
+   "label": "All"
+  },
+  {
+   "id": "open",
+   "label": "Not done",
+   "states": [
+    "running",
+    "blocked",
+    "queued",
+    "waiting"
+   ]
+  },
+  {
+   "id": "blocked",
+   "label": "Blocked",
+   "states": [
+    "blocked"
+   ]
+  },
+  {
+   "id": "done",
+   "label": "Done",
+   "states": [
+    "done"
+   ]
+  }
+ ]
+}

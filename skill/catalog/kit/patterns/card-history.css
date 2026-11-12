@@ -1,0 +1,49 @@
+/* part:page.style.kit.card-history */
+/* Kit css: card history    kit version 0.1.0    pairs with kit/patterns/card-history.js
+   .kit-hi-tags    the count line; .kit-hi-track a row of state nodes joined by a line (--n nodes), each a button that jumps to its move
+   .kit-hi-turn    one turn of the conversation: .kit-hi-l lines, .c the asker's and replier's, .y the answerer's
+   .kit-hi-moves   moves by day: .kit-hi-day has the day in the left column and an ordered list of moves; .kit-hi-flash marks a jumped-to move
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono, optional --seam */
+.kit-hi { display: grid; gap: 16px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-hi-empty { margin: 0; padding: 16px; border: 1px dashed var(--rule); border-radius: 12px; color: var(--ink-2); text-align: center; font-size: 14px; }
+.kit-hi-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-hi-tags li { padding: 3px 10px; border: 1px solid var(--rule); border-radius: 999px; background: var(--sunk); font: 500 12.5px var(--f-mono); color: var(--ink-2); }
+.kit-hi-track { list-style: none; margin: 0; padding: 4px 0 0; display: grid; grid-template-columns: repeat(var(--n, 1), minmax(70px, 1fr)); position: relative; min-width: 0; overflow-x: auto; }
+.kit-hi-track li { position: relative; min-width: 0; }
+.kit-hi-track li::before { content: ""; position: absolute; left: 0; right: 0; top: 16px; border-top: 2px solid var(--rule); }
+.kit-hi-track li:first-child::before { left: 50%; } .kit-hi-track li:last-child::before { right: 50%; }
+.kit-hi-node { position: relative; display: grid; justify-items: center; gap: 4px; width: 100%; padding: 4px 4px 6px; border: 0; border-radius: 10px; background: none; color: var(--ink); cursor: pointer; font: inherit; }
+.kit-hi-node:hover { background: var(--sunk); }
+.kit-hi-node:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 1px; }
+.kit-hi-node .kit-vo-orb { position: relative; z-index: 1; }
+.kit-hi-nl { font: 700 12.5px var(--f-ui); text-align: center; overflow-wrap: anywhere; }
+.kit-hi-node time { font: 12px var(--f-mono); color: var(--ink-2); }
+.kit-hi-sec { display: grid; gap: 8px; min-width: 0; }
+.kit-hi-sec h3 { margin: 0; display: flex; gap: 8px; align-items: center; font: 700 14px var(--f-ui); }
+.kit-hi-cnt { padding: 0 8px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--rule); font: 600 12px var(--f-mono); color: var(--ink-2); }
+.kit-hi-turn { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); min-width: 0; }
+.kit-hi-tn { font: 600 12px var(--f-mono); letter-spacing: .04em; color: var(--ink-2); }
+.kit-hi-ls { display: grid; gap: 8px; }
+.kit-hi-l { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; }
+.kit-hi-av { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--sunk); border: 1px solid var(--rule); font: 700 11.5px var(--f-mono); color: var(--ink); }
+.kit-hi-l.y .kit-hi-av { background: var(--accent-soft, var(--sunk)); border-color: var(--seam, var(--accent)); }
+.kit-hi-b { min-width: 0; }
+.kit-hi-h { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; font-size: 13.5px; }
+.kit-hi-h time { font: 12px var(--f-mono); color: var(--ink-2); }
+.kit-hi-b p { margin: 2px 0 0; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; max-width: 68ch; }
+.kit-hi-b q { font-style: italic; }
+.kit-hi-mute { color: var(--ink-2); }
+.kit-hi-moves { display: grid; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); min-width: 0; overflow: hidden; }
+.kit-hi-day { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 4px 12px; padding: 10px 12px; border-top: 1px solid var(--rule-2); }
+.kit-hi-day:first-child { border-top: 0; }
+.kit-hi-d { font: 700 12.5px var(--f-mono); color: var(--ink-2); padding-top: 4px; }
+.kit-hi-day ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; min-width: 0; }
+.kit-hi-day li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; padding: 3px 6px; border-radius: 8px; font-size: 14px; min-width: 0; }
+.kit-hi-day li:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 1px; }
+.kit-hi-t { flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; }
+.kit-hi-day li time { font: 12px var(--f-mono); color: var(--ink-2); margin-left: auto; font-variant-numeric: tabular-nums; }
+@keyframes kit-hi-flash { from { background: color-mix(in srgb, var(--seam, var(--accent)) 28%, var(--panel)); } to { background: transparent; } }
+.kit-hi-flash { animation: kit-hi-flash 1.4s ease-out; }
+@media (max-width: 480px) { .kit-hi-day { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .kit-hi-flash { animation: none; background: color-mix(in srgb, var(--seam, var(--accent)) 18%, var(--panel)); } }
+/* /part:page.style.kit.card-history */

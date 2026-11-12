@@ -1,0 +1,28 @@
+/* part:page.style.kit.patterns.scenarios */
+/* Kit css: scenario matrix    kit version 0.1.0    pairs with kit/patterns/scenarios.js; sits on kit/table.css
+   A cell is a verdict (a dot and a word) and a sentence: <span class="kit-sv" data-tone="ok|warn|danger|muted">serves</span> <span class="kit-sv-t">What happens.</span>
+   The verdict word carries the meaning; the tone only repeats it. .kit-sv-flag is the small tag on a row's name (unconfirmed, new). Rows read across: the scenario, one cell per configuration, then what to do.
+   Needs from the board: the table's (--panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono) and --ok --warn --danger */
+.kit-scen { min-width: 0; max-width: 100%; }
+.kit-scen .kit-table { min-width: 720px; }
+.kit-scen .kit-table td, .kit-scen .kit-table th { vertical-align: top; }
+.kit-scen .kit-table tbody th[scope="row"] { text-align: left; font: 700 14px/1.4 var(--f-ui); color: var(--ink); min-width: 130px; max-width: 190px; background: var(--panel); position: sticky; left: 0; z-index: 1; border-right: 1px solid var(--rule-2); }
+.kit-scen .kit-table thead th:first-child { position: sticky; left: 0; z-index: 3; }
+.kit-scen .kit-table td { min-width: 170px; max-width: 280px; font-size: 14px; }
+.kit-scen .kit-table td.kit-sv-resp { color: var(--ink); min-width: 220px; }
+.kit-scen .kit-table tr.kit-hl > th[scope="row"] { background: color-mix(in srgb, var(--accent-soft) 60%, var(--panel)); }
+.kit-sv { --tone: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; margin-right: 6px; vertical-align: .05em;
+  font: 700 12px/1.55 var(--f-mono); padding: 0 8px 0 7px; border-radius: 999px; color: color-mix(in srgb, var(--tone) 78%, var(--ink));
+  background: color-mix(in srgb, var(--tone) 10%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--panel)); }
+.kit-sv::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.kit-sv[data-tone="ok"] { --tone: var(--ok); }
+.kit-sv[data-tone="warn"] { --tone: var(--warn); }
+.kit-sv[data-tone="danger"] { --tone: var(--danger); }
+.kit-sv[data-tone="ok"]::before { border-radius: 50%; }
+.kit-sv[data-tone="warn"]::before { border-radius: 1px; transform: rotate(45deg); }
+.kit-sv[data-tone="danger"]::before { border-radius: 1px; }
+.kit-sv[data-tone="muted"]::before { background: transparent; border: 1.5px dashed currentColor; }
+.kit-sv-t { color: var(--ink); }
+.kit-sv-flag { display: inline-block; margin-left: 6px; font: 600 11px/1.6 var(--f-mono); padding: 0 6px; border-radius: 999px; border: 1px dashed var(--ink-2); color: var(--ink-2); vertical-align: .1em; white-space: nowrap; }
+.kit-scen-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 8px 2px 0; font: 13px/1.5 var(--f-ui); color: var(--ink-2); align-items: center; }
+/* /part:page.style.kit.patterns.scenarios */

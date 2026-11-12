@@ -1,0 +1,210 @@
+{
+ "note": "Invented workstreams.",
+ "dims": [
+  {
+   "key": "D",
+   "label": "Drawn"
+  },
+  {
+   "key": "T",
+   "label": "Thrown"
+  },
+  {
+   "key": "G",
+   "label": "Glazed"
+  },
+  {
+   "key": "F",
+   "label": "Fired"
+  }
+ ],
+ "cards": [
+  {
+   "id": 1,
+   "no": 1,
+   "title": "Tea set, six cups",
+   "outcome": "Fired and checked; waiting for the pack-out.",
+   "cells": {
+    "D": {
+     "state": "yes",
+     "note": "Sketch signed off 3 Oct"
+    },
+    "T": {
+     "state": "yes",
+     "note": "Six cups, one spare"
+    },
+    "G": {
+     "state": "yes",
+     "note": "Celadon, thin dip"
+    },
+    "F": {
+     "state": "yes",
+     "note": "Cone 6, Kiln A, firing 41"
+    }
+   },
+   "pills": [
+    {
+     "label": "1 open",
+     "tone": "accent"
+    }
+   ],
+   "sections": [
+    {
+     "heading": "Details",
+     "list": [
+      "Handles pulled on the wheel, attached at leather hard.",
+      "Spare cup kept for the test shelf."
+     ]
+    },
+    {
+     "heading": "Caveats",
+     "tone": "warn",
+     "list": [
+      "One cup has a pinhole near the foot."
+     ]
+    },
+    {
+     "heading": "Open items",
+     "list": [
+      "Pack six in the tea tray box."
+     ]
+    },
+    {
+     "heading": "Where",
+     "tags": [
+      {
+       "label": "Kiln",
+       "items": [
+        "A"
+       ]
+      },
+      {
+       "label": "Clay",
+       "items": [
+        "porcelain"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "no": 2,
+   "title": "Serving bowls, large",
+   "outcome": "Glazed and dry; needs a kiln slot.",
+   "cells": {
+    "D": {
+     "state": "yes"
+    },
+    "T": {
+     "state": "yes"
+    },
+    "G": {
+     "state": "part",
+     "note": "Inside done, outside waxed only"
+    },
+    "F": {
+     "state": "no",
+     "note": "No slot before Tuesday"
+    }
+   },
+   "pills": [
+    {
+     "label": "1 open",
+     "tone": "accent"
+    }
+   ],
+   "sections": [
+    {
+     "heading": "Details",
+     "list": [
+      "Tenmoku, two coats outside.",
+      "Wax resist on the foot ring."
+     ]
+    },
+    {
+     "heading": "Open items",
+     "list": [
+      "Book Kiln B for Tuesday."
+     ]
+    },
+    {
+     "heading": "Where",
+     "tags": [
+      {
+       "label": "Kiln",
+       "items": [
+        "B"
+       ]
+      },
+      {
+       "label": "Clay",
+       "items": [
+        "stoneware"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "no": 3,
+   "title": "Oil bottles",
+   "outcome": "Held: the cork supplier is late.",
+   "cells": {
+    "D": {
+     "state": "yes"
+    },
+    "T": {
+     "state": "nv",
+     "note": "Necks not measured against the corks"
+    },
+    "G": {
+     "state": "na"
+    },
+    "F": {
+     "state": "rev",
+     "note": "Bisque fired once, two bottles cracked"
+    }
+   },
+   "pills": [
+    {
+     "label": "reverted",
+     "tone": "muted"
+    }
+   ],
+   "sections": [
+    {
+     "heading": "Details",
+     "list": [
+      "Neck width must be 18 mm to take the cork."
+     ]
+    },
+    {
+     "heading": "Caveats",
+     "tone": "warn",
+     "list": [
+      "Two bottles cracked at the join in the bisque."
+     ]
+    },
+    {
+     "heading": "Where",
+     "tags": [
+      {
+       "label": "Kiln",
+       "items": []
+      },
+      {
+       "label": "Clay",
+       "items": [
+        "porcelain"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

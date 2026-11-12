@@ -1,0 +1,69 @@
+{
+ "note": "Invented.",
+ "key": "catalog-preview-steps",
+ "phases": [
+  {
+   "id": "prep",
+   "title": "Before the firing",
+   "note": "Do these in order; the load is the last one.",
+   "steps": [
+    {
+     "id": "shelves",
+     "title": "Wash and check the shelves",
+     "body": "Scrape old glaze drips with the flat stone, then wipe with a damp sponge. Look for hairline cracks along the edges.",
+     "done": "every shelf rings clear when tapped.",
+     "ids": [
+      "K-11"
+     ]
+    },
+    {
+     "id": "wadding",
+     "title": "Wad the pots that touch",
+     "body": "Press a pea of wadding under each foot that sits on a glazed shelf.",
+     "details": [
+      "Use alumina wadding above cone 6.",
+      "Never wad the rim of a lid."
+     ],
+     "ids": [
+      "K-12",
+      "K-13"
+     ]
+    },
+    {
+     "id": "vent",
+     "title": "Switch the vent fan on",
+     "body": "The fan runs from its own breaker in the kiln room. Check that it spins before the first element switches on.",
+     "done": "the fan is audible and the airflow card lifts at the vent.",
+     "gate": true,
+     "ids": [
+      "K-14"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fire",
+   "title": "The firing",
+   "note": "About eleven hours to cone 6.",
+   "steps": [
+    {
+     "id": "load",
+     "title": "Load, then close the lid",
+     "body": "Tall pots at the back, test tiles on the top shelf where the peep hole shows them.",
+     "done": "the lid seals with no light at the seam.",
+     "ids": [
+      "K-21"
+     ]
+    },
+    {
+     "id": "start",
+     "title": "Start the slow schedule",
+     "body": "Press Start on the controller and note the time in the log. Check the first ramp after thirty minutes.",
+     "ids": [
+      "K-22"
+     ]
+    }
+   ]
+  }
+ ]
+}

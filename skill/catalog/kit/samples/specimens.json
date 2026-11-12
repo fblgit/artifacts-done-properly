@@ -1,0 +1,97 @@
+{
+ "note": "Invented: one button and its toasts, in two skins named after glazes.",
+ "title": "Firing button",
+ "skins": [
+  {
+   "id": "celadon",
+   "label": "Celadon",
+   "vars": {
+    "--s-bg": "#e9f0ed",
+    "--s-panel": "#f8fbf9",
+    "--s-ink": "#14231d",
+    "--s-ink-2": "#41544c",
+    "--s-line": "#b7c9c1",
+    "--s-accent": "#1d634c",
+    "--s-accent-ink": "#f8fbf9",
+    "--s-ok": "#1d6a3a",
+    "--s-bad": "#a42f1e",
+    "--s-radius": "10px"
+   }
+  },
+  {
+   "id": "raku",
+   "label": "Raku",
+   "vars": {
+    "--s-bg": "#1d1512",
+    "--s-panel": "#2a1e19",
+    "--s-ink": "#f4e8dc",
+    "--s-ink-2": "#cdb8a6",
+    "--s-line": "#54403a",
+    "--s-accent": "#e7a24a",
+    "--s-accent-ink": "#231508",
+    "--s-ok": "#9bd3a3",
+    "--s-bad": "#ff9484",
+    "--s-radius": "3px"
+   }
+  }
+ ],
+ "states": [
+  {
+   "label": "Default",
+   "state": "default",
+   "text": "Start firing"
+  },
+  {
+   "label": "Hover",
+   "state": "hover",
+   "text": "Start firing"
+  },
+  {
+   "label": "Focused with Tab",
+   "state": "focus",
+   "text": "Start firing"
+  },
+  {
+   "label": "Busy",
+   "state": "busy",
+   "text": "Firing"
+  },
+  {
+   "label": "Disabled",
+   "state": "disabled",
+   "text": "Start firing"
+  },
+  {
+   "label": "Done, 2 s",
+   "state": "done",
+   "text": "Fired"
+  }
+ ],
+ "toasts": [
+  {
+   "caption": "A tag key: filed",
+   "tone": "ok",
+   "text": "Filed under Bisque"
+  },
+  {
+   "caption": "Same key again",
+   "tone": "warn",
+   "text": "Already filed under Bisque"
+  },
+  {
+   "caption": "A key with no tag",
+   "tone": "bad",
+   "text": "No tag on key 6"
+  }
+ ],
+ "cells": {
+  "empty": {
+   "title": "No firings yet",
+   "text": "Load the kiln and start a firing. It appears here."
+  },
+  "missing": {
+   "title": "No log for this firing",
+   "text": "The controller did not send one. Import it by hand."
+  }
+ }
+}

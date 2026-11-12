@@ -1,0 +1,37 @@
+/* part:page.style.kit.viz.capability-wheel */
+/* Kit css: capability wheel    kit version 0.1.0    pairs with kit/viz/capability-wheel.js
+   svg parts: .kit-cw (the wheel) .kit-cw-p (a bead group; .on is lit) .kit-cw-seam .kit-cw-bead .kit-cw-tick .kit-cw-label .kit-cw-core
+   card form: .kit-cw-wrap .kit-cw-bar (.kit-cw-b buttons) .kit-cw-grid .kit-cw-card (data-dim, data-on) .kit-cw-h .kit-cw-sub .kit-cw-may .kit-cw-no
+   Lit means solid, ticked and on a gold seam; unlit means dashed with no tick. Labels are --ink when lit and --ink-2 when not (4.5:1 on the panel in the kit's themes).
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui --f-display, optional --seam --edge-gold --rim --pool --glz-r-l --glz-sh-1 */
+.kit-cw { display: block; width: 100%; max-width: 420px; height: auto; overflow: visible; font-family: var(--f-ui); }
+.kit-cw-sm { max-width: 420px; }
+.kit-cw-seam { fill: none; stroke: var(--rule); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 2 6; }
+.kit-cw-p.on .kit-cw-seam { stroke: var(--seam, var(--accent)); stroke-dasharray: none; stroke-width: 3; }
+.kit-cw-bead { fill: var(--sunk); stroke: var(--ink-3); stroke-width: 2; stroke-dasharray: 3.5 3.5; }
+.kit-cw-p.on .kit-cw-bead { fill: var(--panel); stroke: var(--seam, var(--accent)); stroke-dasharray: none; stroke-width: 2.6; filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--ink) 22%, transparent)); }
+.kit-cw-tick { fill: none; stroke: var(--ink); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.kit-cw-label { font: 600 16px var(--f-ui); fill: var(--ink-2); }
+.kit-cw-p.on .kit-cw-label { fill: var(--ink); font-weight: 700; }
+.kit-cw-core { fill: var(--panel); stroke: var(--seam, var(--accent)); stroke-width: 3; filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--ink) 20%, transparent)); }
+.kit-cw-ico { width: 24px; height: 24px; fill: none; stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.kit-cw-dot { fill: var(--ink-2); }
+
+.kit-cw-wrap { display: grid; gap: 14px; min-width: 0; }
+.kit-cw-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.kit-cw-b { min-height: 34px; padding: 0 14px; border: 1.25px solid var(--edge, var(--rule)); border-radius: 999px; background: var(--sunk-2, var(--sunk)); color: var(--ink); font: 600 .84rem/1 var(--f-ui); cursor: pointer;
+  box-shadow: inset 0 1px 0 var(--rim, transparent); transition: background .15s, border-color .15s, transform .15s; }
+.kit-cw-b:hover { border-color: var(--edge-gold, var(--seam, var(--accent))); transform: translateY(-1px); }
+.kit-cw-b[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.kit-cw-b:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-cw-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); min-width: 0; }
+.kit-cw-card { display: grid; justify-items: center; align-content: start; gap: 4px; min-width: 0; padding: 18px 12px 14px; text-align: center; border-radius: var(--glz-r-l, 22px); background: var(--panel); border: 1px solid var(--rule);
+  box-shadow: inset 0 1.5px 0 var(--rim, transparent), inset 0 -22px 26px -24px var(--pool, transparent), var(--glz-sh-1, 0 1px 2px color-mix(in srgb, var(--ink) 16%, transparent)); transition: opacity .2s, filter .2s; }
+.kit-cw-card[data-dim="true"] { opacity: .62; filter: saturate(.5); }
+.kit-cw-card[data-on="true"] { border-color: var(--edge-gold, var(--seam, var(--accent))); }
+.kit-cw-h { margin: 0; font: 700 1rem/1.25 var(--f-ui); color: var(--ink); }
+.kit-cw-sub { margin: 0; font: 500 .82rem/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-cw-may { margin: 0; max-width: 34ch; font: 500 .82rem/1.45 var(--f-ui); color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-cw-no { margin: 0; font: 700 .82rem/1.3 var(--f-ui); color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .kit-cw-card, .kit-cw-b { transition: none !important; } }
+/* /part:page.style.kit.viz.capability-wheel */

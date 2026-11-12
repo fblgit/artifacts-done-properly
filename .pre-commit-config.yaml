@@ -1,0 +1,27 @@
+# pip install pre-commit && pre-commit install   (installs the commit and the push hooks)
+default_install_hook_types: [pre-commit, pre-push]
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.3          # same version CI runs
+    hooks:
+      - id: gitleaks
+        stages: [pre-push]          # secrets are checked on push: the whole history, rules and allowlist in .gitleaks.toml
+        entry: gitleaks git --redact --verbose
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.9
+    hooks:
+      - id: ruff           # rules and excludes: ruff.toml
+  - repo: local
+    hooks:
+      - id: skill-frontmatter
+        name: skill frontmatter (SKILL.md files)
+        entry: python3 tools/package.py --check
+        language: system
+        pass_filenames: false
+        files: ^(skill/.*SKILL\.md|tools/package\.py)$
+      - id: catalog-check
+        name: catalog sizes, sha256 and hashes
+        entry: python3 tools/check_catalog.py
+        language: system
+        pass_filenames: false
+        files: ^(skill/catalog/|tools/check_catalog\.py)

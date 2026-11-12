@@ -1,0 +1,79 @@
+{
+ "note": "Invented: a pottery studio's handbook.",
+ "brand": {
+  "name": "Studio handbook",
+  "sub": "Porcelain, cone 6, electric kiln"
+ },
+ "sections": [
+  {
+   "id": "open",
+   "group": "Before a firing",
+   "title": "Opening the studio",
+   "note": [
+    [
+     "08:30",
+     "doors open"
+    ],
+    [
+     "fan",
+     "on first"
+    ]
+   ],
+   "body": [
+    "Switch the vent fan on before anything else, then check the kiln room is above 10 °C: cold shelves crack.",
+    "Read yesterday's firing log and note any cone that bent short."
+   ]
+  },
+  {
+   "id": "mix",
+   "title": "Mixing glazes",
+   "note": [
+    [
+     "500 g",
+     "batch"
+    ],
+    [
+     "80",
+     "mesh sieve"
+    ]
+   ],
+   "body": [
+    "Weigh dry materials to the gram, add water to a cream consistency and sieve twice.",
+    "Label every bucket with the recipe, the date and your initials."
+   ]
+  },
+  {
+   "id": "load",
+   "group": "The firing",
+   "title": "Loading the kiln",
+   "note": [
+    [
+     "6 mm",
+     "between pots"
+    ]
+   ],
+   "body": [
+    "Wipe glaze off every foot. Leave a finger's width between pots and keep the cone pack visible from the spy hole.",
+    "Load heavy pieces low and the thin porcelain on the top shelf."
+   ]
+  },
+  {
+   "id": "fire",
+   "title": "Firing and cooling",
+   "note": [
+    [
+     "1222 °C",
+     "cone 6"
+    ],
+    [
+     "10 min",
+     "hold"
+    ]
+   ],
+   "body": [
+    "Fire on the medium-speed schedule to cone 6 with a ten-minute hold, then let it cool closed.",
+    "Open below 100 °C. Crackle in a celadon keeps forming for days; that is the glaze, not a fault."
+   ]
+  }
+ ]
+}

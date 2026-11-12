@@ -1,0 +1,68 @@
+/* part:page.style.kit.job-tray */
+/* Kit css: jobs tray    kit version 0.1.0    pairs with kit/patterns/job-tray.js
+   .kit-jt is the tray (a glazed pill that opens into capsules); .kit-jt-corner pins it to the bottom right of the viewport. .kit-jt-head is the summary button, .kit-jt-body the capsule list.
+   .kit-jt-job is one capsule (data-state: running waiting paused done failed lost); a waiting capsule sorts first and has .kit-jt-wait with a turning hollow ring. .kit-jt-wave is the progress
+   wave, .kit-jt-log the log, .kit-jt-lease a hold. The tone of each part is the vocabulary's cascade ([data-vo-tone] -> --vo-c, --vo-soft). Motion stops under prefers-reduced-motion.
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, optional --shadow --seam --glz-r-l; kit/vocab.css, kit/glaze-surfaces.css */
+.kit-jt { --jt-r: var(--glz-r-l, 22px); width: min(100%, 440px); min-width: 0; font: 15px/1.45 var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--rule-2); border-radius: var(--jt-r);
+  box-shadow: inset 0 1.5px 0 var(--rim, transparent), var(--shadow, 0 10px 30px -14px color-mix(in srgb, var(--ink) 40%, transparent)); overflow: clip; }
+.kit-jt.kit-jt-idle:not(.kit-jt-open) { width: fit-content; max-width: 100%; }
+.kit-jt-corner { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 50; }
+@media (max-width: 480px) { .kit-jt-corner { left: max(16px, env(safe-area-inset-left, 0px)); width: auto; } }
+.kit-jt [hidden] { display: none !important; }
+.kit-jt-head { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 8px 16px; border: 0; border-radius: var(--jt-r); background: transparent; color: var(--ink); font: 700 15px/1.3 var(--f-ui); text-align: left; cursor: pointer; }
+.kit-jt-head:hover { background: var(--sunk); }
+.kit-jt-head:focus-visible, .kit-jt-tg:focus-visible, .kit-jt-log:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: -3px; }
+.kit-jt-head[data-vo-tone="attention"] .kit-jt-sum { color: var(--ink); }
+.kit-jt-pile { display: inline-flex; align-items: center; flex: none; min-width: 18px; }
+.kit-jt-pile > * + * { margin-left: -6px; }
+.kit-jt-sum { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kit-jt-chev { width: 9px; height: 9px; flex: none; border: solid var(--ink-2); border-width: 0 2px 2px 0; transform: rotate(-135deg); transition: transform .25s; margin-right: 4px; }
+.kit-jt-open .kit-jt-chev { transform: rotate(45deg); }
+.kit-jt-body { display: none; padding: 0 12px 12px; }
+.kit-jt-open .kit-jt-body { display: grid; gap: 10px; }
+.kit-jt-list { display: grid; gap: 10px; align-content: start; max-height: min(60vh, 520px); overflow: auto; padding: 2px; margin: -2px; }
+.kit-jt-list > [data-state="waiting"], .kit-jt-list > [data-state="paused"] { order: -1; }
+.kit-jt-empty { margin: 0; padding: 12px 10px 2px; text-align: center; color: var(--ink-2); font-size: 14px; }
+.kit-jt-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 4px 0 10px; }
+.kit-jt-rule { color: var(--ink-2); font-size: 13.5px; }
+.kit-jt-notice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; border-radius: 14px; background: var(--sunk); border: 1px solid var(--rule); font-size: 14px; }
+.kit-jt-notice > span { flex: 1 1 14rem; min-width: 0; }
+
+/* the capsule */
+.kit-jt-job { display: grid; gap: 8px; min-width: 0; padding: 12px 14px; border-radius: 16px; background: var(--sunk); border: 1px solid var(--rule); box-shadow: inset 0 1px 0 var(--rim, transparent); }
+.kit-jt-job[data-vo-tone] { border-color: color-mix(in srgb, var(--vo-c) 38%, var(--rule)); }
+.kit-jt-top { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+.kit-jt-bead { flex: none; display: inline-flex; padding-top: 2px; }
+.kit-jt-mid { flex: 1 1 auto; min-width: 0; display: grid; gap: 1px; }
+.kit-jt-t { font: 700 15px/1.3 var(--f-ui); overflow-wrap: anywhere; }
+.kit-jt-s { font: 600 13.5px/1.35 var(--f-ui); color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-jt-time { flex: none; padding-top: 3px; font: 500 13px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-jt-tg { flex: none; width: 34px; height: 34px; margin: -3px -6px 0 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); cursor: pointer; }
+.kit-jt-tg svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.kit-jt-tg:hover, .kit-jt-logopen .kit-jt-tg { background: var(--panel); color: var(--ink); }
+
+/* waiting for you: the first thing in the capsule */
+.kit-jt-wait { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 14px; background: var(--vo-soft, var(--panel)); border: 1.5px solid var(--vo-c, var(--warn)); }
+.kit-jt-wt { margin: 0; font: 600 14px/1.4 var(--f-ui); white-space: pre-wrap; overflow-wrap: anywhere; }
+.kit-jt-ring { flex: none; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; background: conic-gradient(from 200deg, var(--vo-c, var(--warn)), color-mix(in srgb, var(--hi, var(--panel)) 55%, var(--vo-c, var(--warn))), var(--vo-c, var(--warn)));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3.5px)); animation: kit-jt-turn 2.8s linear infinite; }
+@keyframes kit-jt-turn { to { transform: rotate(360deg); } }
+
+/* the wave and the last line */
+.kit-jt-wave { position: relative; height: 6px; border-radius: 6px; background: color-mix(in srgb, var(--vo-c, var(--accent)) 16%, var(--panel)); overflow: hidden; }
+.kit-jt-wave i { position: absolute; inset: 0 auto 0 0; width: 38%; border-radius: 6px; background: linear-gradient(90deg, transparent, var(--vo-c, var(--accent)), var(--seam, var(--vo-c, var(--accent))), transparent); animation: kit-jt-wave 1.7s ease-in-out infinite; }
+@keyframes kit-jt-wave { from { transform: translateX(-100%); } to { transform: translateX(270%); } }
+.kit-jt-last { font: 500 13px/1.4 var(--f-mono); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kit-jt-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-jt-lease { padding: 2px 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); font: 500 12.5px/1.5 var(--f-mono); color: var(--ink-2); }
+.kit-jt-log { display: block; margin: 0; max-height: 220px; overflow: auto; padding: 10px 12px; border-radius: 12px; background: var(--log-bg, var(--panel)); color: var(--log-ink, var(--ink)); border: 1px solid var(--rule-2);
+  font: 12.5px/1.6 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.kit-jt-l-ok { color: var(--log-ok, var(--ok-ink, var(--ok))); font-weight: 700; } .kit-jt-l-bad { color: var(--log-bad, var(--danger-ink, var(--danger))); font-weight: 700; }
+.kit-jt-l-wait { color: var(--log-warn, var(--wait-ink, var(--warn))); font-weight: 700; } .kit-jt-l-dim { color: var(--log-dim, var(--ink-2)); }
+.kit-jt-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.kit-jt-dismiss { margin-left: auto; }
+.kit-jt-flash { animation: kit-jt-flash 1.2s; }
+@keyframes kit-jt-flash { 25% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--seam, var(--accent)) 70%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .kit-jt-ring, .kit-jt-wave i, .kit-jt-chev, .kit-jt-flash { animation: none !important; transition: none !important; } .kit-jt-wave i { width: 100%; opacity: .5; } }
+/* /part:page.style.kit.job-tray */

@@ -1,0 +1,10 @@
+{
+  "component": "chrome",
+  "file": "kit/chrome.js",
+  "about": "The dialog on its own: a title, a text and a checkbox field, Save and Cancel.",
+  "store": { "lsPrefix": "demo", "state": { "modal": null, "toast": null, "busy": null, "canWrite": true } },
+  "chrome": { "kinds": { "note": { "label": "Note" } }, "parts": {} },
+  "open": { "title": "New note", "body": "A note has a name and can be pinned.", "fields": [ { "id": "name", "label": "Name", "value": "" }, { "id": "pin", "label": "Pin it", "type": "checkbox", "value": false } ], "ok": "Save" },
+  "render": ["Modal", "Toast", "Busy"],
+  "expect": { "selectors": [ ".scrim .dialog h2", ".dialog input#f-name", ".dialog input#f-pin", ".dialog button[type=submit]" ] }
+}

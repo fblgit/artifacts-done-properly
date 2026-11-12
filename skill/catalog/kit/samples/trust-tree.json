@@ -1,0 +1,78 @@
+{
+ "note": "Invented: the signing hierarchy of a made-up company, Brindle and Oak. One root, two issuing authorities and a stand-alone shell authority with no parent; 24 certificates and keys; two hardware keys. Every name ends in .example; the serials and fingerprints are made up.",
+ "authorities": [
+  { "id": "root", "name": "Brindle Root CA R1", "parent": null, "sub": "Signs two authorities, nothing else", "glyph": "diamond", "state": "ok", "life": 0.98, "left": "20 years left",
+    "caps": ["certsign", "crlsign"], "short": "Root",
+    "facts": [["Made", "1 Mar 2026", "read"], ["Valid until", "1 Mar 2046", "read"], ["Path length", "1: may sign one level of authorities", "design"], ["Key lives in", "Hardware key slot 82, on both keys", "design"], ["Fingerprint (SHA-256)", "7c:21:9e:04:b8:d1:63:fa", "read", true]] },
+  { "id": "web", "name": "Brindle Web CA 1", "parent": "root", "sub": "Server certificates only", "glyph": "pulse", "state": "ok", "life": 0.9, "left": "4 years left",
+    "caps": ["certsign", "crlsign", "server"], "short": "Web",
+    "facts": [["Made", "1 Mar 2026", "read"], ["Valid until", "1 Mar 2031", "read"], ["Path length", "0: cannot make more authorities", "design"], ["Key lives in", "Hardware key slot 83, on both keys", "design"], ["May only vouch for", "names under brindle.example", "design"]] },
+  { "id": "staff", "name": "Brindle Staff CA 1", "parent": "root", "sub": "Staff and device certificates only", "glyph": "hand", "state": "ok", "life": 0.9, "left": "4 years left",
+    "caps": ["certsign", "crlsign", "client", "email"], "short": "Staff",
+    "facts": [["Made", "1 Mar 2026", "read"], ["Valid until", "1 Mar 2031", "read"], ["Path length", "0: cannot make more authorities", "design"], ["Key lives in", "Hardware key slot 84, on both keys", "design"]] },
+  { "id": "shell", "name": "Brindle Shell CA 1", "parent": null, "sub": "Signs shell keys directly", "glyph": "eye", "state": "ok", "life": 0.98, "left": "20 years left", "ghost": "It signs shell keys itself.",
+    "caps": ["shellhost", "shelluser"], "short": "Shell",
+    "facts": [["Made", "1 Mar 2026", "read"], ["Valid until", "1 Mar 2046", "read"], ["Path length", "Not a certificate chain", "design"], ["Key type", "ecdsa-sha2-nistp384", "read"], ["Key lives in", "Hardware key slot 85, on both keys", "design"]] }
+ ],
+ "kinds": {
+  "server": { "label": "Who can sign server certificates", "short": "Server certificate", "plural": "server certificates", "mark": "dot", "glyph": "pulse", "authority": "web",
+    "caps": ["server", "sign"],
+    "limits": ["Only under brindle.example", "Only private addresses", "Cannot create more authorities (path length 0)", "Up to 397 days", "Needs a hardware key: PIN and touch"] },
+  "client": { "label": "Who can sign client certificates", "short": "Client certificate", "plural": "client certificates", "mark": "ring", "glyph": "hand", "authority": "staff",
+    "caps": ["client", "sign"],
+    "limits": ["Only under brindle.example", "Cannot create more authorities (path length 0)", "365 days by default, some made longer", "Needs a hardware key: PIN and touch"] },
+  "host": { "label": "Who can sign shell host keys", "short": "Shell host key", "plural": "shell host keys", "mark": "square", "glyph": "diamond", "authority": "shell",
+    "caps": ["shellhost"],
+    "limits": ["Host names are written into each one", "397 days is the usual length", "Key sits in slot 85: PIN once and touch"] },
+  "user": { "label": "Who can sign shell user keys", "short": "Shell user key", "plural": "shell user keys", "mark": "diamond", "glyph": "eye", "authority": "shell",
+    "caps": ["shelluser"],
+    "limits": ["The login name is written into each one", "From 12 hours up to 5 years", "Key sits in slot 85: PIN once and touch"] }
+ },
+ "capsList": [
+  { "key": "certsign", "label": "Sign authorities", "hint": "May sign certificates for other authorities" },
+  { "key": "crlsign", "label": "Sign revocations", "hint": "May sign the list of withdrawn certificates" },
+  { "key": "server", "label": "Servers", "hint": "What it signs may prove a server" },
+  { "key": "client", "label": "Clients", "hint": "What it signs may prove a person or device" },
+  { "key": "email", "label": "Email", "hint": "What it signs may seal email" },
+  { "key": "shellhost", "label": "Shell hosts", "hint": "Vouches that a machine is the real one" },
+  { "key": "shelluser", "label": "Shell users", "hint": "Vouches that a person may log in" },
+  { "key": "sign", "label": "Own signature", "hint": "The key may sign data" }
+ ],
+ "groups": [
+  { "id": "shops", "label": "Shops", "sub": "Front of house and the stockroom", "glyph": "ring" },
+  { "id": "tills", "label": "Tills and scanners", "sub": "The devices at the counter", "glyph": "hand" },
+  { "id": "office", "label": "Office", "sub": "Back office machines and people", "glyph": "eye" },
+  { "id": "vehicles", "label": "Vehicles", "sub": "Delivery vans and drivers", "glyph": "play" }
+ ],
+ "holders": [
+  { "id": "k1", "label": "Daily key", "serial": "BK-20417", "slots": [{ "authority": "root", "slot": "0x82" }, { "authority": "web", "slot": "0x83" }, { "authority": "staff", "slot": "0x84" }, { "authority": "shell", "slot": "0x85" }] },
+  { "id": "k2", "label": "Spare key", "serial": "BK-20418", "slots": [{ "authority": "root", "slot": "0x82" }, { "authority": "web", "slot": "0x83" }, { "authority": "staff", "slot": "0x84" }, { "authority": "shell", "slot": "0x85" }] }
+ ],
+ "holdersNote": "Both keys hold identical copies of the four authorities, so either one can sign.",
+ "leaves": [
+  { "id": "s1", "authority": "web", "kind": "server", "label": "shop.brindle.example", "subject": "shop-front", "group": "shops", "state": "ok", "life": 0.96, "left": "351 days left", "issued": "12 Jun 2026", "until": "13 Oct 2027" },
+  { "id": "s2", "authority": "web", "kind": "server", "label": "orders.brindle.example", "subject": "order-desk", "group": "office", "state": "ok", "life": 0.52, "left": "188 days left", "issued": "4 Mar 2026", "until": "30 Apr 2027" },
+  { "id": "s3", "authority": "web", "kind": "server", "label": "depot.brindle.example", "subject": "stockroom", "group": "shops", "state": "soon", "life": 0.11, "left": "41 days left", "issued": "9 Dec 2025", "until": "5 Dec 2026" },
+  { "id": "s4", "authority": "web", "kind": "server", "label": "kiosk-3.brindle.example", "subject": "kiosk-3", "group": "shops", "state": "urgent", "life": 0.025, "left": "9 days left", "issued": "3 Nov 2025", "until": "3 Nov 2026" },
+  { "id": "s5", "authority": "web", "kind": "server", "label": "staff.brindle.example", "subject": "staff-rota", "group": "office", "state": "ok", "life": 0.83, "left": "2.5 years left", "issued": "20 Jul 2026", "until": "20 Apr 2029" },
+  { "id": "s6", "authority": "web", "kind": "server", "label": "cold.brindle.example", "subject": "cold-store", "group": "shops", "state": "ok", "life": 0.6, "left": "230 days left", "issued": "15 Feb 2026", "until": "12 Jun 2027" },
+  { "id": "s7", "authority": "web", "kind": "server", "label": "print.brindle.example", "subject": "print-room", "group": "office", "state": "ok", "life": 0.7, "left": "260 days left", "issued": "2 Apr 2026", "until": "12 Jul 2027" },
+  { "id": "s8", "authority": "web", "kind": "server", "label": "till-old.brindle.example", "subject": "till-1", "group": "tills", "state": "expired", "life": 0, "left": "expired 3 days ago", "issued": "20 Oct 2025", "until": "22 Oct 2026" },
+  { "id": "c1", "authority": "staff", "kind": "client", "label": "till-1", "subject": "till-1", "group": "tills", "state": "ok", "life": 0.2, "left": "70 days left", "issued": "2 Nov 2025", "until": "3 Jan 2027" },
+  { "id": "c2", "authority": "staff", "kind": "client", "label": "till-2", "subject": "till-2", "group": "tills", "state": "ok", "life": 0.2, "left": "72 days left", "issued": "4 Nov 2025", "until": "5 Jan 2027" },
+  { "id": "c3", "authority": "staff", "kind": "client", "label": "till-3", "subject": "till-3", "group": "tills", "state": "ok", "life": 0.21, "left": "75 days left", "issued": "6 Nov 2025", "until": "8 Jan 2027" },
+  { "id": "c4", "authority": "staff", "kind": "client", "label": "till-4", "subject": "till-4", "group": "tills", "state": "ok", "life": 0.21, "left": "78 days left", "issued": "8 Nov 2025", "until": "11 Jan 2027" },
+  { "id": "c5", "authority": "staff", "kind": "client", "label": "scanner-a", "subject": "scanner-a", "group": "tills", "state": "soon", "life": 0.22, "left": "80 days left", "issued": "9 Nov 2025", "until": "13 Jan 2027" },
+  { "id": "c6", "authority": "staff", "kind": "client", "label": "scanner-b", "subject": "scanner-b", "group": "tills", "state": "ok", "life": 0.23, "left": "83 days left", "issued": "11 Nov 2025", "until": "16 Jan 2027" },
+  { "id": "c7", "authority": "staff", "kind": "client", "label": "scanner-c", "subject": "scanner-c", "group": "tills", "state": "ok", "life": 0.24, "left": "86 days left", "issued": "13 Nov 2025", "until": "19 Jan 2027" },
+  { "id": "c8", "authority": "staff", "kind": "client", "label": "van-tablet", "subject": "van-1", "group": "vehicles", "state": "ok", "life": 0.7, "left": "260 days left", "issued": "1 Apr 2026", "until": "12 Jul 2027" },
+  { "id": "c9", "authority": "staff", "kind": "client", "label": "office-laptop", "subject": "office-laptop", "group": "office", "state": "ok", "life": 0.85, "left": "640 days left", "issued": "10 May 2026", "until": "6 Aug 2028" },
+  { "id": "h1", "authority": "shell", "kind": "host", "label": "cold-store", "subject": "cold-store", "group": "shops", "state": "ok", "life": 0.33, "left": "120 days left", "issued": "1 Jan 2026", "until": "22 Feb 2027", "inferred": true },
+  { "id": "h2", "authority": "shell", "kind": "host", "label": "back-office", "subject": "back-office", "group": "office", "state": "ok", "life": 0.92, "left": "335 days left", "issued": "20 Sep 2026", "until": "27 Sep 2027", "inferred": true },
+  { "id": "h3", "authority": "shell", "kind": "host", "label": "gateway", "subject": "gateway", "group": "office", "state": "ok", "life": 0.99, "left": "800 days left", "issued": "1 Oct 2026", "until": "1 Jan 2029", "inferred": true },
+  { "id": "u1", "authority": "shell", "kind": "user", "label": "night-shift@brindle", "subject": "night-shift", "group": "office", "state": "ended", "short": true, "left": "ended by design", "issued": "24 Oct 2026", "until": "25 Oct 2026", "inferred": true },
+  { "id": "u2", "authority": "shell", "kind": "user", "label": "bookkeeper@brindle", "subject": "bookkeeper", "group": "office", "state": "ok", "life": 0.6, "left": "220 days left", "issued": "1 Jul 2026", "until": "2 Jun 2027", "inferred": true },
+  { "id": "u3", "authority": "shell", "kind": "user", "label": "owner@brindle", "subject": "owner", "group": "office", "state": "ok", "life": 0.95, "left": "1400 days left", "issued": "1 Oct 2026", "until": "1 Sep 2030", "inferred": true },
+  { "id": "u4", "authority": "shell", "kind": "user", "label": "driver@brindle", "subject": "van-driver", "group": "vehicles", "state": "ended", "short": true, "left": "ended by design", "issued": "23 Oct 2026", "until": "23 Oct 2026", "inferred": true }
+ ]
+}

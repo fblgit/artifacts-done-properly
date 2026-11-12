@@ -1,0 +1,56 @@
+/* part:page.style.kit.patterns.figures */
+/* Kit css: key figures and the report hero    kit version 0.1.0    extends kit/viz/core.js's Figures (a new file; viz.css is unchanged)
+   .kit-figs[data-variant]   grid   hairline cells, a big number over a label; [data-hot] on a cell marks the one that matters (a seam above it, no extra colour)
+                             tiles  status tiles: a small label, the state as a word with a dot, one line under it; data-tone ok|warn|danger|info|muted
+                             strip  a row of three statements split by rules: a label, a large phrase, a sentence
+                             facts  label and value pairs in two columns, each under a rule
+   .kit-hero                 the report opener: an optional stamp, the title, a lede, summary chips and figures; one gold hairline under it
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-soft --ok --warn --danger --f-ui --f-mono --f-display; optional --seam, --gold-leaf (a gradient), --info */
+.kit-figs { margin: 0; padding: 0; min-width: 0; font: 14px/1.4 var(--f-ui); color: var(--ink); }
+.kit-figs > * { min-width: 0; }
+.kit-figs dt, .kit-figs dd { margin: 0; }
+.kit-figs[data-variant="grid"] { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+.kit-figs[data-variant="grid"] > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 4px; padding: 14px 16px; background: var(--panel); border-top: 2px solid transparent; }
+.kit-figs[data-variant="grid"] > div[data-hot] { border-top-color: var(--seam, var(--accent)); background: color-mix(in srgb, var(--accent-soft) 40%, var(--panel)); }
+.kit-figs[data-variant="grid"] dd { font: 600 1.9rem/1.05 var(--f-display); font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.01em; }
+.kit-figs[data-variant="grid"] dt { font: 12.5px/1.35 var(--f-ui); color: var(--ink-2); }
+.kit-figs[data-variant="grid"] .kit-fig-u { font: 500 .9rem var(--f-ui); color: var(--ink-2); margin-left: 4px; }
+
+.kit-figs[data-variant="tiles"] { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 10px; }
+.kit-figs[data-variant="tiles"] > div { --tone: var(--ink-2); display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--rule); }
+.kit-figs[data-variant="tiles"] > div[data-tone="ok"] { --tone: var(--ok); }
+.kit-figs[data-variant="tiles"] > div[data-tone="warn"] { --tone: var(--warn); }
+.kit-figs[data-variant="tiles"] > div[data-tone="danger"] { --tone: var(--danger); }
+.kit-figs[data-variant="tiles"] > div[data-tone="info"] { --tone: var(--info, var(--accent)); }
+.kit-figs[data-variant="tiles"] dt { order: -1; font: 600 12px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-figs[data-variant="tiles"] dd:nth-of-type(1) { display: flex; align-items: center; gap: 8px; font: 700 1.2rem/1.2 var(--f-ui); color: var(--ink); }
+.kit-figs[data-variant="tiles"] dd:nth-of-type(1)::before { content: ""; width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--tone); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone) 22%, transparent); }
+.kit-figs[data-variant="tiles"] dd + dd { font: 13px/1.4 var(--f-ui); color: var(--ink-2); }
+
+.kit-figs[data-variant="strip"] { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--rule); }
+.kit-figs[data-variant="strip"] > div { padding: 16px 18px 16px 0; border-right: 1px solid var(--rule); display: grid; gap: 4px; align-content: start; }
+.kit-figs[data-variant="strip"] > div + div { padding-left: 18px; }
+.kit-figs[data-variant="strip"] > div:last-child { border-right: 0; }
+.kit-figs[data-variant="strip"] dt { font: 600 12px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-figs[data-variant="strip"] dd:nth-of-type(1) { font: 600 1.45rem/1.15 var(--f-display); letter-spacing: -.01em; text-wrap: balance; }
+.kit-figs[data-variant="strip"] dd + dd { font: 14px/1.5 var(--f-ui); color: var(--ink-2); }
+
+@media (max-width: 700px) { .kit-figs[data-variant="strip"] > div, .kit-figs[data-variant="strip"] > div + div { padding-left: 0; padding-right: 0; border-right: 0; border-bottom: 1px solid var(--rule); } .kit-figs[data-variant="strip"] > div:last-child { border-bottom: 0; } }
+.kit-figs[data-variant="facts"] { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px 28px; }
+.kit-figs[data-variant="facts"] > div { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--rule); padding-top: 9px; }
+.kit-figs[data-variant="facts"] dt { font: 13.5px/1.35 var(--f-ui); color: var(--ink-2); }
+.kit-figs[data-variant="facts"] dd:nth-of-type(1) { font: 600 1.5rem/1.15 var(--f-display); font-variant-numeric: tabular-nums lining-nums; }
+.kit-figs[data-variant="facts"] dd + dd { font: 13px/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-figs[data-variant="facts"] > div { order: 0; } .kit-figs[data-variant="facts"] dt { order: -1; }
+
+.kit-hero { position: relative; display: grid; gap: 14px; padding: clamp(20px, 4vw, 38px); padding-bottom: clamp(24px, 4vw, 42px); border-radius: 18px; background: var(--panel); border: 1px solid var(--rule); box-shadow: var(--shadow); overflow: hidden; min-width: 0; color: var(--ink); }
+.kit-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--gold-leaf, var(--seam, var(--accent))); }
+.kit-hero > * { margin: 0; min-width: 0; }
+.kit-hero-stamp { justify-self: start; font: 600 11.5px/1.5 var(--f-mono); color: var(--ink); padding: 1px 9px; border-radius: 4px; border: 1.5px solid var(--ink); }
+.kit-hero h2 { font: 600 clamp(1.7rem, 4.6vw, 2.7rem)/1.1 var(--f-display); letter-spacing: -.015em; text-wrap: balance; max-width: 24ch; }
+.kit-hero-lede { font: clamp(1rem, 1.5vw, 1.12rem)/1.55 var(--f-ui); color: var(--ink-2); max-width: 62ch; }
+.kit-hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.kit-hero-chips li { display: inline-flex; gap: 6px; align-items: baseline; padding: 3px 11px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--rule-2); font: 13px/1.5 var(--f-ui); color: var(--ink-2); }
+.kit-hero-chips b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.kit-hero .kit-figs { margin-top: 6px; }
+/* /part:page.style.kit.patterns.figures */

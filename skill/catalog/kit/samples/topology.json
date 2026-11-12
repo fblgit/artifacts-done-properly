@@ -1,0 +1,31 @@
+{
+ "note": "Five invented nodes.",
+ "width": 640, "height": 340,
+ "zones": [
+  { "id": "edge", "x": 14, "y": 14, "w": 150, "h": 312, "title": "Edge", "sub": "public", "kind": "outline" },
+  { "id": "core", "x": 190, "y": 14, "w": 300, "h": 312, "title": "Workers", "sub": "10.0.1.0/24" },
+  { "id": "data", "x": 510, "y": 14, "w": 116, "h": 312, "title": "Data", "sub": "private" }
+ ],
+ "nodes": [
+  { "id": "gw", "x": 28, "y": 142, "w": 122, "h": 56, "title": "Gateway", "sub": "TLS, routing", "state": { "tone": "ok", "label": "Healthy" } },
+  { "id": "w1", "x": 214, "y": 62, "w": 124, "h": 56, "title": "Worker 1", "sub": "jobs", "state": { "tone": "ok", "label": "Healthy" } },
+  { "id": "w2", "x": 214, "y": 222, "w": 124, "h": 56, "title": "Worker 2", "sub": "jobs", "state": { "tone": "warn", "label": "Slow: queue depth 40" } },
+  { "id": "q", "x": 372, "y": 142, "w": 106, "h": 56, "title": "Queue", "sub": "messages", "state": { "tone": "ok", "label": "Healthy" } },
+  { "id": "db", "x": 520, "y": 142, "w": 96, "h": 56, "title": "Store", "sub": "records", "state": { "tone": "ok", "label": "Healthy" } }
+ ],
+ "links": [
+  { "from": "gw", "to": "w1", "arrow": "to", "label": "requests" },
+  { "from": "gw", "to": "w2", "arrow": "to" },
+  { "from": "w1", "to": "q", "arrow": "to", "dashed": true },
+  { "from": "w2", "to": "q", "arrow": "to", "dashed": true },
+  { "from": "q", "to": "db", "arrow": "to", "label": "writes" }
+ ],
+ "notes": [{ "x": 202, "y": 312, "text": "Dashed: sent when idle, not per request" }],
+ "details": {
+  "gw": { "kicker": "entry point", "sub": "Terminates TLS and routes by path.", "rows": [["Address", "203.0.113.10"], ["Port", "443"], ["Uptime", "41 days"]], "lists": [{ "title": "Does", "items": ["Terminates TLS", "Rate limits by key", "Routes to a worker"] }], "tags": [{ "text": "public", "on": true }, { "text": "stateless" }] },
+  "w1": { "kicker": "worker", "sub": "Runs queued jobs.", "rows": [["Address", "10.0.1.11"], ["Jobs now", "6"], ["Version", "2.4.1"]], "tags": [{ "text": "scales out", "on": true }] },
+  "w2": { "kicker": "worker", "sub": "Runs queued jobs. Running slow.", "rows": [["Address", "10.0.1.12"], ["Jobs now", "19"], ["Version", "2.4.0"]], "lists": [{ "title": "Watch", "items": ["Queue depth is 40, twice the limit", "Still on the older version"] }], "tags": [{ "text": "scales out", "on": true }] },
+  "q": { "kicker": "buffer", "sub": "Holds messages until a worker is free.", "rows": [["Address", "10.0.1.20"], ["Depth", "40"], ["Oldest", "3 min"]] },
+  "db": { "kicker": "storage", "sub": "Keeps every record.", "rows": [["Address", "10.0.2.5"], ["Size", "212 GiB"], ["Replicas", "2"]], "tags": [{ "text": "private", "on": true }, { "text": "backed up" }] }
+ }
+}

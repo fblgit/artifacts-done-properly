@@ -1,0 +1,32 @@
+/* part:page.style.kit.table */
+/* Kit css: data table    kit version 0.1.0    pairs with kit/table.js (the css works on hand-written tables too)
+   <div class="kit-table-box" role="region" aria-label="…" tabindex="0"><table class="kit-table">…</table></div>
+     .kit-table-box        the scroll frame: the table scrolls sideways inside it, never the page (a flex or grid parent needs min-width: 0); .tall caps its height (70vh) so the head sticks while rows scroll
+     th.num, td.num        numbers: right-aligned, tabular figures
+     tr.kit-group          a group's label row (one th with colspan); tr.kit-sub is the group's subtotal
+     tr.kit-total          the total row (tfoot or last row)
+     tr.kit-hl             a highlighted row (also give it a word: a <span class="kit-tag">…</span> in a cell)
+     .kit-pos, .kit-neg    signed figures; the sign is in the text (+, −), the colour only repeats it
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent-soft --ok --danger --f-ui --f-mono; optional --seam (the total's top rule; falls back to --ink-2) */
+.kit-table-box { max-width: 100%; min-width: 0; overflow: auto; border: 1px solid var(--rule); border-radius: 14px; background: var(--panel); overscroll-behavior-x: contain; }
+.kit-table-box.tall { max-height: 70vh; }
+.kit-table-box:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-table { border-collapse: separate; border-spacing: 0; width: 100%; font: 14px/1.45 var(--f-ui); color: var(--ink); font-variant-numeric: tabular-nums; }
+.kit-table caption { caption-side: top; text-align: left; padding: 12px 14px 4px; font: 600 15px/1.3 var(--f-ui); color: var(--ink); }
+.kit-table caption small { display: block; font: 400 13px/1.4 var(--f-ui); color: var(--ink-2); margin-top: 2px; }
+.kit-table th, .kit-table td { padding: 9px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule-2); }
+.kit-table thead th { position: sticky; top: 0; z-index: 1; background: var(--sunk); color: var(--ink-2); font: 700 12.5px/1.3 var(--f-ui); white-space: nowrap; border-bottom: 1px solid var(--rule); }
+.kit-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.kit-table td.mono, .kit-table .kit-mono { font: 13px/1.45 var(--f-mono); }
+.kit-table tbody tr:last-child > * { border-bottom: 0; }
+.kit-table tr.kit-group > th { background: color-mix(in srgb, var(--sunk) 60%, var(--panel)); font: 700 13px/1.3 var(--f-ui); color: var(--ink); padding-top: 12px; border-bottom: 1px solid var(--rule); }
+.kit-table tr.kit-group > th .kit-group-n { font: 500 12px var(--f-mono); color: var(--ink-2); margin-left: 8px; }
+.kit-table tr.kit-sub > * { color: var(--ink-2); font-weight: 600; }
+.kit-table tr.kit-hl > * { background: var(--accent-soft); }
+.kit-table tr.kit-total > *, .kit-table tfoot td, .kit-table tfoot th { font-weight: 800; background: var(--sunk); border-top: 2px solid var(--seam, var(--ink-2)); border-bottom: 0; }
+.kit-table .kit-pos { color: color-mix(in srgb, var(--ok) 80%, var(--ink)); font-weight: 600; }
+.kit-table .kit-neg { color: color-mix(in srgb, var(--danger) 80%, var(--ink)); font-weight: 600; }
+.kit-table .kit-zero { color: var(--ink-2); }
+.kit-table .kit-tag { display: inline-block; margin-left: 6px; font: 600 11px/1.6 var(--f-mono); padding: 0 6px; border-radius: 999px; background: var(--panel); color: var(--ink); border: 1px solid var(--rule); vertical-align: .1em; }
+.kit-table-note { margin: 6px 2px 0; font: 13px/1.45 var(--f-ui); color: var(--ink-2); }
+/* /part:page.style.kit.table */

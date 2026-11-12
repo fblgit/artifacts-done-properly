@@ -1,0 +1,62 @@
+/* part:page.style.kit.questions */
+/* Kit css: question cards and the sticky answer bar    kit version 0.1.0    pairs with kit/patterns/questions.js
+   .kit-q-bar (sticky under the top bar; count, meter, three buttons, status line), .kit-q (a card; data-state is open, dirty or saved),
+   .kit-q-opt (a radio option; .on when picked), .kit-q-rc (the Recommended tag), .kit-q-rec, .kit-q-claude, .kit-q-hist, .kit-q-btn.
+   Each state is also written in words on the card, so colour never carries it alone. Text is --ink or --ink-2, or a meaning colour mixed 78% into --ink.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono; optional --seam, --kit-topbar-h
+   Lifted from: a decisions board's question cards and answer bar; a task list's option cards, reply box and history. */
+.kit-q-root { display: grid; gap: 14px; min-width: 0; color: var(--ink); font: 15px/1.55 var(--f-ui); }
+.kit-q-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.kit-q-bar { position: sticky; top: calc(var(--kit-topbar-h, 0px) + env(safe-area-inset-top, 0px)); z-index: 5; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+  padding: 10px 0; background: var(--bg); border-bottom: 1px solid var(--rule); }
+.kit-q-count { font: 600 13px/1 var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.kit-q-meter { flex: 1 1 120px; height: 8px; border-radius: 999px; background: var(--sunk); overflow: hidden; min-width: 0; box-shadow: inset 0 0 0 1px var(--rule); }
+.kit-q-meter i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; }
+@media (prefers-reduced-motion: no-preference) { .kit-q-meter i { transition: width .25s ease; } }
+.kit-q-bar-act { display: flex; flex-wrap: wrap; gap: 8px; }
+.kit-q-state-line { flex-basis: 100%; margin: 0; min-height: 1.4em; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-q-copyta { width: 100%; margin-top: 6px; font: 12.5px/1.5 var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; resize: vertical; }
+.kit-q-list { display: grid; gap: 14px; min-width: 0; }
+.kit-q { --st: var(--ink-3); display: grid; gap: 10px; min-width: 0; padding: 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); }
+.kit-q[data-state="dirty"] { border-color: color-mix(in srgb, var(--accent) 60%, var(--rule)); }
+.kit-q[data-state="saved"] { border-color: color-mix(in srgb, var(--ok) 50%, var(--rule)); }
+.kit-q-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.kit-q-title { flex: 1 1 260px; min-width: 0; margin: 0; font: 600 17px/1.3 var(--f-display, var(--f-ui)); text-wrap: balance; }
+.kit-q-st { font: 600 12px/1.3 var(--f-mono); color: color-mix(in srgb, var(--warn) 78%, var(--ink)); white-space: nowrap; }
+.kit-q-st::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--warn); vertical-align: 0; }
+.kit-q[data-state="dirty"] .kit-q-st { color: var(--ink); }
+.kit-q[data-state="dirty"] .kit-q-st::before { background: var(--accent); border-radius: 2px; }
+.kit-q[data-state="saved"] .kit-q-st { color: color-mix(in srgb, var(--ok) 78%, var(--ink)); }
+.kit-q[data-state="saved"] .kit-q-st::before { background: var(--ok); }
+.kit-q-why { margin: 0; max-width: 68ch; }
+.kit-q-facts { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; color: var(--ink-2); font-size: 14px; max-width: 68ch; }
+.kit-q-opts { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 8px; }
+.kit-q-opt { display: flex; gap: 10px; align-items: flex-start; min-width: 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--rule); background: var(--bg); cursor: pointer; }
+.kit-q-opt:hover { border-color: var(--ink-3); }
+.kit-q-opt.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.kit-q-opt:focus-within { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-q-opt input { flex: none; margin: 4px 0 0; accent-color: var(--accent); }
+.kit-q-ob { display: grid; gap: 2px; min-width: 0; }
+.kit-q-ol { font-weight: 600; font-size: 14.5px; overflow-wrap: anywhere; }
+.kit-q-od { font-size: 13.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-q-rc { display: inline-block; margin-left: 8px; padding: 2px 6px; border-radius: 5px; background: var(--accent); color: var(--accent-ink); font: 600 11px/1.2 var(--f-mono); vertical-align: 1px; white-space: nowrap; }
+.kit-q-rec { margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--sunk); font-size: 14px; max-width: 68ch; }
+.kit-q-root textarea:not(.kit-q-copyta) { width: 100%; min-height: 44px; font: 14px/1.45 var(--f-ui); color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; resize: vertical; }
+.kit-q-root textarea:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 1px; border-color: var(--accent); }
+.kit-q-act { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.kit-q-btn { min-height: 38px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); font: 600 14px/1 var(--f-ui); cursor: pointer; }
+.kit-q-bar .kit-q-btn { min-height: 34px; padding: 0 10px; font-size: 13px; }
+.kit-q-btn:hover:not(:disabled) { border-color: var(--ink-3); }
+.kit-q-btn.pri { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.kit-q-btn:disabled { opacity: .5; cursor: not-allowed; }
+.kit-q-btn:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-q-extra { display: grid; gap: 8px; min-width: 0; }
+.kit-q-extra:empty { display: none; }
+.kit-q-claude { padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); font-size: 14px; }
+.kit-q-claude p { margin: 2px 0 0; overflow-wrap: anywhere; }
+.kit-q-hist { font-size: 13px; color: var(--ink-2); }
+.kit-q-hist summary { cursor: pointer; width: max-content; max-width: 100%; }
+.kit-q-hist summary:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; border-radius: 4px; }
+.kit-q-hist ol { margin: 6px 0 0; padding-left: 1.3em; display: grid; gap: 2px; }
+.kit-q-hist b { font-weight: 600; color: var(--ink); }
+/* /part:page.style.kit.questions */

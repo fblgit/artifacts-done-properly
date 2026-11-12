@@ -1,0 +1,135 @@
+/* part:page.style.kit.glaze-surfaces */
+/* Kit css: Glaze surfaces    kit version 0.1.0    pairs with kit/glaze-surfaces.js (the css also works on hand-written markup)
+   Porcelain-made parts, all from tokens. State is a cascade: put kit-is-ok | kit-is-warn | kit-is-bad | kit-is-info | kit-is-wait | kit-is-idle on a part or any ancestor and
+   the orbs, chips, rows, avatars and cards inside read --gz-c (the bead), --gz-soft (the wash) and --gz-ink (text on the wash).
+     <span class="kit-orb kit-is-ok"></span>   + kit-run (breathes) | kit-ring (hollow, for waiting) | kit-md | kit-lg (glyph inside: put an svg in it)
+     <span class="kit-chip kit-is-info"><i class="kit-orb"></i>Running</span>   (kit-chip kit-plain has no dot)
+     <button class="kit-btn">  + kit-primary | kit-ghost | kit-danger | kit-sm | kit-icon | kit-loading        <div class="kit-btn-row">
+     <label class="kit-field"><span>Name</span><input class="kit-input"><small>hint</small></label>   kit-input | kit-select | kit-area, + kit-bad
+     <button class="kit-switch" role="switch" aria-checked="true">    <div class="kit-seg"><button aria-pressed="true">…</div>
+     <div class="kit-card">  + kit-soft | kit-tinted      <dl class="kit-facts"><div><dt>…</dt><dd>…</dd></div></dl>
+     <button class="kit-row"><span class="kit-ava"></span><span><b class="t">…</b><span class="s">…</span></span></button>      <div class="kit-empty">…</div>
+     <div class="kit-speck"></div>   the kiln fleck layer (opt in; place it in a positioned parent, or add kit-fixed); needs Kit.glaze.defs() once
+   Without the depth tokens (theme.glaze-depth) every part falls back to a flat look from the contract tokens, so it still reads in any theme.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono, and, from theme.glaze-depth
+   (each optional): --rim --pool --hi --lo --shade --edge --edge-gold --lac-rim --danger-edge --on-accent --on-state --gold --sunk-2 --ok-bead --warn-bead --danger-bead --info-bead --wait-bead
+   --ok-ink --warn-ink --danger-ink --info-ink --wait-ink --speck-opacity --speck-invert --glyph-drop --glz-r-* --glz-sh-* */
+:is(.kit-orb, .kit-chip, .kit-btn, .kit-input, .kit-select, .kit-area, .kit-switch, .kit-seg, .kit-card, .kit-row, .kit-ava, .kit-empty, .kit-field, .kit-facts, .kit-speck) {
+  --gz-rim: var(--rim, transparent);
+  --gz-pool: var(--pool, color-mix(in srgb, var(--ink) 8%, transparent));
+  --gz-shade: var(--shade, color-mix(in srgb, var(--ink) 22%, transparent));
+  --gz-hi: var(--hi, var(--panel)); --gz-lo: var(--lo, var(--ink));
+  --gz-edge: var(--edge, var(--rule)); --gz-edge-gold: var(--edge-gold, var(--seam, var(--accent)));
+  --gz-gold: var(--gold, var(--seam, var(--accent)));
+  --gz-deep: var(--sunk-2, var(--rule-2));
+  --gz-on: var(--on-state, var(--panel)); --gz-on-accent: var(--on-accent, var(--accent-ink));
+  --gz-sh1: var(--glz-sh-1, 0 1px 2px var(--gz-shade)); --gz-sh2: var(--glz-sh-2, 0 2px 4px var(--gz-shade), 0 20px 40px -20px var(--gz-shade));
+  --gz-r-m: var(--glz-r-m, 16px); --gz-r-l: var(--glz-r-l, 22px);
+  --gz-ease: cubic-bezier(.3, .8, .3, 1);
+}
+.kit-is-ok { --gz-c: var(--ok-bead, var(--ok)); --gz-soft: var(--ok-soft, var(--sunk)); --gz-ink: var(--ok-ink, var(--ok)); }
+.kit-is-warn { --gz-c: var(--warn-bead, var(--warn)); --gz-soft: var(--warn-soft, var(--sunk)); --gz-ink: var(--warn-ink, var(--warn)); }
+.kit-is-bad { --gz-c: var(--danger-bead, var(--danger)); --gz-soft: var(--danger-soft, var(--sunk)); --gz-ink: var(--danger-ink, var(--danger)); }
+.kit-is-info { --gz-c: var(--info-bead, var(--info, var(--accent))); --gz-soft: var(--info-soft, var(--accent-soft)); --gz-ink: var(--info-ink, var(--info, var(--accent))); }
+.kit-is-wait { --gz-c: var(--wait-bead, var(--wait, var(--warn))); --gz-soft: var(--wait-soft, var(--warn-soft, var(--sunk))); --gz-ink: var(--wait-ink, var(--wait, var(--warn))); }
+.kit-is-idle { --gz-c: var(--ink-3); --gz-soft: var(--sunk-2, var(--rule-2)); --gz-ink: var(--ink-2); }
+.kit-gz-ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* orb: a glazed bead; running ones breathe, waiting ones are a hollow ring */
+.kit-orb { width: 12px; height: 12px; flex: none; display: inline-block; vertical-align: middle; border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--gz-hi) 78%, var(--gz-c, var(--ink-3))) 0 12%, var(--gz-c, var(--ink-3)) 46%, color-mix(in srgb, var(--gz-lo) 30%, var(--gz-c, var(--ink-3))) 100%);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--gz-c, var(--ink-3)) 20%, transparent), 0 2px 5px color-mix(in srgb, var(--gz-c, var(--ink-3)) 45%, transparent); }
+.kit-orb.kit-run { animation: kit-gz-breathe 1.6s ease-in-out infinite; }
+.kit-orb.kit-ring { box-shadow: none; background: conic-gradient(from 200deg, var(--gz-c, var(--ink-3)), color-mix(in srgb, var(--gz-hi) 55%, var(--gz-c, var(--ink-3))), var(--gz-c, var(--ink-3)), color-mix(in srgb, var(--gz-lo) 24%, var(--gz-c, var(--ink-3))), var(--gz-c, var(--ink-3)));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), currentColor calc(100% - 3px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), currentColor calc(100% - 3px)); }
+.kit-orb.kit-md, .kit-orb.kit-lg { display: inline-grid; place-items: center; color: var(--gz-on); }
+.kit-orb.kit-md { width: 22px; height: 22px; box-shadow: 0 0 0 3px color-mix(in srgb, var(--gz-c, var(--ink-3)) 20%, transparent), 0 2px 5px color-mix(in srgb, var(--gz-c, var(--ink-3)) 40%, transparent); }
+.kit-orb.kit-lg { width: 32px; height: 32px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--gz-c, var(--ink-3)) 20%, transparent), 0 4px 9px color-mix(in srgb, var(--gz-c, var(--ink-3)) 45%, transparent); }
+.kit-orb.kit-md .kit-gz-ico, .kit-orb.kit-lg .kit-gz-ico { stroke-width: 2.6; filter: var(--glyph-drop, none); }
+.kit-orb.kit-md .kit-gz-ico { width: 13px; height: 13px; } .kit-orb.kit-lg .kit-gz-ico { width: 19px; height: 19px; }
+.kit-orb.kit-is-idle { color: var(--panel); }
+@keyframes kit-gz-breathe { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--gz-c, var(--ink-3)) 0%, transparent); transform: scale(.82); } }
+
+/* chip: a pill that says one thing; the text is --gz-ink on the wash */
+.kit-chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 10px; border-radius: 999px; background: var(--gz-soft, var(--gz-deep)); color: var(--gz-ink, var(--ink-2));
+  font: 600 13px/1.3 var(--f-ui); white-space: nowrap; box-shadow: inset 0 1px 0 var(--gz-rim), inset 0 0 0 1px color-mix(in srgb, var(--gz-c, var(--ink-3)) 26%, transparent); }
+.kit-chip .kit-orb { width: 8px; height: 8px; box-shadow: none; }
+.kit-chip.kit-plain { padding-left: 12px; }
+.kit-chip .kit-gz-ico { width: 14px; height: 14px; stroke-width: 2.6; }
+
+/* buttons: glazed pills; the primary one is black lacquer */
+.kit-btn { --h: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: var(--h); padding: 0 20px; border: 1.25px solid var(--gz-edge); border-radius: 999px;
+  background: var(--gz-deep); color: var(--ink); font: 600 14.5px/1 var(--f-ui); cursor: pointer; white-space: nowrap;
+  box-shadow: inset 0 1px 0 var(--gz-rim), inset 0 -8px 12px -10px var(--gz-pool), 0 1px 2px var(--gz-shade);
+  transition: transform .15s var(--gz-ease), background .15s, box-shadow .15s, border-color .15s; }
+.kit-btn:hover { transform: translateY(-1px); border-color: var(--gz-edge-gold); background: color-mix(in srgb, var(--gz-deep) 82%, var(--gz-gold)); }
+.kit-btn:active, .kit-btn[aria-pressed="true"] { transform: scale(.98); box-shadow: inset 0 3px 7px -2px var(--gz-pool); }
+.kit-btn[aria-pressed="true"]:not(.kit-primary) { background: var(--accent-soft); border-color: var(--gz-edge-gold); }
+.kit-btn:focus-visible, .kit-switch:focus-visible, .kit-seg button:focus-visible, .kit-row:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-btn.kit-primary { background: linear-gradient(180deg, color-mix(in srgb, var(--gz-hi) 24%, transparent), transparent 52%), var(--accent); color: var(--gz-on-accent); border-color: var(--lac-rim, var(--accent));
+  box-shadow: inset 0 1.5px 0 color-mix(in srgb, var(--gz-hi) 35%, transparent), inset 0 -10px 14px -10px color-mix(in srgb, var(--gz-lo) 45%, transparent), 0 12px 22px -10px var(--gz-shade); }
+.kit-btn.kit-primary:hover { border-color: var(--gz-gold); background: linear-gradient(180deg, color-mix(in srgb, var(--gz-hi) 30%, transparent), transparent 52%), var(--accent); }
+.kit-btn.kit-ghost { background: transparent; color: var(--ink-2); box-shadow: none; border-color: transparent; }
+.kit-btn.kit-ghost:hover { background: var(--gz-deep); color: var(--ink); border-color: var(--gz-edge); }
+.kit-btn.kit-danger { background: var(--danger-soft, var(--sunk)); color: var(--danger-ink, var(--danger)); border-color: var(--danger-edge, var(--danger)); }
+.kit-btn.kit-danger:hover { background: var(--danger); color: var(--gz-on); border-color: var(--danger); }
+.kit-btn.kit-sm { --h: 32px; padding: 0 14px; font-size: 13.5px; }
+.kit-btn.kit-icon { width: var(--h); padding: 0; }
+.kit-btn[disabled], .kit-btn[aria-disabled="true"] { opacity: .5; pointer-events: none; filter: saturate(.6); }
+.kit-btn.kit-loading { pointer-events: none; cursor: progress; }
+.kit-btn.kit-loading::before { content: ""; width: 15px; height: 15px; flex: none; border-radius: 50%; border: 2.25px solid currentColor; border-right-color: transparent; animation: kit-gz-spin .8s linear infinite; }
+.kit-btn.kit-loading.kit-icon > * { display: none; }
+@keyframes kit-gz-spin { to { transform: rotate(360deg); } }
+.kit-btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* forms: sunken, a gold glow on focus */
+.kit-field { display: grid; gap: 6px; min-width: 0; }
+.kit-field > span { padding-left: 16px; font: 700 13.5px/1.2 var(--f-ui); color: var(--ink-2); }
+.kit-field > small { padding-left: 16px; font: 13px/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-field > small.kit-err { color: var(--danger-ink, var(--danger)); font-weight: 600; }
+.kit-input, .kit-select, .kit-area { width: 100%; min-width: 0; height: 44px; padding: 0 18px; border: 1.25px solid var(--gz-edge); border-radius: 999px; background: var(--sunk); color: var(--ink);
+  box-shadow: inset 0 2px 5px -2px var(--gz-pool); font: 500 15px var(--f-ui); transition: border-color .15s, background .15s, box-shadow .15s; }
+.kit-area { height: auto; min-height: 96px; padding: 12px 18px; border-radius: var(--gz-r-m); resize: vertical; }
+.kit-input:hover, .kit-select:hover, .kit-area:hover { border-color: var(--gz-edge-gold); }
+.kit-input:focus, .kit-select:focus, .kit-area:focus { outline: 0; border-color: var(--gz-gold); background: var(--panel); box-shadow: 0 0 0 4px color-mix(in srgb, var(--gz-gold) 30%, transparent); }
+.kit-input.kit-bad, .kit-select.kit-bad, .kit-area.kit-bad { border-color: var(--danger); }
+.kit-input.kit-mono { font-family: var(--f-mono); font-size: 14px; }
+.kit-switch { position: relative; width: 48px; height: 28px; flex: none; padding: 0; border: 1.25px solid var(--gz-edge); border-radius: 999px; background: var(--gz-deep); box-shadow: inset 0 2px 5px -2px var(--gz-pool); cursor: pointer; transition: background .2s; }
+.kit-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 34% 26%, var(--gz-rim), transparent 60%), var(--panel); box-shadow: var(--gz-sh1); transition: transform .25s var(--gz-ease); }
+.kit-switch[aria-checked="true"] { background: var(--accent); border-color: var(--lac-rim, var(--accent)); }
+.kit-switch[aria-checked="true"]::after { transform: translateX(20px); }
+.kit-seg { display: inline-flex; max-width: 100%; padding: 4px; gap: 2px; border: 1.25px solid var(--gz-edge); border-radius: 999px; background: var(--gz-deep); box-shadow: inset 0 2px 5px -2px var(--gz-pool); }
+.kit-seg button { height: 34px; padding: 0 16px; border: 1.25px solid transparent; border-radius: 999px; background: transparent; color: var(--ink-2); font: 600 14px var(--f-ui); cursor: pointer; }
+.kit-seg button:hover:not([aria-pressed="true"]) { border-color: var(--gz-edge); color: var(--ink); }
+.kit-seg button[aria-pressed="true"] { background: var(--panel); color: var(--ink); border-color: var(--gz-edge); box-shadow: inset 0 1px 0 var(--gz-rim), var(--gz-sh1); }
+
+/* surfaces: the glaze pools darker where it gathers at the foot */
+.kit-card { min-width: 0; padding: 24px; border-radius: var(--gz-r-l); background: var(--panel); border: 1px solid var(--rule-2);
+  box-shadow: inset 0 1.5px 0 var(--gz-rim), inset 0 -22px 26px -24px var(--gz-pool), var(--gz-sh1); }
+.kit-card.kit-soft { background: var(--sunk); box-shadow: none; }
+.kit-card.kit-tinted { background: var(--gz-soft, var(--gz-deep)); box-shadow: none; }
+@media (max-width: 640px) { .kit-card { padding: 18px; } }
+.kit-facts { display: grid; gap: 16px 28px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); margin: 0; }
+.kit-facts dt { font: 600 13px/1.3 var(--f-ui); color: var(--ink-2); }
+.kit-facts dd { margin: 2px 0 0; font: 600 15px/1.4 var(--f-ui); overflow-wrap: anywhere; }
+.kit-facts dd.kit-mono { font: 500 13.5px/1.5 var(--f-mono); }
+.kit-row { display: flex; align-items: center; gap: 14px; width: 100%; min-width: 0; padding: 12px 14px 12px 12px; border: 0; border-radius: var(--gz-r-m); background: var(--sunk); box-shadow: inset 0 1px 0 var(--gz-rim);
+  color: inherit; font: inherit; text-align: left; transition: background .15s, transform .2s var(--gz-ease); }
+button.kit-row, a.kit-row { cursor: pointer; text-decoration: none; }
+button.kit-row:hover, a.kit-row:hover { background: var(--gz-deep); transform: translateX(3px); }
+.kit-row .t { display: block; font: 700 15px/1.3 var(--f-ui); overflow-wrap: anywhere; }
+.kit-row .s { display: block; font: 13.5px/1.4 var(--f-ui); color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-row > span:not(.kit-ava):not(.kit-orb):not(.kit-chip) { min-width: 0; flex: 1 1 auto; }
+.kit-ava { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--gz-ink, var(--ink-2));
+  background: radial-gradient(circle at 34% 24%, var(--gz-rim), transparent 55%), var(--gz-soft, var(--gz-deep)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gz-c, var(--ink-3)) 30%, transparent); }
+.kit-ava .kit-gz-ico { width: 22px; height: 22px; }
+.kit-empty { display: grid; justify-items: center; gap: 8px; padding: 36px 20px; text-align: center; border-radius: var(--gz-r-l); background: var(--sunk); color: var(--ink-2); font: 15px/1.5 var(--f-ui); }
+.kit-empty b { color: var(--ink); font: 600 19px/1.25 var(--f-display, var(--f-ui)); }
+.kit-empty .kit-ava { width: 64px; height: 64px; }
+
+/* kiln flecks: the clay body showing through the glaze (opt in) */
+.kit-speck { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: var(--speck-opacity, .4); filter: url(#kit-speckle) invert(var(--speck-invert, 0)); }
+.kit-speck.kit-fixed { position: fixed; z-index: -1; }
+@media (prefers-reduced-transparency: reduce) { .kit-speck { display: none; } }
+@media (prefers-reduced-motion: reduce) { .kit-orb, .kit-btn, .kit-row, .kit-switch::after { animation: none !important; transition: none !important; } .kit-btn.kit-loading::before { animation-duration: 2.4s !important; } }
+/* /part:page.style.kit.glaze-surfaces */

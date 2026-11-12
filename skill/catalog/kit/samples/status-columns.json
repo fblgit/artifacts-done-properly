@@ -1,0 +1,32 @@
+{
+  "note": "Twelve invented cards in six lanes. The lane table is the vocabulary's: word, glyph and tone per state.",
+  "vocab": {
+    "lane": {
+      "queued": { "word": "Queued", "short": "queued", "glyph": "ring", "tone": "neutral", "motion": "none" },
+      "running": { "word": "Running", "short": "run", "glyph": "pulse", "tone": "active", "motion": "breathe" },
+      "waiting": { "word": "Waiting for you", "short": "wait", "glyph": "hand", "tone": "attention", "motion": "turn" },
+      "review": { "word": "In review", "short": "review", "glyph": "eye", "tone": "review", "motion": "none" },
+      "blocked": { "word": "Blocked", "short": "blocked", "glyph": "stop", "tone": "danger", "motion": "none" },
+      "done": { "word": "Done", "short": "done", "glyph": "check", "tone": "success", "motion": "none" }
+    }
+  },
+  "groups": [
+    { "key": "state", "label": "State", "field": "state", "enum": "lane" },
+    { "key": "owner", "label": "Owner", "field": "owner", "none": "Unassigned" }
+  ],
+  "limits": { "running": 3 },
+  "cards": [
+    { "id": "T-41", "title": "Round tide heights to the nearest centimetre", "state": "done", "owner": "Mara", "note": "Heights round on the way in, so the chart and the table agree.", "extras": [["Commit", "a41c9e2"], ["Tests", "38 passed"]] },
+    { "id": "T-44", "title": "Add a unit toggle to the tide chart", "state": "running", "owner": "Mara", "note": "Markup is in; the labels are placeholders.", "extras": [["Branch", "unit-toggle"]] },
+    { "id": "T-37", "title": "Write the harbour guide, chapter 3", "state": "running", "owner": "Priya", "note": "Draft pushed; glossary and read-through left.", "extras": [["Words", "2,400"]] },
+    { "id": "T-46", "title": "Draw the lantern icon set", "state": "running", "owner": "Sol", "note": "Eight of twelve icons drawn." },
+    { "id": "T-47", "title": "Check the chart with a screen reader", "state": "running", "owner": "Ines", "note": "Reading order is right; the tide labels are read twice." },
+    { "id": "T-40", "title": "Pick a name for the offline mode", "state": "waiting", "owner": "Tobias", "note": "Mara asked where the offline icon goes on the chart header.", "extras": [["Asked", "Thu 10:02"]] },
+    { "id": "T-48", "title": "Approve the store listing text", "state": "waiting", "owner": "Tobias", "note": "Three paragraphs, 480 characters.", "extras": [["Due", "Fri"]] },
+    { "id": "T-38", "title": "Review the lantern colour tokens", "state": "review", "owner": "Ines", "note": "Muted text is under 4.5 to 1 on the panel.", "extras": [["Findings", "1 fix, 1 nit"]] },
+    { "id": "T-45", "title": "Publish the release notes", "state": "review", "owner": "Priya", "note": "Waiting for the photo credits." },
+    { "id": "T-42", "title": "Fix the flaky weather sync test", "state": "blocked", "owner": "Wen", "note": "Fails on a slow network; the longer timeout waits for approval.", "extras": [["Waiting on", "Tobias"]] },
+    { "id": "T-49", "title": "Collect tide station photos", "state": "done", "owner": "Sol", "note": "Three photos placed." },
+    { "id": "T-50", "title": "Plan the winter tide tables", "state": "queued", "owner": null, "note": "Not started; nobody owns it yet." }
+  ]
+}

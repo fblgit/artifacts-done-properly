@@ -1,0 +1,36 @@
+/* part:page.style.kit.specimens */
+/* Kit css: states specimen sheet    kit version 0.1.0    pairs with kit/patterns/specimens.js
+   .kit-spec (the sheet; paints itself in the active skin), .kit-spec-bar (title and controls), .kit-spec-seg (the skin switch), .kit-spec-btn (a small button),
+   .kit-spec-sec (a group), .kit-spec-rows > .kit-spec-row (label column, then the specimen), .kit-spec-grid > .kit-spec-cell (the specimen, then its caption),
+   .kit-spec-body (where a specimen renders; carries data-state), .kit-spec-note, .kit-spec-skel (skeleton bar), .kit-spec-empty (empty-state box).
+   A skin is custom properties on .kit-spec: --s-bg --s-panel --s-ink --s-ink-2 --s-line --s-radius; each falls back to the page's token, so a sheet with no skin follows the page theme.
+   Under prefers-reduced-motion: reduce every animation and transition inside the sheet stops.
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display; optional --seam */
+.kit-spec { --kit-spec-radius: var(--s-radius, 12px); display: grid; gap: 26px; min-width: 0; padding: 18px 18px 22px; border-radius: 14px; border: 1px solid var(--s-line, var(--rule));
+  background: var(--s-bg, var(--sunk)); color: var(--s-ink, var(--ink)); font: 14px/1.45 var(--f-ui); }
+.kit-spec-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.kit-spec-title { margin: 0; font: 600 20px/1.2 var(--f-display); }
+.kit-spec-ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.kit-spec-seg { display: inline-flex; padding: 3px; border-radius: 999px; border: 1px solid var(--s-line, var(--rule)); background: var(--s-panel, var(--panel)); }
+.kit-spec-seg button { min-height: 32px; padding: 4px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--s-ink-2, var(--ink-2)); font: 600 13px/1.2 var(--f-ui); cursor: pointer; }
+.kit-spec-seg button[aria-pressed="true"] { background: var(--s-ink, var(--ink)); color: var(--s-bg, var(--panel)); }
+.kit-spec-btn { min-height: 34px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--s-line, var(--rule)); background: var(--s-panel, var(--panel)); color: var(--s-ink, var(--ink)); font: 600 13px/1.2 var(--f-ui); cursor: pointer; }
+.kit-spec-btn:hover, .kit-spec-seg button:hover:not([aria-pressed="true"]) { color: var(--s-ink, var(--ink)); }
+.kit-spec button:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-spec-sec { display: grid; gap: 10px; min-width: 0; }
+.kit-spec-sec > h4 { margin: 0; font: 600 13px/1.3 var(--f-mono); color: var(--s-ink-2, var(--ink-2)); }
+.kit-spec-rows { display: grid; gap: 0; border-top: 1px solid var(--s-line, var(--rule)); }
+.kit-spec-row { display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 4px 16px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--s-line, var(--rule)); }
+.kit-spec-lab { font: 13px/1.35 var(--f-ui); color: var(--s-ink-2, var(--ink-2)); }
+.kit-spec-grid { display: grid; grid-template-columns: repeat(var(--kit-spec-cols, 3), minmax(0, 1fr)); gap: 16px; }
+.kit-spec-cell { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.kit-spec-cap { font: 13px/1.35 var(--f-ui); color: var(--s-ink-2, var(--ink-2)); }
+.kit-spec-body { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.kit-spec-note { flex-basis: 100%; margin: 0; font: 12.5px/1.4 var(--f-ui); color: var(--s-ink-2, var(--ink-2)); }
+.kit-spec-skel { display: block; height: 12px; border-radius: 6px; background: var(--s-line, var(--rule)); animation: kit-spec-pulse 1.4s ease-in-out infinite; }
+.kit-spec-empty { display: grid; justify-items: center; gap: 4px; text-align: center; padding: 18px 14px; border-radius: var(--kit-spec-radius); border: 1px dashed var(--s-line, var(--rule)); background: var(--s-panel, var(--panel)); color: var(--s-ink-2, var(--ink-2)); font-size: 13px; }
+.kit-spec-empty b { color: var(--s-ink, var(--ink)); font-size: 14px; }
+@keyframes kit-spec-pulse { 50% { opacity: .45; } }
+@media (max-width: 640px) { .kit-spec-grid { grid-template-columns: minmax(0, 1fr); } .kit-spec-row { grid-template-columns: minmax(0, 1fr); } .kit-spec { padding: 14px; } }
+@media (prefers-reduced-motion: reduce) { .kit-spec *, .kit-spec *::before, .kit-spec *::after { animation: none !important; transition: none !important; } }
+/* /part:page.style.kit.specimens */

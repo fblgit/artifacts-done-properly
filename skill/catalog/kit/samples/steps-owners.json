@@ -1,0 +1,19 @@
+{
+ "note": "Invented: mixing a shared glaze bucket, from the glaze table to the kiln.",
+ "intro": "Mixing a new glaze bucket takes three people. The seat changes hands once, at the signed-off batch sheet.",
+ "label": "Mixing a glaze bucket",
+ "actors": [
+  { "id": "mixer", "label": "Mixer" },
+  { "id": "lead", "label": "Studio lead" },
+  { "id": "tech", "label": "Kiln technician" }
+ ],
+ "steps": [
+  { "id": "G1", "name": "Weigh the dry batch", "who": ["mixer"], "done": "every material is on the batch sheet to the gram.", "fact": "batch-sheet.weighed", "fail": "A material runs short: stop, write the shortfall on the sheet and tell the lead." },
+  { "id": "G2", "name": "Sieve and mix", "who": ["mixer"], "done": "the slop passes an 80-mesh sieve twice with no grit.", "fact": "bucket.mixed", "fail": "Grit stays in the sieve: re-mix for ten minutes, then sieve again." },
+  { "id": "G3", "name": "Check the specific gravity", "who": ["mixer", "lead"], "done": "the reading is between 1.42 and 1.48.", "fact": "bucket.gravity_ok" },
+  { "id": "G4", "name": "Sign off the batch sheet", "who": ["lead"], "done": "the lead has initialled the sheet and shelved the bucket.", "fact": "batch-sheet.signed", "fail": "A reading is outside its range: the bucket goes back to G2, not on the shelf." },
+  { "id": "G5", "name": "Fire a test tile", "who": ["tech"], "done": "the tile is back from cone 6 and photographed.", "fact": "tile.photographed", "fail": "The tile crawls or runs: label the bucket Hold and tell the lead." }
+ ],
+ "seam": { "after": "G4", "label": "The kiln technician takes the bucket" },
+ "current": "G3"
+}

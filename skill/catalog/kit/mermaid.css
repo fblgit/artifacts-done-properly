@@ -1,0 +1,23 @@
+/* part:page.style.kit.mermaid */
+/* Kit css: themed Mermaid frame    kit version 0.1.0    pairs with kit/mermaid.js
+   .kit-mmd-frame (a figure on --panel), .kit-mmd-cap (b: the title, span: a note), .kit-mmd-scroll (sideways scroll for a wide diagram),
+   .kit-mmd (the drawing; --kit-mmd-min sets a minimum width so a wide diagram scrolls instead of shrinking), .kit-mmd-fallback (source and reason when it fails),
+   .kit-legend (swatches: <span style="--c: var(--ok)">shipped</span>).
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --f-ui --f-mono; optional --seam (focus; falls back to --accent) */
+.kit-mmd-frame { margin: 0; display: grid; gap: 10px; min-width: 0; padding: 14px 16px 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); color: var(--ink); }
+.kit-mmd-cap { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 14px; }
+.kit-mmd-cap b { font: 700 15px/1.3 var(--f-ui); }
+.kit-mmd-cap span { font: 13px/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-mmd-scroll { overflow-x: auto; min-width: 0; overscroll-behavior-x: contain; }
+.kit-mmd-scroll:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; border-radius: 8px; }
+pre.kit-mmd, .kit-mmd { display: flex; justify-content: center; align-items: center; margin: 0; min-height: 120px; min-width: var(--kit-mmd-min, 0); padding: 0; background: none; border: 0;
+  white-space: pre-wrap; font: 13px/1.5 var(--f-mono); color: var(--ink-2); }
+.kit-mmd svg { display: block; max-width: 100%; height: auto; }
+.kit-mmd[data-state="loading"]::before { content: "Drawing the diagram…"; font: 14px var(--f-ui); color: var(--ink-2); }
+.kit-mmd-fallback { display: grid; gap: 8px; width: 100%; text-align: left; }
+.kit-mmd-fallback p { margin: 0; font: 13px/1.5 var(--f-ui); color: var(--ink); }
+.kit-mmd-fallback pre { margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--sunk); color: var(--ink); font: 12.5px/1.55 var(--f-mono); white-space: pre; overflow-x: auto; }
+.kit-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; font: 13px/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.kit-legend span::before { content: ""; width: 12px; height: 12px; border-radius: 4px; background: var(--c, var(--ink-2)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 15%, transparent); flex: none; }
+/* /part:page.style.kit.mermaid */

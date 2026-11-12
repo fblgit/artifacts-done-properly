@@ -1,0 +1,91 @@
+<!-- part:kit.template.record -->
+<!-- Kit template: record page (template.record)    kit version 0.1.0
+     What it is: one record on one page, taken as text. A head (name, code, status, one line), a seam edge down the left, and a tab set: Overview (two columns of facts and a note),
+     Health (a table whose first column is a status mark with its word) and History (a dated list). Copy it, replace the invented service record, delete the tabs you do not need.
+     Tab ids are bare tokens (letters, digits, . _ ~ -) and become the page's #anchor, so each tab has a link you can send.
+     Take also, by reference (the server copies them; this file is taken as text):  kit/templates/record.css, kit/tabs.css and .js, kit/table.css, kit/callout.css
+     Load in the head: your theme (kit/themes/glaze.css or your own tokens), then the four css files in the order of the links below.
+     Load before the script at the end: kit/tabs.js
+     Needs from the board: tokens --bg --panel --sunk --ink --ink-2 --rule --rule-2 --ok --warn --danger --shadow --f-ui --f-display --f-mono (optional --seam); no db.
+     Lifted from: a drive-inspection report's record layout (accent edge, head, two columns) and its health table with a status column. -->
+<link rel="stylesheet" href="kit/tabs.css">
+<link rel="stylesheet" href="kit/table.css">
+<link rel="stylesheet" href="kit/callout.css">
+<link rel="stylesheet" href="kit/templates/record.css">
+
+<article class="kit-trec" id="record">
+  <div class="kit-trec-body">
+    <header class="kit-trec-head">
+      <div class="kit-trec-id">
+        <h1>Annealing kiln, east wall</h1>
+        <span class="kit-trec-code">KILN-07</span>
+        <span class="kit-trec-st" data-st="warn">Check</span>
+      </div>
+      <p class="kit-trec-lede">Electric kiln, 120 litres, cone 6. Fired 212 times since the elements were last replaced. One reading is above its limit.</p>
+    </header>
+
+    <div class="kit-tabs line" id="rec-tabs">
+      <div class="kit-tabs-list" role="tablist" aria-label="Record sections">
+        <button type="button" data-tab="overview">Overview</button>
+        <button type="button" data-tab="health">Health <span class="kit-tab-n">5</span></button>
+        <button type="button" data-tab="history">History</button>
+      </div>
+
+      <section data-tab-panel="overview">
+        <div class="kit-trec-two">
+          <div class="kit-trec-card">
+            <h2>Identity</h2>
+            <dl class="kit-trec-facts">
+              <dt>Model</dt><dd>Invented K-120</dd>
+              <dt>Serial</dt><dd class="mono">K120-0007</dd>
+              <dt>Installed</dt><dd>March 2022</dd>
+              <dt>Location</dt><dd>Kiln room, east wall</dd>
+            </dl>
+          </div>
+          <div class="kit-trec-card">
+            <h2>Use</h2>
+            <dl class="kit-trec-facts">
+              <dt>Firings</dt><dd>212</dd>
+              <dt>Peak</dt><dd>1,222 °C</dd>
+              <dt>Last fired</dt><dd>Tuesday, 6 h 40 min</dd>
+              <dt>Next service</dt><dd>January</dd>
+            </dl>
+          </div>
+        </div>
+        <aside class="kit-callout" data-tone="warn"><p class="kit-callout-k">Check first</p><p>The lid thermocouple drifts 14 °C high at peak. Test it against a cone before the next glaze firing.</p></aside>
+      </section>
+
+      <section data-tab-panel="health">
+        <div class="kit-trec-health">
+          <h2>Readings</h2>
+          <div class="kit-table-box" role="region" aria-label="Readings" tabindex="0">
+            <table class="kit-table">
+              <thead><tr><th>State</th><th>Reading</th><th class="num">Value</th><th class="num">Limit</th></tr></thead>
+              <tbody>
+                <tr><td><span class="kit-trec-st" data-st="ok">Healthy</span></td><td>Element resistance, top</td><td class="num">17.2 Ω</td><td class="num">20 Ω</td></tr>
+                <tr><td><span class="kit-trec-st" data-st="ok">Healthy</span></td><td>Element resistance, base</td><td class="num">17.9 Ω</td><td class="num">20 Ω</td></tr>
+                <tr><td><span class="kit-trec-st" data-st="warn">Check</span></td><td>Lid thermocouple drift</td><td class="num">14 °C</td><td class="num">10 °C</td></tr>
+                <tr><td><span class="kit-trec-st" data-st="bad">Failing</span></td><td>Door seal gap</td><td class="num">6 mm</td><td class="num">3 mm</td></tr>
+                <tr><td><span class="kit-trec-st" data-st="ok">Healthy</span></td><td>Ramp to cone 6</td><td class="num">7 h 10 min</td><td class="num">8 h</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="kit-trec-legend"><span class="kit-trec-st" data-st="ok">Healthy</span><span class="kit-trec-st" data-st="warn">Check</span><span class="kit-trec-st" data-st="bad">Failing</span> Readings are taken cold, from the log sheet.</p>
+        </div>
+      </section>
+
+      <section data-tab-panel="history">
+        <ol class="kit-trec-log">
+          <li><time datetime="2026-10-20">20 October</time>Lid thermocouple read 14 °C high at peak.</li>
+          <li><time datetime="2026-07-02">2 July</time>Door seal replaced, gap measured at 2 mm.</li>
+          <li><time datetime="2026-01-12">12 January</time>Elements checked, resistance in range.</li>
+        </ol>
+      </section>
+    </div>
+  </div>
+</article>
+
+<script>
+  Kit.tabs.mount(document.getElementById('rec-tabs'), { label: 'Record sections' });
+</script>
+<!-- /part:kit.template.record -->

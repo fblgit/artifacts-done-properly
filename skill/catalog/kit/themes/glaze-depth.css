@@ -1,0 +1,145 @@
+/* part:page.style.kit.theme.glaze-depth */
+/* Kit theme: Glaze depth    kit version 0.1.0    UPGRADE of theme.glaze (kit/themes/glaze.css, which is not edited): load this file after it.
+   What it adds: the tokens the glossy Glaze parts read and the flat palette lacks. A lit rim (--rim) and a pooled foot (--pool) for surfaces, --hi and --lo to mix
+   gloss in and out, thin edges (--edge, --edge-gold, --lac-rim, --danger-edge), the gold seam (--gold, --seam-0..4), a bead (--<meaning>-bead) and an ink (--<meaning>-ink)
+   for each of ok, warn, danger, info and wait (the -soft tints are Glaze's own), --sunk-2 (the deepest surface), the kiln fleck dials (--speck-opacity, --speck-invert),
+   a log block that stays dark in both themes (--log-*), an identity colour (--identity*) that marks who or what, never a state, four neutral kind greys (--kind-1..4),
+   and the radii and shadows (--glz-r-*, --glz-sh-*).
+   Reading rules: a bead is for a fill with a glyph or a word beside it (the celadon bead is 2.9:1 on the porcelain panel, under the 3:1 a graphic needs alone); draw a ring or
+   text with the -ink or the plain --ok/--warn/--danger/--info/--wait. Any other theme degrades: kit/glaze-surfaces.css gives every token below a fallback built from the
+   contract, so a part still draws, flat.
+   Kit.tokens CONTRACT lists them as glaze-surfaces: the tokens of this file plus --panel --sunk --ink --ink-2 --ink-3 --accent --accent-ink --f-ui --f-mono.
+   Light on :root, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]; Glaze follows the system (the source theme pinned light).
+   From: the Control panel's Glaze skin (its token contract: ground, light and depth, edges, gold, the five glazes, ornaments, log, identity, kinds) and its structural radii and shadows. */
+:root {
+  --sunk-2: #dce4e7;
+  --shade: rgba(24, 52, 62, .26);
+  --rim: rgba(255, 255, 255, .95);
+  --pool: rgba(46, 92, 108, .16);
+  --well: rgba(23, 32, 36, .06);
+  --scrim: rgba(23, 32, 36, .42);
+  --hi: #ffffff;
+  --lo: #000000;
+  --glyph-drop: drop-shadow(0 1px 0 rgba(0, 0, 0, .28));
+  --edge: rgba(24, 52, 62, .24);
+  --edge-gold: rgba(177, 125, 20, .70);
+  --lac-rim: #46575e;
+  --danger-edge: rgba(164, 25, 47, .55);
+  --on-accent: #f5f9f9;
+  --gold: #c99528;
+  --seam-0: #f3d88a;
+  --seam-1: #c99528;
+  --seam-2: #8e6414;
+  --seam-3: #e4bc58;
+  --seam-4: #b8851f;
+  --ok-bead: #6e9f84;
+  --warn-bead: #e2662b;
+  --danger-bead: #a4192f;
+  --info-bead: #2b52b8;
+  --wait-bead: #d4607a;
+  --ok-ink: #2c5a43;
+  --warn-ink: #9a3b0c;
+  --danger-ink: #7a0f21;
+  --info-ink: #1b3c8f;
+  --wait-ink: #8f2442;
+  --on-state: #ffffff;
+  --pebble-hi: #ffffff;
+  --speck-opacity: .5;
+  --speck-invert: 0;
+  --log-bg: #1b1412;
+  --log-ink: #f3eadf;
+  --log-ok: #a8d2b1;
+  --log-warn: #ff9255;
+  --log-bad: #f2566e;
+  --log-dim: #9b8776;
+  --identity: #8dc63f;
+  --identity-soft: #e7f3d4;
+  --identity-ink: #3f6212;
+  --kind-1: #1a2226;
+  --kind-2: #4e6a73;
+  --kind-3: #8ca3aa;
+  --kind-4: #c3d0d4;
+  --glz-r-s: 12px;
+  --glz-r-m: 20px;
+  --glz-r-l: 30px;
+  --glz-r-xl: 44px;
+  --glz-sh-1: 0 1px 2px var(--shade), 0 12px 28px -14px var(--shade);
+  --glz-sh-2: 0 2px 4px var(--shade), 0 32px 60px -24px var(--shade);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sunk-2: #3b2b24;
+    --shade: rgba(0, 0, 0, .62);
+    --rim: rgba(255, 226, 196, .10);
+    --pool: rgba(0, 0, 0, .38);
+    --well: rgba(0, 0, 0, .35);
+    --scrim: rgba(0, 0, 0, .62);
+    --glyph-drop: none;
+    --edge: rgba(255, 226, 196, .22);
+    --edge-gold: rgba(239, 194, 94, .75);
+    --lac-rim: #ffffff;
+    --danger-edge: rgba(242, 86, 110, .6);
+    --on-accent: #1a120f;
+    --gold: #efc25e;
+    --ok-bead: #a8d2b1;
+    --warn-bead: #ff9255;
+    --danger-bead: #f2566e;
+    --info-bead: #86a8f6;
+    --wait-bead: #f58ba5;
+    --ok-ink: #cde9d2;
+    --warn-ink: #ffc4a0;
+    --danger-ink: #ffb0bc;
+    --info-ink: #c2d4fb;
+    --wait-ink: #ffc1d0;
+    --on-state: #1a120f;
+    --pebble-hi: #4d392f;
+    --speck-opacity: .35;
+    --speck-invert: 1;
+    --log-bg: #0b0706;
+    --identity: #a5da5c;
+    --identity-soft: #26331a;
+    --identity-ink: #bfe88a;
+    --kind-1: #f0e6da;
+    --kind-2: #bba692;
+    --kind-3: #8a7566;
+    --kind-4: #5a463b;
+  }
+}
+:root[data-theme="dark"] {
+  --sunk-2: #3b2b24;
+  --shade: rgba(0, 0, 0, .62);
+  --rim: rgba(255, 226, 196, .10);
+  --pool: rgba(0, 0, 0, .38);
+  --well: rgba(0, 0, 0, .35);
+  --scrim: rgba(0, 0, 0, .62);
+  --glyph-drop: none;
+  --edge: rgba(255, 226, 196, .22);
+  --edge-gold: rgba(239, 194, 94, .75);
+  --lac-rim: #ffffff;
+  --danger-edge: rgba(242, 86, 110, .6);
+  --on-accent: #1a120f;
+  --gold: #efc25e;
+  --ok-bead: #a8d2b1;
+  --warn-bead: #ff9255;
+  --danger-bead: #f2566e;
+  --info-bead: #86a8f6;
+  --wait-bead: #f58ba5;
+  --ok-ink: #cde9d2;
+  --warn-ink: #ffc4a0;
+  --danger-ink: #ffb0bc;
+  --info-ink: #c2d4fb;
+  --wait-ink: #ffc1d0;
+  --on-state: #1a120f;
+  --pebble-hi: #4d392f;
+  --speck-opacity: .35;
+  --speck-invert: 1;
+  --log-bg: #0b0706;
+  --identity: #a5da5c;
+  --identity-soft: #26331a;
+  --identity-ink: #bfe88a;
+  --kind-1: #f0e6da;
+  --kind-2: #bba692;
+  --kind-3: #8a7566;
+  --kind-4: #5a463b;
+}
+/* /part:page.style.kit.theme.glaze-depth */

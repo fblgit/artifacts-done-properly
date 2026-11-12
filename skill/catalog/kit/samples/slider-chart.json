@@ -1,0 +1,14 @@
+{
+ "note": "Invented model inputs. The formulas live in the preview; the numbers are illustrations, not measurements.",
+ "quorum": { "min": 3, "max": 9, "value": 5, "unit": "reviewers" },
+ "wear": {
+  "capacityHours": 1800,
+  "hoursPerFiring": 9,
+  "weeks": 4.3,
+  "perWeek": { "min": 1, "max": 14, "value": 6 },
+  "scenarios": [
+   { "id": "low", "label": "Cone 6 (gentler)", "wearPerHour": 0.8 },
+   { "id": "high", "label": "Cone 10 (harder)", "wearPerHour": 1.6 }
+  ]
+ }
+}

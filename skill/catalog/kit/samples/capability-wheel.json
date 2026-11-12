@@ -1,0 +1,19 @@
+{
+ "note": "Invented: the abilities of four roles in a made-up company, Brindle and Oak.",
+ "caps": [
+  { "key": "approve", "label": "Approve orders", "hint": "May approve an order before it ships" },
+  { "key": "refund", "label": "Refund", "hint": "May return money to a customer" },
+  { "key": "stock", "label": "Edit stock", "hint": "May change the counts in the stockroom" },
+  { "key": "price", "label": "Set prices", "hint": "May change a price on the shelf or the site" },
+  { "key": "staff", "label": "Manage staff", "hint": "May add or remove people from a shop" },
+  { "key": "report", "label": "Read reports", "hint": "May open the weekly sales reports" },
+  { "key": "export", "label": "Export data", "hint": "May download customer lists" },
+  { "key": "close", "label": "Close the till", "hint": "May close the day's till and bank it" }
+ ],
+ "wheels": [
+  { "id": "owner", "name": "Owner", "sub": "Everything, with two keys", "glyph": "diamond", "allowed": ["approve", "refund", "stock", "price", "staff", "report", "export", "close"] },
+  { "id": "manager", "name": "Shop manager", "sub": "Runs one shop", "glyph": "hand", "allowed": ["approve", "refund", "stock", "staff", "report", "close"] },
+  { "id": "till", "name": "Till clerk", "sub": "Serves and closes", "glyph": "ring", "allowed": ["refund", "close"] },
+  { "id": "buyer", "name": "Buyer", "sub": "Stock and prices only", "glyph": "eye", "allowed": ["stock", "price", "report"] }
+ ]
+}

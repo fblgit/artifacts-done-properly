@@ -1,0 +1,45 @@
+/* part:page.style.kit.disclosure */
+/* Kit css: disclosure cards and reader bar    kit version 0.1.0    pairs with kit/patterns/disclosure.js (the css also works on hand-written markup)
+   <div class="kit-dis-bar"><span class="kit-dis-status"></span><button class="kit-dis-btn">…</button></div>   the reader bar; sticky under --kit-topbar-h
+   <details class="kit-dis" data-variant="card|letter"><summary><span class="kit-dis-num"></span><span class="kit-dis-t"></span><span class="kit-dis-when"></span></summary><div class="kit-dis-body">…</div></details>
+   <article class="kit-dis-clause"><div class="kit-dis-chead"><span class="kit-dis-num"></span><p class="kit-dis-norm"></p></div><details class="kit-dis-more"><summary>…</summary><div class="kit-dis-body">…</div></details></article>
+   Inside a body: ol.kit-dis-steps (numbered steps) and dl.kit-dis-fields (label and text rows). The letter look spells the action ("Expand" / "Collapse") at the end of the summary.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display, optional --seam, --kit-topbar-h */
+.kit-dis-root { display: grid; gap: 10px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-dis-bar { position: sticky; top: var(--kit-topbar-h, 0px); z-index: 4; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 0; background: var(--bg, var(--panel)); }
+.kit-dis-status { margin-right: auto; font: 500 13px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-dis-btn { min-height: 34px; padding: 4px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 600 13px var(--f-ui); cursor: pointer; }
+.kit-dis-btn:hover { background: var(--sunk); }
+.kit-dis-list { display: grid; gap: 8px; min-width: 0; }
+.kit-dis { background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; min-width: 0; }
+.kit-dis > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 11px 14px 11px 38px; cursor: pointer; list-style: none; position: relative; font: 600 15px/1.35 var(--f-display); min-height: 44px; box-sizing: border-box; }
+.kit-dis > summary::-webkit-details-marker, .kit-dis-more > summary::-webkit-details-marker { display: none; }
+.kit-dis > summary::before { content: ""; position: absolute; left: 16px; top: 18px; width: 7px; height: 7px; border: solid var(--ink-2); border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform .15s; }
+.kit-dis[open] > summary::before { transform: rotate(45deg); top: 16px; }
+.kit-dis[open] > summary { border-bottom: 1px solid var(--rule-2); background: var(--sunk); border-radius: 11px 11px 0 0; }
+.kit-dis-t { flex: 1 1 16ch; min-width: 0; overflow-wrap: anywhere; }
+.kit-dis-when { flex: none; margin-left: auto; font: 500 12px var(--f-mono); color: var(--ink-2); white-space: nowrap; }
+.kit-dis-num { flex: none; min-width: 2ch; font: 600 12.5px var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-dis[data-variant="letter"] > summary::after { content: "Expand"; margin-left: auto; font: 500 12px var(--f-mono); color: var(--ink-2); }
+.kit-dis[data-variant="letter"][open] > summary::after { content: "Collapse"; }
+.kit-dis[data-variant="letter"] .kit-dis-when { margin-left: 0; }
+.kit-dis-body { padding: 10px 16px 14px; display: grid; gap: 10px; font: 14.5px/1.6 var(--f-ui); min-width: 0; overflow-wrap: anywhere; }
+.kit-dis-body > p { margin: 0; max-width: 68ch; }
+.kit-dis-steps { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; max-width: 68ch; }
+.kit-dis-fields { margin: 0; display: grid; gap: 8px; }
+.kit-dis-fields dt { font: 600 12px var(--f-mono); color: var(--ink-2); }
+.kit-dis-fields dd { margin: 2px 0 0; max-width: 68ch; }
+.kit-dis-clause { display: grid; gap: 2px; background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 14px 8px; min-width: 0; }
+.kit-dis-chead { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 10px; align-items: start; }
+.kit-dis-chead .kit-dis-num { display: inline-grid; place-items: center; min-height: 28px; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.kit-dis-norm { margin: 0; font: 500 16px/1.5 var(--f-display); max-width: 62ch; overflow-wrap: anywhere; }
+.kit-dis-more { margin: 6px 0 4px 3.75rem; }
+.kit-dis-more > summary { display: inline-flex; align-items: center; gap: 6px; padding: 6px 2px; cursor: pointer; list-style: none; font: 600 13px var(--f-ui); color: var(--ink-2); }
+.kit-dis-more > summary::before { content: ""; width: 6px; height: 6px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform .15s; }
+.kit-dis-more[open] > summary::before { transform: rotate(45deg); }
+.kit-dis-more > summary:hover { color: var(--ink); }
+.kit-dis-more .kit-dis-body { padding: 4px 0 8px; }
+.kit-dis > summary:focus-visible, .kit-dis-more > summary:focus-visible, .kit-dis-btn:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+@media (max-width: 520px) { .kit-dis-chead { grid-template-columns: 1fr; gap: 6px; } .kit-dis-more { margin-left: 0; } .kit-dis-when { margin-left: 0; flex-basis: 100%; } }
+@media (prefers-reduced-motion: reduce) { .kit-dis > summary::before, .kit-dis-more > summary::before { transition: none; } }
+/* /part:page.style.kit.disclosure */

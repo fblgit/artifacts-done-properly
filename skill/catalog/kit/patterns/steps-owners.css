@@ -1,0 +1,42 @@
+/* part:page.style.kit.patterns.steps-owners */
+/* Kit css: steps with owners    kit version 0.1.0    EXTENDS pattern.steps (a new file; steps.css is unchanged)    pairs with kit/patterns/steps-owners.js
+   .kit-so > .kit-so-lede, ul.kit-so-legend (li > .kit-so-actor[data-t=0|1|2]), .kit-so-track (scrolls sideways) > ol.kit-so-list > li.kit-so-state[.is-current|.is-past] | li.kit-so-seam
+   A state holds .kit-so-head (.kit-so-id .kit-so-name .kit-so-flag), .kit-so-who, .kit-so-done, .kit-so-fact (code), .kit-so-fail, each with a .kit-so-k word in front.
+   The three owner tones are three shapes as well (disc, diamond, square), so who acts never rides on colour alone. The current card is ringed and says Now; earlier cards say Passed and keep full-contrast text.
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-mono --f-display; optional --info (tone 1, falls back to --warn), --seam (the top rule, the seam column and the ring; falls back to --accent) */
+.kit-so { display: grid; gap: 14px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-so-lede { margin: 0; max-width: 64ch; font: 15px/1.55 var(--f-ui); color: var(--ink-2); }
+.kit-so-legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.kit-so-track { overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px 0; border-radius: 12px; }
+.kit-so-track:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-so-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(210px, 1fr); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.kit-so-state { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 14px; border: 1px solid var(--rule); border-top: 3px solid var(--seam, var(--accent)); border-radius: 12px; background: var(--panel); }
+.kit-so-state.is-past { background: var(--sunk); border-top-color: var(--rule); }
+.kit-so-state.is-current { box-shadow: 0 0 0 2px var(--seam, var(--accent)); }
+.kit-so-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; }
+.kit-so-id { font: 700 11.5px/1 var(--f-mono); letter-spacing: .06em; color: var(--ink-2); }
+.kit-so-name { flex: 1 1 8ch; min-width: 0; font: 700 15px/1.3 var(--f-ui); color: var(--ink); overflow-wrap: anywhere; }
+.kit-so-flag { font: 700 11px/1.5 var(--f-mono); padding: 0 8px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); }
+.kit-so-flag.is-quiet { background: none; color: var(--ink-2); border: 1px solid var(--rule); }
+.kit-so-who { display: flex; flex-wrap: wrap; gap: 5px; }
+.kit-so-actor { --c: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; min-height: 22px; padding: 0 9px 0 7px; border-radius: 999px; white-space: nowrap;
+  font: 600 12px/1 var(--f-ui); color: color-mix(in srgb, var(--c) 80%, var(--ink)); background: color-mix(in srgb, var(--c) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--c) 40%, var(--panel)); }
+.kit-so-actor::before { content: ""; width: 8px; height: 8px; background: var(--c); flex: none; border-radius: 50%; }
+.kit-so-actor[data-t="0"] { --c: var(--accent); }
+.kit-so-actor[data-t="1"] { --c: var(--info, var(--warn)); }
+.kit-so-actor[data-t="1"]::before { border-radius: 1px; transform: rotate(45deg) scale(.9); }
+.kit-so-actor[data-t="2"] { --c: var(--ink-2); }
+.kit-so-actor[data-t="2"]::before { border-radius: 1px; }
+.kit-so-done, .kit-so-fact, .kit-so-fail { display: grid; gap: 2px; min-width: 0; font: 14px/1.45 var(--f-ui); color: var(--ink); overflow-wrap: anywhere; }
+.kit-so-k { font: 600 11.5px/1.3 var(--f-mono); color: var(--ink-2); letter-spacing: .03em; }
+.kit-so-fact code { justify-self: start; max-width: 100%; padding: 3px 7px; border-radius: 6px; background: var(--sunk); color: var(--ink); font: 500 12px/1.35 var(--f-mono); overflow-wrap: anywhere; }
+.kit-so-state.is-past .kit-so-fact code { background: var(--panel); }
+.kit-so-fail { padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--danger) 9%, var(--panel)); border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--panel)); }
+.kit-so-fail .kit-so-k { color: color-mix(in srgb, var(--danger) 78%, var(--ink)); }
+.kit-so-seam { display: grid; align-content: center; justify-items: center; min-width: 7.5rem; padding: 8px; border-inline: 2px dashed var(--seam, var(--accent)); text-align: center; }
+.kit-so-seam-t { font: 600 12px/1.35 var(--f-mono); color: var(--ink); }
+@media (max-width: 640px) {
+  .kit-so-list { grid-auto-flow: row; grid-auto-columns: auto; }
+  .kit-so-seam { min-width: 0; border-inline: 0; border-block: 2px dashed var(--seam, var(--accent)); }
+}
+/* /part:page.style.kit.patterns.steps-owners */

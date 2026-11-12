@@ -1,0 +1,148 @@
+{
+ "note": "Invented.",
+ "caption": "Service blueprint: a first firing, from booking to unloading",
+ "steps": [
+  "Book",
+  "Load",
+  "Start",
+  "Fire",
+  "Unload"
+ ],
+ "lanes": [
+  {
+   "name": "Touchpoints",
+   "cells": [
+    {
+     "text": "The booking sheet."
+    },
+    {
+     "mot": "moment of truth",
+     "text": "The kiln room door and the shelves."
+    },
+    {
+     "text": "The controller screen."
+    },
+    {
+     "text": "Nothing, if it goes well."
+    },
+    {
+     "mot": "moment of truth",
+     "text": "The lid, and the first glimpse of the pots."
+    }
+   ]
+  },
+  {
+   "name": "Maker does",
+   "cells": [
+    {
+     "text": "Picks a slot and writes their name."
+    },
+    {
+     "text": "Wads, stacks and places the test tile."
+    },
+    {
+     "text": "Checks the schedule and presses Start."
+    },
+    {
+     "text": "Goes home."
+    },
+    {
+     "text": "Waits for 100 °C, unloads, logs the cones."
+    }
+   ]
+  },
+  {
+   "name": "Maker feels",
+   "cells": [
+    {
+     "feel": "mid",
+     "text": "Hopeful"
+    },
+    {
+     "feel": "mid",
+     "text": "Careful"
+    },
+    {
+     "feel": "mid",
+     "text": "Nervous"
+    },
+    {
+     "feel": "lo",
+     "text": "Anxious"
+    },
+    {
+     "feel": "hi",
+     "text": "Delighted"
+    }
+   ]
+  },
+  {
+   "line": "line of interaction"
+  },
+  {
+   "name": "Frontstage",
+   "cells": [
+    {
+     "text": "The sheet shows free slots."
+    },
+    {
+     "text": "Shelves are numbered."
+    },
+    {
+     "text": "The screen names the schedule and the peak."
+    },
+    {
+     "text": "A light on the door says Firing.",
+     "pain": "No sound or message if it stalls."
+    },
+    {
+     "text": "The door light turns off at 100 °C.",
+     "opp": "Send the maker a message when it is safe."
+    }
+   ]
+  },
+  {
+   "line": "line of visibility"
+  },
+  {
+   "name": "Backstage",
+   "cells": [
+    {
+     "text": "The steward reviews the sheet each Monday."
+    },
+    {
+     "text": "The steward checks the vent breaker."
+    },
+    {
+     "text": "The controller logs the start time."
+    },
+    {
+     "text": "The controller holds cone 6 for ten minutes."
+    },
+    {
+     "text": "The steward restocks cones."
+    }
+   ]
+  },
+  {
+   "name": "Support",
+   "cells": [
+    {
+     "has": "Shared calendar"
+    },
+    {
+     "has": "Wadding, shelf rota"
+    },
+    {
+     "has": "Controller firmware 4.2"
+    },
+    {
+     "has": "Element 2, vent interlock"
+    },
+    {
+     "has": "Cone chart, log book"
+    }
+   ]
+  }
+ ]
+}

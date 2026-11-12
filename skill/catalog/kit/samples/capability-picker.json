@@ -1,0 +1,114 @@
+{
+ "note": "Seven invented capabilities of an invented studio, in two groups that cannot be mixed in one run.",
+ "groups": {
+  "site": "Studio website",
+  "kiln": "Kiln room"
+ },
+ "capabilities": {
+  "build": {
+   "title": "Build the pages",
+   "group": "site",
+   "needs": []
+  },
+  "links": {
+   "title": "Check the links",
+   "group": "site",
+   "needs": [
+    "build"
+   ]
+  },
+  "publish": {
+   "title": "Publish the site",
+   "group": "site",
+   "needs": [
+    "build",
+    "links"
+   ]
+  },
+  "announce": {
+   "title": "Announce on the mailing list",
+   "group": "site",
+   "needs": [
+    "publish"
+   ]
+  },
+  "calibrate": {
+   "title": "Calibrate the kiln",
+   "group": "kiln",
+   "needs": []
+  },
+  "load": {
+   "title": "Load the shelves",
+   "group": "kiln",
+   "needs": []
+  },
+  "fire": {
+   "title": "Fire to cone 6",
+   "group": "kiln",
+   "needs": [
+    "calibrate",
+    "load"
+   ]
+  }
+ },
+ "presets": {
+  "ship": {
+   "label": "Ship the site",
+   "keys": [
+    "publish"
+   ]
+  },
+  "bake": {
+   "label": "A full firing",
+   "keys": [
+    "fire"
+   ]
+  },
+  "both": {
+   "label": "Site and kiln together",
+   "keys": [
+    "announce",
+    "fire"
+   ]
+  }
+ },
+ "targets": [
+  {
+   "name": "Kiln 1",
+   "keys": [
+    "calibrate",
+    "load",
+    "fire"
+   ],
+   "done": [
+    "calibrate",
+    "load"
+   ]
+  },
+  {
+   "name": "Kiln 2",
+   "keys": [
+    "calibrate",
+    "load",
+    "fire"
+   ],
+   "done": [
+    "calibrate",
+    "load",
+    "fire"
+   ]
+  },
+  {
+   "name": "Glaze room",
+   "keys": [
+    "calibrate",
+    "load",
+    "fire"
+   ],
+   "done": [],
+   "na": [
+    "fire"
+   ]
+  }
+ ]
+}

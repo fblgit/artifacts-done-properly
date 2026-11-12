@@ -1,0 +1,60 @@
+/* part:page.style.kit.playground */
+/* Kit css: playground    kit version 0.1.0    pairs with kit/patterns/playground.js
+   .kit-pg (a size container)  the root;  .kit-pg-head (.kit-pg-pick filter and entry, .kit-pg-meta name and summary);  .kit-pg-bar theme select and the .kit-pg-seg radio segments
+   .kit-pg-main > .kit-pg-frame (the bench: .kit-pg-ruler, then .kit-pg-wrap[data-theme] > .kit-pg-stage, the isolated stage with its own tokens) + .kit-pg-ed (the sample panel)
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-mono, optional --seam --ink-3 --f-display --radius */
+.kit-pg { --pg-r: var(--radius, 12px); --pg-mark: var(--seam, var(--accent)); container-type: inline-size; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-pg [hidden] { display: none !important; }
+.kit-pg-box { display: grid; gap: 14px; min-width: 0; }
+.kit-pg-off { margin: 0; padding: 16px 18px; border: 1px dashed var(--rule); border-radius: var(--pg-r); color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+
+.kit-pg-head { display: grid; gap: 12px; min-width: 0; }
+.kit-pg-pick { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); gap: 10px 12px; align-items: end; }
+.kit-pg-meta { display: grid; gap: 4px; min-width: 0; }
+.kit-pg-title { margin: 0; font: 600 21px/1.2 var(--f-display, var(--f-ui)); text-wrap: balance; }
+.kit-pg-title:empty { display: none; }
+.kit-pg-info { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); max-width: 74ch; overflow-wrap: anywhere; }
+.kit-pg-info:empty { display: none; }
+
+.kit-pg-f { display: grid; gap: 5px; min-width: 0; }
+.kit-pg-fl { font: 600 13px/1.2 var(--f-ui); color: var(--ink-2); }
+.kit-pg-f input, .kit-pg-f select { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 11px; font: 14px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; }
+.kit-pg-fe select { font-weight: 600; }
+.kit-pg-bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: end; padding: 10px 12px; border: 1px solid var(--rule); border-radius: var(--pg-r); background: var(--sunk); min-width: 0; }
+.kit-pg-ft { flex: 1 1 11rem; max-width: 16rem; }
+.kit-pg-seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border: 1px solid var(--rule); border-radius: 10px; background: var(--panel); }
+.kit-pg-opt { position: relative; display: inline-flex; }
+.kit-pg-opt input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.kit-pg-opt span { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 7px; font: 600 13.5px/1 var(--f-ui); color: var(--ink-2); white-space: nowrap; }
+.kit-pg-opt input:checked + span { background: var(--accent); color: var(--accent-ink); font-weight: 800; }
+.kit-pg-opt input:hover:not(:checked) + span { color: var(--ink); background: var(--sunk); }
+
+.kit-pg-live { margin: 0; font: 13px/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-pg-live:empty, .kit-pg-err:empty { display: none; }
+.kit-pg-err { margin: 0; padding: 9px 12px; border: 1px solid var(--danger); border-radius: 10px; background: color-mix(in srgb, var(--danger) 9%, var(--panel)); color: var(--ink); font: 13px/1.5 var(--f-mono); overflow-wrap: anywhere; }
+
+.kit-pg-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; min-width: 0; }
+.kit-pg-frame { display: grid; gap: 8px; min-width: 0; overflow-x: auto; padding: 14px; border: 1px solid var(--rule); border-radius: var(--pg-r);
+  background-color: var(--sunk); background-image: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1.2px); background-size: 14px 14px; }
+.kit-pg-ruler { margin: 0 auto; font: 600 12px/1.2 var(--f-mono); color: var(--ink-2); text-align: center; font-variant-numeric: tabular-nums; }
+.kit-pg-ruler::before, .kit-pg-ruler::after { content: "|"; padding: 0 6px; color: var(--pg-mark); }
+.kit-pg-wrap { max-width: 100%; margin: 0 auto; background: var(--bg); color: var(--ink); border: 1px solid var(--rule); border-radius: 10px; font-family: var(--f-ui); contain: content; box-shadow: var(--shadow, none); }
+.kit-pg-stage { padding: 16px; min-width: 0; min-height: 6rem; }
+.kit-pg-none { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+.kit-pg-ed { display: grid; gap: 10px; min-width: 0; padding: 14px; border: 1px solid var(--rule); border-radius: var(--pg-r); background: var(--panel); }
+.kit-pg-edh { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 10px; min-width: 0; }
+.kit-pg-src { font: 12px var(--f-mono); color: var(--ink-2); overflow-wrap: anywhere; min-width: 0; }
+.kit-pg-ta { display: block; width: 100%; box-sizing: border-box; min-height: 16rem; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 10px; background: var(--sunk); color: var(--ink); font: 12.5px/1.55 var(--f-mono); resize: vertical; tab-size: 2; }
+.kit-pg-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.kit-pg-btn { min-height: 38px; padding: 0 18px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 700 13.5px var(--f-ui); cursor: pointer; }
+.kit-pg-btn:hover { border-color: var(--ink-3, var(--ink-2)); }
+.kit-pg-go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+.kit-pg-f input:focus-visible, .kit-pg-f select:focus-visible, .kit-pg-ta:focus-visible, .kit-pg-btn:focus-visible { outline: 3px solid var(--pg-mark); outline-offset: 2px; }
+.kit-pg-opt input:focus-visible + span { outline: 3px solid var(--pg-mark); outline-offset: 1px; }
+
+@container (min-width: 62rem) { .kit-pg-main { grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem); } .kit-pg-ed { position: sticky; top: 12px; } }
+@container (max-width: 34rem) { .kit-pg-pick { grid-template-columns: minmax(0, 1fr); } .kit-pg-frame { padding: 8px; } .kit-pg-bar { padding: 10px; } .kit-pg-ft { max-width: none; } }
+@media (prefers-reduced-motion: reduce) { .kit-pg * { transition: none !important; animation: none !important; } }
+/* /part:page.style.kit.playground */

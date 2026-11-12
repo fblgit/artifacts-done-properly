@@ -1,0 +1,25 @@
+/* part:page.style.kit.carousel */
+/* Kit css: carousel strip    kit version 0.1.0    pairs with kit/layout/carousel.js (also works on hand-written markup)
+   <div class="kit-car"><div class="kit-car-track" tabindex="0" role="region" aria-label="…"><div class="kit-car-card">…</div>…</div></div>
+   Set --kit-car-w (card width) and --kit-car-gap on .kit-car. Fades and arrows follow data-start / data-end / data-fit that the script sets.
+   The fades paint with --bg: set --kit-car-fade on .kit-car when the strip sits on another surface (for example var(--panel)).
+   Needs from the board: --bg --panel --ink --ink-2 --rule --accent, optional --seam --shadow */
+.kit-car { --kit-car-w: min(280px, 78%); --kit-car-gap: 14px; position: relative; min-width: 0; max-width: 100%; }
+.kit-car-track { display: flex; gap: var(--kit-car-gap); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scroll-padding-inline: 4px; padding: 6px 4px 12px; scrollbar-width: thin; cursor: grab; min-width: 0; }
+.kit-car-track.kit-car-drag { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+.kit-car-track:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; border-radius: 10px; }
+.kit-car-card { flex: 0 0 var(--kit-car-w); min-width: 0; scroll-snap-align: start; }
+.kit-car::before, .kit-car::after { content: ""; position: absolute; top: 0; bottom: 12px; width: 36px; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.kit-car::before { left: 0; background: linear-gradient(90deg, var(--kit-car-fade, var(--bg)), transparent); }
+.kit-car::after { right: 0; background: linear-gradient(270deg, var(--kit-car-fade, var(--bg)), transparent); }
+.kit-car[data-start="more"]::before, .kit-car[data-end="more"]::after { opacity: 1; }
+.kit-car-btn { position: absolute; top: calc(50% - 18px); z-index: 3; width: 38px; height: 38px; display: grid; place-items: center; padding: 0; border: 1px solid var(--rule); border-radius: 50%;
+  background: var(--panel); color: var(--ink); cursor: pointer; box-shadow: var(--shadow, 0 2px 8px color-mix(in srgb, var(--ink) 20%, transparent)); transition: opacity .15s, transform .15s; }
+.kit-car-btn:hover:not(:disabled) { transform: scale(1.06); }
+.kit-car-btn:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-car-btn:disabled { opacity: 0; pointer-events: none; }
+.kit-car-btn[hidden] { display: none; }
+.kit-car-prev { left: 4px; } .kit-car-next { right: 4px; }
+@media (hover: none) { .kit-car-btn { display: none; } }
+@media (prefers-reduced-motion: reduce) { .kit-car-track { scroll-behavior: auto; } .kit-car::before, .kit-car::after, .kit-car-btn { transition: none; } }
+/* /part:page.style.kit.carousel */

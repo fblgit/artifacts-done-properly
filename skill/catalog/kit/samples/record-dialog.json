@@ -1,0 +1,16 @@
+{
+ "note": "Invented: a repair-cafe booking for a toaster.",
+ "title": "Toaster that trips the fuse",
+ "id": "RC-2041",
+ "crumbs": [ { "label": "Repair cafe" }, { "label": "Saturday bookings" }, { "label": "RC-2041" } ],
+ "tags": [ { "label": "Waiting for you", "tone": "attention" }, { "label": "Electrical", "tone": "neutral" } ],
+ "tabs": [
+  { "id": "overview", "label": "Overview", "facts": [
+    ["Owner", "Ines, bench 3"], ["Item", "Two-slot toaster, about nine years old"], ["Symptom", "The fuse trips when the lever goes down"], ["Booked", "Saturday, 10:30"], ["Volunteer", "Tomas (electrical)"] ],
+    "text": "The element looks intact. Tomas suspects the lever contacts, which are cheap to replace, and will check insulation first." },
+  { "id": "history", "label": "History", "count": 3, "events": [
+    ["Tue 18:02", "Ines booked the slot and described the fault."], ["Wed 09:40", "Tomas asked for a photo of the base."], ["Wed 20:15", "Ines sent the photo: scorch mark near the lever."] ] },
+  { "id": "answer", "label": "Answer", "question": "Replace the lever contacts, or advise the owner to retire the toaster?", "why": "A scorch mark near live contacts can mean the fault is bigger than the contacts. Retiring it is safe but costs the owner a toaster.",
+    "options": [ "Replace the contacts and test", "Retire the toaster" ] }
+ ]
+}

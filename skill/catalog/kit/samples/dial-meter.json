@@ -1,0 +1,18 @@
+{
+ "note": "Invented: counts for a made-up company, Brindle and Oak.",
+ "tiles": [
+  { "id": "live", "title": "In use", "value": "24", "unit": "certificates", "frac": 0.62, "tone": "ok", "caption": "Of 39 the shops asked for" },
+  { "id": "kinds", "title": "By kind", "value": "58", "unit": "in all", "tone": "idle", "caption": "Signed by three authorities",
+    "segments": [
+      { "v": 21, "kind": 1, "label": "servers" },
+      { "v": 29, "kind": 2, "label": "clients" },
+      { "v": 8, "kind": 3, "label": "ssh hosts" }
+    ] },
+  { "id": "soon", "title": "Ending soon", "value": "3", "unit": "within 60 days", "frac": 0.08, "tone": "warn", "caption": "Kiosk 3 ends first, in 9 days",
+    "actions": [ { "key": "renew", "label": "Renew all", "icon": "play" }, { "key": "list", "label": "Show them", "icon": "eye" } ] },
+  { "id": "backup", "title": "Last backup", "value": "2", "unit": "days ago", "frac": 0.93, "tone": "ok", "caption": "Kept on the second drive",
+    "actions": [ { "key": "run", "label": "Back up now", "icon": "play" }, { "key": "drill", "label": "Run the drill", "icon": "pulse" } ] }
+ ],
+ "drain": { "title": "Vault open", "total": 120, "remaining": 87, "warnAt": 20, "caption": "It seals itself when the ring is empty",
+   "actions": [ { "key": "seal", "label": "Seal now", "icon": "stop" } ] }
+}

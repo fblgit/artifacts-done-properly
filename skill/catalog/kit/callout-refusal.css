@@ -1,0 +1,20 @@
+/* part:page.style.kit.callout-refusal */
+/* Kit css: refusal callout    kit version 0.1.0    EXTENDS kit.callout (a new file; callout.css is unchanged and must be loaded first)    pairs with kit/callout-refusal.js (the markup also works by hand)
+   <aside class="kit-callout kit-refusal" data-tone="warn|danger|pending" role="alert">
+     <p class="kit-callout-k">Refused <b class="kit-refusal-code">Not while a review is open</b> <code class="kit-refusal-field">status</code></p>
+     <dl class="kit-refusal-dl"><dt>Allowed now</dt><dd><ul class="kit-refusal-allowed"><li><code>cancel</code></li></ul></dd></dl>
+     <p class="kit-refusal-msg">The system's own message.</p></aside>
+   The kicker says Refused in words and names the code; the definition list says which field was refused and what is allowed instead, so the reader can act on it. With nothing allowed it says so (.kit-refusal-none).
+   Needs from the board: everything kit/callout.css needs (--panel --ink --ink-2 --rule --accent --warn --danger --f-ui --f-mono) */
+.kit-refusal { padding-right: 18px; }
+.kit-refusal .kit-callout-k { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.kit-refusal-code { font: 700 15px/1.4 var(--f-ui); letter-spacing: 0; color: var(--ink); }
+.kit-refusal-field { padding: 0 6px; border-radius: 5px; background: color-mix(in srgb, var(--tone) 10%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 30%, var(--panel)); font: 500 12px/1.6 var(--f-mono); color: var(--ink); }
+.kit-refusal-dl { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0; }
+.kit-refusal-dl dt { font: 600 12px/1.6 var(--f-mono); color: var(--ink-2); }
+.kit-refusal-dl dd { margin: 0; min-width: 0; }
+.kit-refusal-allowed { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.kit-refusal-allowed code { padding: 0 7px; border-radius: 999px; background: var(--panel); border: 1px solid var(--rule); font: 500 12px/1.7 var(--f-mono); color: var(--ink); }
+.kit-refusal-none { font: 600 13px/1.5 var(--f-ui); color: var(--ink); }
+.kit-refusal-msg { font: 14px/1.5 var(--f-ui); color: var(--ink-2); }
+/* /part:page.style.kit.callout-refusal */

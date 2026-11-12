@@ -1,0 +1,47 @@
+/* part:page.style.kit.record-dialog */
+/* Kit css: record dialog with tabs    kit version 0.1.0    EXTENDS kit.chrome (a new file; chrome.css is unchanged)    pairs with kit/record-dialog.js; the underline tabs are kit/tabs.css (.kit-tabs.line)
+   .kit-rd (the scrim; .kit-rd-in fills a positioned host) > .kit-rd-panel[data-vo-tone] > header.kit-rd-head (.kit-rd-crown .kit-rd-crumbs .kit-rd-top (.kit-rd-id .kit-rd-x) .kit-rd-title .kit-rd-meta (.kit-rd-tag .kit-rd-actions))
+   + .kit-rd-main (the tab list and one .kit-rd-body for each tab). A body holds anything; .kit-rd-cols inside it is two columns from 900px (.kit-rd-side is the narrower, sticky one).
+   The crown and the tag dots take the record's tone (--vo-c from kit/vocab.css); the tags carry the state in words.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --shadow --f-ui --f-display --f-mono; optional --scrim (the backdrop), --seam (focus) */
+.kit-rd { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; box-sizing: border-box; background: var(--scrim, rgba(10, 12, 16, .5));
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.kit-rd-in { position: absolute; z-index: 5; }
+.kit-rd-panel { --c: var(--vo-c, var(--accent)); display: flex; flex-direction: column; box-sizing: border-box; width: min(960px, 100%); max-height: 100%; min-height: 0; overflow: hidden;
+  background: var(--panel); color: var(--ink); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--shadow); font-family: var(--f-ui); }
+.kit-rd-panel:focus { outline: none; }
+.kit-rd-head { position: relative; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 22px 28px 14px; border-bottom: 1px solid var(--rule);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 10%, var(--panel)), var(--panel)); }
+.kit-rd-crown { position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c); }
+.kit-rd-crumbs { flex: 1 1 0; min-width: 0; }
+.kit-rd-crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 0; padding: 0; list-style: none; font: 13px/1.4 var(--f-ui); color: var(--ink-2); }
+.kit-rd-crumbs li { display: inline-flex; align-items: center; min-width: 0; }
+.kit-rd-crumbs li + li::before { content: ""; width: 6px; height: 6px; margin: 0 8px; flex: none; border-top: 1.5px solid var(--ink-3); border-right: 1.5px solid var(--ink-3); transform: rotate(45deg); }
+.kit-rd-crumbs li[aria-current] { color: var(--ink); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40ch; }
+.kit-rd-crumb { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; min-height: 24px; padding: 0 4px; border-radius: 5px; color: var(--ink-2); }
+button.kit-rd-crumb { cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+button.kit-rd-crumb:hover { color: var(--ink); background: var(--sunk); }
+button.kit-rd-crumb:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-rd-top { flex: none; display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.kit-rd-id { font: 500 12.5px/1.4 var(--f-mono); letter-spacing: .04em; color: var(--ink-2); }
+.kit-rd-x { all: unset; box-sizing: border-box; display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--sunk); color: var(--ink-2); font: 22px/1 var(--f-ui); cursor: pointer; border: 1px solid transparent; }
+.kit-rd-x:hover { color: var(--ink); border-color: var(--rule); }
+.kit-rd-x:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-rd-title { flex: 0 0 100%; margin: 0; font: 700 clamp(1.4rem, 1rem + 1.6vw, 1.9rem)/1.15 var(--f-display); letter-spacing: -.01em; color: var(--ink); text-wrap: balance; overflow-wrap: anywhere; }
+.kit-rd-meta { flex: 0 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.kit-rd-tag { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 0 10px 0 8px; border-radius: 999px; font: 600 12px/1 var(--f-ui); color: var(--ink);
+  background: var(--vo-soft, var(--sunk)); border: 1px solid color-mix(in srgb, var(--vo-c, var(--ink-3)) 45%, var(--panel)); }
+.kit-rd-tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--vo-c, var(--ink-3)); flex: none; }
+.kit-rd-actions { margin-left: auto; display: inline-flex; flex-wrap: wrap; gap: 8px; }
+.kit-rd-main { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.kit-rd-main > .kit-tabs-list { flex: none; padding: 0 22px; overflow-x: auto; scrollbar-width: none; }
+.kit-rd-main > .kit-tabs-list::-webkit-scrollbar { display: none; }
+.kit-rd-main > [role="tabpanel"] { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.kit-rd-body { padding: 22px 28px 28px; display: grid; align-content: start; gap: 18px; font: 16px/1.6 var(--f-ui); color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+.kit-rd-body[hidden] { display: none; }
+.kit-rd-body > * { margin: 0; min-width: 0; }
+.kit-rd-body p { max-width: 68ch; }
+.kit-rd-cols { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .kit-rd-cols { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } .kit-rd-side { position: sticky; top: 0; } }
+@media (max-width: 640px) { .kit-rd-head { padding: 18px 16px 12px; } .kit-rd-body { padding: 18px 16px 24px; } .kit-rd-main > .kit-tabs-list { padding: 0 8px; } }
+/* /part:page.style.kit.record-dialog */

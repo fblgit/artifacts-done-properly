@@ -1,0 +1,51 @@
+/* part:page.style.kit.report-cards */
+/* Kit css: structured report cards    kit version 0.1.0    pairs with kit/patterns/report-cards.js
+   .kit-rps          the list of cards (a responsive grid);  .kit-rp one card, [data-kind] its kind, tinted by its tone through [data-vo-tone] (kit/vocab.css)
+   .kit-rp-head      kind pill, subject, then who and when;  .kit-rp-b a labelled block (.kit-rp-k is the label)
+   .kit-rp-bar       the test strip, drawn to scale: i[data-k="pass|fail|skip"] grows by its count;  .kit-rp-nums the three counts in words
+   .kit-rp-div       the asked-versus-did table;  .kit-rp-fb the feedback table;  .kit-rp-unv the not-checked list
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono, optional --rim --pool --glz-r-l --glz-sh-1 */
+.kit-rps { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; align-items: start; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-rp-empty { grid-column: 1 / -1; margin: 0; padding: 16px; border: 1px dashed var(--rule); border-radius: 12px; color: var(--ink-2); text-align: center; font-size: 14px; }
+.kit-rp { display: grid; gap: 10px; min-width: 0; padding: 14px; background: var(--panel); border: 1px solid var(--rule); border-top: 3px solid var(--vo-c, var(--rule)); border-radius: var(--glz-r-l, 12px); color: var(--ink);
+  box-shadow: inset 0 1px 0 var(--rim, transparent), inset 0 -16px 18px -18px var(--pool, transparent), var(--glz-sh-1, none); font-family: var(--f-ui); }
+.kit-rp-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; min-width: 0; }
+.kit-rp-subject { font: 700 13px var(--f-mono); }
+.kit-rp-meta { display: inline-flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; margin-left: auto; font-size: 13px; color: var(--ink-2); }
+.kit-rp-meta time { font: 12.5px var(--f-mono); }
+.kit-rp-who { font-weight: 700; color: var(--ink); }
+.kit-rp-b { display: grid; gap: 5px; min-width: 0; }
+.kit-rp-k { font: 600 12px var(--f-mono); letter-spacing: .04em; color: var(--ink-2); }
+.kit-rp code { font: 12.5px var(--f-mono); padding: 1px 6px; border-radius: 5px; background: var(--sunk); border: 1px solid var(--rule-2); overflow-wrap: anywhere; }
+.kit-rp-prose { display: grid; gap: 6px; min-width: 0; }
+.kit-rp-prose p { margin: 0; font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; max-width: 68ch; }
+.kit-rp-lead p { font-size: 15.5px; font-weight: 600; line-height: 1.45; }
+.kit-rp-on { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; font-size: 14px; }
+.kit-rp-onk { color: var(--ink-2); font-size: 13px; }
+.kit-rp-refs, .kit-rp-eo { display: grid; gap: 6px; margin: 0; min-width: 0; }
+.kit-rp-f { display: grid; grid-template-columns: minmax(70px, auto) minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.kit-rp-f dt { font: 600 12px var(--f-mono); letter-spacing: .03em; color: var(--ink-2); }
+.kit-rp-f dd { margin: 0; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.kit-rp-list { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; font-size: 14.5px; line-height: 1.45; overflow-wrap: anywhere; }
+.kit-rp-unv { list-style: none; padding-left: 0; }
+.kit-rp-unv li { position: relative; padding-left: 1.4em; }
+.kit-rp-unv li::before { content: "?"; position: absolute; left: 0; top: 0; width: 1.1em; text-align: center; font: 700 13px/1.5 var(--f-mono); color: var(--ink); }
+.kit-rp-ev { list-style: none; padding-left: 0; }
+.kit-rp-runs { display: grid; gap: 10px; }
+.kit-rp-run { display: grid; gap: 6px; min-width: 0; }
+.kit-rp-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--sunk); border: 1px solid var(--rule); gap: 2px; }
+.kit-rp-bar i { min-width: 3px; background: var(--ink-2); }
+.kit-rp-bar i[data-k="pass"] { background: var(--ok); } .kit-rp-bar i[data-k="fail"] { background: var(--danger); }
+.kit-rp-bar i[data-k="skip"] { background: repeating-linear-gradient(135deg, var(--ink-2) 0 3px, var(--sunk) 3px 6px); }
+.kit-rp-nums { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; }
+.kit-rp-nums span { display: inline-flex; align-items: center; gap: 5px; }
+.kit-rp-nums b { font-variant-numeric: tabular-nums; }
+.kit-rp-nums .kit-vo-g { width: 1.1em; height: 1.1em; }
+.kit-rp-div, .kit-rp-fb { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.kit-rp-div th, .kit-rp-fb th { padding: 6px 10px; text-align: left; background: var(--sunk); font: 600 12px var(--f-mono); letter-spacing: .03em; color: var(--ink-2); border-bottom: 1px solid var(--rule); }
+.kit-rp-div td, .kit-rp-fb td { padding: 7px 10px; vertical-align: top; border-bottom: 1px solid var(--rule-2); overflow-wrap: anywhere; line-height: 1.45; }
+.kit-rp-div tr:last-child td, .kit-rp-fb tr:last-child td { border-bottom: 0; }
+.kit-rp-fb th:first-child { width: 112px; } .kit-rp-fb th:nth-child(2) { width: 28%; }
+.kit-rp-raw { margin: 0; padding: 10px; border-radius: 8px; background: var(--sunk); font: 12.5px var(--f-mono); overflow: auto; }
+@media (max-width: 480px) { .kit-rp-fb th:first-child { width: 88px; } }
+/* /part:page.style.kit.report-cards */

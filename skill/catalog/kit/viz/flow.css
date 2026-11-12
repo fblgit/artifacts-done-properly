@@ -1,0 +1,38 @@
+/* part:page.style.kit.viz.flow */
+/* Kit css: flow diagram    kit version 0.1.0    pairs with kit/viz/flow.js
+   .kit-flow-row (an ordered list of stages and links)  .kit-flow-stage (a column of nodes)  .kit-flow-link (the arrow between columns; .is-blocked draws a cross)  .kit-flow-node.is-<kind>
+   The row folds into one column when the box is narrower than 560 px (container query on .kit-flow).
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono, optional --seam */
+.kit-flow { container-type: inline-size; min-width: 0; font: 13px/1.45 var(--f-ui); color: var(--ink); }
+.kit-flow-row { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 0; }
+.kit-flow-stage { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; justify-content: center; margin: 0; }
+.kit-flow-link { flex: 0 0 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--ink-2); margin: 0; }
+.kit-flow-ar { position: relative; width: 100%; height: 2px; background: currentColor; }
+.kit-flow-ar::after { content: ""; position: absolute; right: 0; top: -4px; width: 8px; height: 8px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
+.kit-flow-link.is-blocked { color: var(--danger); }
+.kit-flow-link.is-blocked .kit-flow-ar { background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 9px); }
+.kit-flow-link.is-blocked .kit-flow-ar::after { top: -8px; right: -2px; width: 14px; height: 14px; border: 0; transform: none; content: "✕"; font: 700 14px/14px var(--f-mono); text-align: center; background: var(--panel); }
+.kit-flow-ll { font: 11px var(--f-mono); color: var(--ink-2); text-align: center; }
+.kit-flow-node { background: var(--panel); border: 1.5px solid var(--rule); border-radius: 10px; padding: 9px 11px; display: grid; gap: 4px; min-width: 0; }
+.kit-flow-node p { margin: 0; font-size: 12.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+.kit-flow-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.kit-flow-head b { font-size: 13.5px; overflow-wrap: anywhere; }
+.kit-flow-node.is-source { background: var(--accent-soft); border-color: var(--ink-2); }
+.kit-flow-node.is-sink { border: 3px solid var(--ink-2); padding: 7.5px 9.5px; }
+.kit-flow-node.is-human { border: 4px double var(--ink-2); padding: 6.5px 8.5px; background: var(--sunk); }
+.kit-flow-node.is-blocked, .kit-flow-node.is-dashed { border-style: dashed; border-color: var(--ink-2); }
+.kit-flow-node.is-blocked { border-color: var(--danger); }
+.kit-flow-no { display: inline-grid; place-items: center; min-width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: var(--panel); font: 700 12px var(--f-mono); }
+.kit-flow-tag { display: inline-flex; align-items: center; gap: 5px; font: 500 11.5px var(--f-mono); color: var(--ink); border: 1px solid var(--rule); border-radius: 999px; padding: 1px 8px 1px 2px; background: var(--sunk); }
+.kit-flow-tag i { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font: 700 10.5px var(--f-mono); font-style: normal; color: var(--panel); background: var(--ink-2); }
+.kit-flow-t-ok i { background: var(--ok); } .kit-flow-t-warn i { background: var(--warn); } .kit-flow-t-danger i { background: var(--danger); } .kit-flow-t-accent i { background: var(--accent); color: var(--accent-ink); }
+.kit-flow-cap { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-2); }
+@container (max-width: 559px) {
+  .kit-flow-row { flex-direction: column; }
+  .kit-flow-link { flex: 0 0 34px; flex-direction: row; justify-content: center; }
+  .kit-flow-ar { width: 2px; height: 100%; min-height: 22px; }
+  .kit-flow-ar::after { right: auto; top: auto; bottom: 0; left: -4px; transform: rotate(135deg); }
+  .kit-flow-link.is-blocked .kit-flow-ar { background: repeating-linear-gradient(180deg, currentColor 0 5px, transparent 5px 9px); }
+  .kit-flow-link.is-blocked .kit-flow-ar::after { left: -6px; bottom: 50%; margin-bottom: -7px; transform: none; }
+}
+/* /part:page.style.kit.viz.flow */

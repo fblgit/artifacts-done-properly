@@ -1,0 +1,39 @@
+/* part:page.style.kit.patterns.playbook */
+/* Kit css: playbook tabs and the pipeline stepper    kit version 0.1.0    pairs with kit/patterns/playbook.js; builds on kit/tabs.css, kit/copy.css and kit/patterns/steps.css
+   .kit-playbook      the tab set of playbooks; each panel is an ol.kit-steps whose steps end in a .kit-code block with a Copy button
+   .kit-tabs.kit-pipe a pipeline: the tab list becomes a row of numbered stages joined by a line (it scrolls sideways on its own when the stages outgrow it);
+                      the selected stage fills its number, [data-kind="gate"] rings it in the seam, [data-kind="risk"] marks the stage that can hurt in --warn with the word in the label
+   .kit-pipe-body     the open stage's panel: a heading, a line, a short list
+   Needs from the board: --panel --sunk --ink --ink-2 --rule --rule-2 --warn --accent --accent-ink --f-ui --f-mono --f-display; optional --seam */
+.kit-playbook { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; min-width: 0; }
+.kit-playbook > * { min-width: 0; }
+.kit-playbook .kit-steps { gap: 0; }
+.kit-playbook .kit-code { margin-top: 4px; max-width: 100%; }
+.kit-playbook .kit-step-body .kit-code { justify-self: stretch; }
+
+.kit-tabs.kit-pipe { gap: 12px; grid-template-columns: minmax(0, 1fr); }
+.kit-tabs.kit-pipe > * { min-width: 0; }
+.kit-tabs.kit-pipe .kit-tabs-list { display: flex; width: 100%; gap: 0; padding: 2px 0 4px; border-radius: 0; background: none; box-shadow: none; overflow-x: auto; scrollbar-width: thin; counter-reset: kit-pipe; }
+.kit-tabs.kit-pipe .kit-tabs-list::-webkit-scrollbar { display: block; height: 6px; }
+.kit-tabs.kit-pipe [role="tab"] { counter-increment: kit-pipe; display: block; flex: 1 0 112px; min-height: 0; text-align: left; white-space: normal; border-radius: 10px;
+  padding: 46px 10px 10px; background: none; box-shadow: none; color: var(--ink); font: inherit; }
+.kit-tabs.kit-pipe [role="tab"]:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.kit-tabs.kit-pipe [role="tab"]::before { content: counter(kit-pipe); position: absolute; top: 4px; left: 10px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--sunk); color: var(--ink); border: 1.5px solid var(--rule); font: 700 .86rem var(--f-ui); font-variant-numeric: tabular-nums; }
+.kit-tabs.kit-pipe [role="tab"]::after, .kit-tabs.kit-pipe [role="tab"][aria-selected="true"]::after { content: ""; position: absolute; top: 20px; left: 50px; right: -6px; bottom: auto; height: 2px; border-radius: 0; background: var(--rule); }
+.kit-tabs.kit-pipe [role="tab"]:last-child::after { display: none; }
+.kit-tabs.kit-pipe [role="tab"][aria-selected="true"]::before { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.kit-tabs.kit-pipe [role="tab"][data-kind="gate"]::before { border-color: var(--seam, var(--accent)); border-width: 2.5px; }
+.kit-tabs.kit-pipe [role="tab"][data-kind="risk"]::before { border-color: var(--warn); border-style: dashed; }
+.kit-tabs.kit-pipe [role="tab"] b { display: block; font: 700 14px/1.25 var(--f-ui); color: var(--ink); }
+.kit-tabs.kit-pipe [role="tab"] small { display: block; font: 12px/1.35 var(--f-mono); color: var(--ink-2); margin-top: 2px; overflow-wrap: anywhere; }
+.kit-tabs.kit-pipe [role="tab"][aria-selected="true"] b { text-decoration: underline; text-decoration-color: var(--seam, var(--accent)); text-decoration-thickness: 2.5px; text-underline-offset: 4px; }
+.kit-pipe-body { padding: 16px 18px; border-radius: 14px; background: var(--sunk); border: 1px solid var(--rule-2); display: grid; gap: 8px; align-content: start; min-height: 132px; }
+.kit-pipe-body > * { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.kit-pipe-body h3 { font: 600 1.2rem/1.25 var(--f-display); color: var(--ink); }
+.kit-pipe-body p { font: 15px/1.55 var(--f-ui); color: var(--ink); max-width: 68ch; }
+.kit-pipe-body ul { padding-left: 1.2em; display: grid; gap: 4px; font: 14.5px/1.5 var(--f-ui); color: var(--ink-2); max-width: 68ch; }
+.kit-pipe-body code { font: .88em var(--f-mono); color: var(--ink); background: var(--panel); padding: 1px 5px; border-radius: 5px; }
+.kit-pipe-flag { justify-self: start; font: 600 11.5px/1.5 var(--f-mono); padding: 0 8px; border-radius: 999px; border: 1.5px solid var(--seam, var(--accent)); color: var(--ink); }
+.kit-pipe-flag[data-kind="risk"] { border-color: var(--warn); border-style: dashed; color: color-mix(in srgb, var(--warn) 78%, var(--ink)); }
+/* /part:page.style.kit.patterns.playbook */

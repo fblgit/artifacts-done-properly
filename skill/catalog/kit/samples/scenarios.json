@@ -1,0 +1,164 @@
+{
+ "note": "Invented.",
+ "matrix": {
+  "caption": "What breaks, and what keeps working",
+  "note": "Under each kiln setup.",
+  "columns": [
+   {
+    "id": "one",
+    "label": "One kiln"
+   },
+   {
+    "id": "two",
+    "label": "Two kilns"
+   }
+  ],
+  "rows": [
+   {
+    "name": "Element burns out mid-firing",
+    "cells": {
+     "one": {
+      "verdict": "stopped",
+      "tone": "danger",
+      "text": "The load is lost; the kiln is down until a new element arrives."
+     },
+     "two": {
+      "verdict": "serves",
+      "tone": "ok",
+      "text": "The second kiln carries the week's work."
+     }
+    },
+    "response": "Order spare elements in pairs and keep one on the shelf."
+   },
+   {
+    "name": "Planned maintenance",
+    "cells": {
+     "one": {
+      "verdict": "no margin",
+      "tone": "warn",
+      "text": "A day of cleaning is a day without firing."
+     },
+     "two": {
+      "verdict": "margin 1",
+      "tone": "ok",
+      "text": "Clean one while the other fires."
+     }
+    },
+    "response": "Clean the cooler kiln the day after it fires."
+   },
+   {
+    "name": "Power cut overnight",
+    "pick": "worst case",
+    "cells": {
+     "one": {
+      "verdict": "stopped",
+      "tone": "danger",
+      "text": "A firing past 900 °C is spoiled."
+     },
+     "two": {
+      "verdict": "stopped",
+      "tone": "danger",
+      "text": "Both go down; a shared circuit changes nothing."
+     }
+    },
+    "response": "Put both kilns on the same alarm and the same phone number."
+   },
+   {
+    "name": "Vent fan fails",
+    "flag": "unconfirmed",
+    "cells": {
+     "one": {
+      "verdict": "degrades",
+      "tone": "warn",
+      "text": "Fumes build; the interlock should refuse the next start."
+     },
+     "two": {
+      "verdict": "degrades",
+      "tone": "warn",
+      "text": "Same, per kiln."
+     }
+    },
+    "response": "Test the interlock once a month."
+   }
+  ],
+  "legend": [
+   {
+    "verdict": "serves",
+    "tone": "ok",
+    "means": "work continues"
+   },
+   {
+    "verdict": "degrades",
+    "tone": "warn",
+    "means": "works, with a loss"
+   },
+   {
+    "verdict": "stopped",
+    "tone": "danger",
+    "means": "no firing until fixed"
+   }
+  ]
+ },
+ "ledger": {
+  "caption": "Checks before the first firing of the season",
+  "note": "Happy path and error path for each control.",
+  "columns": [
+   {
+    "id": "happy",
+    "label": "Happy path"
+   },
+   {
+    "id": "error",
+    "label": "Error path"
+   }
+  ],
+  "responseLabel": null,
+  "rows": [
+   {
+    "name": "Start button",
+    "cells": {
+     "happy": {
+      "verdict": "done",
+      "tone": "ok",
+      "text": "Starts the loaded schedule."
+     },
+     "error": {
+      "verdict": "done",
+      "tone": "ok",
+      "text": "Refuses with the vent off and says why."
+     }
+    }
+   },
+   {
+    "name": "Halt button",
+    "cells": {
+     "happy": {
+      "verdict": "done",
+      "tone": "ok",
+      "text": "Cuts the elements, keeps the vent."
+     },
+     "error": {
+      "verdict": "to test",
+      "tone": "muted",
+      "text": ""
+     }
+    }
+   },
+   {
+    "name": "Schedule edit",
+    "cells": {
+     "happy": {
+      "verdict": "partial",
+      "tone": "warn",
+      "text": "Saved, but the display shows the old peak until a restart."
+     },
+     "error": {
+      "verdict": "to test",
+      "tone": "muted",
+      "text": ""
+     }
+    }
+   }
+  ]
+ }
+}

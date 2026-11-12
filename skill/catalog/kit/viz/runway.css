@@ -1,0 +1,29 @@
+/* part:page.style.kit.viz.runway */
+/* Kit css: expiry runway    kit version 0.1.0    pairs with kit/viz/runway.js
+   .kit-rw (the figure) .kit-rw-scroll (scrolls inside itself below minWidth) svg parts: .kit-rw-seam .kit-rw-now .kit-rw-lane .kit-rw-month (.kit-rw-yr) and the bubble .kit-rw-b with
+   .kit-rw-halo .kit-rw-bub .kit-rw-n .kit-rw-mk (the state's glyph); .sel marks a picked bubble.
+   The bubble takes the state's tone from [data-vo-tone] (--vo-c the ring, --vo-soft the fill, kit/vocab.css); the count is --ink on the soft fill. The ring's colour is never alone: the glyph
+   at its upper right and the accessible name say the state.
+   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui, optional --seam --seam-0..4 --rim --pool --glz-r-l --glz-sh-1 */
+.kit-rw { min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-rw-scroll { overflow-x: auto; overflow-y: hidden; padding: 12px 8px 4px; border-radius: var(--glz-r-l, 16px); background: var(--panel); border: 1px solid var(--rule);
+  box-shadow: inset 0 1.5px 0 var(--rim, transparent), inset 0 -22px 26px -24px var(--pool, transparent); }
+.kit-rw-scroll:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-rw-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kit-rw-seam { fill: none; stroke-width: 2.6; stroke-linecap: round; opacity: .9; }
+.kit-rw-now { fill: var(--seam, var(--accent)); stroke: var(--panel); stroke-width: 2; }
+.kit-rw-lane { fill: var(--ink); font: 600 17px var(--f-ui); text-anchor: start; }
+.kit-rw-month { fill: var(--ink-2); font: 600 15px var(--f-ui); }
+.kit-rw-yr { font-weight: 500; }
+.kit-rw-b { --c: var(--vo-c, var(--ink-2)); cursor: pointer; outline: none; }
+.kit-rw-bub { fill: var(--vo-soft, var(--sunk)); stroke: var(--c); stroke-width: 2.5; transition: stroke-width .2s; }
+.kit-rw-halo { fill: none; stroke: var(--seam, var(--accent)); stroke-width: 0; transition: stroke-width .2s; }
+.kit-rw-n { fill: var(--ink); font: 700 15px var(--f-ui); font-variant-numeric: tabular-nums; pointer-events: none; }
+.kit-rw-b:hover .kit-rw-bub, .kit-rw-b:focus-visible .kit-rw-bub { stroke-width: 5; }
+.kit-rw-b:focus-visible .kit-rw-halo { stroke-width: 3; }
+.kit-rw-b.sel .kit-rw-halo { stroke-width: 3.5; }
+.kit-rw-b.sel .kit-rw-bub { stroke-width: 4; }
+.kit-rw-mk circle { fill: var(--c); stroke: var(--panel); stroke-width: 2; }
+.kit-rw-mk .kit-vo-g { fill: none; stroke: var(--on-state, var(--panel)); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-reduced-motion: reduce) { .kit-rw-bub, .kit-rw-halo { transition: none; } }
+/* /part:page.style.kit.viz.runway */

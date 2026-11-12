@@ -1,0 +1,28 @@
+{
+  "note": "One invented record, the offline mode name. Times are UTC.",
+  "me": "Tobias",
+  "title": "Pick a name for the offline mode",
+  "moves": [
+    { "at": "2026-10-21T08:10:00Z", "by": "Priya", "what": "filed the card", "state": "queued" },
+    { "at": "2026-10-21T08:42:00Z", "by": "Mara", "what": "started on three candidate names", "state": "running" },
+    { "at": "2026-10-21T09:15:00Z", "by": "Mara", "what": "asked which name suits the harbour theme", "state": "waiting" },
+    { "at": "2026-10-21T09:30:00Z", "by": "Tobias", "what": "answered: Harbour Offline", "state": "running" },
+    { "at": "2026-10-21T11:05:00Z", "by": "Mara", "what": "updated the copy deck with the new name", "state": "running" },
+    { "at": "2026-10-21T13:20:00Z", "by": "Ines", "what": "asked for a plainer subtitle", "state": "review" },
+    { "at": "2026-10-21T13:55:00Z", "by": "Mara", "what": "proposed Works without signal", "state": "waiting" },
+    { "at": "2026-10-22T08:35:00Z", "by": "Tobias", "what": "approved the subtitle", "state": "running" },
+    { "at": "2026-10-22T09:02:00Z", "by": "Mara", "what": "shipped the strings to the preview build", "state": "review" },
+    { "at": "2026-10-22T10:02:00Z", "by": "Mara", "what": "asked where the offline icon goes", "state": "waiting" },
+    { "at": "2026-10-22T10:26:00Z", "by": "Ines", "what": "approved the preview build", "state": "done" }
+  ],
+  "turns": [
+    { "n": 1, "ask": { "by": "Mara", "text": "Three names fit the harbour theme: Harbour Offline, Slack Water, Dry Dock. Which one should I use?" },
+      "answer": { "by": "Tobias", "choice": "Harbour Offline", "reply": "Slack Water is lovely but nobody will guess what it does.", "at": "2026-10-21T09:30:00Z" },
+      "reply": { "by": "Mara", "text": "Harbour Offline it is. I will update the copy deck." } },
+    { "n": 2, "ask": { "by": "Mara", "text": "Ines wants a plainer subtitle. Works without signal, or Saved on this device?" },
+      "answer": { "by": "Tobias", "choice": "Works without signal", "approval": "approved", "at": "2026-10-22T08:35:00Z" },
+      "reply": { "by": "Mara", "text": "Done. Both strings are in the preview build." } },
+    { "n": 3, "ask": { "by": "Mara", "text": "Where should the offline icon sit on the tide chart header?" },
+      "answer": null }
+  ]
+}

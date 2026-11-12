@@ -1,0 +1,16 @@
+/* part:page.style.kit.save-status */
+/* Kit css: save status line    kit version 0.1.0    pairs with kit/save-status.js
+   .kit-save (the line) with data-state loading, saving, shared, local, offline or refused, and .kit-save-dot (a shape ahead of the words: round when kept
+   with the artifact, square when kept in this browser only, hollow while saving or loading). The words carry the state; the dot only repeats it.
+   Needs from the board: --ink-2 --ok --warn --danger --ink-3
+   Lifted from: a session board's save line. */
+.kit-save { display: inline-flex; align-items: baseline; gap: 7px; font: 13px/1.4 var(--f-ui, inherit); color: var(--ink-2); overflow-wrap: anywhere; min-width: 0; }
+.kit-save-dot { flex: none; width: 8px; height: 8px; background: var(--ink-3); border-radius: 50%; transform: translateY(-1px); }
+.kit-save[data-state="shared"] .kit-save-dot { background: var(--ok); }
+.kit-save[data-state="local"] .kit-save-dot { background: var(--ink-3); border-radius: 2px; }
+.kit-save[data-state="offline"] .kit-save-dot, .kit-save[data-state="refused"] .kit-save-dot { background: var(--warn); border-radius: 2px; }
+.kit-save[data-state="refused"] { color: color-mix(in srgb, var(--warn) 72%, var(--ink)); }
+.kit-save[data-state="saving"] .kit-save-dot, .kit-save[data-state="loading"] .kit-save-dot { background: transparent; box-shadow: inset 0 0 0 2px var(--ink-3); }
+@media (prefers-reduced-motion: no-preference) { .kit-save[data-state="saving"] .kit-save-dot { animation: kit-save-pulse 1s ease-in-out infinite; } }
+@keyframes kit-save-pulse { 50% { opacity: .35; } }
+/* /part:page.style.kit.save-status */

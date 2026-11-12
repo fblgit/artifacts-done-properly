@@ -1,0 +1,141 @@
+{
+ "note": "Invented studio passes.",
+ "rows": [
+  {
+   "id": "p1",
+   "title": "Marta, weekday pass",
+   "sub": "Paused at the front desk",
+   "state": "blocked",
+   "chips": [
+    {
+     "text": "locker 14"
+    }
+   ]
+  },
+  {
+   "id": "p2",
+   "title": "Ibrahim, evening pass",
+   "sub": "Ends in 6 days",
+   "state": "review",
+   "chips": [
+    {
+     "text": "locker 3"
+    }
+   ]
+  },
+  {
+   "id": "p3",
+   "title": "Joon, weekend pass",
+   "sub": "Welcome kit ready",
+   "state": "done",
+   "chips": [
+    {
+     "text": "locker 22"
+    }
+   ]
+  },
+  {
+   "id": "p4",
+   "title": "Lena, trial class",
+   "sub": "Booked for Saturday",
+   "state": "queued",
+   "chips": []
+  },
+  {
+   "id": "p5",
+   "title": "Tomas, studio pass",
+   "sub": "In the studio now",
+   "state": "running",
+   "chips": [
+    {
+     "text": "locker 9"
+    }
+   ]
+  }
+ ],
+ "mains": {
+  "blocked": {
+   "key": "recover",
+   "label": "Recover",
+   "primary": true
+  },
+  "review": {
+   "key": "renew",
+   "label": "Renew"
+  },
+  "done": {
+   "key": "open-kit",
+   "label": "Open kit"
+  },
+  "queued": {
+   "key": "details",
+   "label": "Details"
+  },
+  "running": {
+   "key": "details",
+   "label": "Details"
+  }
+ },
+ "menu": [
+  {
+   "key": "details",
+   "label": "Details",
+   "icon": "eye"
+  },
+  {
+   "key": "pin",
+   "label": "Assign a locker",
+   "icon": "link"
+  },
+  {
+   "key": "open-kit",
+   "label": "Open kit",
+   "icon": "download"
+  },
+  {
+   "key": "renew",
+   "label": "Renew",
+   "icon": "refresh"
+  },
+  {
+   "key": "lost",
+   "label": "Lost or stolen",
+   "icon": "alert",
+   "danger": true
+  },
+  {
+   "key": "remove",
+   "label": "Remove",
+   "icon": "trash",
+   "danger": true
+  }
+ ],
+ "card": {
+  "title": "Glaze batch 31",
+  "sub": "Celadon, 4 kg",
+  "pills": [
+   {
+    "key": "renew",
+    "label": "Remix",
+    "icon": "refresh",
+    "primary": true
+   },
+   {
+    "key": "copy",
+    "label": "Copy recipe",
+    "icon": "copy"
+   },
+   {
+    "key": "edit",
+    "label": "Edit",
+    "icon": "edit"
+   },
+   {
+    "key": "trash",
+    "label": "Discard",
+    "icon": "trash",
+    "danger": true
+   }
+  ]
+ }
+}

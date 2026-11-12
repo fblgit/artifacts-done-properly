@@ -1,0 +1,91 @@
+<!-- part:kit.template.expiry-board -->
+<!-- Kit template: lifecycle board page (template.expiry-board)    kit version 0.1.0
+     What it is: a page for things that expire (certificates, keys, licences, leases), taken as text. Three tabs under one head. Overview: five dial meters, the runway (what ends when, by kind), a note under it for the
+     bubble you pick, and the five nearest seals. Trust: the signing tree, with the passes and limits. Inventory: facet buttons for kind and state, the bubble pictures (clusters or lanes), and the lens line.
+     One drawer opens for the record you pick in any of them. The status line under the head says how many are shown and how many are lit.
+     How the pieces share data: one list of records and a tiny store inside kit/templates/expiry-board.js (the records, a lit set, an only filter and the selected record). A view writes to the store through its own
+     callbacks and reads from it; no view calls another. An action (renew, check, revoke) is never done in a view. It leaves as a cancelable "eb:action" event on the document, with {key, id, item}; the handler at the
+     bottom of this file is where the page does the work (or sends the request), and it calls preventDefault() to say it took it.
+     Copy it, replace the invented records (kit/samples/expiry-board.json: items, lanes, authorities, kinds, groups) with yours, delete the tabs you do not need. Tab ids are bare tokens and become the page's #anchor.
+     Take also, by reference (this file is taken as text): kit/templates/expiry-board.css and .js, and the pieces' files named in this entry's requires (viz.dial-meter, viz.runway, viz.seal, viz.trust-tree, viz.bubbles, kit.drawer, kit.tabs,
+     kit.tooltip, kit.vocab, kit.callout, the glaze surfaces and the Glaze depth theme the trust tree and the seals draw on).
+     Load in the head: your theme (kit/themes/glaze.css and glaze-depth.css give the porcelain look; any other theme degrades flat), then the css files in the order of the links below.
+     Load before the script at the end: the scripts, in the order shown.
+     Needs from the board: tokens --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --danger --f-ui --f-display --f-mono (optional --seam and the depth tokens); no db.
+     pattern.facet-batch is not used: it draws its own record list and reports no change to a store, so two facet rows in expiry-board.js filter this page.
+     Lifted from: a network-ops console's certificates page (overview, trust and inventory tabs over one record list and one drawer); every record here is invented. -->
+<link rel="stylesheet" href="kit/vocab.css">
+<link rel="stylesheet" href="kit/tabs.css">
+<link rel="stylesheet" href="kit/tooltip.css">
+<link rel="stylesheet" href="kit/drawer.css">
+<link rel="stylesheet" href="kit/callout.css">
+<link rel="stylesheet" href="kit/glaze-surfaces.css">
+<link rel="stylesheet" href="kit/viz/seal.css">
+<link rel="stylesheet" href="kit/viz/dial-meter.css">
+<link rel="stylesheet" href="kit/viz/runway.css">
+<link rel="stylesheet" href="kit/viz/trust-tree.css">
+<link rel="stylesheet" href="kit/viz/bubbles.css">
+<link rel="stylesheet" href="kit/templates/expiry-board.css">
+
+<main class="kit-eb" id="expiry-board">
+  <header class="kit-eb-head">
+    <h1>Certificates and keys</h1>
+    <p class="kit-eb-lead">What is live, what runs out next and who signed it.</p>
+    <p class="kit-eb-status" data-eb="status" role="status" aria-live="polite"></p>
+  </header>
+
+  <div class="kit-tabs line" data-eb="tabs">
+    <div class="kit-tabs-list" role="tablist" aria-label="Certificates">
+      <button type="button" data-tab="overview">Overview</button>
+      <button type="button" data-tab="trust">Trust</button>
+      <button type="button" data-tab="inventory">Inventory</button>
+    </div>
+
+    <section class="kit-eb-panel" data-tab-panel="overview">
+      <div class="kit-eb-dials" data-eb="dials"></div>
+      <section class="kit-eb-sec">
+        <h2>When things end</h2>
+        <div data-eb="runway"></div>
+        <div class="kit-eb-picked" data-eb="picked"></div>
+      </section>
+      <section class="kit-eb-sec">
+        <h2>Next to run out</h2>
+        <div class="kit-eb-seals" data-eb="seals"></div>
+      </section>
+    </section>
+
+    <section class="kit-eb-panel" data-tab-panel="trust">
+      <div data-eb="tree"></div>
+    </section>
+
+    <section class="kit-eb-panel" data-tab-panel="inventory">
+      <div class="kit-eb-bar">
+        <div class="kit-eb-facets" data-eb="facets"></div>
+        <div class="kit-eb-facet" data-eb="layout"></div>
+      </div>
+      <div data-eb="bubbles"></div>
+    </section>
+  </div>
+</main>
+
+<script src="kit/vocab.js"></script>
+<script src="kit/tabs.js"></script>
+<script src="kit/tooltip.js"></script>
+<script src="kit/drawer.js"></script>
+<script src="kit/viz/seal.js"></script>
+<script src="kit/viz/dial-meter.js"></script>
+<script src="kit/viz/runway.js"></script>
+<script src="kit/viz/trust-tree.js"></script>
+<script src="kit/viz/bubbles.js"></script>
+<script src="kit/templates/expiry-board.js"></script>
+<script>
+  // your records: replace this fetch with your own data
+  fetch('kit/samples/expiry-board.json').then(function (r) { return r.json(); }).then(function (data) {
+    Kit.expiryBoard.mount(document.getElementById('expiry-board'), data);
+  });
+  // the page decides what an action means; cancel the event to say you took it
+  document.addEventListener('eb:action', function (e) {
+    e.preventDefault();
+    document.querySelector('[data-eb="status"]').textContent = e.detail.key + ' asked for ' + e.detail.item.label + '. Send the request from here.';
+  });
+</script>

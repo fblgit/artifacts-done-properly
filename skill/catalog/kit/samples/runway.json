@@ -1,0 +1,32 @@
+{
+ "note": "Invented: what ends when across the shop systems of a made-up company, Brindle and Oak. Days are counted from the day the page loads.",
+ "lanes": [
+  { "key": "server", "label": "Server certificates" },
+  { "key": "client", "label": "Client certificates" },
+  { "key": "host", "label": "Host keys" },
+  { "key": "user", "label": "User keys" }
+ ],
+ "items": [
+  { "id": "r1", "lane": "server", "daysLeft": 9, "state": "urgent", "label": "kiosk-3" },
+  { "id": "r2", "lane": "server", "daysLeft": 41, "state": "soon", "label": "depot" },
+  { "id": "r3", "lane": "server", "daysLeft": 188, "state": "ok", "label": "orders" },
+  { "id": "r4", "lane": "server", "daysLeft": 361, "state": "ok", "label": "shop" },
+  { "id": "r5", "lane": "server", "daysLeft": 910, "state": "ok", "label": "staff" },
+  { "id": "r6", "lane": "client", "daysLeft": 70, "state": "ok", "label": "till-1" },
+  { "id": "r7", "lane": "client", "daysLeft": 72, "state": "ok", "label": "till-2" },
+  { "id": "r8", "lane": "client", "daysLeft": 75, "state": "ok", "label": "till-3" },
+  { "id": "r9", "lane": "client", "daysLeft": 78, "state": "ok", "label": "till-4" },
+  { "id": "r10", "lane": "client", "daysLeft": 80, "state": "soon", "label": "scanner-a" },
+  { "id": "r11", "lane": "client", "daysLeft": 83, "state": "ok", "label": "scanner-b" },
+  { "id": "r12", "lane": "client", "daysLeft": 86, "state": "ok", "label": "scanner-c" },
+  { "id": "r13", "lane": "client", "daysLeft": 90, "state": "ok", "label": "scanner-d" },
+  { "id": "r14", "lane": "client", "daysLeft": 260, "state": "ok", "label": "van-tablet" },
+  { "id": "r15", "lane": "client", "daysLeft": 640, "state": "ok", "label": "office-laptop" },
+  { "id": "r16", "lane": "host", "daysLeft": 120, "state": "ok", "label": "cold-store" },
+  { "id": "r17", "lane": "host", "daysLeft": 335, "state": "ok", "label": "back-office" },
+  { "id": "r18", "lane": "host", "daysLeft": 800, "state": "ok", "label": "gateway" },
+  { "id": "r19", "lane": "user", "daysLeft": 3, "state": "urgent", "label": "night-shift" },
+  { "id": "r20", "lane": "user", "daysLeft": 220, "state": "ok", "label": "bookkeeper" },
+  { "id": "r21", "lane": "user", "daysLeft": 1400, "state": "ok", "label": "owner" }
+ ]
+}

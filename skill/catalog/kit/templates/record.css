@@ -1,0 +1,40 @@
+/* part:page.style.kit.template.record */
+/* Kit css: record page template    kit version 0.1.0    pairs with kit/templates/record.html.txt
+   .kit-trec (the record: a seam edge down its left side, a head, then a tab set), .kit-trec-head (.kit-trec-id: name, code and status on one line; .kit-trec-lede),
+   .kit-trec-two (two columns of facts that stack when narrow; .kit-trec-facts is a definition list), .kit-trec-health (a table whose first column is a status mark),
+   .kit-trec-st[data-st="ok|warn|bad"] (the mark: a round glyph and its word, so the state never rides on colour alone), .kit-trec-legend (what the marks mean).
+   Sits on kit/tabs.css and kit/table.css and styles only what they do not.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --rule-2 --ok --warn --danger --f-ui --f-display --f-mono; optional --seam */
+.kit-trec { display: grid; gap: 20px; min-width: 0; max-width: 980px; margin-inline: auto; color: var(--ink); font: 15px/1.55 var(--f-ui);
+  padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.kit-trec-body { display: grid; gap: 20px; min-width: 0; border-left: 3px solid var(--seam, var(--ink-2)); padding-left: clamp(12px, 3vw, 26px); border-radius: 0 0 0 2px; }
+.kit-trec-head { display: grid; gap: 8px; min-width: 0; }
+.kit-trec-id { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; min-width: 0; }
+.kit-trec-id h1 { margin: 0; font: 600 clamp(26px, 4vw, 36px)/1.1 var(--f-display); letter-spacing: -.01em; text-wrap: balance; overflow-wrap: anywhere; }
+.kit-trec-code { font: 500 13px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-trec-lede { margin: 0; max-width: 62ch; color: var(--ink-2); text-wrap: pretty; }
+.kit-trec-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 20px 28px; }
+.kit-trec-two > * { min-width: 0; }
+.kit-trec [data-tab-panel] > .kit-callout { margin-top: 16px; }
+.kit-trec-card { display: grid; gap: 8px; align-content: start; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--rule); background: var(--panel); }
+.kit-trec-card h2, .kit-trec-card h3 { margin: 0; font: 700 15px/1.3 var(--f-ui); }
+.kit-trec-facts { margin: 0; display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 6px 16px; font-variant-numeric: tabular-nums; }
+.kit-trec-facts dt { color: var(--ink-2); }
+.kit-trec-facts dd { margin: 0; overflow-wrap: anywhere; }
+.kit-trec-facts .mono { font: 13px/1.5 var(--f-mono); }
+.kit-trec-health { display: grid; gap: 8px; min-width: 0; }
+.kit-trec-health h2 { margin: 0; font: 700 15px/1.3 var(--f-ui); }
+.kit-trec-st { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; font-weight: 600; --tone: var(--ok); color: color-mix(in srgb, var(--tone) 80%, var(--ink)); }
+.kit-trec-st::before { content: "\2713"; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; flex: none; font: 700 13px/1 var(--f-ui);
+  color: color-mix(in srgb, var(--tone) 80%, var(--ink)); background: color-mix(in srgb, var(--tone) 14%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 45%, var(--panel)); }
+.kit-trec-st[data-st="warn"] { --tone: var(--warn); }
+.kit-trec-st[data-st="warn"]::before { content: "!"; }
+.kit-trec-st[data-st="bad"] { --tone: var(--danger); }
+.kit-trec-st[data-st="bad"]::before { content: "\00D7"; font-size: 15px; }
+.kit-trec-legend { margin: 0; font: 13px/1.5 var(--f-ui); color: var(--ink-2); }
+.kit-trec-legend .kit-trec-st { font-weight: 500; margin-right: 10px; }
+.kit-trec-log { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; border-left: 1px solid var(--rule); }
+.kit-trec-log li { padding: 2px 0 12px 16px; position: relative; }
+.kit-trec-log li::before { content: ""; position: absolute; left: -4.5px; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--panel); border: 1.5px solid var(--ink-2); }
+.kit-trec-log time { display: block; font: 12.5px/1.4 var(--f-mono); color: var(--ink-2); }
+/* /part:page.style.kit.template.record */

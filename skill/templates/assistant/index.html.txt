@@ -1,0 +1,68 @@
+<title>{{title}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="adp:build" content="1">
+<meta name="adp:db-rules" content='[{"path":"","read":"view","write":"admin"},{"path":"ns/shared","read":"view","write":"interact"},{"path":"ns/users/{self}","read":"view","write":"interact"},{"path":"requests","read":"view","write":"interact"},{"path":"conversations","read":"view","write":"interact"},{"path":"presence","read":"view","write":"interact"}]'>
+<link rel="stylesheet" href="styles/page.css">
+<link rel="stylesheet" href="kit/vocab.css">
+<link rel="stylesheet" href="kit/patterns/settings.css">
+<link rel="stylesheet" href="kit/patterns/inbox.css">
+<link rel="stylesheet" href="kit/patterns/namespaces.css">
+<link rel="stylesheet" href="kit/patterns/block-picker.css">
+<link rel="stylesheet" href="kit/patterns/request-card.css">
+<link rel="stylesheet" href="kit/patterns/presence.css">
+<link rel="stylesheet" href="kit/patterns/assist-panel.css">
+<link rel="stylesheet" href="styles/assist.css">
+
+<div class="layout" id="layout">
+<div class="col">
+<!-- part:page.header -->
+<header class="top" data-part="page.header" data-comment-target>
+  <div class="wrap top-in">
+    <div>
+      <h1>{{title}}</h1>
+      <!-- part:page.lead --><p class="lead" data-part="page.lead" data-comment-target></p><!-- /part:page.lead -->
+    </div>
+    <div class="top-tools">
+      <div class="top-presence" id="presence" data-assist-ui></div>
+      <button type="button" class="assist-btn" id="assistBtn" aria-expanded="false" aria-controls="assist" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Work with Claude</span></button>
+      <button type="button" class="gear" id="gear" aria-label="Settings" title="Settings" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/><circle cx="12" cy="12" r="6.5"/></svg></button>
+    <!-- part:page.changes -->
+    <details class="wc" id="wc" data-part="page.changes" data-comment-target hidden>
+      <summary><span>What changed</span><span class="wc-n" id="wcN"></span></summary>
+      <div class="wc-body">
+        <section><h3>Latest changes</h3><ol class="wc-list" id="wcChanges"></ol></section>
+        <section><h3>Owner decisions in force</h3><ul class="wc-list wc-dec" id="wcDecisions"></ul></section>
+      </div>
+    </details>
+    <!-- /part:page.changes -->
+    </div>
+  </div>
+</header>
+<!-- /part:page.header -->
+<!-- part:page.tabs --><nav class="tabs" aria-label="Views" data-part="page.tabs" data-comment-target><div class="wrap tabs-in" id="tabs"></div></nav><!-- /part:page.tabs -->
+<main class="wrap views" id="views"></main>
+</div>
+<div class="assist-scrim" id="assistScrim" hidden></div>
+<!-- part:page.assist -->
+<aside class="assist" id="assist" data-part="page.assist" data-assist-ui aria-label="Work with Claude" hidden>
+  <button type="button" class="assist-close" id="assistClose" aria-label="Close Work with Claude">Close</button>
+  <div id="assistBody"><p class="muted">Loading.</p></div>
+</aside>
+<!-- /part:page.assist -->
+</div>
+
+<script src="adp.js"></script>
+<script src="content.js"></script>
+<script src="kit/dom.js"></script>
+<script src="kit/tokens.js"></script>
+<script src="kit/vocab.js"></script>
+<script src="kit/keep-state.js"></script>
+<script src="kit/patterns/settings.js"></script>
+<script src="kit/patterns/inbox.js"></script>
+<script src="kit/patterns/namespaces.js"></script>
+<script src="kit/patterns/block-picker.js"></script>
+<script src="kit/patterns/assist.js"></script>
+<script src="kit/patterns/request-card.js"></script>
+<script src="kit/patterns/presence.js"></script>
+<script src="kit/patterns/assist-panel.js"></script>
+<script src="parts/app.js"></script>

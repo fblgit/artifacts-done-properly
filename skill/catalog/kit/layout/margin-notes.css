@@ -1,0 +1,38 @@
+/* part:page.style.kit.margin-notes */
+/* Kit css: clause with margin notes    kit version 0.1.0    pairs with kit/layout/margin-notes.js (also works on hand-written markup)
+   .kit-mn > section.kit-mn-sec (h2.kit-mn-sh > .kit-mn-sn, p.kit-mn-intro, article.kit-mn-clause[data-vo-tone] > div.kit-mn-body (h3.kit-mn-h > .kit-mn-no .kit-mn-t sup.kit-mn-ref, p.kit-mn-text, details.kit-mn-fn) + aside.kit-mn-margin (.kit-mn-state, .kit-mn-own, .kit-mn-ans, .kit-mn-ack))
+   .kit-mn-bar marks a clause that waits on someone. The layout answers its own width (a container query), so it also works inside a narrow pane.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --f-ui --f-display --f-mono, optional --seam --measure --label-caps --label-case --radius */
+.kit-mn { container-type: inline-size; min-width: 0; max-width: 100%; display: grid; gap: 28px; font-family: var(--f-ui); color: var(--ink); }
+.kit-mn-sec { display: grid; gap: 4px; min-width: 0; }
+.kit-mn-sh { display: flex; align-items: baseline; gap: 12px; margin: 0 0 6px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); font: 700 clamp(1.25rem, 3vw, 1.6rem)/1.2 var(--f-display, var(--f-ui)); text-wrap: balance; }
+.kit-mn-sn { font: 600 .8em/1 var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-mn-intro { margin: 0 0 8px; max-width: var(--measure, 65ch); font: 15.5px/1.6 var(--f-ui); color: var(--ink-2); }
+.kit-mn-clause { position: relative; display: grid; grid-template-columns: minmax(0, var(--measure, 65ch)) minmax(11rem, 15rem); gap: 6px 28px; justify-content: start; padding: 14px 0 14px 14px; border-bottom: 1px solid var(--rule-2); min-width: 0; }
+.kit-mn-bar::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 2px; background: var(--seam, var(--vo-c, var(--accent))); }
+.kit-mn-body { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.kit-mn-h { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 0; font: 600 17px/1.3 var(--f-display, var(--f-ui)); }
+.kit-mn-no { font: 600 13px/1 var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-mn-t { min-width: 0; overflow-wrap: anywhere; }
+.kit-mn-ref { font: 700 11px/1 var(--f-mono); color: var(--ink); }
+.kit-mn-text { margin: 0; font: 16px/1.6 var(--f-ui); }
+.kit-mn-fn { font: 13.5px/1.5 var(--f-ui); color: var(--ink-2); }
+.kit-mn-fn summary { display: flex; align-items: baseline; gap: 6px; cursor: pointer; width: fit-content; max-width: 100%; padding: 2px 0; text-transform: var(--label-case, none); font-variant-caps: var(--label-caps, normal); letter-spacing: .03em; }
+.kit-mn-fn summary:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-mn-fnn { font: 700 11px/1 var(--f-mono); color: var(--ink); vertical-align: super; }
+.kit-mn-fnc { color: var(--ink-2); }
+.kit-mn-fn ol { margin: 6px 0 0; padding-left: 1.4em; display: grid; gap: 4px; }
+.kit-mn-fn time { font: 12px/1.4 var(--f-mono); color: var(--ink-2); }
+.kit-mn-margin { display: grid; gap: 7px; align-content: start; min-width: 0; padding: 2px 0 0 12px; border-left: 1px solid var(--rule); font: 13.5px/1.45 var(--f-ui); color: var(--ink-2); }
+.kit-mn-margin p { margin: 0; }
+.kit-mn-state { display: inline-flex; align-items: center; gap: 6px; font: 700 14px/1.2 var(--f-ui); color: var(--ink); text-transform: var(--label-case, none); font-variant-caps: var(--label-caps, normal); }
+.kit-mn-state .kit-vo-g { color: var(--vo-c, var(--ink-2)); }
+.kit-mn-l { font: 600 12px/1.3 var(--f-mono); letter-spacing: .05em; text-transform: var(--label-case, uppercase); font-variant-caps: var(--label-caps, normal); color: var(--ink-2); }
+html .kit-mn .kit-mn-l { font-family: var(--f-mono); }
+.kit-mn-ans { display: grid; gap: 2px; }
+.kit-mn-ans b { color: var(--ink); } .kit-mn-ans q { color: var(--ink); font-style: italic; }
+@container (max-width: 40rem) {
+  .kit-mn-clause { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .kit-mn-margin { margin-left: 4px; padding: 6px 0 2px 12px; border-left: 2px solid var(--rule); }
+}
+/* /part:page.style.kit.margin-notes */

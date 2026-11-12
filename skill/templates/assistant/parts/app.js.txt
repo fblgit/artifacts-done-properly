@@ -1,0 +1,163 @@
+/* part:page.script.app */
+/* The views. Each view is a part; each section inside it is a part with markers here and a data-part root.
+   Copy-only sections render ADP.content(<id>); adp.js repaints them live when content/<id> changes in the db.
+   Add a view: one VIEWS entry, its parts marked, its ids in TITLES. */
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const copy = id => window.ADP ? window.ADP.content(id) : '';
+
+const VIEWS = {
+  /* part:home */
+  home: {
+    label: 'Home',
+    parts: ['home', 'home.welcome', 'home.next', 'home.about'],
+    html: () => `<section class="view" data-part="home" data-comment-target aria-label="Home">
+      <!-- part:home.welcome --><div class="card hero" data-part="home.welcome" data-comment-target></div><!-- /part:home.welcome -->
+      <div class="grid">
+        <!-- part:home.next --><div class="card" data-part="home.next" data-comment-target></div><!-- /part:home.next -->
+        <!-- part:home.about --><div class="card" data-part="home.about" data-comment-target></div><!-- /part:home.about -->
+      </div>
+    </section>`,
+  },
+  /* /part:home */
+  /* part:requests */
+  requests: {
+    label: 'Requests',
+    parts: ['requests', 'requests.intro', 'requests.list'],
+    html: () => `<section class="view requests-view" data-part="requests" data-comment-target aria-label="Requests">
+      <!-- part:requests.intro --><div class="card" data-part="requests.intro" data-comment-target></div><!-- /part:requests.intro -->
+      <!-- part:requests.list --><div class="req-list" data-part="requests.list" data-comment-target aria-label="Every request, newest first"></div><!-- /part:requests.list -->
+    </section>`,
+  },
+  /* /part:requests */
+  /* part:settings */
+  settings: {
+    label: 'Settings', hidden: true,      // reached from the gear and by #settings, not from the tabs
+    parts: ['settings', 'settings.intro', 'settings.switches', 'settings.inbox', 'settings.namespaces'],
+    html: () => `<section class="view settings-view" data-part="settings" data-comment-target aria-label="Settings">
+      <!-- part:settings.intro --><div class="card" data-part="settings.intro" data-comment-target></div><!-- /part:settings.intro -->
+      <!-- part:settings.switches --><div class="card" data-part="settings.switches" data-comment-target></div><!-- /part:settings.switches -->
+      <!-- part:settings.inbox --><div class="card" data-part="settings.inbox" data-comment-target></div><!-- /part:settings.inbox -->
+      <!-- part:settings.namespaces --><div class="card" data-part="settings.namespaces" data-comment-target></div><!-- /part:settings.namespaces -->
+    </section>`,
+  },
+  /* /part:settings */
+};
+const TITLES = {'page.header': 'Header', 'page.lead': 'Lead', 'page.tabs': 'Views', 'page.changes': 'What changed', 'page.assist': 'Work with Claude',
+  requests: 'Requests', 'requests.intro': 'Requests intro', 'requests.list': 'Request list',
+  home: 'Home', 'home.welcome': 'Welcome', 'home.next': 'Next steps', 'home.about': 'How this page works',
+  settings: 'Settings', 'settings.intro': 'Settings intro', 'settings.switches': 'Switches', 'settings.inbox': 'Incoming', 'settings.namespaces': 'Namespaces'};
+const COPY = new Set(Object.keys(window.ADP_CONTENT || {}));   // parts whose inner HTML is copy
+
+/* A switch of the template's own, as the example to copy: declare a group, read it with get, follow it with on. */
+if (window.ADP && ADP.config) {
+  ADP.config.define('page', {
+    'show-about': {type: 'bool', default: true, label: 'Show "How this page works"',
+      help: 'Shows or hides the "How this page works" card on Home. Replace it with a switch of your own.'},
+  });
+  ADP.config.on('page.show-about', on => { const c = document.querySelector('[data-part="home.about"]'); if (c) c.hidden = !on; });
+}
+
+let view = '', mounted = [], engine = null, panel = null;
+/* Assist: the engine starts once the config is read; the panel lives in page.assist (a side pane on a wide screen, a sheet on a phone). */
+const Kit0 = window.Kit || {}, A = $('#assist'), B = $('#assistBtn'), L = $('#layout'), S = $('#assistScrim');
+const hasAssist = !!(window.ADP && Kit0.assist && Kit0.assistPanel);
+function setOpen(on, focus){
+  if (!A) return;
+  A.hidden = !on; S.hidden = !on; B.setAttribute('aria-expanded', String(on));
+  if (on) L.setAttribute('data-assist-open', ''); else L.removeAttribute('data-assist-open');
+  try { sessionStorage.setItem('assist-open', on ? '1' : ''); } catch (e) {}
+  if (on && focus && panel) panel.focus(); else if (!on && focus) B.focus();
+}
+const claudeUse = n => (window.claude && claude.use ? Promise.resolve(claude.use(n)).catch(() => null) : Promise.resolve(null));
+const ready = hasAssist ? ADP.config.ready.then(() => {
+  engine = Kit0.assist.start({
+    page: window.ADP, config: ADP.config, titles: TITLES,
+    comments: claudeUse('comments'), sample: claudeUse('sample'), downloads: claudeUse('downloads'),
+    onPick: p => { setOpen(true); if (panel) panel.setScope(p, true); },
+  });
+  return engine.ready;
+}).then(() => {
+  const body = $('#assistBody');
+  panel = Kit0.assistPanel.mount(body, {engine, titles: TITLES, me: engine.me(), onReveal: reveal});
+  Kit0.presence.mount($('#presence'), {engine, compact: true, canPing: false, ask: engine.can().ask});
+  B.hidden = false;
+  try { if (sessionStorage.getItem('assist-open')) setOpen(true); } catch (e) {}
+}).catch(() => { B.hidden = true; }) : Promise.resolve();
+if (B) {
+  B.addEventListener('click', () => setOpen(A.hidden, true));
+  $('#assistClose').addEventListener('click', () => setOpen(false, true));
+  S.addEventListener('click', () => setOpen(false, true));
+  A.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.documentElement.classList.contains('kit-bp-on')) { e.stopPropagation(); setOpen(false, true); } });
+}
+function unmount(){ mounted.forEach(m => { try { m.destroy(); } catch (e) {} }); mounted = []; }
+function mountSettings(){
+  const Kit = window.Kit || {}, sw = $('[data-part="settings.switches"]'), ns = $('[data-part="settings.namespaces"]'), ib = $('[data-part="settings.inbox"]');
+  if (!window.ADP || !Kit.settings || !Kit.namespaces) {
+    sw.innerHTML = '<p class="muted">The settings kit is not installed.</p>'; ns.hidden = true; ib.hidden = true; return;
+  }
+  const done = () => { if (view !== 'settings') return;
+    mounted.push(Kit.settings.mount(sw, {}));
+    if (Kit.inbox && ADP.db) mounted.push(Kit.inbox.mount(ib, {})); else ib.hidden = true;     // an agent's proposal is applied or declined here
+    mounted.push(Kit.namespaces.mount(ns, {parts: Object.keys(TITLES), titles: TITLES})); };
+  ADP.config.ready.then(done);
+}
+function mountRequests(){
+  const box = $('[data-part="requests.list"]'), Kit = window.Kit || {};
+  if (!box) return;
+  if (!engine || !Kit.requestCard) { box.innerHTML = '<p class="muted card">' + (engine ? 'The request card kit is not installed.' : 'Requests need the assist kit, and it is not available on this page.') + '</p>'; return; }
+  const cards = new Map(), empty = document.createElement('p');
+  empty.className = 'muted card'; empty.textContent = 'Nothing has been sent yet. Open Work with Claude, pick a block and say what you want.';
+  const list = engine.requests({});
+  const paint = rows => {
+    const ids = new Set(rows.map(r => r.id));
+    cards.forEach((c, id) => { if (!ids.has(id)) { c.m.destroy(); c.el.remove(); cards.delete(id); } });
+    rows.forEach((r, i) => {
+      let c = cards.get(r.id);
+      if (!c) { const el = document.createElement('div'); el.className = 'req-item';
+        c = {el, m: Kit.requestCard.mount(el, {engine, rid: r.id, me: engine.me(), titles: TITLES, onReveal: reveal})}; cards.set(r.id, c); }
+      if (box.children[i] !== c.el) box.insertBefore(c.el, box.children[i] || null);
+    });
+    empty.hidden = rows.length > 0; if (!empty.parentNode) box.append(empty);
+  };
+  const off = list.on(paint); paint(list.get());
+  mounted.push({destroy(){ off(); cards.forEach(c => c.m.destroy()); }});
+}
+function reveal(id){
+  const v = owner(id); if (v && v !== view) show(v);
+  setTimeout(() => { const t = document.querySelector('[data-part="' + String(id).split(':')[0] + '"]'); if (t) { t.scrollIntoView({block: 'center'}); t.setAttribute('data-assist-ring', ''); setTimeout(() => t.removeAttribute('data-assist-ring'), 1800); } }, 80);
+}
+function show(v){
+  if (!VIEWS[v]) v = Object.keys(VIEWS)[0];
+  unmount();
+  view = v;
+  $('#views').innerHTML = VIEWS[v].html();
+  document.querySelectorAll('[data-part]').forEach(el => { if (COPY.has(el.dataset.part)) el.innerHTML = copy(el.dataset.part); });
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+  const gear = $('#gear'); if (gear) gear.setAttribute('aria-pressed', String(v === 'settings'));
+  if (v === 'settings') mountSettings();
+  else if (v === 'requests') { ready.then(mountRequests); }
+  else if (window.ADP && ADP.config) { const c = $('[data-part="home.about"]'); if (c) c.hidden = !ADP.config.get('page.show-about'); }
+  if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
+}
+$('#tabs').innerHTML = Object.entries(VIEWS).filter(([k, x]) => !x.hidden).map(([k, x]) => `<button type="button" class="tab" data-view="${k}">${x.label}</button>`).join('');
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if (b) show(b.dataset.view); });
+const gear = $('#gear');
+if (gear) {
+  gear.addEventListener('click', () => show(view === 'settings' ? 'home' : 'settings'));
+  if (window.ADP && ADP.config) ADP.config.ready.then(() => { gear.hidden = !(ADP.user && ADP.user.canEdit); });
+}
+addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1));
+
+const owner = id => Object.keys(VIEWS).find(k => VIEWS[k].parts.includes(id));
+if (window.ADP) window.ADP.page({
+  view: () => view,
+  expected: v => ['page.lead'].concat(VIEWS[v] ? VIEWS[v].parts : []),
+  titles: TITLES, legacy: {},
+  all: Object.keys(TITLES),
+  reveal: id => { const v = owner(id); if (v && v !== view) show(v); return new Promise(r => setTimeout(r, 60)); },
+});
+})();
+/* /part:page.script.app */

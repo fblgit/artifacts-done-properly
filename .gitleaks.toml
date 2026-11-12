@@ -1,0 +1,11 @@
+# Extends the default gitleaks rules. The two files below are catalog sample fixtures
+# (demo inputs for the sandbox redaction and timed-reveal components): fake values, byte-exact copies.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "fake demo values in catalog sample fixtures"
+paths = [
+  '''skill/catalog/kit/samples/sandbox\.json''',
+  '''skill/catalog/kit/samples/timed-reveal\.json''',
+]

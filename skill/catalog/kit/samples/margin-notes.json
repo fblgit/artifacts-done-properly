@@ -1,0 +1,114 @@
+{
+ "note": "Invented: the house rules of a repair cafe, drafted as numbered clauses.",
+ "words": {
+  "done": "Settled",
+  "waiting": "Awaiting you",
+  "running": "In drafting",
+  "review": "Read, not yet accepted",
+  "queued": "Not started"
+ },
+ "sections": [
+  {
+   "id": "doors",
+   "title": "Doors and sign-in",
+   "intro": "How people arrive, wait and are looked after.",
+   "clauses": [
+    {
+     "id": "d1",
+     "title": "Doors open at six",
+     "text": "The hall is opened by the lead repairer at six and visitors may enter from then. No item is accepted after eight forty.",
+     "state": "done",
+     "owner": "Priya",
+     "answer": {
+      "label": "Option a",
+      "text": "Six, as in the old hall.",
+      "at": "2 Oct"
+     },
+     "ack": {
+      "by": "Claude",
+      "at": "3 Oct"
+     }
+    },
+    {
+     "id": "d2",
+     "title": "One item each on a full night",
+     "text": "When more than twelve people are waiting, each visitor may bring one item to the bench until the queue clears.",
+     "state": "waiting",
+     "owner": "Marcus"
+    }
+   ]
+  },
+  {
+   "id": "bench",
+   "title": "At the bench",
+   "intro": "What repairers do and do not do.",
+   "clauses": [
+    {
+     "id": "b1",
+     "title": "Show, do not take over",
+     "text": "A repairer explains each step and lets the owner hold the tool wherever it is safe to do so.",
+     "state": "done",
+     "owner": "Odile",
+     "answer": {
+      "label": "Agreed",
+      "text": "This is the point of the night.",
+      "at": "2 Oct"
+     },
+     "ack": {
+      "by": "Claude",
+      "at": "3 Oct"
+     },
+     "history": [
+      {
+       "at": "28 Sep",
+       "text": "Draft said repairers should finish the job; changed after the first meeting."
+      },
+      {
+       "at": "2 Oct",
+       "text": "Wording about holding the tool added."
+      }
+     ]
+    },
+    {
+     "id": "b2",
+     "title": "Mains items are tested before they leave",
+     "text": "Any lamp or appliance that was opened is tested at the electrical bench, and the result is written in the log.",
+     "state": "review",
+     "owner": "Ravi",
+     "answer": {
+      "label": "Option b",
+      "text": "Two people sign the log line.",
+      "at": "5 Oct"
+     }
+    },
+    {
+     "id": "b3",
+     "title": "No repairs on gas or medical equipment",
+     "text": "Gas appliances, heaters with a pilot light and anything used for care are turned away with a kind word and a suggestion of who to ask.",
+     "state": "queued",
+     "owner": "Priya"
+    }
+   ]
+  },
+  {
+   "id": "close",
+   "title": "Closing",
+   "intro": "Leaving the hall as we found it.",
+   "clauses": [
+    {
+     "id": "c1",
+     "title": "The log is counted before the lights go off",
+     "text": "Items looked at, fixed and not fixed are added up by the door counter and written on the whiteboard photo.",
+     "state": "running",
+     "owner": "Lena",
+     "history": [
+      {
+       "at": "5 Oct",
+       "text": "Door counter added to the kit list."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

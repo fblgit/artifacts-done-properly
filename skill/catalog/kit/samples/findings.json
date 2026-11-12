@@ -1,0 +1,75 @@
+{
+ "note": "Invented.",
+ "items": [
+  {
+   "severity": "med",
+   "tag": "Unclear",
+   "title": "The cooling curve is described twice, in two ways",
+   "body": "The handbook says the kiln cools freely, and the controller sheet lists a three-stage controlled cool. Both are in use.",
+   "evidence": [
+    [
+     "Handbook",
+     "page 14"
+    ],
+    [
+     "Controller",
+     "sheet 2, step 9"
+    ]
+   ],
+   "fix": "Pick the controlled cool and delete the free-cool paragraph."
+  },
+  {
+   "severity": "crit",
+   "tag": "Conflict",
+   "title": "Two documents give different top temperatures for the same glaze",
+   "body": "The glaze card says cone 6 (1222 °C). The firing schedule peaks at 1260 °C, which is cone 8. A load fired to the schedule overfires the glaze.",
+   "evidence": [
+    [
+     "Card",
+     "celadon-3"
+    ],
+    [
+     "Schedule",
+     "slow-glaze, ramp 4"
+    ],
+    [
+     "Check",
+     "cone pack from the last firing"
+    ]
+   ],
+   "fix": "Cap ramp 4 at 1222 °C and re-fire one test tile."
+  },
+  {
+   "severity": "high",
+   "tag": "Gap",
+   "title": "No one is named for the weekend cool-down",
+   "body": "A firing started on Friday evening finishes cooling on Sunday morning. The rota ends on Friday at 17:00.",
+   "evidence": [
+    [
+     "Rota",
+     "week view"
+    ]
+   ],
+   "fix": "Add a Sunday 09:00 unload slot with a named person."
+  },
+  {
+   "severity": "low",
+   "tag": "Noise",
+   "title": "The log template has two columns that nobody fills in",
+   "body": "Humidity and kiln-room temperature have been blank for six months.",
+   "fix": "Drop both columns."
+  },
+  {
+   "severity": "ok",
+   "tag": "Checked",
+   "title": "The vent interlock works",
+   "body": "The controller refused to start with the fan off, three times out of three.",
+   "evidence": [
+    [
+     "Test",
+     "bench, 12 March"
+    ]
+   ]
+  }
+ ]
+}

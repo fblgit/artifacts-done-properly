@@ -1,0 +1,43 @@
+/* part:page.style.kit.patterns.disclosure-reader */
+/* Kit css: reference reader    kit version 0.1.0    EXTENDS pattern.disclosure (a new file; disclosure.css is unchanged)    pairs with kit/patterns/disclosure-reader.js
+   .kit-rdr > nav.kit-rdr-index (p.kit-rdr-index-h, ul > li > .kit-rdr-item[aria-current=location]) + .kit-rdr-main (ul.kit-rdr-tiles > li.kit-rdr-tile (b, span), .kit-rdr-bar (label.kit-rdr-search, .kit-rdr-count, .kit-rdr-clear),
+   .kit-rdr-cards (the disclosure cards), .kit-rdr-empty)
+   From 860px the index is a sticky column at the left (under --kit-topbar-h); below that it is a row of chips that scrolls sideways inside its own box. The section in view is marked by a bar and bold type, not colour alone.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display; optional --seam, --kit-topbar-h */
+.kit-rdr { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px 28px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }
+.kit-rdr-main { display: grid; gap: 12px; min-width: 0; align-content: start; }
+.kit-rdr-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.kit-rdr-tile { display: grid; gap: 2px; padding: 10px 14px; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); min-width: 0; }
+.kit-rdr-tile b { font: 600 1.6rem/1.1 var(--f-display); font-variant-numeric: tabular-nums; color: var(--ink); }
+.kit-rdr-tile span { font: 500 12.5px/1.3 var(--f-mono); color: var(--ink-2); }
+.kit-rdr-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.kit-rdr-search { flex: 1 1 14rem; min-width: 0; display: flex; }
+.kit-rdr-search input { width: 100%; min-width: 0; min-height: 40px; box-sizing: border-box; padding: 6px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 15px var(--f-ui); }
+.kit-rdr-search input:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-rdr-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.kit-rdr-count { font: 500 13px/1.3 var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.kit-rdr-clear { min-height: 34px; padding: 0 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font: 600 13px var(--f-ui); cursor: pointer; }
+.kit-rdr-clear:hover { background: var(--sunk); }
+.kit-rdr-clear:focus-visible, .kit-rdr-item:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-rdr-cards { display: grid; gap: 10px; min-width: 0; }
+.kit-rdr-cards [hidden] { display: none; }
+.kit-rdr-empty { display: grid; gap: 4px; justify-items: start; padding: 22px 18px; border: 1px dashed var(--rule); border-radius: 12px; background: var(--panel); }
+.kit-rdr-empty b { font: 600 1.05rem/1.3 var(--f-display); }
+.kit-rdr-empty span { font: 14.5px/1.5 var(--f-ui); color: var(--ink-2); }
+.kit-rdr-empty[hidden], .kit-rdr-clear[hidden] { display: none; }
+.kit-rdr-index { min-width: 0; }
+.kit-rdr-index ul { display: flex; gap: 6px; margin: 0; padding: 2px 2px 8px; list-style: none; overflow-x: auto; }
+.kit-rdr-index-h { display: none; margin: 0 0 8px; font: 600 12px/1.3 var(--f-mono); letter-spacing: .04em; color: var(--ink-2); }
+.kit-rdr-item { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 999px; white-space: nowrap; cursor: pointer; background: var(--panel);
+  font: 500 13.5px/1.3 var(--f-ui); color: var(--ink-2); }
+.kit-rdr-item:hover { color: var(--ink); background: var(--sunk); }
+.kit-rdr-item[aria-current] { color: var(--ink); font-weight: 700; border-color: var(--seam, var(--accent)); box-shadow: inset 0 0 0 1px var(--seam, var(--accent)); }
+@media (min-width: 860px) {
+  .kit-rdr { grid-template-columns: 13rem minmax(0, 1fr); }
+  .kit-rdr-index { position: sticky; top: calc(var(--kit-topbar-h, 0px) + 12px); align-self: start; max-height: calc(100vh - var(--kit-topbar-h, 0px) - 24px); overflow-y: auto; }
+  .kit-rdr-index-h { display: block; }
+  .kit-rdr-index ul { flex-direction: column; gap: 0; padding: 0; border-left: 1px solid var(--rule); overflow: visible; }
+  .kit-rdr-item { display: flex; width: 100%; min-height: 32px; padding: 4px 10px; border: 0; border-radius: 0; background: none; white-space: normal; margin-left: -1px; border-left: 3px solid transparent; }
+  .kit-rdr-item[aria-current] { border-color: transparent; border-left-color: var(--seam, var(--accent)); box-shadow: none; background: var(--sunk); }
+}
+/* /part:page.style.kit.patterns.disclosure-reader */
