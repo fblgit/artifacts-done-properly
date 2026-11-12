@@ -134,5 +134,39 @@ class LogInitTests(Base):
         self.run_adp('init'); self.assertTrue(os.path.isfile(os.path.join(self.cwd, '.adp', 'config.json')))
 
 
+class ProjectsTests(Base):
+    def reg(self):
+        root = os.path.join(self.home, '.adp', 'projects')
+        return {n: json.load(open(os.path.join(root, n, 'config.json'))) for n in sorted(os.listdir(root))} if os.path.isdir(root) else {}
+
+    def test_init_registers_path_in_home(self):
+        t = os.path.join(self.tmp, 'My Proj'); os.makedirs(t)
+        self.assertEqual(self.run_adp('init', t).returncode, 0)
+        r = self.reg(); self.assertEqual(list(r), ['my-proj'])
+        self.assertEqual((r['my-proj']['path'], r['my-proj']['scope'], r['my-proj']['name']), (t, 'project', 'My Proj'))
+        c1 = r['my-proj']['created']
+        self.assertEqual(self.run_adp('init', t).returncode, 0)          # again: one entry, same created
+        r = self.reg(); self.assertEqual(list(r), ['my-proj']); self.assertEqual(r['my-proj']['created'], c1)
+
+    def test_same_name_two_folders(self):
+        a, b = os.path.join(self.tmp, 'x', 'app'), os.path.join(self.tmp, 'y', 'app')
+        for d in (a, b): os.makedirs(d); self.run_adp('init', d)
+        r = self.reg(); self.assertEqual(sorted(v['path'] for v in r.values()), sorted([a, b])); self.assertEqual(len(r), 2)
+
+    def test_setup_project_registers_dry_run_does_not(self):
+        self.run_adp('setup', '--scope', 'project', '--dry-run', '--yes')
+        self.assertEqual(self.reg(), {})
+        self.assertEqual(self.run_adp('setup', '--scope', 'local', '--yes').returncode, 0)
+        r = self.reg(); self.assertEqual([v['path'] for v in r.values()], [self.cwd]); self.assertEqual(list(r.values())[0]['scope'], 'local')
+        self.run_adp('setup', '--scope', 'user', '--yes'); self.assertEqual(len(self.reg()), 1)    # user scope is not a project
+
+    def test_projects_lists_and_marks_missing(self):
+        r = self.run_adp('projects'); self.assertIn('no projects registered', r.stdout)
+        t = os.path.join(self.tmp, 'gone'); os.makedirs(t); self.run_adp('init', t)
+        out = self.run_adp('projects', cwd=self.tmp).stdout        # from outside the project
+        self.assertEqual(out.strip().split('\t'), ['gone', 'project', t])
+        shutil.rmtree(t); self.assertIn('(missing)', self.run_adp('projects').stdout)
+
+
 if __name__ == '__main__':
     unittest.main()
