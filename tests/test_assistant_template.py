@@ -173,5 +173,55 @@ class CanvasTab(unittest.TestCase):
         self.assertEqual([l for l in css.splitlines() if l.startswith(':root{') or l.startswith('body')], [])
 
 
+class HomeExamplesAndMindMap(unittest.TestCase):
+    APP = os.path.join(TPL, 'assistant', 'parts', 'app.js.txt')
+
+    def app(self):
+        return open(self.APP, encoding='utf-8').read()
+
+    def test_mind_map_is_taken_and_loaded_by_assistant_and_default(self):
+        for t in ('assistant', 'default'):
+            self.assertIn('pattern.mindmap', load(os.path.join(TPL, t, 'template.json'))['take'], t)
+        for name in ARGS:
+            d, _ = generate(name)
+            html = read(d, 'index.html')
+            self.assertEqual(html.count('kit/patterns/mindmap.js'), 1, name)
+            self.assertEqual(html.count('kit/patterns/mindmap.css'), 1, name)
+
+    def test_mind_map_is_a_canvas_mode_saved_on_the_shared_namespace(self):
+        app = self.app()
+        self.assertIn("{id: 'mindmap', label: 'Mind map', mount: mountMind}", app)
+        self.assertIn("ADP.ns('shared').doc('mindmaps/main')", app)
+        self.assertIn('Kit.mindmap.mount', app)
+
+    def test_home_has_the_examples_part_and_every_example_goes_through_the_engine(self):
+        app = self.app()
+        self.assertIn('<!-- part:home.examples -->', app)
+        self.assertIn("'home.examples': 'Examples'", app)
+        self.assertIn('engine.send({lane: \'task\'', app)
+        for i in ('kanban', 'calendar', 'drafting', 'canvas', 'mindmap', 'rearrange', 'change', 'adopt'):
+            self.assertIn(f"{{id: '{i}'", app, i)
+
+    def test_prompts_fit_the_comment_limit_and_name_only_real_catalog_ids(self):
+        app = self.app()
+        texts = re.findall(r"text: '((?:[^'\\]|\\.)*)'", app)
+        self.assertGreaterEqual(len(texts), 8)
+        for t in texts:
+            self.assertLess(len(t) + 300, 3000)       # the comment carries the instruction and trailer too, under 4 KiB
+        cat = {e['id'] for e in load(CATALOG)['entries']}
+        for i in re.findall(r'\b((?:kit|pattern|viz|theme|template)\.[a-z0-9-]+)\b', ' '.join(texts)):
+            self.assertIn(i, cat, i)
+
+    def test_translate_table_has_flags_and_sets_the_language_setting(self):
+        app = self.app()
+        self.assertGreaterEqual(len(re.findall(r"\['[\U0001F1E6-\U0001F1FF]{2}', '[A-Za-z]+'\]", app)), 10)
+        self.assertIn('page.language', app)
+
+    def test_language_setting_is_declared_with_default_english_in_both_templates(self):
+        for t in ('starter', 'assistant'):
+            src = open(os.path.join(TPL, t, 'parts', 'app.js.txt'), encoding='utf-8').read()
+            self.assertIn("language: {type: 'text', default: 'English', label: 'Language'", src, t)
+
+
 if __name__ == '__main__':
     unittest.main()

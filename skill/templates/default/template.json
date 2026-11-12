@@ -63,6 +63,7 @@
   "kit.store",
   "kit.chrome",
   "kit.canvas",
+  "pattern.mindmap",
   "theme.adr-drafting-table",
   "theme.journey-whiteboard",
   "theme.glaze",

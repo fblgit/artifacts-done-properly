@@ -340,3 +340,14 @@ When no `presence/*` doc is fresh and `canSendToClaude()` is not `available`, th
 ### Who can do what
 
 Classifying, picking, Apply and Decline write only for an editor (`user.canEdit`). Others see the cards read-only.
+
+## 12. The assistant template's Home examples
+
+The `assistant` template (and `default`, which repeats its take list) shows how a request is made by sending real ones. `mountExamples()` in `skill/templates/assistant/parts/app.js.txt` draws the `home.examples` part: the `EXAMPLES` list (a drag and drop board, a calendar, a drafting board, a canvas, a mind map, rearranging, changing, adopting) and a table of `LANGUAGES` with a flag each. A button calls `engine.send({lane: 'task', scope: null, text})`, so the request is the ordinary `requests/<rid>` document of section 3, about the whole page, and the page then opens the Requests view. Replies to it are turns, as in section 5.
+
+- The buttons are disabled unless `engine.can().send` is `available`; the line under the table says why when it is not (no engine, `writers_only`, `no_session`, or off). The check repeats every 30 seconds.
+- Each prompt is written to fit the comment that wakes the session (4 KiB with its instruction and trailer); `tests/test_assistant_template.py` checks the length and that every catalog id a prompt names exists.
+- The prompts that build something say to check the catalog first and take what exists. The page does not know what the catalog has; the instruction and the catalog entry `pattern.mindmap` are what make a session take it.
+- Translating is a request like the others. Its text asks for the whole page to be translated with every part id and class kept, then for the `page.language` switch (a text setting, default English, declared in `starter` and `assistant`) to be set to that language. Nothing in the page reads `page.language` yet; it records what Claude did.
+
+The Canvas tab (`CANVAS_MODES`) has two modes. Paint is `kit.canvas` on `ns/shared/{name}`. Mind map is `Kit.mindmap` with its data in one document, `ns/shared/mindmaps/main`: the component hands the whole next map to `onChange`, the page writes it with `set`, and a snapshot from another viewer is drawn with `update()`. A viewer for whom `user.can('data.write')` is false gets the mind map read-only.

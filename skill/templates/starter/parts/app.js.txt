@@ -46,6 +46,8 @@ if (window.ADP && ADP.config) {
   ADP.config.define('page', {
     'show-about': {type: 'bool', default: true, label: 'Show "How this page works"',
       help: 'Shows or hides the "How this page works" card on Home. Replace it with a switch of your own.'},
+    language: {type: 'text', default: 'English', label: 'Language',
+      help: 'The language of the page\'s text. Ask Claude to translate the page and to set this to the language it used.'},
   });
   ADP.config.on('page.show-about', on => { const c = document.querySelector('[data-part="home.about"]'); if (c) c.hidden = !on; });
 }

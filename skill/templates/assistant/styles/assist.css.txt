@@ -28,3 +28,14 @@
 [data-assist-ring]{outline:3px solid var(--accent);outline-offset:3px;border-radius:var(--r)}
 kbd{font:600 12px var(--f-mono);padding:1px 6px;border:1px solid var(--rule);border-bottom-width:2px;border-radius:5px;background:var(--panel);color:var(--ink)}
 /* /part:page.style.assist */
+/* Home examples */
+.ex-list{list-style:none;margin:12px 0 18px;padding:0;display:grid;gap:10px}
+.ex-item{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;padding:12px 14px;border:1px solid var(--rule);border-radius:var(--r);background:var(--panel)}
+.ex-item>div{min-width:0}
+.ex-item p{margin:.3em 0 0;font-size:13px;overflow-wrap:anywhere}
+.ex-item button,.ex-langs button{flex:none}
+.ex-langs{border-collapse:collapse;margin:8px 0 12px}
+.ex-langs th{font-weight:500;text-align:left;padding-right:24px}
+.ex-langs td{padding:3px 12px 3px 0;vertical-align:middle}
+.ex-note{min-height:1.4em}
+@media (max-width:560px){.ex-item{flex-direction:column}}

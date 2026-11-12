@@ -10,6 +10,7 @@ THIS PAGE IS AN ADP ARTIFACT (Artifacts Done Properly). ADP is about building ri
   TAKE what this page needs from the catalog by reference. Do not write it again: a taken component costs a few tokens, a written one costs thousands and is not tested.
   MODIFY by layering: put the change in this page's own styles or script, or fix the entry in the catalog and take it again. Do not edit a taken file in place.
   DO NOT FORGET what is good. When this page builds something worth keeping (a component, a view, a theme), tell the owner: it can become a catalog entry, so the next artifact starts from it. It is a second life for good work.
+  SUBSCRIBE. People using this page send requests to the Claude Code sessions watching it, and a session that is not watching never sees them (the page then says nobody is watching). Watch every ADP artifact you are working on in this session, and each one you create, as soon as you publish it. A publish already makes this session watch that artifact (the result says so); for one you did not just publish, use the ArtifactComments tool to watch it. Answer a request as the comment that wakes you says: ack, then working with progress lines, then done with the response, and keep presence/<your-name> fresh while you watch.
 
 CATALOG: {{catalog}}
 

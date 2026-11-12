@@ -131,7 +131,7 @@ class DefaultLoader(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             out = os.path.join(tmp, 'p')
             r = subprocess.run([sys.executable, os.path.join(ROOT, 'skill', 'scripts', 'adp.py'), 'new', '--tier', 'default', out],
-                               capture_output=True, text=True, cwd=tmp)
+                               capture_output=True, text=True, cwd=tmp, env=dict(os.environ, ADP_HOME=os.path.join(tmp, 'home')))
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertFalse(os.path.exists(os.path.join(out, 'index.html.txt')))
             with open(os.path.join(out, 'index.html'), encoding='utf-8') as f:
