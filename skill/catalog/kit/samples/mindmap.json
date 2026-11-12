@@ -1,0 +1,23 @@
+{
+  "note": "Fifteen invented nodes over three levels: the plan for a product launch, in four branches.",
+  "label": "Plan a product launch",
+  "data": {
+    "nodes": [
+      { "id": "launch", "text": "Plan a product launch", "parent": null, "order": 0 },
+      { "id": "product", "text": "Product", "parent": "launch", "order": 0 },
+      { "id": "freeze", "text": "Freeze the feature list", "parent": "product", "order": 0 },
+      { "id": "beta", "text": "Triage the beta feedback", "parent": "product", "order": 1 },
+      { "id": "pricing", "text": "Settle the pricing tiers", "parent": "product", "order": 2 },
+      { "id": "marketing", "text": "Marketing", "parent": "launch", "order": 1 },
+      { "id": "post", "text": "Write the announcement post", "parent": "marketing", "order": 0 },
+      { "id": "emails", "text": "Draft the three-email sequence", "parent": "marketing", "order": 1 },
+      { "id": "press", "text": "Brief the press and partners", "parent": "marketing", "order": 2 },
+      { "id": "support", "text": "Support", "parent": "launch", "order": 2 },
+      { "id": "articles", "text": "Publish the help-centre articles", "parent": "support", "order": 0 },
+      { "id": "macros", "text": "Write the support macros", "parent": "support", "order": 1 },
+      { "id": "ops", "text": "Operations", "parent": "launch", "order": 3 },
+      { "id": "golive", "text": "Run the go-live checklist", "parent": "ops", "order": 0 },
+      { "id": "rollback", "text": "Agree the rollback plan", "parent": "ops", "order": 1 }
+    ]
+  }
+}
