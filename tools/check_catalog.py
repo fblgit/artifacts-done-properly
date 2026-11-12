@@ -62,6 +62,10 @@ def main():
         if path in referenced or path in PAGE_FILES or path.startswith("parts/"):
             continue
         errors.append(f"orphan: {path} is not referenced by any entry or page file")
+    skill_runtime = root.parent / "assets" / "adp.js"
+    if root.name == "catalog" and skill_runtime.is_file() and (root / "adp.js").is_file() \
+            and skill_runtime.read_bytes() != (root / "adp.js").read_bytes():
+        errors.append("runtime: skill/assets/adp.js and skill/catalog/adp.js differ; the skill has one runtime")
     if errors:
         print(f"FAIL: {len(errors)} problem(s)")
         for m in errors:
