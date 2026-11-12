@@ -22,10 +22,9 @@ Default to recommended when people and Claude use the page together. Ask the use
 
 ## 2. Create the project
 
-1. Run `ADP new assistant DIR --title "<name>" --by <your session name> --theme theme.glaze --catalog CATALOG` (`--slug`, `--content FILE`, `--data FILE|DIR` are optional). It writes the page into DIR plus `seed.json` and `seed/`, and prints ONE publish object (`files` already carries the taken kit entries), the `take` list, a `design` note and the ordered `next` steps. Follow `next`.
-2. UNVERIFIED for hosts other than this one: the template files land in DIR with a `.txt` suffix (`index.html.txt`, `content.js.txt`, `parts/app.js.txt`, `styles/*.css.txt`). Rename every one of them, dropping `.txt`, before `check` or the publish: the publish's `file_path` is `DIR/index.html`. Do this once, right after `new`.
-3. Replace the placeholder look and copy: write `styles/page.css` and the views for the user's content (`design` says what to keep: the token names, the part markers, the selectors `adp.js` relies on). A placeholder look must not ship. `--content FILE` builds the views from a content file.
-4. `ADP check DIR` must pass: markers balance, ids valid and unique, every part has `data-part`.
+1. Run `ADP new assistant DIR --title "<name>" --by <your session name> --theme theme.glaze --catalog CATALOG` (`--slug`, `--content FILE`, `--data FILE|DIR` are optional). It writes the page into DIR (`index.html`, `content.js`, `parts/`, `styles/`; the template's `.txt` suffix is dropped) plus `seed.json` and `seed/`, and prints ONE publish object (`files` already carries the taken kit entries), the `take` list, a `design` note and the ordered `next` steps. Follow `next`.
+2. Replace the placeholder look and copy: write `styles/page.css` and the views for the user's content (`design` says what to keep: the token names, the part markers, the selectors `adp.js` relies on). A placeholder look must not ship. `--content FILE` builds the views from a content file.
+3. `ADP check DIR` must pass: markers balance, ids valid and unique, every part has `data-part`.
 
 ## 3. Publish
 

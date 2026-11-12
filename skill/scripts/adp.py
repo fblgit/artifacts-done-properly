@@ -414,6 +414,12 @@ def taken(src, ids, a):
     return out, code
 
 
+def real_name(p):
+    """A template keeps a `.txt` on files the artifact service would serve as pages (index.html.txt); the project gets the real name. A file whose own name has no other extension keeps its .txt."""
+    stem = p[:-4] if p.endswith('.txt') else p
+    return stem if stem != p and os.path.splitext(stem)[1] else p
+
+
 TIERS = {'minimal': 'starter', 'default': 'default', 'full': None}
 
 
@@ -439,8 +445,8 @@ def new(a):
     for layer in layers:
         src = os.path.join(TPL, layer)
         for p in tree(src):
-            if p != 'template.json': files[p] = os.path.join(src, p)
-    for p in meta.get('drop', []): files.pop(p, None)
+            if p != 'template.json': files[real_name(p)] = os.path.join(src, p)
+    for p in meta.get('drop', []): files.pop(real_name(p), None)
     files['adp.js'] = os.path.join(HERE, 'assets', 'adp.js')
     sub = lambda t: t.replace('{{title}}', title).replace('{{slug}}', slug)
     for p, src in sorted(files.items()):
