@@ -297,7 +297,7 @@ CTYPE = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascrip
 
 def propose(a):
     pos = A.bare(a[1:]); by, summary = A.opt(a, '--by'), A.opt(a, '--summary')
-    if len(pos) != 1 or not by or not summary: sys.exit('usage: adp.py propose DIR --by NAME --summary S [--retire ID --reason R ...]')
+    if len(pos) != 1 or not by or not summary: sys.exit('usage: adp.py propose DIR --by NAME --summary S [--retire ID --reason R ...]  (every deleted part id needs its own --retire ID --reason R pair, paired in order)')
     d = pos[0]; ad = adir(d); st = load_state(d)
     if not st: print(json.dumps({'error': 'no export yet', 'next': f'adp.py export {d} --url URL'})); return 2
     repo = repo_init(d); refs = st.get('refs') or {}
@@ -372,9 +372,10 @@ def hook_url(ti):
 
 def ack(a):
     pos = A.bare(a[1:]); src = A.opt(a, '--result')
-    raw = json.load(open(src)) if src else {}
+    raw = A.read_json(src, '--result') if src else {}
     if not src and not A.opt(a, '--proposal') and not sys.stdin.isatty():    # a result on stdin; --proposal alone reads nothing, so a piped shell does not hang
-        raw = json.loads(sys.stdin.read() or '{}')
+        try: raw = json.loads(sys.stdin.read() or '{}')
+        except ValueError as e: sys.exit(f'ack: the result on stdin is not JSON: {e}')
     if 'tool_input' in raw or '--hook' in a:                                  # the PostToolUse hook's stdin
         url = hook_url(raw.get('tool_input')); res = raw.get('tool_response') or raw.get('tool_result') or {}
         if isinstance(res, list):                            # content blocks: the text of the first that parses
@@ -427,7 +428,10 @@ def decide(kind, why):
 
 def gate(a):
     src = A.opt(a, '--input')
-    raw = json.load(open(src)) if src else json.load(sys.stdin)
+    if src: raw = A.read_json(src, '--input')
+    else:
+        try: raw = json.load(sys.stdin)
+        except ValueError: return A.emit(decide('allow', 'adp: the hook input is not JSON, so there is nothing to gate'))
     tool, ti = raw.get('tool_name', ''), raw.get('tool_input') or {}
     url = hook_url(ti)
     act = ti.get('action') or ('publish' if tool.endswith('Artifact') else '')

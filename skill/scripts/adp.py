@@ -53,7 +53,7 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
                                                     with them DIR.adp/incoming/, state.json, the nested repo (base/live/work), report.json,
                                                     live merged into work when nothing is held; ~/.adp/artifacts.json updated
   adp.py classify BASE.json LIVE.json INCOMING.json new/ours/theirs/applied/held/retired over parts and files (contract 4)
-  adp.py propose DIR --by NAME --summary S [--retire ID --reason R ...]
+  adp.py propose DIR --by NAME --summary S [--retire ID --reason R ...]   (every deleted part id needs its own --retire ID --reason R pair, paired in order)
                                                     local-to-remote incoming: the incoming/<pid> doc and its one ArtifactData batch;
                                                     exit 2 with the list when anything is held, a part is deleted unretired, or no export
   adp.py ack DIR [--result FILE | stdin] [--proposal PID]
@@ -217,14 +217,26 @@ def opt(a, name, default=None):
     return a[a.index(name) + 1] if name in a and a.index(name) + 1 < len(a) else default
 
 
+FLAGS = ('--dry-run', '--batches', '--yes', '--hook')      # the options that take no value
+
+
 def bare(a):
     """positional args: everything that is not a --flag or a flag's value"""
     out, skip = [], False
     for x in a:
         if skip: skip = False
+        elif x in FLAGS: pass
         elif x.startswith('--'): skip = True
         else: out.append(x)
     return out
+
+
+def read_json(path, what='file'):
+    """The JSON in a file the person named; a missing or malformed one is one line and exit 1, not a traceback."""
+    try:
+        with open(path, encoding='utf-8') as f: return json.load(f)
+    except OSError as e: sys.exit(f'{what}: cannot read {path}: {e.strerror}')
+    except ValueError as e: sys.exit(f'{what}: {path} is not JSON: {e}')
 
 
 def tmeta(name):
@@ -463,7 +475,7 @@ def new(a):
         if p == 'adp.js': shutil.copyfile(src, dst); continue
         with open(src, encoding='utf-8') as f, open(dst, 'w', encoding='utf-8') as g: g.write(sub(f.read()))
     built = build_content(d, content) if content else None
-    seed_file(d, opt(a, '--by', 'adp'), data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
+    seed_file(d, opt(a, '--by') or 'adp', data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
     design = meta.get('design') or (tmeta(meta['base']).get('design', '') if meta.get('base') else '')
     tk = list(dict.fromkeys(meta.get('take', []) + optall(a, '--theme') + optall(a, '--layout')))
     out = {'template': name, 'dir': d, 'title': title, 'slug': slug,
@@ -586,14 +598,15 @@ class Batch:
     """ArtifactData writes, each doc in its own file, printed as lists of at most 50 with `last` docs at the end."""
     def __init__(self, out, pins, dry=False):
         self.out, self.pins, self.w, self.unpinned, self.dry, self.bytes = out, pins, [], [], dry, 0
-        if not dry: os.makedirs(out, exist_ok=True)
 
     def put(self, op, coll, doc, data=None, exists=False):
         e = {'op': op, 'collection': coll, 'doc_id': doc}
         if op != 'delete':
             p = os.path.join(self.out, f"{coll.replace('/', '~')}__{doc}.json")
             self.bytes += len(json.dumps(data, ensure_ascii=False, indent=1).encode())
-            if not self.dry: json.dump(data, open(p, 'w'), ensure_ascii=False, indent=1); e['file_path'] = os.path.abspath(p)
+            if not self.dry:
+                os.makedirs(self.out, exist_ok=True)          # made with the first doc written, so a refused call leaves nothing behind
+                json.dump(data, open(p, 'w'), ensure_ascii=False, indent=1); e['file_path'] = os.path.abspath(p)
         k = f'{coll}/{doc}'
         if k in self.pins: e['if_version'] = self.pins[k]
         elif exists or op in ('update', 'delete'): self.unpinned.append(k)
@@ -687,12 +700,12 @@ def seed_given(d, data=None):
     return [(c, i, x) for (c, i), x in extra.items()] + [(c, i, x) for (c, i), x in over.items()], old
 
 
-def seed_file(d, by='adp', version='1', at=None, data=None, summary=None, role=''):
+def seed_file(d, by=None, version=None, at=None, data=None, summary=None, role=''):
     """Write DIR/seed.json (adp-seed/2, the index) and DIR/seed/pack-NNN.json (the docs, PACK bytes each, manifest/current the last doc):
     the page expands them when its db is empty and an editor opens it. --data docs given before are kept (replaced by id when given
     again). Unchanged docs keep the files as they are (so `files --since` does not re-send them); returns True when (re)written."""
     given, old = seed_given(d, data); had = read_seed(d)[1]
-    by, version = old.get('by', by), old.get('version', version)
+    by, version = by or old.get('by', 'adp'), version or old.get('version', '1')      # a value given wins; else the seed's own
     role, summary = role or old.get('role', ''), summary or old.get('summary')
     strip = lambda docs: [(c, i, {k: v for k, v in x.items() if k not in ('at', 'last_seen')}) for c, i, x in docs]
     docs, empty = seed_docs(d, by, version, at or old.get('at') or now(), given, role, summary)
@@ -723,6 +736,7 @@ def seed_file(d, by='adp', version='1', at=None, data=None, summary=None, role='
 
 def seed(a):
     d = bare(a[1:])[0] if bare(a[1:]) else sys.exit('usage: adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--batches] [--dry-run]')
+    if not os.path.isdir(d): sys.exit(f'seed: {d} is not a directory (adp.py new makes one)')
     at, dry = opt(a, '--at') or now(), '--dry-run' in a
     given, old = seed_given(d, data_docs(optall(a, '--data')))
     by, version = opt(a, '--by') or old.get('by', 'adp'), opt(a, '--version') or old.get('version', '1')
@@ -794,7 +808,7 @@ def guard(a, changed, deepest=None, existing=None):
     if hit: stop({'error': 'locked parts', 'parts': hit})
     if v['edit.require-hold'] is True and deepest is not None:
         if not opt(a, '--holds'): stop({'error': 'unheld', 'parts': sorted(deepest), 'note': 'edit.require-hold needs --holds'})
-        h = json.load(open(opt(a, '--holds')))
+        h = read_json(opt(a, '--holds'), '--holds')
         who = lambda x: (x.get('holder') if isinstance(x, dict) else x) or ''
         un = sorted(p for p in deepest if p in (existing or ()) and not who(h.get(p)))
         if un: stop({'error': 'unheld', 'parts': un})
@@ -813,7 +827,7 @@ def config_cmd(a):
         vals, chg = dict(doc.get('values') or {}), dict(doc.get('changed') or {})
         if key in CORE and val == CORE[key][1]: vals.pop(key, None); chg.pop(key, None)
         else: vals[key] = val; chg[key] = {'by': by, 'at': at}
-        pins = json.load(open(opt(a, '--pins'))) if opt(a, '--pins') else {}
+        pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
         b = Batch(opt(a, '--out', 'config.adp'), pins)
         b.put('set', 'config', 'current', {'schema': 'adp-config/1', 'at': at, 'by': by, 'values': vals, 'changed': chg}, exists=True)
         if cvalues(doc)['log.data-changes'] is not False:
@@ -832,7 +846,7 @@ def hold(a):
     by, hrs = opt(a, '--by', 'agent'), float(opt(a, '--hours', '2'))
     guard(a, pos[1:])
     until = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=min(hrs, 2))).strftime('%Y-%m-%dT%H:%M:%SZ')
-    pins = json.load(open(opt(a, '--pins'))) if opt(a, '--pins') else {}
+    pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
     b = Batch(opt(a, '--out', pos[0].rstrip('/') + '.adp'), pins)
     for p in pos[1:]: b.put('update', 'parts', p, {'holder': by, 'hold_until': until})
     b.put('update' if f'agents/{agent_id(by)}' in pins else 'set', 'agents', agent_id(by), {'last_seen': now(), 'holds': pos[1:]})
@@ -843,12 +857,12 @@ def record(a):
     pos = bare(a[1:])
     if len(pos) != 2 or not opt(a, '--seq') or not opt(a, '--summary'):
         sys.exit('usage: adp.py record OLD.json DIR --seq N --by NAME --summary S [--version V] [--threads T,..] [--pins P.json]')
-    o = json.load(open(pos[0])); o = o.get('data', o) if 'parts' not in o else o      # a saved doc may wrap its fields in data
+    o = read_json(pos[0], 'OLD.json'); o = o.get('data', o) if 'parts' not in o else o      # a saved doc may wrap its fields in data
     d = pos[1]; n = manifest_dir(d)
     by, at, version = opt(a, '--by', 'agent'), now(), opt(a, '--version', '')
     seq, summary = opt(a, '--seq').zfill(6), opt(a, '--summary')
     threads = [t for t in (opt(a, '--threads', '') or '').split(',') if t]
-    pins = json.load(open(opt(a, '--pins'))) if opt(a, '--pins') else {}
+    pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
     real = lambda m: {k: v for k, v in m.get('parts', {}).items() if not k.startswith(REST)}
     op, np_, moved, cont = real(o), real(n), [], content_of(d)
     ch = {p for p in np_ if p not in op or op[p] != np_[p]} | {p for p in op if p not in np_}
@@ -876,7 +890,7 @@ def record(a):
 def req_dump(path):
     """A dump of a collection: a list of docs ({id|doc_id, data, version} as ArtifactData returns them, or bare docs with id),
     or an {id: doc} map. -> {id: (doc, version or None)}"""
-    raw = json.load(open(path))
+    raw = read_json(path, 'DUMP.json')
     if isinstance(raw, dict) and isinstance(raw.get('documents', raw.get('docs')), list): raw = raw.get('documents', raw.get('docs'))
     items = raw.items() if isinstance(raw, dict) else [(x.get('id') or x.get('doc_id') or '', x) for x in raw if isinstance(x, dict)]
     out = {}
@@ -893,7 +907,8 @@ def rstate(d):
 
 
 def requests_cmd(a):
-    use = 'usage: adp.py requests DUMP.json [--ack RID --by NAME | --progress RID --text T | --done RID --response FILE --changed a,b --version V] [--out DIR]'
+    use = ('usage: adp.py requests DUMP.json [--ack RID --by NAME | --progress RID --text T [--by NAME] | --done RID --response FILE [--changed a,b] [--version V] [--turns TURNS.json] [--by NAME]]'
+           ' [--pins P.json] [--out DIR]')
     pos = bare(a[1:])
     if len(pos) != 1: sys.exit(use)
     docs, by, at = req_dump(pos[0]), opt(a, '--by', 'agent'), now()
@@ -910,7 +925,7 @@ def requests_cmd(a):
     if not rid or rid.startswith('--'): sys.exit(use)
     if rid not in docs: sys.exit(f'{rid}: not in {pos[0]}')
     d, ver = docs[rid]
-    pins = json.load(open(opt(a, '--pins'))) if opt(a, '--pins') else {}
+    pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
     if ver is not None: pins.setdefault(f'requests/{rid}', ver)
     b = Batch(opt(a, '--out', 'requests.adp'), pins)
     doing = f"{rid} ({d.get('lane', '')})"
