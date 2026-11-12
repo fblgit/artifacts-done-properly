@@ -2,7 +2,8 @@
 """adp/1 parts tool (artifact-dataplane skill): part markers -> per-part hashes -> manifest -> diff.
 
   adp.py setup [--scope user|project|local] [--dry-run] [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
-  adp.py init [DIR]                                 DIR/.adp/config.json for project onboarding (idempotent)
+  adp.py init [DIR]                                 DIR/.adp/config.json for project onboarding; also registers the project (name, path) in ~/.adp/projects/
+  adp.py projects                                   the registered projects: name, scope, path
   adp.py log [-n N]                                 the last N lines of log.jsonl (every command appends one; project .adp/ else ~/.adp/)
   adp.py check    PAGE|DIR                          markers balance, ids valid and unique, each part has data-part="<id>"
   adp.py manifest PAGE|DIR [--file NAME=PATH ...]   manifest JSON on stdout (schema, page_hash, parts, files, parents)
@@ -949,12 +950,47 @@ def log_cmd(a):
     return 0
 
 
+def project_reg(d):
+    """The registry entry of project folder d in ADP_HOME/projects/<name>/config.json, or None."""
+    root = os.path.join(ADP_HOME, 'projects')
+    for n in sorted(os.listdir(root)) if os.path.isdir(root) else []:
+        try: c = json.load(open(os.path.join(root, n, 'config.json')))
+        except (OSError, ValueError): continue
+        if c.get('path') == d: return os.path.join(root, n, 'config.json')
+    return None
+
+
+def register_project(d, scope):
+    """Write the project's config into ADP_HOME/projects/<name>/config.json (path, scope); one entry per folder, updated in place."""
+    d = os.path.abspath(d); p = project_reg(d)
+    if not p:
+        base = re.sub(r'[^a-z0-9._-]+', '-', os.path.basename(d).lower()).strip('-') or 'project'; n, i = base, 2
+        while os.path.exists(os.path.join(ADP_HOME, 'projects', n)): n, i = f'{base}-{i}', i + 1
+        p = os.path.join(ADP_HOME, 'projects', n, 'config.json')
+    old = json.load(open(p)) if os.path.isfile(p) else {}
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    json.dump({**old, 'schema': 'adp-project/1', 'name': os.path.basename(d), 'path': d, 'scope': scope, 'created': old.get('created', now()), 'at': now()}, open(p, 'w'), indent=1)
+    return p
+
+
+def projects_cmd(a):
+    root = os.path.join(ADP_HOME, 'projects'); rows = []
+    for n in sorted(os.listdir(root)) if os.path.isdir(root) else []:
+        try: c = json.load(open(os.path.join(root, n, 'config.json')))
+        except (OSError, ValueError): continue
+        rows.append((c.get('name', n), c.get('scope', ''), c.get('path', '') + ('' if os.path.isdir(c.get('path', '')) else '  (missing)')))
+    if not rows: print('no projects registered (run adp.py init in a project folder)'); return 0
+    for r in rows: print('\t'.join(r))
+    return 0
+
+
 def init_cmd(a):
     d = os.path.abspath((bare(a[1:]) or ['.'])[0]); p = os.path.join(d, '.adp', 'config.json')
-    if os.path.isfile(p): print(f'{p} exists'); return 0
+    reg = register_project(d, 'project')
+    if os.path.isfile(p): print(f'{p} exists; registered in {reg}'); return 0
     os.makedirs(os.path.dirname(p), exist_ok=True)
     json.dump({'schema': 'adp-project/1', 'name': os.path.basename(d), 'created': now()}, open(p, 'w'), indent=1)
-    print(f'created {p}'); return 0
+    print(f'created {p}; registered in {reg}'); return 0
 
 
 def ref_version(skill_md):
@@ -982,7 +1018,7 @@ def setup_cmd(a):
     gi = os.path.join(cwd, '.gitignore') if scope != 'user' else None
     block = '\n'.join([BEGIN, 'For artifacts, ADP or the catalog, load the `adp` skill and run `python3 -I ' + os.path.abspath(__file__) + ' ...` for its commands.', END])
     print(f'setup {scope}{" (dry run)" if dry else ""}: {len(names)} skills ({", ".join(names)}) -> {skills}; skill_root {HERE}')
-    print(f'config: {cfg}'); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
+    print(f'config: {cfg}' + ('' if scope == 'user' else f'; registry {os.path.join(ADP_HOME, "projects")}/<name>/config.json (path {cwd})')); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
     if dry: return 0
     for n in names:
@@ -993,6 +1029,7 @@ def setup_cmd(a):
     c.update({'schema': 'adp-setup/1', 'scope': scope, 'skill_root': HERE, 'skills': names,
               'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md')))}, 'at': now()})
     json.dump(c, open(cfg, 'w'), indent=1)
+    if scope != 'user': register_project(cwd, scope)
     if not yes: return 0
     os.makedirs(os.path.dirname(ptr), exist_ok=True)
     old = open(ptr).read() if os.path.isfile(ptr) else ''
@@ -1011,7 +1048,7 @@ adp_loop.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'log': log_cmd}
+    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):
