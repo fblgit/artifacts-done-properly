@@ -32,7 +32,7 @@ Use `--help` or a subcommand with no arguments to see its usage; never guess a s
 | to edit or publish an artifact others also work on, or answer its comments | `adp-edit` |
 | an existing artifact put on ADP (adopt it, move it to adp/2) | `adp-adopt` |
 
-If a road skill is not installed yet, run setup first. Each road is complete on its own; the full standard is `catalog/kit/guides/artifact-dataplane.md` in this skill's folder (read it only when a road leaves a question open).
+If a road skill is not installed yet, run setup first. Each road is complete on its own; the full standard is `catalog/kit/guides/artifact-dataplane.md` in this skill's folder (read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
 
 ## Log
 

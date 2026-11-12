@@ -7,28 +7,27 @@ metadata:
 
 # Adopt an existing artifact
 
-Why: a page without part ids has no stable anchors, and its history lives only in versions. Adoption adds the dataplane without changing how the page looks or behaves.
+Why: a page without part ids has no stable anchors, and its history lives only in versions. Adoption adds the part ids and the db without changing how the page looks or behaves.
 
-`ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. Read the artifact's latest version first (Artifact `read`), save it to a folder, and tell the owner what you are about to do.
+`ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. Read the artifact's latest version first (Artifact `read`), save it into a folder, and tell the owner what you are about to do.
 
-## Step A: adp/1 (markers on the existing page)
+## Step A: markers on the existing page
 
-1. Wrap every view and its main sections in markers `<!-- part:view.section -->` ... `<!-- /part:view.section -->` (ids lowercase kebab, dot-separated, never changed later; styles and shared scripts become parts `page.style`, `page.script`). Add `data-part="<id>" data-comment-target` and a heading to each rendered root.
-2. `ADP check DIR` passes. Note: `adp.py` accepts only the adp/2 directory layout and refuses a single .html page, so a one-file page must reach Step B's layout before it can be checked or recorded: UNVERIFIED how to check a single-file adp/1 page with this tool version.
+1. Wrap every view and its main sections in markers `<!-- part:view.section -->` ... `<!-- /part:view.section -->` (ids lowercase kebab, dot-separated, never changed later; styles and shared scripts become parts such as `page.style`, `page.script`). Add `data-part="<id>"` and `data-comment-target` to each rendered root.
+2. `ADP check PAGE|DIR` takes a single page or a folder: it must pass. `ADP manifest PAGE|DIR` prints the part hashes.
 3. Publish with `capabilities: {db: {rules: [{path: "", read: "view", write: "admin"}]}, user: {}}` and a `label`.
-4. Seed the db in pinned batches (see `adp-edit`): `manifest/current`, `parts/*`, `changes/000001` (summary "adp/1 adopted"), `decisions/*` (owner decisions so far, quoted verbatim) and `threads/*` (open threads). Tell the owner in one line.
+4. Seed the database: `ADP seed DIR --by <you> --data FILE|DIR` writes `seed.json` and `seed/` for the page to expand on its first open by an editor; `--batches` prints ArtifactData batches instead. Tell the owner in one line. UNVERIFIED: `seed` on a single-file page was not run here.
 
-## Step B: move to adp/2
+## Step B: move to the multi-file layout
 
-1. Split the page into files: a thin `index.html` shell, `adp.js`, `content.js`, `styles/*`, `parts/*`. Take the shared runtime and shell template from the catalog by reference (`adp-catalog`: entry `runtime.adp`, template `adp2-shell`).
-2. Move copy into `content/<part id>` docs with `content.js` as the fallback.
-3. Declare `comments: {customAnchors: true}` (full form) and map the old CSS-path threads in the page's `legacy {css anchor: part id}`.
-4. Prove parity: render old and new in a headless browser, compare every element's computed style and box in every view and state, at the widths and themes in use. Mutate the new build once to show the comparison catches a difference. No parity proof, no publish.
-5. Publish with a label. Record in pinned batches, retire the old part ids (delete their `parts/` docs and list them as removed in `changes/`).
-6. Ask the owner to open the page and enter comment mode once, then read `checks/latest` (`anchors.unknown` lists unmapped old threads).
+1. Start a reference project with `ADP new starter REF --catalog CATALOG` (rename its `.txt` files, see `adp-new`) and copy its shell, `adp.js` and `content.js` structure: a thin `index.html`, `adp.js`, `content.js`, `styles/*`, `parts/*`.
+2. Move the page's own copy and views into those files; use `ADP new starter DIR --content FILE` to build views from a content file, then `--data` for records.
+3. Prove parity: render old and new in a headless browser and compare every element's computed style and box in every view and state, at the widths and themes in use. No parity proof, no publish.
+4. `ADP check DIR`, publish with `ADP files DIR`, then `ADP export` and `ADP record` (road `adp-edit`).
+5. Ask the owner to open the page once as an editor so the seed expands.
 
 ## Rules
 
 - Never rename a published part id.
 - Do not change the page's look while adopting; restyling is a separate change under `adp-edit`.
-- Untested on other hosts: customAnchors, db rules, `if_version`, server-side file copy. Check each before relying on it outside claude.ai.
+- UNVERIFIED on other hosts: db rules, `if_version`, server-side file copy.
