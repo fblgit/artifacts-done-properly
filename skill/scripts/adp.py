@@ -414,6 +414,15 @@ def taken(src, ids, a):
     return out, code
 
 
+def base_chain(name):
+    """The template and every template under it, base first (default -> assistant -> starter): each layer overrides the one before."""
+    out = []
+    while name:
+        if name in out: sys.exit(f'template {name}: base loop ({" -> ".join(out + [name])})')
+        out.insert(0, name); name = tmeta(name).get('base')
+    return out
+
+
 def real_name(p):
     """A template keeps a `.txt` on files the artifact service would serve as pages (index.html.txt); the project gets the real name. A file whose own name has no other extension keeps its .txt."""
     stem = p[:-4] if p.endswith('.txt') else p
@@ -440,7 +449,7 @@ def new(a):
         if not os.path.isfile(content): sys.exit(f'--content: no file {content}')
         if name != 'starter' and tmeta(name).get('base') != 'starter': sys.exit('--content needs the starter or a template based on it')
         read_content(content)       # a malformed file fails before anything is written
-    layers = ([meta['base']] if meta.get('base') else []) + [name]
+    layers = base_chain(name)
     files = {}
     for layer in layers:
         src = os.path.join(TPL, layer)
