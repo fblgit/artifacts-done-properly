@@ -109,7 +109,9 @@ function Tabs() {
   const s = useS();
   const n = g => g === 'all' ? s.entries.length : s.entries.filter(e => e.group === g).length;
   const groups = ['all', ...GROUPS.filter(g => n(g)), ...[...new Set(s.entries.map(e => e.group))].filter(g => !GROUPS.includes(g))];
-  return groups.map(g => html`<button type="button" class="tab" aria-pressed=${s.group === g} onClick=${() => set({ group: g })}>${g === 'all' ? 'All' : g}<span class="c-n">${n(g)}</span></button>`);
+  const home = () => { open(null); set({ group: 'all', q: '' }); scrollTo(0, 0); };
+  return [html`<button type="button" class="tab tab-home" aria-pressed=${!s.sel} aria-label="Home: the catalog's start page" onClick=${home}><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg>Home</button>`]
+    .concat(groups.map(g => html`<button type="button" class="tab" aria-pressed=${s.sel ? false : s.group === g} onClick=${() => { if (s.sel) open(null); set({ group: g }); }}>${g === 'all' ? 'All' : g}<span class="c-n">${n(g)}</span></button>`));
 }
 function Meta() {
   const s = useS();
