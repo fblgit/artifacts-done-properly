@@ -1,7 +1,7 @@
 /* part:page.script.kit.assist */
 /**
  * Assist engine
- * Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session moves the request through ack, working (with progress lines) and done (response, changed parts, version), and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns its id, title, hash and a 600-character quote (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.
+ * Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session moves the request through ack, working (with progress lines) and done (response, changed parts, version), and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.
  *
  * The engine behind a page that works with Claude out of the box (docs/assist.md is the contract, word for word). People pick a block, say what they want, and
  * either send it to a Claude Code session watching the artifact (a request doc plus a comment that wakes the session) or ask Claude at once through `sample` (a stored
@@ -9,7 +9,7 @@
  * presence line are other entries built over this API only.
  *
  * API:
- *   Kit.assist.start({db, user, comments, sample, downloads, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed}) -> engine
+ *   Kit.assist.start({db, user, comments, sample, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed}) -> engine
  *     every handle optional and may be a promise (claude.use(...) as it is); page = window.ADP (db, user, config); titles {part id: title} and manifest
  *     (manifest/current: parts {id: hash}) name and hash picked blocks; words {lane: word}; frame replaces the Ask now framing; onPick(pick) after the shortcut;
  *     shortcut false turns the key off; no db -> an in-memory store (seed {path: doc}), nothing leaves the page.
@@ -28,7 +28,7 @@
  *   engine.state(req)             'queue' | 'ack' | 'working' | 'done';  engine.lanes() the offered lanes;  engine.word(lane);  engine.destroy()
  *   Kit.assist.memory(seed) -> a db-shaped in-memory handle;  Kit.assist.parseShortcut('Mod+Shift+K');  Kit.assist.state(req)
  *
- * Keeps: the switches (ADP.config.define('assist', ...) when the runtime exists), canSendToClaude re-checked every 30 s, the comment text under 4 KiB with its trailer last,
+ * Keeps: the switches (ADP.config.define('assist', ...) when the runtime exists), canSendToClaude re-checked every 30 s, the comment text within 4000 bytes with its trailer last,
  * a failed send deleting its request doc, every write logged as changes/d-<ms> unless log.data-changes is off (not in the memory path), the shortcut ignored while typing.
  *
  * The picker: the page dims, the [data-part] under the pointer is ringed with its title, arrows move between blocks, Enter or a click picks, Esc leaves; announced through role=status.
@@ -42,7 +42,7 @@
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
  * @requires  kit.tokens, kit.dom
  * @provides  Kit.assist.start, Kit.assist.memory, Kit.assist.parseShortcut
- * @config    Kit.assist.start(opts) | db, user, comments, sample, downloads, config (handles or the promises claude.use returns), page (window.ADP), project, now, titles {part id: title}, manifest (for hashes), words {lane: word}, frame (the Ask now framing), onPick(pick) after the shortcut, shortcut false, pingTimeout, seed (the memory store); returns the engine
+ * @config    Kit.assist.start(opts) | db, user, comments, sample, config (handles or the promises claude.use returns), page (window.ADP), project, now, titles {part id: title}, manifest (for hashes), words {lane: word}, frame (the Ask now framing), onPick(pick) after the shortcut, shortcut false, pingTimeout, seed (the memory store); returns the engine
  * @config    assist.enabled | switch, bool, default true: the lane exists on the page (button, shortcut, panel)
  * @config    assist.lanes | switch, list, default ask, task, fix, design: the lanes the composer offers
  * @config    assist.ask-now | switch, bool, default true: offer sample when granted
@@ -373,8 +373,8 @@ function start(o) {
       sr.setAttribute('role', 'status'); ring.append(tag); ring.hidden = true; dim.setAttribute('aria-hidden', 'true');
       document.body.append(dim, ring, hint, sr);
       const back = document.activeElement;
-      const parts = () => [...document.querySelectorAll('[data-part]')].filter(e => !e.closest('[data-uncommentable]') && (e.offsetWidth || e.offsetHeight));
-      const under = n => { const p = n && n.closest ? n.closest('[data-part]') : null; return p && !p.closest('[data-uncommentable]') ? p : null; };
+      const parts = () => [...document.querySelectorAll('[data-part]')].filter(e => !e.closest('[data-uncommentable], [data-assist-ui]') && (e.offsetWidth || e.offsetHeight));
+      const under = n => { const p = n && n.closest ? n.closest('[data-part]') : null; return p && !p.closest('[data-uncommentable], [data-assist-ui]') ? p : null; };
       let cur = null;
       const show = e => {
         cur = e; if (!e) { ring.hidden = true; return; }
