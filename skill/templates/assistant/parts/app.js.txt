@@ -427,15 +427,25 @@ const THEME_ICO = {
   light: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8"/>',
   dark: '<path d="M20 14.5A8.5 8.5 0 119.5 4a7 7 0 0010.5 10.5z"/>'
 };
-const themeMode = () => { try { const v = localStorage.getItem(THEME_KEY); return v === 'light' || v === 'dark' || v === 'system' ? v : null; } catch (e) { return null; } };
-const applyTheme = () => { const m = themeMode(), h = document.documentElement; if (!m) return; if (m === 'system') h.removeAttribute('data-theme'); else h.setAttribute('data-theme', m); };
-const paintTheme = () => { if (!themeBtn) return; const m = themeMode() || 'system'; themeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + THEME_ICO[m] + '</svg>';
+/* Colour: two inputs, one rule. The page's own default is the Settings value look.mode (auto, light, dark), which the runtime writes to data-theme.
+   The viewer's own pick from this button (system, light, dark) is kept in this browser and wins over it. Changing look.mode in Settings drops that pick,
+   so the newest explicit choice is the one shown. The last look.mode seen is kept in the browser too, so the first paint already has the right colour. */
+const MODE_KEY = 'adp-look-mode';
+const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} return null; };
+const personal = () => { const v = ls(THEME_KEY); return v === 'light' || v === 'dark' || v === 'system' ? v : null; };
+const themeMode = () => personal() || (ls(MODE_KEY) === 'light' ? 'light' : ls(MODE_KEY) === 'dark' ? 'dark' : 'system');
+const applyTheme = () => { const m = themeMode(), h = document.documentElement, cur = h.getAttribute('data-theme');
+  if (m === 'system') { if (cur !== null) h.removeAttribute('data-theme'); } else if (cur !== m) h.setAttribute('data-theme', m); };
+const paintTheme = () => { if (!themeBtn) return; const m = themeMode(); themeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + THEME_ICO[m] + '</svg>';
   themeBtn.setAttribute('aria-label', 'Colour theme: ' + m + '. Press to change.'); themeBtn.title = 'Colour theme: ' + m; };
+applyTheme();
 if (themeBtn) {
-  themeBtn.addEventListener('click', () => { const next = {system: 'light', light: 'dark', dark: 'system'}[themeMode() || 'system']; try { localStorage.setItem(THEME_KEY, next); } catch (e) {} applyTheme(); paintTheme(); });
-  if (window.ADP && ADP.config) ADP.config.on('look.mode', () => setTimeout(applyTheme, 0));
-  applyTheme(); paintTheme();
+  themeBtn.addEventListener('click', () => { ls(THEME_KEY, {system: 'light', light: 'dark', dark: 'system'}[themeMode()]); applyTheme(); paintTheme(); });
+  paintTheme();
 }
+/* The runtime rewrites data-theme from look.mode each time the settings arrive or change; put the rule back at once, with no flash between. */
+new MutationObserver(applyTheme).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+if (window.ADP && ADP.config) ADP.config.on('look.mode', v => { const seen = ls(MODE_KEY); if (seen !== null && seen !== v) ls(THEME_KEY, null); ls(MODE_KEY, v); applyTheme(); paintTheme(); });
 /* The header's pop-overs fold back: a press outside What changed or the how-to-start note closes it, and so does Escape. */
 const foldPopovers = e => {
   const wc = $('#wc'), pr = $('#presence');

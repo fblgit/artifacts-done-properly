@@ -225,7 +225,7 @@ class HomeExamplesAndMindMap(unittest.TestCase):
         with open(os.path.join(TPL, 'assistant', 'index.html.txt'), encoding='utf-8') as f:
             html = f.read()
         self.assertIn('id="themeBtn"', html)
-        for needle in ("'adp-theme'", "light: 'dark'", "addEventListener('pointerdown', foldPopovers)", "e.key === 'Escape'", "look.mode"):
+        for needle in ("'adp-theme'", "light: 'dark'", "addEventListener('pointerdown', foldPopovers)", "e.key === 'Escape'", "look.mode", "adp-look-mode", "MutationObserver(applyTheme)"):
             self.assertIn(needle, app, needle)
 
     def test_ideas_are_grouped_into_kinds_with_a_recommended_one_and_an_icon_each(self):
