@@ -14317,7 +14317,7 @@
   {
    "kind": "component",
    "group": "Patterns",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "pattern.mindmap",
    "name": "Mind map",
@@ -14337,14 +14337,14 @@
     {
      "path": "kit/patterns/mindmap.js",
      "role": "script",
-     "sha256": "229d6fbd5ede3a6295a068b3fd93d9aa5a2bb20214a1f8d2a6147e3d7c70b59c",
-     "bytes": 30405
+     "sha256": "df38b5ca16b649b459032bb3dee8a2c30d4892a9cac802eb422e6b4749934eea",
+     "bytes": 33759
     },
     {
      "path": "kit/patterns/mindmap.css",
      "role": "style",
-     "sha256": "c6313d9d4c69b52af027a878c15307b8f4c010156744f205f974a603d3fa4a90",
-     "bytes": 5825
+     "sha256": "f9d265d802ef506efc2d2d293b05c1288757c00fa1d38fa1ffad9a4e0bec529e",
+     "bytes": 5976
     },
     {
      "path": "kit/samples/mindmap.json",
@@ -14404,8 +14404,10 @@
      "what": "the pointer drag with a drop line, and a Move to menu that does the same without a drag"
     }
    ],
-   "changed": [],
-   "hash": "aa1b020923a1",
+   "changed": [
+    "0.1.1: layout 'free': nodes can carry x and y and a drag drops a node, with its subtree, anywhere on the map; the default stays the tidy tree."
+   ],
+   "hash": "acd4cc5aa3fb",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-sonnet-5-5"
   }
