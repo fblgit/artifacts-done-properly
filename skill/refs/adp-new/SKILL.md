@@ -36,7 +36,7 @@ Default to the assistant when people and Claude use the page together. Ask the u
 
 ## 4. The one-time editor open (seeds the database)
 
-The page expands `seed.json` and `seed/` into the database itself, and only when an editor opens it. After the first publish tell the user in one line: "Open the artifact once as the editor." A session that works alone (no person to open it) runs `ADP seed DIR --batches` and writes the printed ArtifactData batches itself. Without either the db stays empty: not a failure, only unseeded.
+The page expands `seed.json` and `seed/` into the database itself, and only when an editor opens it. After the first publish tell the user in one line: "Open the artifact once as the editor." A session that cannot count on a person opening it soon (unattended, scheduled, or the owner is away) does not wait: it runs `ADP seed DIR --batches` and writes the printed ArtifactData batches itself. Without either the db stays empty: not a failure, only unseeded.
 
 ## Page code
 
