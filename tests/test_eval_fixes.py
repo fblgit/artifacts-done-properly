@@ -118,6 +118,7 @@ class ThemeTags(Cmd):
                 tag = f'<link rel="stylesheet" href="{e["fonts"]}">'
                 self.assertEqual(html.count(tag), 1)
                 self.assertLess(html.index(tag), html.index('href="styles/page.css"'))
+                self.assertNotIn('Bricolage+Grotesque', html)       # the template's placeholder fonts go: the theme brings its own
                 self.assertEqual(self.run_adp('check', self.p(d)).returncode, 0)
 
     def test_take_prints_the_fonts_of_the_themes_it_takes(self):

@@ -482,6 +482,9 @@ def installed_index(src, take):
             'entries': [{k: by[i][k] for k in INSTALLED if k in by[i]} if i in by else {'id': i} for i in order]}
 
 
+STARTER_FONTS = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap'    # the templates' placeholder fonts (index.html.txt)
+
+
 def add_kit_tags(d, files, fonts=()):
     """link/script tags in DIR/index.html for the taken .css/.js files it does not load yet. A theme (tokens only) goes after
     styles/page.css so it wins over the starter's placeholder tokens; other stylesheets go before it, so the page's own rules win;
@@ -493,6 +496,7 @@ def add_kit_tags(d, files, fonts=()):
     js = [x for x in files if x.endswith('.js') and f'"{x}"' not in html]
     fonts = [u for u in dict.fromkeys(fonts) if f'"{u}"' not in html]
     link = lambda xs: ''.join(f'<link rel="stylesheet" href="{x}">\n' for x in xs)
+    if fonts: new = new.replace(link([STARTER_FONTS]), '', 1)      # a theme brings its own families: the starter's placeholder fonts would load for nothing
     if page in new:
         new = new.replace(page, link(fonts) + link(x for x in css if not x.startswith('kit/themes/')) + page + ''.join('\n' + link([x]).rstrip('\n') for x in css if x.startswith('kit/themes/')), 1)
     if js and '<script src="parts/app.js"></script>' in new:
