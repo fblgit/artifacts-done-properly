@@ -62,6 +62,13 @@ kbd{font:600 12px var(--f-mono);padding:1px 6px;border:1px solid var(--rule);bor
   .top .wc-body{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:60px;width:auto}
   .top-presence .kit-pr-btn{min-height:36px}
 }
+/* The how-to-start note is a small pop-over under the session line, not a block that pushes the header down */
+.top .top-presence{position:relative}
+.top-presence .kit-pr-nudge{position:absolute;z-index:25;top:calc(100% + 8px);right:0;width:min(360px,calc(100vw - 32px));padding:12px 14px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow)}
+.top-presence .kit-pr-nt{font-size:14px}
+.top-presence .kit-pr-sm{display:none}
+.top-presence .kit-pr-cmd code{flex-basis:12rem}
+@container top (max-width:760px){.top-presence .kit-pr-nudge{left:0;right:0;width:auto}}
 /* /part:page.style.assist */
 /* Home examples: a list of ideas beside one composer */
 .ex-head h3{margin:0 0 4px}
