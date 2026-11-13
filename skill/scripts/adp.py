@@ -444,6 +444,20 @@ def real_name(p):
 TIERS = {'minimal': 'starter', 'default': 'default', 'full': None}
 
 
+MY_CATALOG = ('id', 'name', 'kind', 'group', 'summary', 'version', 'status', 'tags', 'requires')
+
+
+def catalog_index(src):
+    """The owner's catalog.json, from a local file or from the copy `catalog` fetched into ~/.adp, cut to what a page lists
+    (id, name, kind, group, summary, version, status, tags, requires), or None when there is none on disk."""
+    if not src or src == '-': return None
+    p = src if os.path.isfile(src) else os.path.join(cat_dir(src), 'catalog.json') if CAT_URL.match(src) else None
+    if not p or not os.path.isfile(p): return None
+    c = read_json(p, 'catalog')
+    return {'schema': 'my-catalog/1', 'url': c.get('url') or (src if CAT_URL.match(src) else ''), 'ver': c.get('ver') or '', 'built': c.get('built') or '',
+            'entries': [{k: e[k] for k in MY_CATALOG if k in e} for e in c.get('entries', [])]}
+
+
 def new(a):
     pos = bare(a[1:]); tier = opt(a, '--tier')
     if '--tier' in a:
@@ -478,6 +492,11 @@ def new(a):
         if p == 'adp.js': shutil.copyfile(src, dst); continue
         with open(src, encoding='utf-8') as f, open(dst, 'w', encoding='utf-8') as g: g.write(sub(f.read()))
     built = build_content(d, content) if content else None
+    if any(tmeta(l).get('my_catalog') for l in layers):     # the My catalog tab lists this file; without a catalog on disk the tab says so
+        mc = catalog_index(opt(a, '--catalog') or saved_catalog())
+        if mc:
+            if opt(a, '--url'): mc['url'] = opt(a, '--url')       # the link the owner gave wins over the one inside the file
+            with open(os.path.join(d, 'my-catalog.json'), 'w', encoding='utf-8') as f: json.dump(mc, f, ensure_ascii=False, separators=(',', ':'))
     seed_file(d, opt(a, '--by') or 'adp', data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
     design = meta.get('design') or (tmeta(meta['base']).get('design', '') if meta.get('base') else '')
     tk = list(dict.fromkeys(meta.get('take', []) + optall(a, '--theme') + optall(a, '--layout')))
