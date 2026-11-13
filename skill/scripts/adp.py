@@ -482,6 +482,25 @@ def installed_index(src, take):
             'entries': [{k: by[i][k] for k in INSTALLED if k in by[i]} if i in by else {'id': i} for i in order]}
 
 
+def add_kit_tags(d, files):
+    """link/script tags in DIR/index.html for the taken .css/.js files it does not load yet. A theme (tokens only) goes after
+    styles/page.css so it wins over the starter's placeholder tokens; other stylesheets go before it, so the page's own rules win;
+    scripts go before parts/app.js. True when the page changed."""
+    p = os.path.join(d, 'index.html')
+    with open(p, encoding='utf-8') as f: html = f.read()
+    new, page = html, '<link rel="stylesheet" href="styles/page.css">'
+    css = [x for x in files if x.endswith('.css') and f'"{x}"' not in html]
+    js = [x for x in files if x.endswith('.js') and f'"{x}"' not in html]
+    link = lambda xs: ''.join(f'<link rel="stylesheet" href="{x}">\n' for x in xs)
+    if page in new:
+        new = new.replace(page, link(x for x in css if not x.startswith('kit/themes/')) + page + ''.join('\n' + link([x]).rstrip('\n') for x in css if x.startswith('kit/themes/')), 1)
+    if js and '<script src="parts/app.js"></script>' in new:
+        new = new.replace('<script src="parts/app.js"></script>', ''.join(f'<script src="{x}"></script>\n' for x in js) + '<script src="parts/app.js"></script>', 1)
+    if new == html: return False
+    with open(p, 'w', encoding='utf-8') as f: f.write(new)
+    return True
+
+
 def new(a):
     pos = bare(a[1:]); tier = opt(a, '--tier')
     if '--tier' in a:
@@ -537,6 +556,9 @@ def new(a):
         t, code = taken(src, tk, a)
         if code: emit(t); sys.exit(2)
         out['publish']['files'].update(t['files']); out['catalog'] = t['catalog']; out['entries'] = t['entries']
+        asked = optall(a, '--theme') + optall(a, '--layout')
+        if asked and add_kit_tags(d, taken(src, asked, a)[0]['files']):       # a theme or layout asked for is served and also loaded: its tags go into index.html
+            seed_file(d, opt(a, '--by') or 'adp', data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
     out['next'] = ['adp.py check ' + d,
                    'Design it: read `design` above, take a theme and the layouts the content needs from the catalog, then write page.css and the views for this content (a script that emits them beats typing)' if design and not built else '',
                    'Artifact publish with the `publish` arguments (first publish: add icon; label "adp/2 start"); its files already carry the kit entries' if merged else 'Artifact publish with the `publish` arguments (first publish: add icon; label "adp/2 start")',

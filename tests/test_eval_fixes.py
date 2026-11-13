@@ -95,3 +95,13 @@ class EvalFixes(Cmd):
         r = self.run_adp('check', d)
         self.assertEqual(r.returncode, 1)
         self.assertIn('ghost.part', r.stdout + r.stderr)
+
+
+class ThemeTags(Cmd):
+    def test_new_with_a_theme_links_it_after_the_page_css(self):
+        real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')
+        self.ok('new', 'starter', 'pg', '--theme', 'theme.glaze', '--catalog', real, '--url', KITURL)
+        html = open(self.p('pg', 'index.html'), encoding='utf-8').read()
+        self.assertEqual(html.count('href="kit/themes/glaze.css"'), 1)
+        self.assertLess(html.index('href="styles/page.css"'), html.index('href="kit/themes/glaze.css"'))
+        self.assertEqual(self.run_adp('check', self.p('pg')).returncode, 0)
