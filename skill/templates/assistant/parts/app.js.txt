@@ -190,39 +190,74 @@ function mountMyCatalog(){
    A prompt that needs the person's choice says to ask it in the response and stop: a request ends at its response, and the person's answer reopens it as a reply. */
 const CATALOG_RULE = ' Check the catalog first and take what already exists; build only what is missing, and tell me if it deserves a catalog entry.';
 const EXAMPLES = [
-  {id: 'kanban', title: 'A drag and drop board', text: 'Add a Board view: columns To do, Doing and Done with cards I can drag between them and add, edit and delete, saved in the page database so everyone sees the same board.' + CATALOG_RULE},
-  {id: 'calendar', title: 'A calendar', text: 'Add a Calendar view: a month grid where I can add, move and delete events by dragging, saved in the page database, readable on a phone.' + CATALOG_RULE},
-  {id: 'drafting', title: 'A drafting board', text: 'Add a Drafting view: a page to write a draft in sections, reorder the sections by dragging, and keep every saved version so I can go back.' + CATALOG_RULE},
-  {id: 'canvas', title: 'A canvas for my topic', text: 'In the Canvas tab, add a ready-made canvas for planning a trip: a board with sticky notes for days, places and bookings, so it opens with something to move around instead of empty.' + CATALOG_RULE},
-  {id: 'mindmap', title: 'A mind map to start from', text: 'In the Canvas tab, make the Mind map open with a map of my project in place of the sample. Ask me for its name and three main branches in your response and stop there; I will answer on this request and then you build it.' + CATALOG_RULE},
-  {id: 'rearrange', title: 'Rearrange something', text: 'Reorder the tabs and the cards on Home into the order a first-time visitor needs them, and tell me what you moved and why. Change nothing else.'},
-  {id: 'change', title: 'Change something', text: 'Change the look of this page to a calmer one, with larger text and more space, and keep every part and its id. Tell me which parts changed.' + CATALOG_RULE},
-  {id: 'adopt', title: 'Adopt something', text: 'Suggest three catalog components that would suit this page and say what each does, in your response, and stop there. I will reply with my choice and then you add it by taking it from the catalog.'},
+  {id: 'kanban', title: 'A drag and drop board', blurb: 'A board you can drag', icon: 'kanban', text: 'Add a Board view: columns To do, Doing and Done with cards I can drag between them and add, edit and delete, saved in the page database so everyone sees the same board.' + CATALOG_RULE},
+  {id: 'calendar', title: 'A calendar', blurb: 'Events you can move around', icon: 'calendar', text: 'Add a Calendar view: a month grid where I can add, move and delete events by dragging, saved in the page database, readable on a phone.' + CATALOG_RULE},
+  {id: 'drafting', title: 'A drafting board', blurb: 'Write in sections, keep every version', icon: 'drafting', text: 'Add a Drafting view: a page to write a draft in sections, reorder the sections by dragging, and keep every saved version so I can go back.' + CATALOG_RULE},
+  {id: 'canvas', title: 'A canvas for my topic', blurb: 'Start with something to move', icon: 'canvas', text: 'In the Canvas tab, add a ready-made canvas for planning a trip: a board with sticky notes for days, places and bookings, so it opens with something to move around instead of empty.' + CATALOG_RULE},
+  {id: 'mindmap', title: 'A mind map to start from', blurb: 'Think in branches', icon: 'mindmap', text: 'In the Canvas tab, make the Mind map open with a map of my project in place of the sample. Ask me for its name and three main branches in your response and stop there; I will answer on this request and then you build it.' + CATALOG_RULE},
+  {id: 'rearrange', title: 'Rearrange something', blurb: 'Put things in a better order', icon: 'rearrange', text: 'Reorder the tabs and the cards on Home into the order a first-time visitor needs them, and tell me what you moved and why. Change nothing else.'},
+  {id: 'change', title: 'Change something', blurb: 'A calmer look, same parts', icon: 'change', text: 'Change the look of this page to a calmer one, with larger text and more space, and keep every part and its id. Tell me which parts changed.' + CATALOG_RULE},
+  {id: 'adopt', title: 'Adopt something', blurb: 'Let Claude suggest what fits', icon: 'adopt', text: 'Suggest three catalog components that would suit this page and say what each does, in your response, and stop there. I will reply with my choice and then you add it by taking it from the catalog.'},
 ];
+const ICONS = {
+  kanban: '<rect x="3" y="4" width="5" height="16" rx="1"/><rect x="9.5" y="4" width="5" height="10" rx="1"/><rect x="16" y="4" width="5" height="13" rx="1"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  drafting: '<path d="M5 3h10l4 4v14H5z"/><path d="M9 12h6M9 16h6"/>',
+  canvas: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 15c2-4 4 0 6-3s2-3 4-4"/>',
+  mindmap: '<circle cx="12" cy="12" r="2.5"/><circle cx="4.5" cy="5.5" r="1.8"/><circle cx="19.5" cy="6" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="19" cy="18.5" r="1.8"/><path d="M10 10.2 6 7M14 10.3 18 7.4M10 13.8 6.5 17.5M14.2 13.8 17.5 17.2"/>',
+  rearrange: '<path d="M7 4v16M4 17l3 3 3-3M17 20V4M14 7l3-3 3 3"/>',
+  change: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18 16l.8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8z"/>',
+  adopt: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/>',
+  translate: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
+};
+const icon = id => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[id] || '') + '</svg>';
 const LANGUAGES = [['🇪🇸', 'Spanish'], ['🇫🇷', 'French'], ['🇩🇪', 'German'], ['🇧🇷', 'Portuguese'], ['🇮🇹', 'Italian'], ['🇨🇳', 'Chinese'], ['🇯🇵', 'Japanese'], ['🇰🇷', 'Korean'], ['🇸🇦', 'Arabic'], ['🇮🇳', 'Hindi']];
 const translateText = lang => 'Translate this whole page into ' + lang + ': the copy of every part (it lives in the content/<part id> docs), the tabs, the settings and the buttons. Keep every part id and every class and change no behaviour. Then set the Language setting (page.language) to ' + lang + ', and reply with what you translated and anything you left in the original language.';
 function mountExamples(){
   const box = $('[data-part="home.examples"]');
   if (!box) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-  box.innerHTML = '<h3>Try it: ask Claude</h3><p class="muted ex-lead">Each button sends the request written under it, as it is, to Claude. Follow it on <b>Requests</b>, then reply to it there.</p>'
-    + '<ul class="ex-list">' + EXAMPLES.map(x => `<li class="ex-item"><div><b>${esc(x.title)}</b><p class="muted">${esc(x.text)}</p></div><button type="button" class="btn primary" data-ex="${x.id}">Send</button></li>`).join('') + '</ul>'
-    + '<h4>Translate this page</h4><p class="muted ex-lead">Pick a language: Claude translates the page and records it in the Language setting.</p>'
-    + '<table class="ex-langs"><tbody>' + LANGUAGES.map(l => `<tr><td aria-hidden="true">${l[0]}</td><th scope="row">${esc(l[1])}</th><td><button type="button" class="btn" data-lang="${esc(l[1])}">Translate</button></td></tr>`).join('') + '</tbody></table>'
+  const IDEAS = EXAMPLES.concat([{id: 'translate', title: 'Translate this page', blurb: 'Into your language', icon: 'translate'}]);
+  box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
+    + '<div class="ex-split"><ul class="ex-ideas">'
+    + IDEAS.map(x => `<li><button type="button" class="ex-idea" data-ex="${x.id}" aria-pressed="false"><span class="ex-ico">${icon(x.icon)}</span><span class="ex-t"><b>${esc(x.title)}</b><small>${esc(x.blurb)}</small></span></button></li>`).join('')
+    + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
+    + '<label class="ex-sel" hidden><span class="ex-sr">Language</span><select>' + LANGUAGES.map(l => `<option value="${esc(l[1])}">${l[0]}  ${esc(l[1])}</option>`).join('') + '</select></label></div>'
+    + '<label class="ex-sr" for="exText">Your request to Claude</label><textarea id="exText" maxlength="1500" rows="6"></textarea>'
+    + '<div class="ex-foot"><span class="muted ex-count"></span><span class="ex-acts"><button type="button" class="btn ex-ghost" data-reset>Start again</button><button type="submit" class="btn primary">Send to Claude</button></span></div></form></div>'
     + '<p class="ex-note muted" role="status" aria-live="polite"></p>';
-  const note = box.querySelector('.ex-note'), btns = () => box.querySelectorAll('button[data-ex], button[data-lang]');
-  const gate = () => { const c = engine ? engine.can() : null, ok = !!c && c.send === 'available'; btns().forEach(b => { b.disabled = !ok; });
+  const note = box.querySelector('.ex-note'), form = box.querySelector('.ex-composer'), ta = form.querySelector('textarea'), cnt = form.querySelector('.ex-count'), submit = form.querySelector('button[type="submit"]');
+  const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-sel'), pick = sel.querySelector('select');
+  let cur = null, original = '', ok = false;
+  const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight + 2, 420) + 'px'; };
+  const count = () => { cnt.textContent = ta.value.length + ' / 1500'; submit.disabled = !ok || !ta.value.trim(); };
+  const textFor = () => cur.id === 'translate' ? translateText(pick.value) : cur.text;
+  const choose = id => {
+    cur = IDEAS.find(x => x.id === id); if (!cur) return;
+    box.querySelectorAll('.ex-idea').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
+    ico.innerHTML = icon(cur.icon); ttl.textContent = cur.title; sel.hidden = id !== 'translate';
+    original = textFor(); ta.value = original; grow(); count();
+  };
+  const gate = () => { const c = engine ? engine.can() : null; ok = !!c && c.send === 'available'; count();
     note.textContent = ok ? '' : !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to Claude is not possible here right now.'; };
   ready.then(gate);
   const t = setInterval(() => { if (!box.isConnected) clearInterval(t); else gate(); }, 30000);
   box.addEventListener('click', e => {
-    const b = e.target.closest('button[data-ex], button[data-lang]');
-    if (!b || b.disabled || !engine) return;
-    const ex = b.dataset.ex ? EXAMPLES.find(x => x.id === b.dataset.ex) : null, text = ex ? ex.text : translateText(b.dataset.lang);
-    b.disabled = true;
-    engine.send({lane: 'task', scope: null, text}).then(() => { note.textContent = 'Sent. Follow it on Requests.'; show('requests'); },
-      err => { note.textContent = (err && err.message) || 'It could not be sent.'; }).finally(() => { b.disabled = false; });
+    const b = e.target.closest('.ex-idea');
+    if (b) { choose(b.dataset.ex); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
+    else if (e.target.closest('[data-reset]')) { ta.value = original; grow(); count(); ta.focus(); }
   });
+  pick.addEventListener('change', () => { original = textFor(); ta.value = original; grow(); count(); });
+  ta.addEventListener('input', () => { grow(); count(); });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = ta.value.trim();
+    if (!text || !engine) return;
+    submit.disabled = true;
+    engine.send({lane: 'task', scope: null, text}).then(() => { note.textContent = 'Sent. Follow it on Requests.'; show('requests'); },
+      err => { note.textContent = (err && err.message) || 'It could not be sent.'; }).finally(count);
+  });
+  choose(IDEAS[0].id);
   mounted.push({destroy(){ clearInterval(t); }});
 }
 /* The Mind map mode: Kit.mindmap (catalog) with its data in one doc, ns/shared/mindmaps/main. The component keeps no data of its own: it
