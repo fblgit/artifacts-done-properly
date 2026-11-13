@@ -328,7 +328,7 @@ function mountMind(host){
   Promise.resolve(claudeUse('user')).then(u => { try { return u && u.can ? u.can('data.write') : null; } catch (e) { return null; } }).then(w => {
     if (dead) return;
     can = w !== false;
-    mm = Kit.mindmap.mount(host, {data: seed(), readOnly: !can, label: 'Mind map',
+    mm = Kit.mindmap.mount(host, {data: seed(), readOnly: !can, label: 'Mind map', layout: 'free',
       onChange: next => { writing = writing.then(() => ref.set(next)).catch(() => { const n = document.createElement('p'); n.className = 'muted canvas-note'; n.setAttribute('role', 'alert'); n.textContent = 'The change could not be saved.'; host.prepend(n); setTimeout(() => n.remove(), 4000); }); }});
     off = ref.onSnapshot(snap => { if (dead || !mm) return; if (snap.exists) mm.update(snap.data()); });
   });

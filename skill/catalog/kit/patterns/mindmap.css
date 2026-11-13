@@ -1,5 +1,5 @@
 /* part:page.style.kit.mindmap */
-/* Kit css: mind map    kit version 0.1.0    pairs with kit/patterns/mindmap.js
+/* Kit css: mind map    kit version 0.1.1    pairs with kit/patterns/mindmap.js
    .kit-mm        the root;  [data-ro] marks a read-only map;  .kit-mm-dragging while a node is dragged
    .kit-mm-bar    the toolbar (.kit-mm-btn);  .kit-mm-ask the inline delete question;  .kit-mm-err the one line shown for malformed data
    .kit-mm-scroll the frame that scrolls and pans (the page never scrolls sideways) > .kit-mm-tree (role tree) > svg.kit-mm-links and .kit-mm-node pills
@@ -43,4 +43,6 @@
 .kit-mm-item:hover { background: var(--sunk); }
 .kit-mm-live { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) { .kit-mm * { transition: none !important; scroll-behavior: auto !important; } }
+.kit-mm[data-free]:not([data-ro]) .kit-mm-node { cursor: grab; }
+.kit-mm-moving { z-index: 30; box-shadow: var(--shadow, 0 8px 22px rgba(0,0,0,.2)); }
 /* /part:page.style.kit.mindmap */

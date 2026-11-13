@@ -20,6 +20,10 @@
  * that shows between or after siblings and it takes that place. Onto itself or its own descendants shows no target. Escape cancels. The original stays dimmed and a ghost follows the pointer.
  * The way without a drag: Move to... (key M) lists every valid target as Make child of X, Move before Y, Move after Y. An aria-live line says what moved.
  *
+ * Free placement: Kit.mindmap.mount(root, {layout: 'free'}). A node may carry x and y (px from the top left of the map). Nodes without them keep the tidy tree and each new node sits right of its parent;
+ * the first drag pins every shown node where it is, then the dragged node moves with its subtree to wherever it is dropped (the root can move too). Dropping on a node no longer re-parents it:
+ * Move to... still does. A child left of its parent is joined to its left side. Positions come out through onChange as x and y.
+ *
  * Keys on the tree (role tree, treeitems with aria-expanded and aria-selected): Up and Down in reading order, Left to the parent or collapse, Right to the first child or expand.
  * The tree pans by scrolling and by dragging empty space, inside its own frame; the page never scrolls sideways. On touch, a node drags at once, and empty space scrolls.
  * Classes: .kit-mm (root), .kit-mm-bar, .kit-mm-scroll > .kit-mm-tree > .kit-mm-node[data-root] (.kit-mm-sel, .kit-mm-dim, .kit-mm-into) and svg.kit-mm-links, .kit-mm-drop, .kit-mm-menu, .kit-mm-ghost.
@@ -27,13 +31,13 @@
  * @id        pattern.mindmap
  * @group     Patterns
  * @status    new
- * @version   0.1.0
+ * @version   0.1.1
  * @updated   2026-11-13
  * @summary   A mind-map you make and arrange with drag and drop: a tidy tree left to right, add, edit and delete nodes, drop on a node or on a line between siblings, and a Move to menu that does every drop from the keyboard.
  * @tags      mind map, tree, drag and drop, outline, hierarchy, move, keyboard, pointer events
  * @requires  kit.dom
  * @provides  Kit.mindmap.mount
- * @config    Kit.mindmap.mount(root, opts) | data {nodes [{id, text, parent, order, collapsed}]}, onChange(next) with the whole next data, readOnly, label; returns {update(next), destroy()}
+ * @config    Kit.mindmap.mount(root, opts) | data {nodes [{id, text, parent, order, collapsed, x?, y?}]}, onChange(next) with the whole next data, readOnly, label, layout 'tree' (default) or 'free'; returns {update(next), destroy()}
  * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --danger --f-ui --accent-soft? --shadow? --r?
  * @globals   none
  * @db        none
@@ -56,6 +60,7 @@ function validate(data) {
     if (typeof n.text !== 'string') return 'Node ' + q(n.id) + ' needs a text string.';
     if (typeof n.order !== 'number' || !isFinite(n.order)) return 'Node ' + q(n.id) + ' needs a numeric order.';
     if (n.parent !== null && typeof n.parent !== 'string') return 'Node ' + q(n.id) + ' needs parent null (the root) or the id of its parent.';
+    for (const k of ['x', 'y']) if (n[k] !== undefined && (typeof n[k] !== 'number' || !isFinite(n[k]))) return 'Node ' + q(n.id) + ' has a ' + k + ' that is not a number.';
   }
   for (const n of data.nodes) if (n.parent !== null && !byId.has(n.parent)) return 'Node ' + q(n.id) + ' has an unknown parent ' + q(n.parent) + '.';
   for (const n of data.nodes) {
@@ -80,14 +85,15 @@ function indexOf(nodes) {
 }
 
 function mount(root, opts) {
-  const o = Object.assign({ data: { nodes: [] }, readOnly: false, label: 'Mind map' }, opts);
+  const o = Object.assign({ data: { nodes: [] }, readOnly: false, label: 'Mind map', layout: 'tree' }, opts);
+  const free = () => o.layout === 'free', hasPos = n => Number.isFinite(n.x) && Number.isFinite(n.y);
   const { el, sv } = Kit.dom;
   const pills = new Map();
   let nodes = [], M = null, selected = null, editing = null, ask = null, menu = null, menuOpener = null, press = null, pan = null, built = false, flip = false;
   let geom = new Map(), bar, askBox, scroller, canvas, svg, lineEl, live, ghost = null;
   const btn = {};
 
-  const load = data => { nodes = data.nodes.map(n => ({ id: n.id, text: n.text, parent: n.parent, order: n.order, collapsed: n.collapsed === true })); reindex(); if (!selected || !M.byId.has(selected)) selected = M.root.id; };
+  const load = data => { nodes = data.nodes.map(n => { const c = { id: n.id, text: n.text, parent: n.parent, order: n.order, collapsed: n.collapsed === true }; if (hasPos(n)) { c.x = n.x; c.y = n.y; } return c; }); reindex(); if (!selected || !M.byId.has(selected)) selected = M.root.id; };
   const reindex = () => { M = indexOf(nodes); };
   const kidsOf = id => M.kids.get(id) || [];
   const visKids = n => n.collapsed ? [] : kidsOf(n.id);
@@ -96,7 +102,7 @@ function mount(root, opts) {
   function depthOf(id) { let d = 0, c = M.byId.get(id); while (c && c.parent !== null) { d++; c = M.byId.get(c.parent); } return d; }
   function snapshot() {
     const out = [];
-    (function w(n) { if (!(editing && editing.isNew && editing.id === n.id)) { const c = { id: n.id, text: n.text, parent: n.parent, order: n.order }; if (n.collapsed) c.collapsed = true; out.push(c); kidsOf(n.id).forEach(w); } })(M.root);
+    (function w(n) { if (!(editing && editing.isNew && editing.id === n.id)) { const c = { id: n.id, text: n.text, parent: n.parent, order: n.order }; if (n.collapsed) c.collapsed = true; if (hasPos(n)) { c.x = n.x; c.y = n.y; } out.push(c); kidsOf(n.id).forEach(w); } })(M.root);
     return { nodes: out };
   }
   const emit = () => { if (o.onChange) o.onChange(snapshot()); };
@@ -113,7 +119,7 @@ function mount(root, opts) {
     const p = el('p', 'kit-mm-err', 'This mind map cannot be drawn. ' + msg); p.setAttribute('role', 'alert'); root.replaceChildren(p);
   }
   function build() {
-    pills.clear(); root.classList.add('kit-mm'); root.toggleAttribute('data-ro', !!o.readOnly); root.replaceChildren();
+    pills.clear(); root.classList.add('kit-mm'); root.toggleAttribute('data-ro', !!o.readOnly); root.toggleAttribute('data-free', free()); root.replaceChildren();
     askBox = el('div', 'kit-mm-ask'); askBox.setAttribute('role', 'alert'); askBox.hidden = true;
     scroller = el('div', 'kit-mm-scroll'); canvas = el('div', 'kit-mm-tree'); canvas.setAttribute('role', 'tree'); canvas.setAttribute('aria-label', o.label);
     svg = sv('svg', { 'aria-hidden': 'true' }, 'kit-mm-links'); lineEl = el('div', 'kit-mm-drop'); lineEl.hidden = true; canvas.append(svg, lineEl); scroller.append(canvas);
@@ -194,12 +200,27 @@ function mount(root, opts) {
       geom.set(n.id, { x: cx[d], y: cy - s.h / 2, w: s.w, h: s.h, d });
     };
     const total = measure(M.root); put(M.root, PAD, 0);
-    const W = cx[cw.length] - HGAP + PAD, Hh = total + PAD * 2;
+    let W = cx[cw.length] - HGAP + PAD, Hh = total + PAD * 2;
+    if (free() && nodes.some(hasPos)) {
+      // Free placement: a node with x and y sits there; one without sits right of its parent, one row per sibling; the root keeps its tidy place.
+      const g2 = new Map();
+      (function w(n) {
+        const s = size.get(n.id), t = geom.get(n.id); let x = t.x, y = t.y;
+        if (hasPos(n)) { x = n.x; y = n.y; }
+        else if (n.parent !== null) { const a = g2.get(n.parent); x = a.x + a.w + HGAP; y = a.y + visKids(M.byId.get(n.parent)).indexOf(n) * (s.h + VGAP); }
+        g2.set(n.id, { x, y, w: s.w, h: s.h, d: t.d }); visKids(n).forEach(w);
+      })(M.root);
+      geom = g2; W = PAD; Hh = PAD; geom.forEach(g => { W = Math.max(W, g.x + g.w + PAD); Hh = Math.max(Hh, g.y + g.h + PAD); });
+    }
     canvas.style.width = W + 'px'; canvas.style.height = Hh + 'px'; svg.setAttribute('width', W); svg.setAttribute('height', Hh);
     geom.forEach((g, id) => { const p = pills.get(id); p.style.left = g.x + 'px'; p.style.top = g.y + 'px'; });
+    drawLinks();
+  }
+  function drawLinks() {
     svg.replaceChildren();
-    list.forEach(({ n }) => visKids(n).forEach(c => {
-      const a = geom.get(n.id), b = geom.get(c.id), x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x, y2 = b.y + b.h / 2, mx = (x1 + x2) / 2;
+    visibleList().forEach(({ n }) => visKids(n).forEach(c => {
+      const a = geom.get(n.id), b = geom.get(c.id), left = free() && b.x + b.w < a.x;
+      const x1 = left ? a.x : a.x + a.w, y1 = a.y + a.h / 2, x2 = left ? b.x + b.w : b.x, y2 = b.y + b.h / 2, mx = (x1 + x2) / 2;
       svg.append(sv('path', { d: 'M' + x1 + ' ' + y1 + ' C' + mx + ' ' + y1 + ' ' + mx + ' ' + y2 + ' ' + x2 + ' ' + y2 }, 'kit-mm-link'));
     }));
   }
@@ -356,7 +377,7 @@ function mount(root, opts) {
     }
     if (e.target.closest('.kit-mm-tog, .kit-mm-input')) return;
     const id = p.dataset.id; select(id, { focus: true });
-    if (o.readOnly || M.byId.get(id).parent === null) return;
+    if (o.readOnly || (!free() && M.byId.get(id).parent === null)) return;
     const r = p.getBoundingClientRect();
     press = { id, x: e.clientX, y: e.clientY, pid: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top, started: false, target: null };
     addEventListener('pointermove', onMove, { passive: false }); addEventListener('pointerup', onUp); addEventListener('pointercancel', onUp); addEventListener('keydown', onDragKey, true);
@@ -368,11 +389,26 @@ function mount(root, opts) {
     if (!press.started) {
       if (Math.hypot(e.clientX - press.x, e.clientY - press.y) < DRAG) return;
       press.started = true; closeMenu(false); root.classList.add('kit-mm-dragging');
+      if (free()) {
+        // Pin every shown node where it is, so nothing jumps; the dragged one moves with its subtree.
+        visibleList().forEach(({ n }) => { const g = geom.get(n.id); n.x = g.x; n.y = g.y; });
+        const ids = [...descendants(press.id)].filter(i => pills.has(i));
+        press.ids = ids; press.from = new Map(ids.map(i => [i, { x: M.byId.get(i).x, y: M.byId.get(i).y }]));
+        press.minX = Math.min(...ids.map(i => press.from.get(i).x)); press.minY = Math.min(...ids.map(i => press.from.get(i).y));
+        ids.forEach(i => pills.get(i).classList.add('kit-mm-moving'));
+      } else {
       const n = M.byId.get(press.id), p = pills.get(press.id);
       descendants(press.id).forEach(x => { const q = pills.get(x); if (q) q.classList.add('kit-mm-dim'); });
       ghost = el('div', 'kit-mm-ghost', n.text || 'Untitled'); ghost.style.maxWidth = p.offsetWidth + 'px'; root.append(ghost);
+      }
     }
     e.preventDefault();
+    if (free()) {
+      const dx = Math.max(e.clientX - press.x, -press.minX), dy = Math.max(e.clientY - press.y, -press.minY);
+      press.dx0 = dx; press.dy0 = dy;
+      press.ids.forEach(i => { const f = press.from.get(i), g = geom.get(i); g.x = f.x + dx; g.y = f.y + dy; const q = pills.get(i); q.style.left = g.x + 'px'; q.style.top = g.y + 'px'; });
+      drawLinks(); return;
+    }
     ghost.style.left = (e.clientX - press.dx) + 'px'; ghost.style.top = (e.clientY - press.dy) + 'px';
     const r = canvas.getBoundingClientRect(); press.target = hit(e.clientX - r.left, e.clientY - r.top, press.id); showTarget(press.target);
   }
@@ -404,16 +440,21 @@ function mount(root, opts) {
     removeEventListener('pointermove', onMove); removeEventListener('pointerup', onUp); removeEventListener('pointercancel', onUp); removeEventListener('keydown', onDragKey, true);
     if (ghost) { ghost.remove(); ghost = null; }
     if (root) root.classList.remove('kit-mm-dragging');
-    pills.forEach(p => p.classList.remove('kit-mm-dim', 'kit-mm-into')); if (lineEl) lineEl.hidden = true; press = null;
+    pills.forEach(p => p.classList.remove('kit-mm-dim', 'kit-mm-into', 'kit-mm-moving')); if (lineEl) lineEl.hidden = true; press = null;
   }
   function onUp(e) {
     if (!press || e.pointerId !== press.pid) return;
     const p = press; endPress();
+    if (free() && p.started) {
+      if (e.type !== 'pointerup' || !(p.dx0 || p.dy0)) { render(); return; }
+      descendants(p.id).forEach(i => { const n = M.byId.get(i); if (hasPos(n)) { n.x = Math.round(n.x + p.dx0); n.y = Math.round(n.y + p.dy0); } });
+      announce('Moved ' + (M.byId.get(p.id).text || 'Untitled') + '.'); render(); emit(); return;
+    }
     if (!p.started || e.type !== 'pointerup' || !p.target) return;
     if (p.target.kind === 'into') applyMove(p.id, p.target.id, kidsOf(p.target.id).filter(x => x.id !== p.id).length, false);
     else applyMove(p.id, p.target.parent, p.target.index, true);
   }
-  function onDragKey(e) { if (e.key === 'Escape' && press) { e.preventDefault(); e.stopPropagation(); endPress(); } }
+  function onDragKey(e) { if (e.key === 'Escape' && press) { e.preventDefault(); e.stopPropagation(); const was = press.started && free(); endPress(); if (was) render(); } }
   const onOutside = e => { if (menu && !menu.contains(e.target) && e.target !== menuOpener) closeMenu(false); };
   addEventListener('pointerdown', onOutside, true);
 
