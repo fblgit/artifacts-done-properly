@@ -1,10 +1,11 @@
 """The assistant template (and `default`, which inherits it) with its Canvas tab: what it takes, what its index.html loads, what the publish map holds."""
 import json
 import os
-import re
+import shutil
 import subprocess
-import sys
 import tempfile
+import re
+import sys
 import unittest
 
 from test_default_template import CDN, TPL, load, tags
@@ -209,6 +210,28 @@ class HomeExamplesAndMindMap(unittest.TestCase):
         self.assertEqual(app.count("engine.send({lane: 'task'"), 1)      # one send, from the form: no tile or language button sends by itself
         for i in ('kanban', 'calendar', 'drafting', 'canvas', 'mindmap', 'rearrange', 'change', 'adopt', 'translate'):
             self.assertIn(i + ': \'', app, i)                            # each has an icon
+
+    @unittest.skipUnless(shutil.which('node'), 'node is not installed')
+    def test_the_page_script_parses(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, 'app.js')
+            with open(f, 'w', encoding='utf-8') as out:
+                out.write(self.app())
+            r = subprocess.run(['node', '--check', f], capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_ideas_are_grouped_into_kinds_with_a_recommended_one_and_an_icon_each(self):
+        app = self.app()
+        ids = re.findall(r"\{id: '([a-z]+)', cat: '([a-z]+)'", app)
+        self.assertEqual(len({i for i, _ in ids}), len(ids))                              # ids are unique
+        cats = re.search(r"const CATS = \[(.*?)\];", app).group(1)
+        for c in re.findall(r"\['([a-z]+)', '", cats):
+            if c != 'rec':
+                self.assertGreaterEqual(sum(1 for _, k in ids if k == c), 2, c)
+        self.assertGreaterEqual(len(re.findall(r"rec: true", app)), 4)                       # the Recommended group
+        icons = re.search(r"const ICONS = \{(.*?)\n\};", app, re.S).group(1)
+        for i in re.findall(r"icon: '([a-z]+)'", app):
+            self.assertIn('  ' + i + ": '", icons, i)
 
     def test_prompts_fit_the_comment_limit_and_name_only_real_catalog_ids(self):
         app = self.app()

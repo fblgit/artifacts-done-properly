@@ -190,15 +190,37 @@ function mountMyCatalog(){
    A prompt that needs the person's choice says to ask it in the response and stop: a request ends at its response, and the person's answer reopens it as a reply. */
 const CATALOG_RULE = ' Check the catalog first and take what already exists; build only what is missing, and tell me if it deserves a catalog entry.';
 const EXAMPLES = [
-  {id: 'kanban', title: 'A drag and drop board', blurb: 'A board you can drag', icon: 'kanban', text: 'Add a Board view: columns To do, Doing and Done with cards I can drag between them and add, edit and delete, saved in the page database so everyone sees the same board.' + CATALOG_RULE},
-  {id: 'calendar', title: 'A calendar', blurb: 'Events you can move around', icon: 'calendar', text: 'Add a Calendar view: a month grid where I can add, move and delete events by dragging, saved in the page database, readable on a phone.' + CATALOG_RULE},
-  {id: 'drafting', title: 'A drafting board', blurb: 'Write in sections, keep every version', icon: 'drafting', text: 'Add a Drafting view: a page to write a draft in sections, reorder the sections by dragging, and keep every saved version so I can go back.' + CATALOG_RULE},
-  {id: 'canvas', title: 'A canvas for my topic', blurb: 'Start with something to move', icon: 'canvas', text: 'In the Canvas tab, add a ready-made canvas for planning a trip: a board with sticky notes for days, places and bookings, so it opens with something to move around instead of empty.' + CATALOG_RULE},
-  {id: 'mindmap', title: 'A mind map to start from', blurb: 'Think in branches', icon: 'mindmap', text: 'In the Canvas tab, make the Mind map open with a map of my project in place of the sample. Ask me for its name and three main branches in your response and stop there; I will answer on this request and then you build it.' + CATALOG_RULE},
-  {id: 'rearrange', title: 'Rearrange something', blurb: 'Put things in a better order', icon: 'rearrange', text: 'Reorder the tabs and the cards on Home into the order a first-time visitor needs them, and tell me what you moved and why. Change nothing else.'},
-  {id: 'change', title: 'Change something', blurb: 'A calmer look, same parts', icon: 'change', text: 'Change the look of this page to a calmer one, with larger text and more space, and keep every part and its id. Tell me which parts changed.' + CATALOG_RULE},
-  {id: 'adopt', title: 'Adopt something', blurb: 'Let Claude suggest what fits', icon: 'adopt', text: 'Suggest three catalog components that would suit this page and say what each does, in your response, and stop there. I will reply with my choice and then you add it by taking it from the catalog.'},
+  {id: 'kanban', cat: 'work', title: 'A drag and drop board', blurb: 'Cards that move between columns', icon: 'kanban', rec: true, text: 'Add a Board view: columns To do, Doing and Done with cards I can drag between them and add, edit and delete, saved in the page database so everyone sees the same board. Take viz.buckets for the dragging.' + CATALOG_RULE},
+  {id: 'calendar', cat: 'work', title: 'A calendar', blurb: 'Events you can move around', icon: 'calendar', text: 'Add a Calendar view: a month grid where I can add, move and delete events by dragging, saved in the page database, readable on a phone.' + CATALOG_RULE},
+  {id: 'drafting', cat: 'work', title: 'A drafting board', blurb: 'Write in sections, keep every version', icon: 'drafting', text: 'Add a Drafting view: a page to write a draft in sections, reorder the sections by dragging, and keep every saved version so I can go back.' + CATALOG_RULE},
+  {id: 'canvas', cat: 'work', title: 'A canvas for my topic', blurb: 'Start with something to move', icon: 'canvas', text: 'In the Canvas tab, add a ready-made canvas for planning a trip: a board with sticky notes for days, places and bookings, so it opens with something to move around instead of empty.' + CATALOG_RULE},
+  {id: 'mindmap', cat: 'work', title: 'A mind map to start from', blurb: 'Think in branches', icon: 'mindmap', rec: true, text: 'In the Canvas tab, make the Mind map open with a map of my project in place of the sample. Ask me for its name and three main branches in your response and stop there; I will answer on this request and then you build it.' + CATALOG_RULE},
+  {id: 'roadmap', cat: 'work', title: 'A now, next, later roadmap', blurb: 'Plan in three buckets', icon: 'kanban', text: 'Add a Roadmap view: items sorted into Now, Next and Later that I can drag between buckets, with a timeline underneath. Take viz.buckets and viz.timeline.' + CATALOG_RULE},
+  {id: 'decisions', cat: 'records', title: 'A decision log', blurb: 'Questions, options, the answer', icon: 'decisions', rec: true, text: 'Add a Decisions view: each decision a card with the question, the options with pros and cons, and my answer recorded with who and when. Take pattern.decisions and pattern.options, and wear theme.adr-drafting-table.' + CATALOG_RULE},
+  {id: 'findings', cat: 'records', title: 'A findings register', blurb: 'Issues by severity, filterable', icon: 'findings', text: 'Add a Findings view: issues as cards by severity with the evidence and an owner, filterable by status. Take pattern.findings and pattern.filter-table.' + CATALOG_RULE},
+  {id: 'ledger', cat: 'records', title: 'A ledger of what was settled', blurb: 'Dated, grouped, searchable', icon: 'ledger', text: 'Add a Ledger view: settled items grouped by month with filter chips and a count on each, and a log of every change underneath. Take pattern.ledger and pattern.event-log.' + CATALOG_RULE},
+  {id: 'expiry', cat: 'records', title: 'Things that expire', blurb: 'Certificates, licences, renewals', icon: 'expiry', text: 'Add an Expiry view for things that expire (certificates, licences, domains): dials, a runway of the next twelve months and the nearest ones first. Start from template.expiry-board.' + CATALOG_RULE},
+  {id: 'kpi', cat: 'data', title: 'A metrics dashboard', blurb: 'Figures, trends and a split', icon: 'kpi', rec: true, text: 'Add a Dashboard view: the numbers I care about as big figures with a trend line each, and a bar showing how the total splits. Take pattern.figures, viz.sparkline and viz.bars, and keep the numbers in the page database so I can edit them.' + CATALOG_RULE},
+  {id: 'timeline', cat: 'data', title: 'A project timeline', blurb: 'Phases, dates, dependencies', icon: 'timeline', text: 'Add a Timeline view: my project in numbered phases on a dated scale with each dependency drawn. Take viz.timeline-phased and viz.wires.' + CATALOG_RULE},
+  {id: 'compare', cat: 'data', title: 'Compare two options', blurb: 'Pros, cons and a matrix', icon: 'compare', text: 'Add a Compare view for two options I name: pros and cons side by side, and a matrix of the criteria with a toggle per cell. Take pattern.options and viz.matrix.' + CATALOG_RULE},
+  {id: 'whatif', cat: 'data', title: 'A what-if model', blurb: 'Sliders that redraw a chart', icon: 'whatif', text: 'Add a What-if view: sliders for the inputs of a simple model I describe, redrawing a chart and a one-line conclusion. Take viz.slider-chart. Ask me for the model in your response and stop there.' + CATALOG_RULE},
+  {id: 'standup', cat: 'team', title: 'A team board', blurb: 'Who is doing what', icon: 'roster', text: 'Add a Team view: one card per person or agent with what they hold and what is queued, and a board of the work by status. Take pattern.roster and pattern.status-columns.' + CATALOG_RULE},
+  {id: 'launch', cat: 'team', title: 'A launch checklist', blurb: 'Steps with owners and sign-off', icon: 'launch', rec: true, text: 'Add a Launch view: the steps to ship, each with an owner and a done-when line, and a sign-off gate before the last one. Take pattern.steps-owners and pattern.gate.' + CATALOG_RULE},
+  {id: 'incident', cat: 'team', title: 'An incident room', blurb: 'Timeline and what to do next', icon: 'incident', text: 'Add an Incident view: a live timeline of what happened, the next steps as a checklist, and a status banner. Take pattern.event-log, pattern.next-steps and pattern.verdict, and wear theme.warroom.' + CATALOG_RULE},
+  {id: 'approvals', cat: 'team', title: 'An approvals queue', blurb: 'Answer one, the next opens', icon: 'approvals', text: 'Add an Approvals view: requests waiting for my answer, each with its risk and what it changes, answered one after another. Take pattern.gate and pattern.answer-queue.' + CATALOG_RULE},
+  {id: 'doc', cat: 'docs', title: 'A long document', blurb: 'A contents rail and sections', icon: 'doc', text: 'Add a Document view for a long piece of writing: a contents rail that follows the section in view and numbered sections. Start from template.doc and layout.doc-shell.' + CATALOG_RULE},
+  {id: 'runbook', cat: 'docs', title: 'A runbook with commands', blurb: 'Copy each step in one click', icon: 'runbook', text: 'Add a Runbook view: playbooks in tabs, each a numbered list of commands I can copy. Take pattern.playbook and kit.copy.' + CATALOG_RULE},
+  {id: 'report', cat: 'docs', title: 'A report page', blurb: 'Verdict, figures and findings', icon: 'report', text: 'Add a Report view: a verdict at the top, the key figures, and the findings by severity. Take pattern.verdict, pattern.figures and pattern.findings.' + CATALOG_RULE},
+  {id: 'diagram', cat: 'docs', title: 'A diagram of how it fits', blurb: 'Architecture or a flow', icon: 'diagram', text: 'Add a Diagram view that draws how the parts of my project fit together, in this page colours. Take kit.mermaid, or viz.topology for nodes I can pick. Ask me what it should show in your response and stop there.' + CATALOG_RULE},
+  {id: 'rearrange', cat: 'page', title: 'Rearrange something', blurb: 'Put things in a better order', icon: 'rearrange', text: 'Reorder the tabs and the cards on Home into the order a first-time visitor needs them, and tell me what you moved and why. Change nothing else.'},
+  {id: 'change', cat: 'page', title: 'Change the look', blurb: 'A calmer look, same parts', icon: 'change', text: 'Change the look of this page to a calmer one, with larger text and more space, and keep every part and its id. Tell me which parts changed.' + CATALOG_RULE},
+  {id: 'theme', cat: 'page', title: 'Wear a catalog theme', blurb: 'Journal, war room, blueprint', icon: 'theme', text: 'Show me this page in two catalog themes that would suit it (for example theme.journal or theme.blueprint), pick the one that fits best and keep every part and its id. Tell me which you chose and why.' + CATALOG_RULE},
+  {id: 'search', cat: 'page', title: 'Search everything', blurb: 'Ctrl+K over sections and records', icon: 'search', text: 'Add a search to this page: Ctrl+K opens a box that finds sections and records and jumps to them. Take kit.palette.' + CATALOG_RULE},
+  {id: 'adopt', cat: 'page', title: 'Adopt something', blurb: 'Let Claude suggest what fits', icon: 'adopt', text: 'Suggest three catalog components that would suit this page and say what each does, in your response, and stop there. I will reply with my choice and then you add it by taking it from the catalog.'},
+  {id: 'newkit', cat: 'catalog', title: 'Turn a view into a kit', blurb: 'Keep the best part for next time', icon: 'newkit', text: 'Pick the best view or component on this page and prepare it as a catalog entry: its files, what it requires, a sample and a header, ready to add. Tell me what you would name it and what it replaces.'},
+  {id: 'newtheme', cat: 'catalog', title: 'A theme from my colours', blurb: 'Make it once, reuse it', icon: 'theme', text: 'Make a catalog theme from my brand: ask me for two or three colours and a typeface in your response and stop there; I will answer on this request and then you write the theme as a theme.* entry and wear it on this page.'},
 ];
+const CATS = [['rec', 'Recommended'], ['work', 'Workspaces'], ['records', 'Records'], ['data', 'Dashboards'], ['team', 'Team rooms'], ['docs', 'Docs'], ['page', 'This page'], ['catalog', 'Catalog']];
 const ICONS = {
   kanban: '<rect x="3" y="4" width="5" height="16" rx="1"/><rect x="9.5" y="4" width="5" height="10" rx="1"/><rect x="16" y="4" width="5" height="13" rx="1"/>',
   calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
@@ -208,6 +230,25 @@ const ICONS = {
   rearrange: '<path d="M7 4v16M4 17l3 3 3-3M17 20V4M14 7l3-3 3 3"/>',
   change: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18 16l.8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8z"/>',
   adopt: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/>',
+  roster: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M15 14.3c3 0 6 1.5 6 5"/>',
+  decisions: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
+  findings: '<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>',
+  ledger: '<path d="M5 4h14v16H5z"/><path d="M9 4v16M12 9h4M12 13h4"/>',
+  expiry: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 3h6"/>',
+  kpi: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  timeline: '<path d="M3 12h18"/><circle cx="7" cy="12" r="2"/><circle cx="13" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 6v4M13 14v4M19 6v4"/>',
+  compare: '<rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/><path d="M6 9h2M16 9h2M6 13h2M16 13h2"/>',
+  whatif: '<path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2.2"/><circle cx="15" cy="16" r="2.2"/>',
+  launch: '<path d="M5 21V4M5 4h12l-2 4 2 4H5"/>',
+  incident: '<path d="M8 20h8M6 20v-6a6 6 0 0112 0v6M12 3v2M4.5 6.5L6 8M19.5 6.5L18 8"/>',
+  approvals: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
+  doc: '<path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h3"/>',
+  runbook: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>',
+  report: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  diagram: '<rect x="3" y="3" width="7" height="6" rx="1"/><rect x="14" y="15" width="7" height="6" rx="1"/><rect x="14" y="3" width="7" height="6" rx="1"/><path d="M10 6h4M6.5 9v6a3 3 0 003 3H14"/>',
+  theme: '<path d="M12 3a9 9 0 100 18c1.5 0 2-1 1.5-2.2-.6-1.4.3-2.8 1.8-2.8H17a4 4 0 004-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/>',
+  newkit: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12v9M12 12L4 7.5M12 12l8-4.5"/>',
   translate: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
 };
 const icon = id => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[id] || '') + '</svg>';
@@ -217,10 +258,12 @@ function mountExamples(){
   const box = $('[data-part="home.examples"]');
   if (!box) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-  const IDEAS = EXAMPLES.concat([{id: 'translate', title: 'Translate this page', blurb: 'Into your language', icon: 'translate'}]);
+  const IDEAS = EXAMPLES.concat([{id: 'translate', cat: 'page', title: 'Translate this page', blurb: 'Into your language', icon: 'translate', rec: true}]);
+  let cat = 'rec';
+  const inCat = x => cat === 'rec' ? !!x.rec : x.cat === cat;
   box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
+    + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '</div>'
     + '<div class="ex-split"><ul class="ex-ideas">'
-    + IDEAS.map(x => `<li><button type="button" class="ex-idea" data-ex="${x.id}" aria-pressed="false"><span class="ex-ico">${icon(x.icon)}</span><span class="ex-t"><b>${esc(x.title)}</b><small>${esc(x.blurb)}</small></span></button></li>`).join('')
     + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
     + '<label class="ex-sel" hidden><span class="ex-sr">Language</span><select>' + LANGUAGES.map(l => `<option value="${esc(l[1])}">${l[0]}  ${esc(l[1])}</option>`).join('') + '</select></label></div>'
     + '<label class="ex-sr" for="exText">Your request to Claude</label><textarea id="exText" maxlength="1500" rows="6"></textarea>'
@@ -229,6 +272,9 @@ function mountExamples(){
   const note = box.querySelector('.ex-note'), form = box.querySelector('.ex-composer'), ta = form.querySelector('textarea'), cnt = form.querySelector('.ex-count'), submit = form.querySelector('button[type="submit"]');
   const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-sel'), pick = sel.querySelector('select');
   let cur = null, original = '', ok = false;
+  const list = box.querySelector('.ex-ideas');
+  const draw = () => { list.innerHTML = IDEAS.filter(inCat).map(x => `<li><button type="button" class="ex-idea" data-ex="${x.id}" aria-pressed="${!!cur && cur.id === x.id}"><span class="ex-ico">${icon(x.icon)}</span><span class="ex-t"><b>${esc(x.title)}</b><small>${esc(x.blurb)}</small></span></button></li>`).join('');
+    box.querySelectorAll('.ex-cat').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === cat))); };
   const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight + 2, 420) + 'px'; };
   const count = () => { cnt.textContent = ta.value.length + ' / 1500'; submit.disabled = !ok || !ta.value.trim(); };
   const textFor = () => cur.id === 'translate' ? translateText(pick.value) : cur.text;
@@ -244,6 +290,8 @@ function mountExamples(){
   ready.then(gate);
   const t = setInterval(() => { if (!box.isConnected) clearInterval(t); else gate(); }, 30000);
   box.addEventListener('click', e => {
+    const c = e.target.closest('.ex-cat');
+    if (c) { cat = c.dataset.cat; const first = IDEAS.find(inCat); cur = IDEAS.find(x => inCat(x) && cur && x.id === cur.id) || first; draw(); choose(cur.id); return; }
     const b = e.target.closest('.ex-idea');
     if (b) { choose(b.dataset.ex); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
     else if (e.target.closest('[data-reset]')) { ta.value = original; grow(); count(); ta.focus(); }
@@ -258,7 +306,7 @@ function mountExamples(){
     engine.send({lane: 'task', scope: null, text}).then(() => { note.textContent = 'Sent. Follow it on Requests.'; show('requests'); },
       err => { note.textContent = (err && err.message) || 'It could not be sent.'; }).finally(count);
   });
-  choose(IDEAS[0].id);
+  cur = IDEAS.find(inCat); draw(); choose(cur.id);
   mounted.push({destroy(){ clearInterval(t); }});
 }
 /* The Mind map mode: Kit.mindmap (catalog) with its data in one doc, ns/shared/mindmaps/main. The component keeps no data of its own: it
