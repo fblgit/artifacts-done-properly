@@ -1197,7 +1197,7 @@ def main(a):
             if not b: rest += len(norm(own(text, parts, ''))); size += len(norm(text))
         bad += [f'part {p}: no data-part="{p}" in the page' for p in ids
                 if f'data-part="{p}"' not in allt and not p.startswith(('page.style', 'page.script'))]
-        named = set(re.findall(r'data-part="(' + ID + r')"', allt))
+        named = set(re.findall(r'(?<!\[)data-part="(' + ID + r')"', allt))     # `[data-part="x"]` in a script or a stylesheet looks an element up, it does not name one
         bad += [f'data-part="{p}" has no part:{p} markers (a new piece nobody marked)' for p in sorted(named - set(ids))]
         r = rest if not bad else 0
         print(f'{len(ids)} parts' + (f' in {len(marked)} files' if len(marked) > 1 else '') +

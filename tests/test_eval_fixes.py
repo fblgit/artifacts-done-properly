@@ -69,3 +69,14 @@ class EvalFixes(Cmd):
         self.assertFalse(os.path.exists(self.p('pg')))             # nothing half-written
         self.ok('new', 'starter', self.p('ok'), '--content', content)
         self.assertEqual(self.run_adp('check', self.p('ok')).returncode, 0)
+
+    def test_check_ignores_a_data_part_selector_in_a_script(self):
+        d = self.new_project()
+        f = os.path.join(d, 'parts', 'app.js')
+        open(f, 'a').write('\nconst gone = document.querySelector(\'[data-part="ghost.part"]\');\n')
+        r = self.run_adp('check', d)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        open(f, 'a').write('\nconst el = \'<div data-part="ghost.part"></div>\';\n')       # an element that names a part nobody marked still fails
+        r = self.run_adp('check', d)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn('ghost.part', r.stdout + r.stderr)
