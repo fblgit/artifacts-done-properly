@@ -24,6 +24,9 @@ class Base(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.skill = os.path.join(self.tmp.name, "skill")
         self.out = os.path.join(self.tmp.name, "dist")
+        for n in ("LICENSE", "NOTICE"):       # beside the skill folder, as in the repository
+            with open(os.path.join(self.tmp.name, n), "w", encoding="utf-8") as f:
+                f.write(n + "\n")
         write(os.path.join(self.skill, "SKILL.md"), fm())
         write(os.path.join(self.skill, "refs", "alpha", "SKILL.md"), fm("alpha"))
         write(os.path.join(self.skill, "scripts", "run.py"), "print(1)\n")
