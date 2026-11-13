@@ -63,3 +63,4 @@ class DevTests(Base):
         self.assertIn('all[presenceKey] || Object.values(all)', lane); self.assertIn('Date.parse(t)', lane)
         r = self.run_adp('dev', 'send', self.d, out)      # the same batch again: its if_version is stale now
         self.assertEqual((r.returncode, json.loads(r.stdout)['results'][0]['error']['code']), (3, 'conflict'))
+        self.assertEqual(json.loads(self.get('__adp/db'))['docs']['requests/r-1']['version'], 2)      # refused whole: nothing written
