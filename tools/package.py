@@ -141,8 +141,17 @@ def collect_files(skill_dir):
     return out
 
 
+LEGAL = ("LICENSE", "NOTICE")      # Apache-2.0 asks that a copy of the license and the NOTICE travel with every redistribution
+
+
+def legal_files(skill_dir):
+    """LICENSE and NOTICE from the repository root, which sits beside the skill folder: (name, path) for each."""
+    top = os.path.dirname(os.path.abspath(skill_dir))
+    return [(n, os.path.join(top, n)) for n in LEGAL]
+
+
 def build(skill_dir, out_dir):
-    files = collect_files(skill_dir)
+    files = sorted(collect_files(skill_dir) + legal_files(skill_dir))
     os.makedirs(out_dir, exist_ok=True)
     target = os.path.join(out_dir, SKILL_NAME + ".skill")
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
@@ -170,6 +179,7 @@ def main(argv=None):
         print("error: skill dir not found: %s" % a.skill_dir, file=sys.stderr)
         return 1
     errors, warnings, _ = validate_tree(a.skill_dir)
+    errors += ["%s: missing (a redistribution must carry it)" % f for _, f in legal_files(a.skill_dir) if not os.path.isfile(f)]
     for w in warnings:
         print("warning: " + w, file=sys.stderr)
     if errors:

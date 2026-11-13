@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use the Artifact Data Protocol or Artifacts Done Properly in research or in a product, please cite it as below and keep the NOTICE file."
+title: "Artifacts Done Properly (ADP)"
+type: software
+authors:
+  - family-names: Murias
+    given-names: Xavier
+    alias: fblgit
+    orcid: "https://orcid.org/0009-0003-1898-6701"
+    website: "https://github.com/fblgit"
+repository-code: "https://github.com/fblgit/artifacts-done-properly"
+version: 2.0.0
+license: Apache-2.0
+keywords:
+  - claude artifacts
+  - agents
+  - protocol
