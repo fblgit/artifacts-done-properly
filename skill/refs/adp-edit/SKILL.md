@@ -36,7 +36,7 @@ Copy lives in `content/<part id>`. Change it with an ArtifactData update with `i
 1. When a thread is sent to you, note the part its anchor sits in (anchors are part ids). Do not promise work in the thread.
 2. The holder of that part makes the change and publishes.
 3. Reply after the publish naming the version and the part ids.
-4. A page with the Work with Claude pane keeps `requests/`: `ADP requests DUMP.json` lists the open ones; `--ack RID --by NAME`, `--progress RID --text T`, `--done RID --response FILE` write the pinned update.
+4. A page with the Work with Claude pane keeps `requests/`: `ADP requests DUMP.json` lists the open ones; `--ack RID --by NAME`, `--progress RID --text T`, `--done RID --response FILE` write the pinned update, and `presence/NAME` with it (the page reads watching while that is recent, five minutes by default). A request a reply reopened is answered with `--done RID --response FILE --turns TURNS.json`: it adds a turn and leaves `response` as it was.
 
 ## Other
 
