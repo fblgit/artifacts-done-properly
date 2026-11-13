@@ -223,24 +223,45 @@ class HomeExamplesAndMindMap(unittest.TestCase):
             self.assertIn("language: {type: 'text', default: 'English', label: 'Language'", src, t)
 
 
-class MyCatalog(unittest.TestCase):
-    def test_new_writes_the_catalog_index_and_publishes_it(self):
-        full = {e['id']: e for e in load(CATALOG)['entries']}
-        for name in ARGS:
-            d, out = generate(name)
-            mc = json.loads(read(d, 'my-catalog.json'))
-            self.assertEqual(mc['schema'], 'my-catalog/1')
-            self.assertEqual([e['id'] for e in mc['entries']], list(full))
-            self.assertEqual(set(mc['entries'][0]) - {'id', 'name', 'kind', 'group', 'summary', 'version', 'status', 'tags', 'requires'}, set())
-            self.assertLess(os.path.getsize(os.path.join(d, 'my-catalog.json')), 150000)      # the page fetches it whole
-            self.assertIn('my-catalog.json', out['publish']['files'], name)
+class Installed(unittest.TestCase):
+    def take_closure(self, name):
+        cat = {e['id']: e for e in load(CATALOG)['entries']}
+        out, seen = [], set()
 
-    def test_without_a_catalog_on_disk_nothing_is_written_and_check_is_ok(self):
+        def visit(i):
+            if i in seen:
+                return
+            seen.add(i)
+            for r in cat[i].get('requires') or []:
+                visit(r)
+            out.append(i)
+        for i in load(os.path.join(TPL, name, 'template.json'))['take']:
+            visit(i)
+        return out
+
+    def take_closure_ids_only(self):
+        # with no catalog the requires are unknown, so the list is exactly the template's own take
+        return load(os.path.join(TPL, 'assistant', 'template.json'))['take']
+
+    def test_new_writes_what_is_installed_in_load_order_and_publishes_it(self):
+        for name, tpl in (('assistant', 'assistant'), ('default', 'default')):
+            d, out = generate(name)
+            ix = json.loads(read(d, 'installed.json'))
+            self.assertEqual(ix['schema'], 'installed/1')
+            self.assertEqual([e['id'] for e in ix['entries']], self.take_closure(tpl))
+            self.assertLess(len(ix['entries']), len(load(CATALOG)['entries']))      # what is installed, not the whole catalog
+            self.assertTrue(all(e.get('name') and e.get('summary') for e in ix['entries']))
+            self.assertIn('installed.json', out['publish']['files'], name)
+            self.assertFalse(os.path.exists(os.path.join(d, 'my-catalog.json')))
+
+    def test_without_a_catalog_on_disk_the_list_is_ids_only_and_check_is_ok(self):
         d = os.path.join(tempfile.mkdtemp(), 'out')
         env = dict(os.environ, ADP_HOME=tempfile.mkdtemp())
         r = subprocess.run([sys.executable, ADP, 'new', 'assistant', d], capture_output=True, text=True, env=env)
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertFalse(os.path.exists(os.path.join(d, 'my-catalog.json')))
+        ix = json.loads(read(d, 'installed.json'))
+        self.assertEqual([e['id'] for e in ix['entries']], self.take_closure_ids_only())
+        self.assertEqual(set(ix['entries'][0]), {'id'})
         c = subprocess.run([sys.executable, ADP, 'check', d], capture_output=True, text=True, env=env)
         self.assertEqual(c.returncode, 0, c.stdout + c.stderr)
 
@@ -248,17 +269,21 @@ class MyCatalog(unittest.TestCase):
         d = os.path.join(tempfile.mkdtemp(), 'out')
         r = subprocess.run([sys.executable, ADP, 'new', 'starter', d, '--catalog', CATALOG, '--url', URL], capture_output=True, text=True, env=dict(os.environ, ADP_HOME=tempfile.mkdtemp()))
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertFalse(os.path.exists(os.path.join(d, 'my-catalog.json')))
+        self.assertFalse(os.path.exists(os.path.join(d, 'installed.json')))
 
-    def test_the_view_and_its_parts_are_in_the_generated_page(self):
-        for name in ARGS:
-            d, _ = generate(name)
-            app, content = read(d, 'parts/app.js'), read(d, 'content.js')
-            for p in ('mycatalog', 'mycatalog.intro', 'mycatalog.list'):
-                self.assertIn(f'data-part="{p}"', app, p)
-            self.assertIn("mycatalog: 'My catalog', 'mycatalog.intro': 'My catalog intro', 'mycatalog.list': 'My catalog list'", app)
-            self.assertIn('"mycatalog.intro"', content)
-            self.assertIn("fetch('my-catalog.json')", app)
+    def test_the_view_its_parts_and_the_places_it_points_to_exist(self):
+        app = open(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt'), encoding='utf-8').read()
+        for p in ('mycatalog', 'mycatalog.intro', 'mycatalog.list'):
+            self.assertIn(f'data-part="{p}"', app, p)
+        self.assertIn("fetch('installed.json')", app)
+        take = load(os.path.join(TPL, 'assistant', 'template.json'))['take']
+        titles = set(re.findall(r"'([a-z.]+)': '", app.split('const TITLES = ')[1].split('};')[0])) | set(re.findall(r"(?:^|\s)([a-z]+): '", app.split('const TITLES = ')[1].split('};')[0]))
+        at = re.search(r"const INSTALLED_AT = \{(.*?)\};", app, re.S).group(1)
+        for eid, parts in re.findall(r"'([a-z.-]+)': \[([^\]]*)\]", at):
+            self.assertIn(eid, take, eid)       # only entries the assistant really takes
+            for part in re.findall(r"'([a-z.]+)'", parts):
+                self.assertIn(part, titles, part)       # and only blocks that exist on the page
+                self.assertIn(f'data-part="{part}"', app + open(os.path.join(TPL, 'assistant', 'index.html.txt'), encoding='utf-8').read(), part)
 
 
 if __name__ == '__main__':
