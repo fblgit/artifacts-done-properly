@@ -59,17 +59,17 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
   adp.py ack DIR [--result FILE | stdin] [--proposal PID]
                                                     a publish or batch result into state.json; --proposal: an applied one moves base
   adp.py gate [--input FILE | stdin]                the PreToolUse hook decision: deny while the inbox holds anything or a pin is stale
-  adp.py hold DIR ID ... --by NAME [--hours H] [--pins P.json] [--config C.json] [--unlock PREFIX ...]
+  adp.py hold DIR ID ... --by NAME [--hours H (at most 2)] [--pins P.json] [--config C.json] [--unlock PREFIX ...]
                                                     the hold batch for parts you will touch
   adp.py record OLD.json DIR --seq N --by NAME --summary S [--version V] [--threads T,..] [--pins P.json]
                 [--config C.json] [--unlock PREFIX ...] [--holds H.json]
                                                     the record batch after a publish; OLD.json is manifest/current as read
-  adp.py config DIR [--doc C.json]                  the switches: defaults, current values, locked, locked_parts, links
+  adp.py config [DIR] [--doc C.json]                the switches: defaults, current values, locked, locked_parts, links (DIR is accepted and not read)
   adp.py config set KEY VALUE [--doc C.json] [--by NAME] [--pins P.json] [--out DIR]
                                                     the pinned write of config/current (+ a changes/d-<ms> data change)
   adp.py requests DUMP.json [--ack RID --by NAME | --progress RID --text T [--by NAME] |
                 --done RID --response FILE [--changed a,b] [--version V] [--turns TURNS.json] [--by NAME]] [--pins P.json] [--out DIR]
-                                                    the open requests/ of a page that asks (docs/assist.md); with an option, the pinned
+                                                    the open requests/ of a page that asks (docs/assist.md; ping-lane requests are listed on purpose, a session needs them to answer a ping); with an option, the pinned
                                                     write that moves one forward, plus presence/<NAME>. --turns: answer a reply in the next turn
 Batches are written to files (--out, default DIR.adp/) and printed as `writes` lists whose entries carry file_path.
 P.json maps "collection/doc" to the version you read, e.g. {"manifest/current": 4, "parts/home": 2}.
@@ -810,13 +810,21 @@ def cvalues(doc):
     return {**{k: v[1] for k, v in CORE.items()}, **(doc.get('values') or {})}
 
 
+def real_date(v):
+    """An ISO date or date-time (what adp.js's Date.parse takes from the settings page) that is a real moment: month 13 and hour 25 fail."""
+    if re.match(r'\d{4}-\d\d-\d\d([T ]\d\d:\d\d(:\d\d)?(\.\d+)?(Z|[+-]\d\d:?\d\d)?)?$', v) is None: return False
+    try: datetime.datetime.fromisoformat(v[:-1] + '+00:00' if v.endswith('Z') else v)
+    except ValueError: return False
+    return True
+
+
 def check_value(key, v):
     if key not in CORE: return
     t, _, opts = CORE[key]
-    ok = {'bool': isinstance(v, bool), 'text': isinstance(v, str), 'enum': v in (opts or []) if isinstance(v, str) else False,
+    ok = {'bool': isinstance(v, bool), 'text': isinstance(v, str) and len(v) <= 2000, 'enum': v in (opts or []) if isinstance(v, str) else False,
           'list': isinstance(v, list) and all(isinstance(x, str) for x in v),
-          'url': isinstance(v, str) and (v == '' or re.match(r'https?://\S+$', v) is not None),
-          'datetime': isinstance(v, str) and (v == '' or re.match(r'\d{4}-\d\d-\d\d([T ]\d\d:\d\d(:\d\d)?(\.\d+)?(Z|[+-]\d\d:?\d\d)?)?$', v) is not None)}[t]
+          'url': isinstance(v, str) and (v == '' or re.match(r'https://\S+$', v) is not None),
+          'datetime': isinstance(v, str) and (v == '' or real_date(v))}[t]
     if not ok: sys.exit(f'{key}: expected {t}' + (' of ' + '/'.join(opts) if opts else '') + f', got {json.dumps(v)}')
 
 
@@ -854,8 +862,9 @@ def config_cmd(a):
         check_value(key, val)
         doc = read_doc(opt(a, '--doc')); by, at = opt(a, '--by', 'agent'), now()
         vals, chg = dict(doc.get('values') or {}), dict(doc.get('changed') or {})
-        if key in CORE and val == CORE[key][1]: vals.pop(key, None); chg.pop(key, None)
-        else: vals[key] = val; chg[key] = {'by': by, 'at': at}
+        if key in CORE and val == CORE[key][1]: vals.pop(key, None)       # at its default: no value kept, but changed[key] stays, as in adp.js
+        else: vals[key] = val
+        chg[key] = {'by': by, 'at': at}
         pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
         b = Batch(opt(a, '--out', 'config.adp'), pins)
         b.put('set', 'config', 'current', {'schema': 'adp-config/1', 'at': at, 'by': by, 'values': vals, 'changed': chg}, exists=True)
@@ -863,7 +872,6 @@ def config_cmd(a):
             b.put('set', 'changes', 'd-' + str(int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)),
                   {'version': '', 'at': at, 'by': by, 'summary': f'Set {key} = {json.dumps(val)}', 'parts': [], 'threads': [], 'data': [{'doc': 'config/current'}]})
         return b.emit((), {'key': key, 'value': val, **({} if key in CORE else {'unknown': True})})
-    if len(bare(a[1:])) < 1: sys.exit('usage: adp.py config DIR [--doc C.json]  |  adp.py config set KEY VALUE ...')
     v = cvalues(read_doc(opt(a, '--doc')))
     return emit({'defaults': {k: x[1] for k, x in CORE.items()}, 'values': v, 'locked': v['edit.locked'] is True,
                  'locked_parts': v['parts.locked'], 'links': {k[6:]: x for k, x in v.items() if k.startswith('links.')}})
@@ -871,7 +879,7 @@ def config_cmd(a):
 
 def hold(a):
     pos = bare(a[1:])
-    if len(pos) < 2: sys.exit('usage: adp.py hold DIR ID ... --by NAME [--hours H] [--pins P.json]')
+    if len(pos) < 2: sys.exit('usage: adp.py hold DIR ID ... --by NAME [--hours H (at most 2)] [--pins P.json]')
     by, hrs = opt(a, '--by', 'agent'), float(opt(a, '--hours', '2'))
     guard(a, pos[1:])
     until = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=min(hrs, 2))).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -879,7 +887,7 @@ def hold(a):
     b = Batch(opt(a, '--out', pos[0].rstrip('/') + '.adp'), pins)
     for p in pos[1:]: b.put('update', 'parts', p, {'holder': by, 'hold_until': until})
     b.put('update' if f'agents/{agent_id(by)}' in pins else 'set', 'agents', agent_id(by), {'last_seen': now(), 'holds': pos[1:]})
-    return b.emit(())
+    return b.emit((), {'hold_until': until})
 
 
 def record(a):
