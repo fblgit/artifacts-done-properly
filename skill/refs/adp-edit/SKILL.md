@@ -17,7 +17,7 @@ Why: several agents change the page over many versions. The only lock is the `if
 
 ## Protocol
 
-1. **Export (read).** `ADP export DIR --url URL` without its inputs prints the Artifact and ArtifactData reads and exits 2. Run them, save the results, run it again with `--files-listing F.json --docs D.json [--version V]`. It builds `DIR.adp/` (`incoming/`, `state.json`, base/live/work, `report.json`) and merges live into work when nothing is held. `ADP classify BASE.json LIVE.json INCOMING.json` sorts parts and files into new, ours, theirs, applied, held, retired.
+1. **Export (read).** `ADP export DIR --url URL` without its inputs prints the Artifact and ArtifactData reads and exits 2. Run them, save each result as the tool returned it (the `Artifact list` text as it is, ArtifactData as JSON), run it again with `--files-listing F.json --docs D.json [--version V]`. It builds `DIR.adp/` (`incoming/`, `state.json`, base/live/work, `report.json`) and merges live into work when nothing is held. `ADP classify BASE.json LIVE.json INCOMING.json` sorts parts and files into new, ours, theirs, applied, held, retired.
 2. **Hold.** `ADP hold DIR ID ... --by <you> [--hours H] (at most 2) [--pins P.json]` prints one pinned batch and the `hold_until` it set for the parts you will touch. A refused batch: export again. Someone else's live hold means hands off.
 3. **Edit** in DIR. Keep every marker and `data-part`; add both for a new part; never reuse a retired id.
 4. **Check.** `ADP check DIR`, `ADP manifest DIR`, then `ADP diff OLD.json NEW.json` or `ADP diff-pages OLD NEW` for the changed lines.

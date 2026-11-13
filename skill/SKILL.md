@@ -33,7 +33,7 @@ Use `--help` or a subcommand with no arguments to see its usage; do not guess a 
 | to edit or publish an artifact others also work on, or answer its comments | `adp-edit` |
 | an existing artifact put on ADP (adopt it, move it to adp/2) | `adp-adopt` |
 
-If a road skill is not installed yet, run setup first. Each road is complete on its own; the full standard is `catalog/kit/guides/artifact-dataplane.md` in this skill's folder (read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
+Each road is also a plain file in this skill's folder, `refs/<road>/SKILL.md` (for example `refs/adp-new/SKILL.md`): when the Skill tool does not know a road, read that file; setup is not needed for it. Each road is complete on its own; the full standard is `catalog/kit/guides/artifact-dataplane.md` in this skill's folder (read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
 
 ## Log
 
@@ -42,4 +42,4 @@ Every `adp.py` command appends one JSON line to `log.jsonl`: in `./.adp/` when a
 ## Always
 
 - Read the latest version of an artifact before touching it; a local copy from an earlier session may predate other people's work, and publishing from it overwrites theirs.
-- Mark anything a command or a read did not confirm as UNVERIFIED when you tell the user, so they know what to check; this includes whether this session is watching an artifact (only the publish result or the ArtifactComments tool says so).
+- Mark anything a command or a read did not confirm as UNVERIFIED when you tell the user, so they know what to check; this includes whether this session is watching an artifact (only the publish result or the ArtifactComments tool says so). A publish result that says live subscription is not supported from this session means you are not watching: tell the owner in one line, write `presence/<your name>` with `doing` saying requests are read only when they say go (polling), and carry on.

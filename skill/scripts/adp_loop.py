@@ -146,8 +146,15 @@ def dump_docs(path):
     return out
 
 
+TEXT_ROW = re.compile(r'^- "(.+?)"\s+\S+\s+(\d+) bytes', re.M)
+
+
 def listing(path):
-    raw = json.load(open(path)); raw = raw.get('files', raw) if isinstance(raw, dict) else raw
+    text = open(path, encoding='utf-8').read()
+    if text.lstrip()[:1] not in '{[':                       # the Artifact list result as the tool prints it: `- "path"  type  N bytes` rows
+        raw = [{'path': m.group(1), 'bytes': int(m.group(2))} for m in TEXT_ROW.finditer(text)]
+        if not raw: sys.exit(f'{path}: no file rows (`- "path"  type  N bytes`) and not JSON: save the Artifact list result as it came')
+    else: raw = json.loads(text); raw = raw.get('files', raw) if isinstance(raw, dict) else raw
     return [{'path': x['path'], 'sha256': x.get('sha256') or x.get('sha') or '', 'bytes': x.get('bytes') or x.get('size') or 0,
              'ref': {'artifact': x['artifact'], 'ver': x.get('ver', '')} if x.get('artifact') else None} for x in raw
             if not A.is_seed(x['path'])]   # the seed (seed.json, seed/) is read once by an empty db, never a part of the page: not in the manifest, not in the loop
@@ -204,7 +211,7 @@ def export(a):
     d = pos[0]; ad = adir(d); inc = os.path.join(ad, 'incoming'); os.makedirs(inc, exist_ok=True)
     fl, dd = A.opt(a, '--files-listing', os.path.join(ad, 'listing.json')), A.opt(a, '--docs', os.path.join(ad, 'docs.json'))
     if not os.path.isfile(fl):
-        print(json.dumps({'reads': [{'tool': 'Artifact', 'action': 'list', 'scope': 'files', 'url': url, 'save_to': os.path.abspath(fl)}],
+        print(json.dumps({'reads': [{'tool': 'Artifact', 'action': 'list', 'scope': 'files', 'url': url, 'save_to': os.path.abspath(fl), 'save': 'the result as the tool returned it, text or JSON'}],
                           'then': f'adp.py export {d} --url {url} --files-listing {fl}'}, indent=1)); return 2
     files = listing(fl)
     if not os.path.isfile(dd):
@@ -225,6 +232,7 @@ def export(a):
                 if unwrap(b) != b: b = unwrap(b); open(src, 'wb').write(b)
                 live_sha['index.html'] = hashlib.sha256(b).hexdigest()   # also when an earlier export already stored it bare
             live_tree['files/' + f['path']] = b
+            live_sha[f['path']] = hashlib.sha256(b).hexdigest()     # a listing printed as text carries no hash
     for coll, ds in docs.items():
         for k, (data, _) in ds.items():
             if coll == 'content':
