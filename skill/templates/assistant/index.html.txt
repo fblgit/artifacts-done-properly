@@ -19,7 +19,7 @@ CATALOG: {{catalog}}
 
 WHERE TO START
   1. Read the catalog's catalog.json (id, name, summary, tags, requires). Search it; do not open every entry.
-  2. Pick the entry and what it requires. ADP take <catalog url> ID ... prints the files map for the Artifact publish: one reference per file, {"artifact": "<catalog url>", "path": "kit/..."}. The server copies the file. The first run asks for one Artifact read of catalog.json (it lands in ~/.adp); run the command again after it.
+  2. Pick the entry and what it requires. ADP take <catalog url> ID ... prints the files map for the Artifact publish: one reference per file, {"artifact": "<catalog url>", "path": "kit/..."}. The server copies the file. The first run asks for one Artifact read of catalog.json (it lands in ~/.adp/catalogs/<id>/); run the command again after it.
   3. Templates are .html.txt text: copy the shell into your own index.html. Scripts, styles and data are taken as they are.
 
 THIS PAGE
