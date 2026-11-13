@@ -1,14 +1,14 @@
 /* part:page.style.kit.theme.longpage */
 /**
  * Long page
- * Kept beside Kanban, which is also cool grey with a blue accent. Long page is for a report read top to bottom: Schibsted Grotesk headings over Atkinson Hyperlegible, a stamp red as the second colour, 10 and 14px corners, 14px padding, and states as soft tints with coloured text, never solid fills. Kanban is the dense variant for working cards. The sticky section nav and the 4px gate edge are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ * Kept beside Kanban, which is also cool grey with a blue accent. Long page is for a report read top to bottom: Schibsted Grotesk headings over Atkinson Hyperlegible Next, a stamp red as the second colour, 10 and 14px corners, 14px padding, and states as soft tints with coloured text, never solid fills. Kanban is the dense variant for working cards. The sticky section nav and the 4px gate edge are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
  *
- * Character: compared with Kanban (the other cool grey and blue): Long page is for reading. 15px Atkinson Hyperlegible on 1.6 within a 68ch measure, 14px padding, 10px controls and 14px panels, a stamp red as the second colour (Kanban has a syntax purple), states as soft tints with coloured text and never solid fills.
+ * Character: compared with Kanban (the other cool grey and blue): Long page is for reading. 15px Atkinson Hyperlegible Next on 1.6 within a 68ch measure, 14px padding, 10px controls and 14px panels, a stamp red as the second colour (Kanban has a syntax purple), states as soft tints with coloured text and never solid fills.
  * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
  * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
- * Fonts: https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ * Fonts: https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Atkinson+Hyperlegible+Next:wght@200..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  *
  * @id        theme.longpage
  * @group     Themes
@@ -18,7 +18,7 @@
  * @summary   The reading one: cool grey paper, ink blue, a stamp-red second voice, 15px on 1.6 in a 68ch measure, rounder corners and soft tinted states.
  * @tags      palette, tokens, colours, dark mode, longpage, report, reading, grey, blue, stamp, soft tints
  * @requires  none
- * @config    fonts | Schibsted Grotesk, Atkinson Hyperlegible and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    fonts | Schibsted Grotesk, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
@@ -72,7 +72,7 @@
   --dot: rgba(25, 28, 36, 0.12);
   --shadow: 0 1px 2px rgba(25, 28, 36, .10), 0 10px 24px -16px rgba(25, 28, 36, .22);
   --f-display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --f-ui: "Atkinson Hyperlegible", -apple-system, "Segoe UI", sans-serif;
+  --f-ui: "Atkinson Hyperlegible Next", -apple-system, "Segoe UI", sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --f-hand: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --outline: #cfd5e2;
