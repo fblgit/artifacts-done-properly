@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""adp/1 parts tool (artifact-dataplane skill): part markers -> per-part hashes -> manifest -> diff.
+"""ADP parts tool, adp/2 layout (artifact-dataplane skill; it still reads adp/1 pages): part markers -> per-part hashes -> manifest -> diff.
 
   adp.py setup [--scope user|project|local] [--dry-run] [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
   adp.py init [DIR]                                 DIR/.adp/config.json for project onboarding; also registers the project (name, path) in ~/.adp/projects/
@@ -309,6 +309,22 @@ def publish_args(d, only=None):
     return out
 
 
+def add_kit_refs(out, d):
+    """A page built from the catalog keeps its kit files as references, not as local files: a full publish carries them beside the
+    local ones. The entries come from installed.json (what `new` wrote), cut to the roots (the entries no other one requires), the
+    way `new` took them; a local file at the same path wins. Without installed.json or the fetched index it says why in `kit_refs`."""
+    p = os.path.join(d, 'installed.json')
+    if not os.path.isfile(p): return out
+    ix = read_json(p, 'installed'); ents = ix.get('entries') or []
+    ids = [e['id'] for e in ents]; needed = {r for e in ents for r in e.get('requires') or []}
+    roots = [i for i in ix.get('take') or [] if i in ids] or [i for i in ids if i not in needed]
+    if not (ix.get('url') and roots): return out
+    t, code = taken(ix['url'], roots, [])
+    if code or 'files' not in t: out['kit_refs'] = t.get('error') and t or {'error': 'take failed', 'catalog': ix['url']}; return out
+    for f, ref in t['files'].items(): out['files'].setdefault(f, ref)
+    out['kit_refs'] = len(t['files']); return out
+
+
 def page_deps(d):
     """the local files index.html loads, in order: they go up with the page so version 1 renders"""
     p = os.path.join(d, 'index.html')
@@ -503,7 +519,9 @@ def new(a):
     tk = list(dict.fromkeys(meta.get('take', []) + optall(a, '--theme') + optall(a, '--layout')))
     if any(tmeta(l).get('installed') for l in layers):     # the My catalog tab lists this file
         ix = installed_index(opt(a, '--catalog') or saved_catalog(), tk)
-        if opt(a, '--url'): ix['url'] = opt(a, '--url')       # the link the owner gave wins over the one inside the file
+        given = opt(a, '--url') or (cat if CAT_URL.match(cat) else '')
+        ix['take'] = tk       # what this page asked for: `files` takes the same entries again
+        if given: ix['url'] = given       # the link the owner gave (or the catalog url this run used) wins over the one inside the file
         with open(os.path.join(d, 'installed.json'), 'w', encoding='utf-8') as f: json.dump(ix, f, ensure_ascii=False, separators=(',', ':'))
     seed_file(d, opt(a, '--by') or 'adp', data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
     design = meta.get('design') or (tmeta(meta['base']).get('design', '') if meta.get('base') else '')
@@ -1160,7 +1178,7 @@ def main(a):
     if len(a) >= 2 and a[0] == 'files':
         since = opt(a, '--since'); n = int(opt(a, '--batch', LIMIT)); where = opt(a, '--out', a[1].rstrip('/') + '.adp')
         fresh = os.path.isfile(os.path.join(a[1], SEED)) and seed_file(a[1])    # edits after `new` change the hashes the seed carries
-        if not since: return emit(batched(publish_args(a[1]), a[1], n, where))
+        if not since: return emit(batched(add_kit_refs(publish_args(a[1]), a[1]), a[1], n, where))
         o = json.load(open(since)); o = o.get('data', o) if 'files' not in o else o
         nf = manifest_dir(a[1])['files']; of = o.get('files', {})
         changed = {p for p, h in nf.items() if of.get(p) != h and p != 'index.html'} | ({SEED, *read_seed(a[1])[0].get('packs', [])} if fresh else set())
