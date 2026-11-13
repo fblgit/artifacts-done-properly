@@ -18,7 +18,7 @@
  * @config    ADP.page(cfg) | {view(), expected(view), titles, legacy, all, reveal(id, key)}
  * @config    page.header, page.tabs, page.changes | parts the page must render; #wc, #wcN, #wcChanges, #wcDecisions for the panel
  * @globals   none
- * @db        reads content, changes, decisions, incoming, manifest/current, config/current; writes checks/latest and status/integrity (editors only), config/current and a changes/d-<time> record when a setting is saved, and the seed docs on first open
+ * @db        reads content, changes, decisions, incoming, manifest/current, config/current; writes status/integrity (attempted for any viewer with a db; it lands only where the db rules allow) and checks/latest (editors only), config/current and a changes/d-<time> record when a setting is saved, and the seed docs on first open
  */
 (function(){
 'use strict';
@@ -458,14 +458,14 @@ function effects(){
   st.textContent = 'html[data-adp-locked] [data-adp-edit]{pointer-events:none;opacity:.55}.adp-lock{padding:8px 16px;background:var(--accent-soft,#fef3c7);color:var(--ink,#1c1917);border-bottom:2px solid var(--warn,#b45309);font:13px/1.4 var(--f-ui,system-ui,sans-serif)}';
   (document.head || document.documentElement).append(st);
 }
-define('edit', {locked: {type: 'bool', label: 'Pause editing', help: 'Freezes every control marked data-adp-edit and shows a banner.'}, until: {type: 'datetime', label: 'Paused until', help: 'Shown in the banner; nothing lifts the freeze by itself.'},
-  reason: {type: 'text', label: 'Reason'}, 'require-hold': {type: 'bool', label: 'Require a hold', help: 'A publish touching a part nobody holds is refused by adp.py record.'}});
+define('edit', {locked: {type: 'bool', label: 'Pause editing', help: 'Turns off pointer events on controls marked data-adp-edit (CSS only) and shows a banner; ADP.config.set ignores it.'}, until: {type: 'datetime', label: 'Paused until', help: 'Shown in the banner; nothing lifts the freeze by itself.'},
+  reason: {type: 'text', label: 'Reason'}, 'require-hold': {type: 'bool', label: 'Require a hold', help: 'Only adp.py record --holds checks it: it refuses changed parts that already existed and that nobody holds (deepest parts only; hold_until is not checked).'}});
 define('parts', {locked: {type: 'list', label: 'Locked parts', help: 'Part-id prefixes that are frozen.'}});
-define('comments', {enabled: {type: 'bool', default: true, label: 'Comment mode'}});
+define('comments', {enabled: {type: 'bool', default: true, label: 'Comment mode', help: 'Reserved: stored and shown, nothing reads it yet.'}});
 define('panel', {changes: {type: 'enum', options: ['everyone', 'editors', 'off'], default: 'everyone', label: 'What changed panel'}, checks: {type: 'enum', options: ['everyone', 'editors', 'off'], default: 'editors', label: 'Integrity badge'}});
 define('playground', {enabled: {type: 'bool', default: true, label: 'Playground'}});
-define('look', {theme: {type: 'text', label: 'Theme id'}, mode: {type: 'enum', options: ['auto', 'light', 'dark'], default: 'auto', label: 'Colour mode'}, density: {type: 'enum', options: ['comfortable', 'compact'], default: 'comfortable', label: 'Density'}});
-define('links', {catalog: {type: 'url', label: 'Catalog'}, board: {type: 'url', label: 'Board'}, repo: {type: 'url', label: 'Repository'}});
+define('look', {theme: {type: 'text', label: 'Theme id', help: 'Sets data-adp-theme on the page for your own CSS; the kit does not read it.'}, mode: {type: 'enum', options: ['auto', 'light', 'dark'], default: 'auto', label: 'Colour mode'}, density: {type: 'enum', options: ['comfortable', 'compact'], default: 'comfortable', label: 'Density', help: 'Sets data-adp-density on the page for your own CSS; the kit does not read it.'}});
+define('links', {catalog: {type: 'url', label: 'Catalog', help: 'Reserved: stored and shown, nothing reads it yet.'}, board: {type: 'url', label: 'Board', help: 'Reserved: stored and shown, nothing reads it yet.'}, repo: {type: 'url', label: 'Repository', help: 'Reserved: stored and shown, nothing reads it yet.'}});
 define('log', {'data-changes': {type: 'bool', default: true, label: 'Log data changes'}});
 
 /* ---------- boot ---------- */

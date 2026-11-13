@@ -30,7 +30,7 @@ Two entry points, one engine.
 | Send to a session | The engine writes `requests/<rid>` and sends a comment (`comments.sendToClaude`) that wakes the Claude Code sessions watching the artifact. A session moves the request forward in the db. | `db`, `comments` |
 | Ask now | The engine asks Claude through the `sample` capability, streams the answer, and stores the conversation in `conversations/`. The page cannot change; the framing text tells Claude so. | `sample` |
 
-The engine is `Kit.assist.start({db, user, comments, sample, downloads, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed})` in `assist.js`. It draws nothing. The views are `Kit.assistPanel` (composer and feed), `Kit.requestCard` (one request), `Kit.presence` (the "is a session watching" line) and `Kit.blockPicker` (the picker), each built over the engine's API.
+The engine is `Kit.assist.start({db, user, comments, sample, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed})` in `assist.js`. It draws nothing. The views are `Kit.assistPanel` (composer and feed), `Kit.requestCard` (one request), `Kit.presence` (the "is a session watching" line) and `Kit.blockPicker` (the picker), each built over the engine's API.
 
 ### People side
 
@@ -231,9 +231,9 @@ The same rules are in the `adp:db-rules` meta tag of `index.html.txt`. The level
 | --- | --- |
 | `requests` | the engine writes `requests/<rid>` on send and updates `status`/`state` and `requests/<rid>/turns` on reply; the sessions write the progress fields |
 | `conversations` | Ask now writes `conversations/<cid>` and `.../messages/<n>` |
-| `presence` | declared at `interact`; the page never writes it, the sessions do. Nothing in the repo states why the level is `interact` rather than the root `admin`. |
+| `presence` | declared at `interact`; the page never writes it, the sessions do. Nothing in the repo states why the level is `interact` rather than the root `admin`; it stays at `interact` because sessions write `presence/<name>` through ArtifactData as the person and nothing in the repo shows that person is always admin, so tightening it could stop a viewer-run session from reporting. |
 
-`ns/shared` and `ns/users/{self}` belong to the namespaces pattern of the starter, not to the assist. The root rule is `write admin`: `changes/d-<ms>` (the engine's log) and `incoming`, `manifest`, `parts`, `content` fall under it.
+`ns/shared` and `ns/users/{self}` belong to the namespaces pattern of the starter, not to the assist. The root rule is `write admin`: `changes/d-<ms>` (the engine's log) and `incoming`, `manifest`, `parts`, `content` fall under it. `changes` has no rule of its own, so for a viewer who is not an admin the engine's `changes/d-<ms>` write is refused and dropped silently (the engine catches the error); the request or reply itself is still written.
 
 | Capability | Used by | When it is missing |
 | --- | --- | --- |
@@ -242,7 +242,7 @@ The same rules are in the `adp:db-rules` meta tag of `index.html.txt`. The level
 | `comments` (`customAnchors: true`) | engine: `canSendToClaude`, `anchorFor`, `sendToClaude`; inbox: wake-up | `can().send` is `none`: sending is refused with code `none`; the panel says "This page cannot reach a session." Ask now still works. What the runtime does without `customAnchors` is not in this repo; the engine calls `anchorFor(el)` and, if that throws, the send fails with `upstream_error` and the request doc is deleted. |
 | `sample` | engine: Ask now | `can().ask` is false; "Ask now is not available on this page." |
 | `artifact` | inbox: `Apply` (`artifact.publish`) | Apply is disabled with "Apply needs the artifact capability, which this page does not declare." |
-| `downloads` | declared and passed to `Kit.assist.start` by the template; neither the engine nor the panel nor the inbox reads it | nothing changes |
+| `downloads` | the engine takes no `downloads` option; neither the engine nor the panel nor the inbox reads it | nothing changes |
 
 When `ADP` or the assist kits are not on the page, the template hides the button and the Requests view says "Requests need the assist kit, and it is not available on this page." A failed engine start hides the button.
 
@@ -262,7 +262,7 @@ The engine declares them with `ADP.config.define('assist', ...)` when the runtim
 
 Default shortcut `Mod+Shift+K` (`assist.shortcut`; `shortcut: false` in the engine options turns it off). `Mod` is Cmd on a Mac, iPad or iPhone (`/Mac|iPhone|iPad/` on `navigator.platform`), Ctrl elsewhere. Modifiers must match exactly. The key is ignored while focus is in an `input`, `textarea`, `select` or a content-editable element, while a pick is open, and when `assist.enabled` is `false`. In the template, a pick through the shortcut opens the pane and fills the composer (`onPick` calls `setScope`).
 
-`engine.pick()` uses `Kit.blockPicker.open` when it is loaded (the template loads it): the page dims around one `[data-part]` block at a time and a bar at the bottom names it with its place (3 of 9) and has Previous, Next, Pick this block and Cancel. Arrows move, Home and End jump, Enter picks, Esc leaves; a click picks on a fine pointer, and on a touch screen the first tap moves the ring and Pick this block confirms. Blocks inside `[data-uncommentable]` or `[data-assist-ui]` are not offered. Without `Kit.blockPicker`, the engine's built-in layer rings the block under the pointer with a tag; arrows move, Enter or a click picks, Esc leaves; it skips `[data-uncommentable]` but not `[data-assist-ui]`. The pick is `{id, label, hash, quote, el}`; the id carries `:<partKey>` for a repeated item in the picker.
+`engine.pick()` uses `Kit.blockPicker.open` when it is loaded (the template loads it): the page dims around one `[data-part]` block at a time and a bar at the bottom names it with its place (3 of 9) and has Previous, Next, Pick this block and Cancel. Arrows move, Home and End jump, Enter picks, Esc leaves; a click picks on a fine pointer, and on a touch screen the first tap moves the ring and Pick this block confirms. Blocks inside `[data-uncommentable]` or `[data-assist-ui]` are not offered. Without `Kit.blockPicker`, the engine's built-in layer rings the block under the pointer with a tag; arrows move, Enter or a click picks, Esc leaves; it skips `[data-uncommentable]` and `[data-assist-ui]`, as the block picker does. The pick is `{id, label, hash, quote, el}`; the id carries `:<partKey>` for a repeated item in the picker.
 
 `[data-assist-ring]` is a separate thing: the template's `reveal(id)` (`parts/app.js.txt`), called by the "About <block>" and "Changed" buttons on a card, switches to the view that owns the block, scrolls the `[data-part]` into the centre, sets `data-assist-ring` on it and removes it after 1800 ms. `assist.css.txt` styles it: `outline: 3px solid var(--accent); outline-offset: 3px`.
 
@@ -335,7 +335,7 @@ After Apply, a publish conflict, a hold on open, and Decline, the inbox sends a 
 
 ### The handoff
 
-When no `presence/*` doc is fresh and `canSendToClaude()` is not `available`, the inbox says "Nobody is watching. Paste this into any session:" and shows `watch the artifact <url>` (`(this artifact's link)` when no `url` is given), followed by ` — open requests: <ids>` when requests are open (status not `done` or `closed`), with a Copy button. When a presence doc is fresh it says `<name> is watching`; when `canSendToClaude()` is `available` it says a session is listening and will be woken when a proposal is decided. Freshness uses `last_seen` or `at`, and the name is `name` or the doc id, within `assist.presence-minutes`, or 10 minutes when that switch cannot be read (the engine's own default is 5).
+When no `presence/*` doc is fresh and `canSendToClaude()` is not `available`, the inbox says "Nobody is watching. Paste this into any session:" and shows `watch the artifact <url>` (`(this artifact's link)` when no `url` is given), followed by ` — open requests: <ids>` when requests are open (status not `done` or `closed`), with a Copy button. When a presence doc is fresh it says `<name> is watching`; when `canSendToClaude()` is `available` it says a session is listening and will be woken when a proposal is decided. Freshness uses `last_seen` or `at`, and the name is `name` or the doc id, within `assist.presence-minutes`, or 5 minutes when that switch cannot be read (the same default as the engine's).
 
 ### Who can do what
 
@@ -346,7 +346,7 @@ Classifying, picking, Apply and Decline write only for an editor (`user.canEdit`
 The `assistant` template (and `default`, which repeats its take list) shows how a request is made by sending real ones. `mountExamples()` in `skill/templates/assistant/parts/app.js.txt` draws the `home.examples` part: the `EXAMPLES` list (a drag and drop board, a calendar, a drafting board, a canvas, a mind map, rearranging, changing, adopting) and a table of `LANGUAGES` with a flag each. A button calls `engine.send({lane: 'task', scope: null, text})`, so the request is the ordinary `requests/<rid>` document of section 3, about the whole page, and the page then opens the Requests view. Replies to it are turns, as in section 5.
 
 - The buttons are disabled unless `engine.can().send` is `available`; the line under the table says why when it is not (no engine, `writers_only`, `no_session`, or off). The check repeats every 30 seconds.
-- Each prompt is written to fit the comment that wakes the session (4 KiB with its instruction and trailer); `tests/test_assistant_template.py` checks the length and that every catalog id a prompt names exists.
+- Each prompt is written to fit the comment that wakes the session (4000 bytes with its instruction and trailer); `tests/test_assistant_template.py` checks the length and that every catalog id a prompt names exists.
 - The prompts that build something say to check the catalog first and take what exists. The page does not know what the catalog has; the instruction and the catalog entry `pattern.mindmap` are what make a session take it.
 - Translating is a request like the others. Its text asks for the whole page to be translated with every part id and class kept, then for the `page.language` switch (a text setting, default English, declared in `starter` and `assistant`) to be set to that language. Nothing in the page reads `page.language` yet; it records what Claude did.
 

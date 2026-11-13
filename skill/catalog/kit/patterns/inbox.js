@@ -209,7 +209,7 @@ function mount(root, opts) {
   }
 
   function presenceLine() {
-    const cfg = o.config || (window.ADP && window.ADP.config), mins = Number(cfg && cfg.get && cfg.get('assist.presence-minutes')) || 10, now = Date.now();
+    const cfg = o.config || (window.ADP && window.ADP.config), mins = Number(cfg && cfg.get && cfg.get('assist.presence-minutes')) || 5, now = Date.now();
     const fresh = presence.filter(x => now - Date.parse(x.last_seen || x.at || 0) < mins * 60000);
     const line = el('div', B + 'presence');
     if (fresh.length) { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, (fresh[0].name || fresh[0].id) + ' is watching')); return line; }
