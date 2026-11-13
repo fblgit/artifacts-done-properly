@@ -20,7 +20,7 @@ Start on adp/2, not a single index.html: a one-file page cannot give per-file ha
 | default | `ADP new --tier default DIR` | the assistant plus every theme, the canvas, 3D and the most useful common kits |
 | full | `ADP new --tier full DIR` | not available yet (the published catalog, later): it exits with that message |
 
-Default to the assistant when people and Claude use the page together. Ask the user only if the purpose is unclear. `--theme` and `--layout` take a catalog entry ID in full (`theme.glaze`, `layout.topbar`), not a short name; `ADP kit list CATALOG --kind theme` shows the themes. CATALOG is the catalog url (its fetched index), `-` for the saved catalog, or `skill/catalog/catalog.json`; see `adp-catalog`. A local catalog.json is a build, not the live catalog, and prints a warning: do not publish from it.
+Default to the assistant when people and Claude use the page together. Ask the user only if the purpose is unclear. `--theme` and `--layout` take a catalog entry ID in full (`theme.glaze`, `layout.topbar`), not a short name, and add their `<link>` tags to index.html (a theme after `styles/page.css`: it is tokens only, so it wins over the placeholder tokens there; do not copy token blocks back into page.css); `ADP kit list CATALOG --kind theme` shows the themes. CATALOG is the catalog url (its fetched index), `-` for the saved catalog, or `catalog/catalog.json` inside the adp skill's folder; see `adp-catalog`. A local catalog.json is a build, not the live catalog, and prints a warning: do not publish from it.
 
 ## 2. Create the project
 
