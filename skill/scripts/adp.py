@@ -71,6 +71,9 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
                 --done RID --response FILE [--changed a,b] [--version V] [--turns TURNS.json] [--by NAME]] [--pins P.json] [--out DIR]
                                                     the open requests/ of a page that asks (docs/assist.md; ping-lane requests are listed on purpose, a session needs them to answer a ping); with an option, the pinned
                                                     write that moves one forward, plus presence/<NAME>. --turns: answer a reply in the next turn
+Local emulator (try a page offline: its db and Claude requests stood in by files under DIR/.adp-dev; `adp.py dev help`):
+  adp.py dev serve DIR [--port 8787] [--user ID]
+  adp.py dev watch DIR  |  dev send DIR OUT.json   (the session side: messages in, as JSON lines; batches out, pushed to the page)
 Batches are written to files (--out, default DIR.adp/) and printed as `writes` lists whose entries carry file_path.
 P.json maps "collection/doc" to the version you read, e.g. {"manifest/current": 4, "parts/home": 2}.
 C.json is config/current as read ({schema, at, by, values, changed}, or wrapped in data). With --config, hold and record exit 2
@@ -1195,12 +1198,12 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop
-adp_loop.A = sys.modules[__name__]
+import adp_loop, adp_dev
+adp_loop.A = adp_dev.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd}
+    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):

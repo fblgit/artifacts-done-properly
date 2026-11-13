@@ -1,0 +1,212 @@
+"""adp.py dev: a local stand-in for the claude.ai viewer, so a page can be tried offline (docs/assist.md "Local emulator").
+Imported by adp.py, which sets A to itself. Stdlib only.
+
+  dev serve DIR [--port 8787] [--user ID]   serve DIR (missing paths from the skill's catalog/) with window.claude stood in
+  dev watch DIR                             runs until stopped: prints each message the page sends, one JSON line, and moves its file
+                                            to inbox/done/; keeps watch.beat fresh, so the page reads a session as listening
+  dev send DIR FILE                         POST the batches a command printed (adp.py requests) to the server: applied as ArtifactData
+                                            would (if_version pinned, each batch all or nothing) and pushed to the page; prints
+                                            each doc written as {collection, id, data, version}, the dump of the next step
+
+State lives in DIR/.adp-dev/: db/<collection, / as ~>.json {doc_id: {data, version}}, inbox/<ns>.jsonl, inbox/done/, watch.beat, server.json."""
+import contextlib, copy, http.server, json, mimetypes, os, queue, re, sys, threading, time, types, urllib.request
+
+A: types.ModuleType = types.ModuleType('adp')      # the adp module, set by adp.py at import
+SHIM = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'adp_dev.js')
+BEAT_FRESH = 15                 # seconds: a watcher that touched watch.beat this recently is listening
+
+
+def fail(code, msg):
+    return {'error': {'code': code, 'message': msg}}
+
+
+def merge(a, b):
+    """update(): nested objects merge recursively, anything else replaces the field."""
+    o = copy.deepcopy(a)
+    for k, v in b.items(): o[k] = merge(o[k], v) if isinstance(v, dict) and isinstance(o.get(k), dict) else v
+    return o
+
+
+class Store:
+    """The db as files under state/db; the server is its only writer, under one lock."""
+    def __init__(self, state):
+        self.db, self.mu = os.path.join(state, 'db'), threading.Lock()
+        os.makedirs(self.db, exist_ok=True)
+
+    def file(self, coll):
+        return os.path.join(self.db, coll.replace('/', '~') + '.json')
+
+    def coll(self, coll):
+        p = self.file(coll)
+        return json.load(open(p, encoding='utf-8')) if os.path.isfile(p) else {}
+
+    def all(self):
+        return {f'{n[:-5].replace("~", "/")}/{i}': d for n in sorted(os.listdir(self.db)) if n.endswith('.json')
+                for i, d in self.coll(n[:-5].replace('~', '/')).items()}
+
+    def write(self, op, path, data=None):
+        """One write, under the lock. -> error or None"""
+        c, i = path.rsplit('/', 1); docs = self.coll(c); cur = docs.get(i)
+        if op == 'delete': docs.pop(i, None)
+        elif not isinstance(data, dict): return fail('invalid_argument', 'a document body is a JSON object')
+        elif op == 'update' and cur is None: return fail('invalid_argument', f'{path}: update needs an existing document')
+        elif op in ('set', 'update'):
+            docs[i] = {'data': merge(cur['data'], data) if op == 'update' and cur else data, 'version': (cur or {}).get('version', 0) + 1}
+        else: return fail('invalid_argument', f'unknown op {op}')
+        tmp = self.file(c) + '.tmp'
+        json.dump(docs, open(tmp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1); os.replace(tmp, self.file(c))
+        return None
+
+    def apply(self, batches):
+        """ArtifactData batches [[{op, collection, doc_id, file_path|data, if_version}]]: each batch all or nothing."""
+        out = []
+        for b in batches:
+            docs = self.all(); key = lambda w: f"{w['collection']}/{w['doc_id']}"
+            bad = next((f'{key(w)}: stale if_version {w["if_version"]}' for w in b
+                        if 'if_version' in w and (docs.get(key(w)) or {}).get('version') != w['if_version']), None)
+            bad = bad or next((f'{key(w)}: update needs an existing document' for w in b if w['op'] == 'update' and key(w) not in docs), None)
+            if bad: out.append({'ok': False, **fail('conflict' if 'stale' in bad else 'invalid_argument', bad)}); continue
+            for w in b:
+                data = w.get('data')
+                if data is None and w.get('file_path'): data = json.load(open(w['file_path'], encoding='utf-8'))
+                self.write(w['op'], key(w), data)
+            now = self.all()      # the docs as written, so the next step needs no read
+            out.append({'ok': True, 'docs': [{'collection': w['collection'], 'id': w['doc_id'], **now[key(w)]} for w in b if key(w) in now]})
+        return out
+
+
+def listening(state):
+    p = os.path.join(state, 'watch.beat')
+    return os.path.isfile(p) and time.time() - os.path.getmtime(p) < BEAT_FRESH
+
+
+def inject(html):
+    """The shim goes first in <head>, so window.claude exists before any page script (as the platform's does)."""
+    tag = '<script src="/__adp/shim.js"></script>'
+    m = re.search(r'<head[^>]*>', html, re.I)
+    if m: return html[:m.end()] + tag + html[m.end():]
+    return ('<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">' + tag +
+            '</head><body>' + html + '</body></html>')      # the skeleton the platform wraps a head-less page in
+
+
+def handler(d, state, user):
+    store, subs = Store(state), []
+    inbox = os.path.join(state, 'inbox'); os.makedirs(inbox, exist_ok=True)
+
+    def push(paths):
+        for q in list(subs): q.put(paths)
+
+    def named(text, docs):
+        """the doc a message is about: one whose path, else whose id, its text names (the page writes the doc before it sends)"""
+        return next((p for p in docs if p in text), None) or \
+            next((p for p in docs if re.search(rf'(?<![\w-]){re.escape(p.rsplit("/", 1)[1])}(?![\w-])', text)), None)
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def log_message(self, format, *args): pass
+
+        def send(self, body, ctype='application/json', code=200):
+            b = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode()
+            self.send_response(code); self.send_header('content-type', ctype); self.send_header('content-length', str(len(b)))
+            self.send_header('cache-control', 'no-store'); self.end_headers(); self.wfile.write(b)
+
+        def do_GET(self):
+            path = self.path.split('?')[0]
+            if path == '/__adp/shim.js':
+                js = f'window.__ADP_DEV={json.dumps({"user": user})};\n' + open(SHIM, encoding='utf-8').read()
+                return self.send(js.encode(), 'text/javascript; charset=utf-8')
+            if path == '/__adp/db': return self.send({'docs': store.all(), 'canSend': 'available' if listening(state) else 'no_session'})
+            if path == '/__adp/events': return self.events()
+            rel = path.lstrip('/') or 'index.html'
+            f = next((p for base in (d, os.path.join(A.HERE, 'catalog')) for p in [os.path.normpath(os.path.join(base, rel))]
+                      if p.startswith(os.path.normpath(base) + os.sep) and os.path.isfile(p)), None)
+            if not f: return self.send(fail('not_found', rel), code=404)
+            b, ctype = open(f, 'rb').read(), mimetypes.guess_type(f)[0] or 'application/octet-stream'
+            if ctype == 'text/html': b = inject(b.decode('utf-8')).encode()
+            self.send(b, ctype + ('; charset=utf-8' if ctype.startswith('text/') or ctype.endswith('javascript') else ''))
+
+        def events(self):
+            """SSE: one `data: [paths]` per change; a comment line every 10 s finds a closed tab"""
+            q = queue.Queue(); subs.append(q)
+            self.send_response(200); self.send_header('content-type', 'text/event-stream'); self.send_header('cache-control', 'no-store'); self.end_headers()
+            try:
+                while True:
+                    try: self.wfile.write(f'data: {json.dumps(q.get(timeout=10))}\n\n'.encode())
+                    except queue.Empty: self.wfile.write(b': beat\n\n')
+                    self.wfile.flush()
+            except OSError: pass
+            finally: subs.remove(q); self.close_connection = True
+
+        def do_POST(self):
+            try: b = json.loads(self.rfile.read(int(self.headers.get('content-length') or 0)) or b'{}')
+            except ValueError: return self.send(fail('invalid_argument', 'body is not JSON'))
+            path = self.path.split('?')[0]
+            if path == '/__adp/db':
+                with store.mu: err = store.write(b.get('op'), b.get('path', ''), b.get('data'))
+                if not err: push([b.get('path')])
+                return self.send(err or {'ok': True})
+            if path == '/__adp/outbox':
+                batches = b.get('batches') if isinstance(b, dict) else b
+                if batches and isinstance(batches[0], dict): batches = [batches]
+                with store.mu: res = store.apply(batches or [])
+                push([f"{x['collection']}/{x['id']}" for r in res if r['ok'] for x in r['docs']])
+                return self.send({'results': res})
+            if path == '/__adp/inbox':
+                if not listening(state): return self.send(fail('claude_unavailable', 'no session is watching: run adp.py dev watch DIR'))
+                tid, text, docs = 't%x' % time.time_ns(), b.get('text', ''), store.all()
+                p = named(text, docs)
+                msg = {'threadId': tid, 'by': user, 'anchor': b.get('anchor'), 'text': text,
+                       'doc': p and {'collection': p.rsplit('/', 1)[0], 'id': p.rsplit('/', 1)[1], 'data': docs[p]['data'], 'version': docs[p]['version']}}
+                tmp = os.path.join(inbox, f'.{tid}')
+                with open(tmp, 'w', encoding='utf-8') as f: f.write(json.dumps(msg, ensure_ascii=False) + '\n')
+                os.replace(tmp, os.path.join(inbox, f'{time.time_ns()}.jsonl'))      # one file per message, whole when it appears
+                return self.send({'threadId': tid, 'commentId': tid})
+            self.send(fail('not_found', path), code=404)
+    return H
+
+
+def state_of(d):
+    s = os.path.join(d, '.adp-dev'); os.makedirs(s, exist_ok=True); return s
+
+
+def serve(a, d):
+    if not os.path.isfile(os.path.join(d, 'index.html')): sys.exit(f'{d}: no index.html')
+    s = state_of(d)
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', int(A.opt(a, '--port', 8787))), handler(d, s, A.opt(a, '--user', 'dev-user')))
+    srv.daemon_threads = True
+    json.dump({'port': srv.server_port}, open(os.path.join(s, 'server.json'), 'w'))
+    A.emit({'url': f'http://127.0.0.1:{srv.server_port}/', 'state': os.path.abspath(s)}); sys.stdout.flush()
+    with contextlib.suppress(KeyboardInterrupt): srv.serve_forever()
+    return 0
+
+
+def watch(d):
+    s = state_of(d); inbox, done = os.path.join(s, 'inbox'), os.path.join(s, 'inbox', 'done')
+    os.makedirs(done, exist_ok=True)
+    while True:
+        open(os.path.join(s, 'watch.beat'), 'w').close()
+        for n in sorted(os.listdir(inbox)):
+            f = os.path.join(inbox, n)
+            if n.endswith('.jsonl') and time.time() - os.path.getmtime(f) >= 1:      # settled for a second
+                sys.stdout.write(open(f, encoding='utf-8').read()); sys.stdout.flush()
+                os.replace(f, os.path.join(done, n))
+        time.sleep(0.5)
+
+
+def send(d, path):
+    try:
+        url = f"http://127.0.0.1:{json.load(open(os.path.join(d, '.adp-dev', 'server.json')))['port']}/__adp/outbox"
+        req = urllib.request.Request(url, json.dumps(A.read_json(path, 'FILE')).encode(), {'content-type': 'application/json'})
+        res = json.loads(urllib.request.urlopen(req, timeout=10).read())['results']
+    except (OSError, ValueError, KeyError) as e: sys.exit(f'dev send: no server for {d} ({e}); run adp.py dev serve {d}')
+    A.emit({'results': res})
+    return 3 if not res or any(not r['ok'] for r in res) else 0
+
+
+def main(a):
+    use = 'usage: adp.py dev serve DIR [--port N] [--user ID] | watch DIR | send DIR FILE   (adp.py dev help)'
+    pos = A.bare(a[1:])
+    if pos[:1] == ['help']: print(__doc__); return 0
+    if pos[:1] == ['serve'] and len(pos) == 2: return serve(a, pos[1])
+    if pos[:1] == ['watch'] and len(pos) == 2: return watch(pos[1])
+    if pos[:1] == ['send'] and len(pos) == 3: return send(pos[1], pos[2])
+    sys.exit(use)

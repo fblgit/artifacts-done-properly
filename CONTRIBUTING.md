@@ -26,6 +26,8 @@ Ruff uses `ruff.toml` (pyflakes errors only). CI also runs gitleaks over the
 full history. The catalog entry headers are checked locally with
 `python3 tools/check_headers.py` (the pre-commit hook `catalog-headers`).
 
+To try a page in a browser without claude.ai, run `python3 skill/scripts/adp.py dev serve DIR` (docs/assist.md, "Local emulator").
+
 ## Editing the catalog
 
 If you edit a file under `skill/catalog/`, update its entry in
