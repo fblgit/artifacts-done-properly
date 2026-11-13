@@ -10,7 +10,7 @@
  * config  Kit.claudeLane.create({store, db, chrome, collection, presenceSlot, presenceKey, who, steps, hints, workingState, ackStates, doneStatus,
  *                                recordField, textMax, words, footer, onList, onAnswered})
  *           collection     db collection of requests (default "requests"); the state slot has the same name
- *           presenceSlot   state slot of presence docs (default "presence"); presenceKey the doc id the Claude session keeps fresh (default "claude-code")
+ *           presenceSlot   state slot of presence docs (default "presence"); presenceKey the doc id the Claude session keeps fresh (default "claude-code"; else the freshest presence doc)
  *           who            display name of the session (default "Claude Code")
  *           steps          ordered step names (default ["queue","ack","pending","done"]); hints {step: text}; css classes derive from the step names
  *           workingState   request.state value that means "being worked on" (default "working"), ackStates values that mean acknowledged (default ["ack","seen"]), doneStatus request.status value for answered (default "done")
@@ -27,7 +27,7 @@
  * @id        kit.claude-lane
  * @group     Board kit
  * @status    new
- * @version   0.1.1
+ * @version   0.1.2
  * @updated   2026-10-24
  * @summary   Sends a request to the Claude Code session that has the page open, queues it on the board when nobody listens, and shows each request’s answer state: queued, acknowledged, working, answered.
  * @tags      claude, claude code, requests, queue, answer states, stepper, comments, sendtoclaude, presence
@@ -112,12 +112,12 @@ Kit.claudeLane = Object.freeze({
 
     // whether a session is listening right now, and when one was last seen
     function ListenHint() {
-      const s = S;
-      const pr = s[presenceSlot][presenceKey];
-      const fresh = pr && pr.at && now() - pr.at < 5 * 60000;
+      const s = S, ms = t => typeof t === 'number' ? t : Date.parse(t) || 0;      // adp.py requests writes presence/<--by> with an ISO at
+      const all = s[presenceSlot] || {}, pr = all[presenceKey] || Object.values(all).sort((a, b) => ms(b.at) - ms(a.at))[0];
+      const fresh = pr && pr.at && now() - ms(pr.at) < 5 * 60000;
       const on = s.listen === 'available';
       return html`<div class="listen ${on ? 'on' : ''}"><span class="dot ${on ? 'on' : 'off'}"></span>
-        <span>${on ? W.listening : s.listen === 'writers_only' ? W.writersOnly : s.listen == null ? W.checking : W.none}${pr && pr.at ? html` · <span class="faint">${fresh ? 'busy with: ' + clip(pr.doing || 'something', 60) : 'last seen ' + ago(pr.at)}</span>` : ''}</span></div>`;
+        <span>${on ? W.listening : s.listen === 'writers_only' ? W.writersOnly : s.listen == null ? W.checking : W.none}${pr && pr.at ? html` · <span class="faint">${fresh ? 'busy with: ' + clip(pr.doing || 'something', 60) : 'last seen ' + ago(ms(pr.at))}</span>` : ''}</span></div>`;
     }
     // one request, with where it is in queued → delivered → picked up → working → answered
     function ReqLine({ id, r, compact }) {

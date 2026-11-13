@@ -87,7 +87,7 @@ Written only by Ask now (`engine.ask`). The conversation: `{title, by, at, scope
 
 ### `presence/<name>`
 
-Written by the sessions, never by the page (`assist.js` header, `@db`). `adp.py requests` writes `{at, doing, session}` under the name given by `--by` (default `agent`) with every request write: `doing` is `'<rid> (<lane>)'` on `--ack` and `--progress` and `''` on `--done`. The engine reads `at`, `doing` and `session` (the doc id when `session` is missing).
+Written by the sessions, never by the page (`assist.js` header, `@db`). `adp.py requests` writes `{at, doing, session}` under the name given by `--by` (default `agent`) with every request write: `doing` is `'<rid> (<lane>)'` on `--ack` and `--progress` and `''` on `--done`. The engine reads `at`, `doing` and `session` (the doc id when `session` is missing). `kit.claude-lane` reads `presence/<presenceKey>` (default `claude-code`), else the freshest presence doc, and takes `at` in ISO or ms.
 
 Fresh means `now - at` is less than the watching window, which is the switch `assist.presence-minutes`: an enum of `2`, `5` or `15`, default `5`. So with the default, five minutes without a write reads as nobody watching. The list `engine.presence()` yields `{watching, busy, sessions: [{session, at, doing, fresh}]}`; `watching` is true when any session is fresh, `busy` when a fresh session has a non-empty `doing`.
 
@@ -209,6 +209,17 @@ The gate (contract 7, `adp.py gate`) refuses other writes while a request awaits
 3. Do the work; `--progress RID --text ...` as it goes; edit, publish and record as `docs/architecture.md` describes.
 4. `--done RID --response FILE --changed a,b --version V`. For a reply, put the reply doc's dump in `--turns`.
 5. Replies come as comments naming `requests/<rid>` and as new `turns/`.
+
+### Local emulator: `adp.py dev`
+
+To try a page and this loop without claude.ai, `adp.py dev serve DIR [--port 8787] [--user ID]` serves `DIR` on 127.0.0.1 (paths missing from `DIR`, such as `kit/` or `adp.js`, come from the skill's `catalog/`) and injects `/__adp/shim.js` first in `<head>`. The shim stands in for `window.claude.use`: `db` (doc and collection refs, get, set, update, delete, add, onSnapshot, where, orderBy, limit; `update` of a missing doc rejects `invalid_argument`), `user` (`id`, `canEdit`, `can('data.write')`, all granted) and `comments` (`canSendToClaude`, `sendToClaude`); every other name resolves `null`. The server pushes each change over an event stream and the page re-reads the db. State lives in `DIR/.adp-dev/`: `db/<collection>.json`, `inbox/`, `watch.beat`, `server.json`.
+
+The session side:
+
+1. Run `adp.py dev watch DIR` in the background and read its output. It keeps `watch.beat` fresh, so `canSendToClaude` reads `available` while it runs (15 seconds) and `no_session` otherwise. Each `sendToClaude` lands as one file in `inbox/`; a second after it appears, `watch` prints it as one JSON line `{threadId, by, anchor, text, doc}` and moves it to `inbox/done/`. `doc` is `{collection, id, data, version}` of the doc the text names (by path, else by id), and `[doc]` saved as a file is a dump `adp.py requests` reads.
+2. Answer with `adp.py requests ... --out DIR > OUT.json`, then `adp.py dev send DIR OUT.json`: the server applies the printed `batches` as ArtifactData does (each batch all or nothing, a stale `if_version` refused, exit 3) and pushes them to the page. It prints each doc written as `{collection, id, data, version}`, so the request's entry, in a list, is the dump for the next step (`--progress`, `--done`).
+
+Not emulated: access rules and roles, sampling, `artifact.publish`, the comment UI and threads, and the platform's CDN rules.
 
 ## 7. Capabilities and rules the assist needs
 

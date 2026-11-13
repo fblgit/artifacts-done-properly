@@ -1727,12 +1727,13 @@
   {
    "kind": "component",
    "group": "Board kit",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "status": "new",
    "globals": [
     "htm-preact"
    ],
    "changed": [
+    "0.1.2: ListenHint reads the presence doc adp.py requests writes: presence/<presenceKey>, else the freshest presence doc, with at in ms or ISO.",
     "0.1.1 (this catalog’s copy): the queue strip counts read --ink-2, a waiting count reads --ink on its --warn tint, and the listening line reads --ink beside its green dot, all 4.5:1 or more in both themes.",
     "0.1.1: the header names the .faint and .dot classes it takes from kit/chrome.css."
    ],
@@ -1755,8 +1756,8 @@
     {
      "path": "kit/claude-lane.js",
      "role": "script",
-     "sha256": "baf42d0fdca358fd353e8bfb739936774faa8c442af6757aa2b838473155c5a0",
-     "bytes": 11338
+     "sha256": "9f2b1ac4150dcc048c6341a76326b3d0d9c418a366639852a2799a52edc35ff3",
+     "bytes": 11576
     },
     {
      "path": "kit/claude-lane.css",
@@ -1838,7 +1839,7 @@
      "what": "the same lane with ping and refresh states, which stay board code"
     }
    ],
-   "hash": "2c4d174e8d36",
+   "hash": "3978fa87ac47",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
