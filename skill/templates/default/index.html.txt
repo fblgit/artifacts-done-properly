@@ -19,7 +19,7 @@ THIS PAGE IS AN ADP ARTIFACT (Artifacts Done Properly). ADP is about building ri
 INSTALL THE ADP SKILL (once per machine, before ADP take / ADP check; skip if ~/.claude/skills/adp/SKILL.md exists):
   1. Download adp.skill from the latest release: https://github.com/fblgit/artifacts-done-properly/releases/latest (it is a zip whose root folder is adp/).
   2. Unzip it into your skills folder: unzip adp.skill -d ~/.claude/skills
-  3. Run: python3 -I ~/.claude/skills/adp/scripts/adp.py setup
+  3. Run: python3 -I ~/.claude/skills/adp/scripts/adp.py setup --dry-run, then read ~/.claude/skills/adp/SKILL.md (First run): it says which scope to ask the user (user, project or local) and then runs setup with it.
   No pip or npm is needed; the script is Python 3 standard library only.
 
 CATALOG: {{catalog}}

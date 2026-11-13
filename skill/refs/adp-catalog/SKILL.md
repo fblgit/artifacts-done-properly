@@ -28,8 +28,8 @@ The catalog is a published artifact whose files are kit entries, listed in its `
    `"kit/themes/glaze.css": {"artifact": "<catalog url>", "path": "kit/themes/glaze.css"}`
 2. A `warning` in the output means CATALOG was a local `catalog.json`, not the live catalog: do not publish from it. Local catalogs need `--url URL` to name the catalog artifact; `--config C.json` is accepted too.
 3. Publish with that `files` map (merge it into the page's own `files`), then `ADP check DIR`.
-4. A taken file is served, not loaded: in the page's `index.html` add a `<link rel="stylesheet">` for each taken `.css` and a `<script src>` for each taken `.js`, in the order of `entries` (requires first), the scripts before `parts/app.js`; the globals an entry `provides` (for example `Kit.timeline`) exist only after its script loaded. `ADP check` does not verify the loading.
-5. `ADP new` takes only a theme and a layout for you: `--theme ID`, `--layout ID` and `--catalog CATALOG` put them (and what they require) into its publish object and its index.html. Any other entry: `ADP take`, merge its `files`, add the tags of step 4.
+4. A taken file is served, not loaded: in the page's `index.html` add a `<link rel="stylesheet">` for each taken `.css` and a `<script src>` for each taken `.js`, in the order of `entries` (requires first), the scripts before `parts/app.js`; the globals an entry `provides` (for example `Kit.timeline`) exist only after its script loaded. Stylesheets: the theme first, then the entries' own in `entries` order, then the page's `styles/` (a later rule wins). `ADP check` does not verify the loading.
+5. Besides what its tier already takes (adp-new, section 1), `ADP new` takes only a theme and a layout for you: `--theme ID`, `--layout ID` and `--catalog CATALOG` put them (and what they require) into its publish object and its index.html. Any other entry: `ADP take`, merge its `files`, add the tags of step 4.
 
 ## Rules
 

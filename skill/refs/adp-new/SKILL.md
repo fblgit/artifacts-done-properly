@@ -34,9 +34,9 @@ Default to the assistant when people and Claude use the page together. Ask the u
 - Over 250 files `files` becomes `batches`: publish the page with the first and send the rest to the same url.
 - Record the publish result with `ADP ack DIR --result FILE` (or on stdin) after `ADP export DIR --url URL` has run once (road `adp-edit`). On a brand-new page skip it: `ack` answers `no export yet` until then, and the first export takes the live version (`--version V` from the publish result); the next republish of the page starts with that export (road `adp-edit`). `ADP check` prints one warning on every assistant page, `part roots without data-comment-target: page.assist`: the Claude pane is not a place to comment on, so it is expected.
 
-## 4. The one-time editor open (seeds the database)
+## 4. Seed the database
 
-The page expands `seed.json` and `seed/` into the database itself, and only when an editor opens it. After the first publish tell the user in one line: "Open the artifact once as the editor." A session that works alone (no person to open it) runs `ADP seed DIR --batches` and writes the printed ArtifactData batches itself. Without either the db stays empty: not a failure, only unseeded.
+The page can expand `seed.json` and `seed/` into the database itself, but only when an editor opens it, and until then the db has no record (no `manifest/current`), so the edit road cannot hold or record anything. So right after the first publish run `ADP seed DIR --by <you> --batches` and write the printed ArtifactData batches yourself (the db rules let an editor write them). The page then does not expand the seed again. Tell the owner in one line what you wrote. If you cannot write to the db, say so and ask the owner to open the artifact once as the editor.
 
 ## Page code
 
