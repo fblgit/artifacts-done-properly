@@ -149,44 +149,40 @@ function mountRequests(){
   const off = list.on(paint); paint(list.get());
   mounted.push({destroy(){ off(); cards.forEach(c => c.m.destroy()); }});
 }
-/* The My catalog view lists the owner's catalog: my-catalog.json, written beside the page by adp.py new from the catalog it was given
-   (id, name, group, summary, version, tags, requires). It is a copy from that day: the line above the list says which catalog and which build.
-   "Add to this page" is a request to Claude, sent through the assist engine, to take that entry by reference. */
+/* The My catalog view lists what this page has installed: installed.json, written beside the page by adp.py new from the page's take list and
+   what those entries require (the files it loads), with their words from the owner's catalog. A component that has a place on this page says where
+   (INSTALLED_AT: entry id -> part ids) and offers two buttons on that part: Show it (the page goes to it and rings it) and Work on it (Work with Claude
+   opens with that part picked, so the request is about that block). The page is the render; nothing is previewed twice. */
+const INSTALLED_AT = {'pattern.settings': ['settings.switches'], 'pattern.inbox': ['settings.inbox'], 'pattern.namespaces': ['settings.namespaces'],
+  'pattern.assist-panel': ['page.assist'], 'pattern.presence': ['page.header'], 'pattern.request-card': ['requests.list'],
+  'kit.canvas': ['canvas.board'], 'pattern.mindmap': ['canvas.board']};
 function mountMyCatalog(){
   const box = $('[data-part="mycatalog.list"]');
   if (!box) return;
   const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-  let dead = false, data = null, q = '', group = 'all';
-  const none = why => { box.innerHTML = '<p class="muted">' + why + '</p>'; };
+  let dead = false;
   mounted.push({destroy(){ dead = true; }});
-  fetch('my-catalog.json').then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); }).then(j => {
+  const none = why => { box.innerHTML = '<p class="muted">' + why + '</p>'; };
+  fetch('installed.json').then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); }).then(j => {
     if (dead) return;
-    if (!j || !Array.isArray(j.entries) || !j.entries.length) return none('The catalog file has no entries.');
-    data = j;
-    box.innerHTML = '<p class="muted mc-src"></p><div class="mc-bar"><input type="search" class="mc-q" placeholder="Search by name, id, tag or what it does" aria-label="Search the catalog"><select class="mc-group" aria-label="Group"></select></div><p class="muted mc-count" role="status" aria-live="polite"></p><ul class="mc-list"></ul><p class="muted mc-note" role="status" aria-live="polite"></p>';
-    const groups = ['all'].concat([...new Set(j.entries.map(e => e.group).filter(Boolean))]);
-    box.querySelector('.mc-group').innerHTML = groups.map(g => `<option value="${esc(g)}">${g === 'all' ? 'All groups' : esc(g)}</option>`).join('');
-    box.querySelector('.mc-src').innerHTML = esc(j.entries.length) + ' entries from ' + (j.url ? `<a href="${esc(j.url)}" target="_blank" rel="noopener">your catalog</a>` : 'your catalog') + (j.built ? ', built ' + esc(String(j.built).slice(0, 10)) : '') + '. This is the copy made when the page was created.';
-    draw();
-  }).catch(() => { if (!dead) none('No catalog is connected to this page. In Claude Code, give your catalog link with <code>adp.py catalog &lt;url&gt;</code> and create the page again, or ask Claude to add <code>my-catalog.json</code>.'); });
-  const score = (e, ts) => { const hay = [e.id, e.name, e.summary, (e.tags || []).join(' ')].join(' ').toLowerCase(); let n = 0; for (const t of ts) { if (hay.indexOf(t) < 0) return 0; n += (e.id + ' ' + e.name).toLowerCase().indexOf(t) >= 0 ? 3 : 1; } return n || 1; };
-  function draw(){
-    const ts = q.toLowerCase().split(/\s+/).filter(Boolean);
-    const rows = data.entries.filter(e => group === 'all' || e.group === group).map(e => [e, ts.length ? score(e, ts) : 1]).filter(r => r[1] > 0);
-    if (ts.length) rows.sort((a, b) => b[1] - a[1]);
-    const shown = rows.slice(0, 60);
-    box.querySelector('.mc-count').textContent = rows.length + ' of ' + data.entries.length + (rows.length > shown.length ? ', first ' + shown.length + ' shown' : '');
-    box.querySelector('.mc-list').innerHTML = shown.map(([e]) => `<li class="mc-item"><div><b>${esc(e.name)}</b> <code>${esc(e.id)}</code> <span class="muted">${esc(e.group)} · ${esc(e.version)}</span><p class="muted">${esc(e.summary)}</p>${(e.requires || []).length ? `<p class="muted mc-req">Needs ${(e.requires).map(r => '<code>' + esc(r) + '</code>').join(' ')}</p>` : ''}</div><button type="button" class="btn" data-take="${esc(e.id)}">Add to this page</button></li>`).join('');
-  }
-  box.addEventListener('input', e => { if (e.target.classList.contains('mc-q')) { q = e.target.value; if (data) draw(); } });
-  box.addEventListener('change', e => { if (e.target.classList.contains('mc-group')) { group = e.target.value; if (data) draw(); } });
+    if (!j || !Array.isArray(j.entries) || !j.entries.length) return none('Nothing is listed as installed.');
+    const here = j.entries.filter(e => INSTALLED_AT[e.id]), rest = j.entries.filter(e => !INSTALLED_AT[e.id]);
+    const item = e => `<li class="mc-item"><div><b>${esc(e.name || e.id)}</b> <code>${esc(e.id)}</code> <span class="muted">${esc(e.group || '')}${e.version ? ' · ' + esc(e.version) : ''}</span>${e.summary ? `<p class="muted">${esc(e.summary)}</p>` : ''}`
+      + (INSTALLED_AT[e.id] || []).map(pid => `<p class="mc-where">On this page: <b>${esc(TITLES[pid] || pid)}</b> <code>${esc(pid)}</code> <button type="button" class="btn" data-show="${esc(pid)}">Show it</button> <button type="button" class="btn primary" data-work="${esc(pid)}" data-name="${esc(e.name || e.id)}">Work on it</button></p>`).join('')
+      + `</div></li>`;
+    box.innerHTML = `<p class="muted mc-src">${j.entries.length} installed on this page${j.url ? `, from <a href="${esc(j.url)}" target="_blank" rel="noopener">your catalog</a>` : ''}. ${here.length} of them have a place you can see on this page.</p>`
+      + (here.length ? `<h3>On this page</h3><ul class="mc-list">${here.map(item).join('')}</ul>` : '')
+      + (rest.length ? `<h3>Libraries and helpers</h3><p class="muted">No block of their own: other components use them.</p><ul class="mc-list">${rest.map(item).join('')}</ul>` : '')
+      + '<p class="muted mc-note" role="status" aria-live="polite"></p>';
+  }).catch(() => { if (!dead) none('This page has no list of what it installed. Create it again with <code>adp.py new</code>, or ask Claude to write <code>installed.json</code> beside the page.'); });
   box.addEventListener('click', e => {
-    const b = e.target.closest('button[data-take]'); if (!b || !data) return;
-    const note = box.querySelector('.mc-note'), id = b.dataset.take, c = engine ? engine.can() : null;
-    if (!engine || !c || c.send !== 'available') { note.textContent = !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c && c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c && c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to Claude is not possible here right now.'; return; }
-    b.disabled = true;
-    engine.send({lane: 'task', scope: null, text: 'Add the catalog entry ' + id + ' to this page. Take it by reference from my catalog' + (data.url ? ' (' + data.url + ')' : '') + ' together with what it requires, wire it where it fits, and tell me where you put it. Change nothing else.'})
-      .then(() => { note.textContent = 'Sent: ' + id + '. Follow it on Requests.'; show('requests'); }, err => { note.textContent = (err && err.message) || 'It could not be sent.'; }).finally(() => { b.disabled = false; });
+    const sh = e.target.closest('button[data-show]'), wk = e.target.closest('button[data-work]');
+    if (sh) { reveal(sh.dataset.show); return; }
+    if (!wk) return;
+    const note = box.querySelector('.mc-note'), id = wk.dataset.work, el = document.querySelector('[data-part="' + id + '"]');
+    if (!panel) { if (note) note.textContent = 'Work with Claude is not available on this page.'; return; }
+    setOpen(true);
+    panel.setScope({id, label: TITLES[id] || id, hash: '', quote: el ? String(el.innerText || '').trim().slice(0, 600) : ''}, true);
   });
 }
 /* The Home examples: each is a ready request. The button sends it to Claude through the assist engine (engine.send), so the person sees how a request is made, followed and answered.
