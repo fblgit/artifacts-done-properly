@@ -482,18 +482,19 @@ def installed_index(src, take):
             'entries': [{k: by[i][k] for k in INSTALLED if k in by[i]} if i in by else {'id': i} for i in order]}
 
 
-def add_kit_tags(d, files):
+def add_kit_tags(d, files, fonts=()):
     """link/script tags in DIR/index.html for the taken .css/.js files it does not load yet. A theme (tokens only) goes after
     styles/page.css so it wins over the starter's placeholder tokens; other stylesheets go before it, so the page's own rules win;
-    scripts go before parts/app.js. True when the page changed."""
+    a theme's web fonts (the `fonts` urls `take` prints) go before them all; scripts go before parts/app.js. True when the page changed."""
     p = os.path.join(d, 'index.html')
     with open(p, encoding='utf-8') as f: html = f.read()
     new, page = html, '<link rel="stylesheet" href="styles/page.css">'
     css = [x for x in files if x.endswith('.css') and f'"{x}"' not in html]
     js = [x for x in files if x.endswith('.js') and f'"{x}"' not in html]
+    fonts = [u for u in dict.fromkeys(fonts) if f'"{u}"' not in html]
     link = lambda xs: ''.join(f'<link rel="stylesheet" href="{x}">\n' for x in xs)
     if page in new:
-        new = new.replace(page, link(x for x in css if not x.startswith('kit/themes/')) + page + ''.join('\n' + link([x]).rstrip('\n') for x in css if x.startswith('kit/themes/')), 1)
+        new = new.replace(page, link(fonts) + link(x for x in css if not x.startswith('kit/themes/')) + page + ''.join('\n' + link([x]).rstrip('\n') for x in css if x.startswith('kit/themes/')), 1)
     if js and '<script src="parts/app.js"></script>' in new:
         new = new.replace('<script src="parts/app.js"></script>', ''.join(f'<script src="{x}"></script>\n' for x in js) + '<script src="parts/app.js"></script>', 1)
     if new == html: return False
@@ -557,7 +558,8 @@ def new(a):
         if code: emit(t); sys.exit(2)
         out['publish']['files'].update(t['files']); out['catalog'] = t['catalog']; out['entries'] = t['entries']
         asked = optall(a, '--theme') + optall(a, '--layout')
-        if asked and add_kit_tags(d, taken(src, asked, a)[0]['files']):       # a theme or layout asked for is served and also loaded: its tags go into index.html
+        ta = taken(src, asked, a)[0] if asked else {}
+        if asked and add_kit_tags(d, ta['files'], ta.get('fonts', {}).values()):       # a theme or layout asked for is served and also loaded: its tags go into index.html
             seed_file(d, opt(a, '--by') or 'adp', data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
     out['next'] = ['adp.py check ' + d,
                    'Design it: read `design` above, take a theme and the layouts the content needs from the catalog, then write page.css and the views for this content (a script that emits them beats typing)' if design and not built else '',
@@ -599,7 +601,10 @@ def take(a):
             m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))
     info = {'url': url, 'index': os.path.abspath(idx), 'live': live, 'ver': cat.get('ver') or None, 'built': cat.get('built')}
     if not live: info['warning'] = 'a local index is a build, not the live catalog: a file it lists may be missing there. adp.py take <catalog url> ... reads the fetched live index'
-    return emit({'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}})
+    out = {'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}}
+    fonts = {i: by[i]['fonts'] for i in order if by[i].get('fonts')}
+    if fonts: out['fonts'] = fonts      # a theme's web fonts: the page links each url in its head, or the theme's families fall back to system fonts
+    return emit(out)
 
 
 def index_of(src, a):

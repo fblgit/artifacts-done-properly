@@ -9,7 +9,7 @@
  * published one back. Theme, mode (light, dark, auto) and width (390, 768, full) change the stage only, never the page. An entry with no mount says so. An error thrown by a mount is shown, not thrown.
  *
  * The theme is applied on the stage, not on :root: the kit's theme css only applies on :root, so the stage copies the custom properties from the theme's json (the css path with .json, light map then dark map
- * for dark mode), the way the catalog's previews do. The stage has its own data-theme and contain: content.
+ * for dark mode), the way the catalog's previews do, and links the json's "fonts" url once so the theme's families load. The stage has its own data-theme and contain: content.
  *
  * Layout: a head (filter and entry picker, then the entry's name in the display face with its summary and what loads first), a stage bar (theme select, mode and width as segments of
  * native radios, so arrow keys move), the bench (the stage on a dotted ground, its width written above it) and the sample panel (beside the bench when there is room, under it when not:
@@ -27,7 +27,7 @@
  * @id        pattern.playground
  * @group     Patterns
  * @status    new
- * @version   0.1.0
+ * @version   0.1.1
  * @updated   2026-11-13
  * @summary   Try any catalog entry live on a page: pick it, edit its sample, switch the stage's theme, mode and width.
  * @tags      playground, try, preview, sample, theme, width, workbench, catalog, tools
@@ -134,7 +134,7 @@ function mount(root, opts) {
     let vars = '';
     if (t) {
       const j = t.css.replace(/\.css$/, '.json');
-      try { themeCache[j] = themeCache[j] || await get(url(j), 'json'); const d = themeCache[j]; vars = Object.entries(Object.assign({}, d.light, isDark ? d.dark : {})).map(([k, v]) => k + ':' + v).join(';'); }
+      try { themeCache[j] = themeCache[j] || await get(url(j), 'json'); const d = themeCache[j]; if (d.fonts) get(d.fonts, 'style').catch(() => {}); vars = Object.entries(Object.assign({}, d.light, isDark ? d.dark : {})).map(([k, v]) => k + ':' + v).join(';'); }
       catch (e) { fail('The theme could not be loaded (' + e.message + '); the page tokens are used.'); }
     }
     wrap.style.cssText = vars + ';color-scheme:' + (isDark ? 'dark' : 'light') + ';width:' + (st.width === '0' ? '100%' : st.width + 'px');
