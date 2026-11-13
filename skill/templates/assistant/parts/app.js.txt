@@ -217,41 +217,47 @@ function mountExamples(){
   const box = $('[data-part="home.examples"]');
   if (!box) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-  box.innerHTML = '<h3>Try it: ask Claude</h3><p class="muted ex-lead">Pick one. Its request opens below so you can read it, change it and add your own details; nothing is sent until you press Send.</p>'
-    + '<ul class="ex-grid">' + EXAMPLES.map(x => `<li class="ex-tile"><span class="ex-ico">${icon(x.icon)}</span><div><b>${esc(x.title)}</b><p class="muted">${esc(x.blurb)}</p></div><button type="button" class="btn" data-ex="${x.id}">Write it</button></li>`).join('') + '</ul>'
-    + `<h4><span class="ex-ico ex-ico-s">${icon('translate')}</span> Translate this page</h4><p class="muted ex-lead">Pick a language: Claude translates the page and records it in the Language setting.</p>`
-    + '<div class="ex-langs">' + LANGUAGES.map(l => `<button type="button" class="ex-lang" data-lang="${esc(l[1])}"><span aria-hidden="true">${l[0]}</span>${esc(l[1])}</button>`).join('') + '</div>'
-    + '<form class="ex-edit" hidden><label class="ex-edit-h" for="exText"></label><textarea id="exText" rows="8" maxlength="1500"></textarea>'
-    + '<p class="muted ex-edit-n"><span class="ex-count"></span> It goes to Claude exactly as written.</p>'
-    + '<div class="ex-edit-b"><button type="submit" class="btn primary">Send to Claude</button><button type="button" class="btn" data-reset>Start again</button><button type="button" class="btn" data-cancel>Cancel</button></div></form>'
+  const IDEAS = EXAMPLES.concat([{id: 'translate', title: 'Translate this page', blurb: 'Into your language', icon: 'translate'}]);
+  box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
+    + '<div class="ex-split"><ul class="ex-ideas">'
+    + IDEAS.map(x => `<li><button type="button" class="ex-idea" data-ex="${x.id}" aria-pressed="false"><span class="ex-ico">${icon(x.icon)}</span><span class="ex-t"><b>${esc(x.title)}</b><small>${esc(x.blurb)}</small></span></button></li>`).join('')
+    + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
+    + '<label class="ex-sel" hidden><span class="ex-sr">Language</span><select>' + LANGUAGES.map(l => `<option value="${esc(l[1])}">${l[0]}  ${esc(l[1])}</option>`).join('') + '</select></label></div>'
+    + '<label class="ex-sr" for="exText">Your request to Claude</label><textarea id="exText" maxlength="1500" rows="6"></textarea>'
+    + '<div class="ex-foot"><span class="muted ex-count"></span><span class="ex-acts"><button type="button" class="btn ex-ghost" data-reset>Start again</button><button type="submit" class="btn primary">Send to Claude</button></span></div></form></div>'
     + '<p class="ex-note muted" role="status" aria-live="polite"></p>';
-  const note = box.querySelector('.ex-note'), form = box.querySelector('.ex-edit'), ta = form.querySelector('textarea'), head = form.querySelector('.ex-edit-h'), cnt = form.querySelector('.ex-count');
-  const opens = () => box.querySelectorAll('button[data-ex], button[data-lang]'), submit = form.querySelector('button[type="submit"]');
-  let original = '', ok = false;
-  const count = () => { cnt.textContent = ta.value.length + ' of 1500 characters.'; submit.disabled = !ok || !ta.value.trim(); };
-  const gate = () => { const c = engine ? engine.can() : null; ok = !!c && c.send === 'available'; opens().forEach(b => { b.disabled = !ok; }); count();
+  const note = box.querySelector('.ex-note'), form = box.querySelector('.ex-composer'), ta = form.querySelector('textarea'), cnt = form.querySelector('.ex-count'), submit = form.querySelector('button[type="submit"]');
+  const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-sel'), pick = sel.querySelector('select');
+  let cur = null, original = '', ok = false;
+  const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight + 2, 420) + 'px'; };
+  const count = () => { cnt.textContent = ta.value.length + ' / 1500'; submit.disabled = !ok || !ta.value.trim(); };
+  const textFor = () => cur.id === 'translate' ? translateText(pick.value) : cur.text;
+  const choose = id => {
+    cur = IDEAS.find(x => x.id === id); if (!cur) return;
+    box.querySelectorAll('.ex-idea').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
+    ico.innerHTML = icon(cur.icon); ttl.textContent = cur.title; sel.hidden = id !== 'translate';
+    original = textFor(); ta.value = original; grow(); count();
+  };
+  const gate = () => { const c = engine ? engine.can() : null; ok = !!c && c.send === 'available'; count();
     note.textContent = ok ? '' : !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to Claude is not possible here right now.'; };
   ready.then(gate);
   const t = setInterval(() => { if (!box.isConnected) clearInterval(t); else gate(); }, 30000);
-  const close = () => { form.hidden = true; ta.value = ''; };
   box.addEventListener('click', e => {
-    const b = e.target.closest('button[data-ex], button[data-lang]');
-    if (b && !b.disabled) {
-      const ex = b.dataset.ex ? EXAMPLES.find(x => x.id === b.dataset.ex) : null;
-      original = ex ? ex.text : translateText(b.dataset.lang); head.textContent = ex ? ex.title : 'Translate into ' + b.dataset.lang;
-      ta.value = original; form.hidden = false; count(); note.textContent = ''; ta.focus(); form.scrollIntoView({block: 'nearest', behavior: 'smooth'});
-    } else if (e.target.closest('[data-reset]')) { ta.value = original; count(); ta.focus(); }
-    else if (e.target.closest('[data-cancel]')) close();
+    const b = e.target.closest('.ex-idea');
+    if (b) { choose(b.dataset.ex); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
+    else if (e.target.closest('[data-reset]')) { ta.value = original; grow(); count(); ta.focus(); }
   });
-  ta.addEventListener('input', count);
+  pick.addEventListener('change', () => { original = textFor(); ta.value = original; grow(); count(); });
+  ta.addEventListener('input', () => { grow(); count(); });
   form.addEventListener('submit', e => {
     e.preventDefault();
     const text = ta.value.trim();
     if (!text || !engine) return;
     submit.disabled = true;
-    engine.send({lane: 'task', scope: null, text}).then(() => { close(); note.textContent = 'Sent. Follow it on Requests.'; show('requests'); },
+    engine.send({lane: 'task', scope: null, text}).then(() => { note.textContent = 'Sent. Follow it on Requests.'; show('requests'); },
       err => { note.textContent = (err && err.message) || 'It could not be sent.'; }).finally(count);
   });
+  choose(IDEAS[0].id);
   mounted.push({destroy(){ clearInterval(t); }});
 }
 /* The Mind map mode: Kit.mindmap (catalog) with its data in one doc, ns/shared/mindmaps/main. The component keeps no data of its own: it
