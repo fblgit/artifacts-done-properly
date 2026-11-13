@@ -497,7 +497,7 @@ def new(a):
     content = opt(a, '--content')
     if content:
         if not os.path.isfile(content): sys.exit(f'--content: no file {content}')
-        if name != 'starter' and tmeta(name).get('base') != 'starter': sys.exit('--content needs the starter or a template based on it')
+        if name != 'starter': sys.exit('--content builds the starter\'s views: use it with the starter (--tier minimal). The assistant and default templates carry their own Home view wired into parts/app.js: change it there')
         read_content(content)       # a malformed file fails before anything is written
     layers = base_chain(name)
     files = {}

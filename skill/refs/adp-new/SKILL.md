@@ -24,15 +24,15 @@ Default to the assistant when people and Claude use the page together. Ask the u
 
 ## 2. Create the project
 
-1. Run `ADP new assistant DIR --title "<name>" --by <your session name> --theme theme.glaze --catalog CATALOG` (`--slug`, `--content FILE`, `--data FILE|DIR` are optional). It writes the page into DIR (`index.html`, `content.js`, `parts/`, `styles/`; the template's `.txt` suffix is dropped) plus `seed.json` and `seed/`, and prints ONE publish object (`files` already carries the taken kit entries), the `take` list, a `design` note and the ordered `next` steps. Follow `next`.
-2. Change the look and copy for the user's content: write `styles/page.css` and the views (`design` says what to keep: the token names, the part markers, the selectors `adp.js` relies on). The starting look is the catalog page's shell; two pages must not ship looking the same. `--content FILE` builds the views from a content file.
+1. Run `ADP new assistant DIR --title "<name>" --by <your session name> --theme theme.glaze --catalog CATALOG` (`--slug`, `--data FILE|DIR` are optional; `--content FILE` only with the starter). It writes the page into DIR (`index.html`, `content.js`, `parts/`, `styles/`; the template's `.txt` suffix is dropped) plus `seed.json` and `seed/`, and prints ONE publish object (`files` already carries the taken kit entries), the `take` list, a `design` note and the ordered `next` steps. Follow `next`.
+2. Change the look and copy for the user's content: write `styles/page.css` and the views (`design` says what to keep: the token names, the part markers, the selectors `adp.js` relies on). The starting look is the catalog page's shell; two pages must not ship looking the same. `ADP new starter DIR --content FILE` builds the views from a content file (`## Lead` text, then `## View: <label> (id: <id>)`, under each `### Section <id> - <title>` followed by one fenced html block, used verbatim). The assistant and default templates keep their own Home view (welcome, examples, next steps, about): replace its copy in `content.js` and its views in `parts/app.js`, or hide them, so the page opens on the user's content.
 3. `ADP check DIR` must pass: markers balance, ids valid and unique, every part has `data-part`.
 
 ## 3. Publish
 
-- Run the Artifact tool with the `publish` object `new` printed (`file_path`, `root`, `files`, `capabilities`); add a `label` of at most 60 characters and, on the first publish, an `icon`. Re-run `ADP files DIR` for the arguments after you changed files: it returns the local files and the kit references together, the same map `new` printed. `file_path` and `root` are relative to where you ran the command; pass absolute paths when you are not in that folder.
+- Run the Artifact tool with the `publish` object `new` printed (`file_path`, `root`, `files`, `capabilities`); add a `label` of at most 60 characters and, on the first publish, an `icon`. Re-run `ADP files DIR` for the arguments after you changed files: it returns the local files and the kit references together (`kit_refs` counts them), the same `files` map `new` printed. It does not repeat `capabilities`: pass them on the first publish only, a republish keeps them. `file_path` and `root` are relative to where you ran the command; pass absolute paths when you are not in that folder.
 - Over 250 files `files` becomes `batches`: publish the page with the first and send the rest to the same url.
-- Record the publish result with `ADP ack DIR --result FILE` (or on stdin) after `ADP export DIR --url URL` has run once (road `adp-edit`); until then `ack` answers `no export yet` and nothing is lost.
+- Record the publish result with `ADP ack DIR --result FILE` (or on stdin) after `ADP export DIR --url URL` has run once (road `adp-edit`). On a brand-new page skip it: `ack` answers `no export yet` until then, and the first export takes the live version (`--version V` from the publish result).
 
 ## 4. The one-time editor open (seeds the database)
 
@@ -40,7 +40,7 @@ The page expands `seed.json` and `seed/` into the database itself, and only when
 
 ## Page code
 
-The page's own script reaches the database through the runtime: `ADP.ns('shared').doc('board/main')` and `.collection('cards')` return db handles under `ns/shared/` (the rule that lets everyone who may interact write there); `ADP.ns('users/<id>')` is per person. A handle has `get`, `set`, `update`, `delete` and `onSnapshot`. `ADP.config.get/on('look.mode')` reads a switch. Both need the page to run under adp.js, which the template already loads.
+The page's own script reaches the database through the runtime: `ADP.ns('shared').doc('board/main')` and `.collection('cards')` return db handles under `ns/shared/` (the rule that lets everyone who may interact write there); `ADP.ns('users/<id>')` is per person. A handle has `get`, `set`, `update`, `delete` and `onSnapshot`; their shapes are the db capability's (the `artifact-capabilities` skill has its types). `ADP.config.get/on('look.mode')` reads a switch. Both need the page to run under adp.js, which the template already loads.
 
 ## Rules
 

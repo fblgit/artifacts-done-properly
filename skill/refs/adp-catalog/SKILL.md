@@ -13,7 +13,7 @@ The catalog is a published artifact whose files are kit entries, listed in its `
 
 ## Save and fetch the user's catalog
 
-`ADP catalog URL` saves it in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalogs/<id>/`. Make that read, then run the command again: it prints the fetched index's `ver` and build date. `ADP catalog` alone shows the saved one. Never assume a catalog.
+`ADP catalog URL` saves it in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalogs/<id>/`. Make that read, then run the command again: it prints `fetched: true`, the build date and the entry count (`ver` is empty until the catalog's owner sets one, so compare the build date). `ADP catalog` alone shows the saved one. Never assume a catalog.
 
 ## Find
 
