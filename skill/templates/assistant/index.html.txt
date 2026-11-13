@@ -2,9 +2,8 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="adp:build" content="1">
 <meta name="adp:db-rules" content='[{"path":"","read":"view","write":"admin"},{"path":"ns/shared","read":"view","write":"interact"},{"path":"ns/users/{self}","read":"view","write":"interact"},{"path":"requests","read":"view","write":"interact"},{"path":"conversations","read":"view","write":"interact"},{"path":"presence","read":"view","write":"interact"}]'>
-<section id="adp-readme" aria-label="For agents: what this page is and how to work on it">
-<details><summary>For agents: what this page is (ADP)</summary>
-<pre style="white-space:pre-wrap;margin:0;padding:8px 16px;font:12px/1.5 ui-monospace,Menlo,monospace;color:inherit">READ THIS FIRST. It is a real element, not a comment, so nothing strips it.
+<section id="adp-readme" hidden aria-hidden="true">
+<pre>READ THIS FIRST. It is a real (hidden) element, not a comment, so nothing strips it.
 
 THIS PAGE IS AN ADP ARTIFACT (Artifacts Done Properly). ADP is about building rich, reusable artifacts at a lower cost: more quality for fewer tokens.
   There is a catalog of ready components: themes, layouts, patterns, charts, a canvas, whole page templates. They are already written, already tested, and every one can be reused and modified.
@@ -34,7 +33,6 @@ THIS PAGE
   Layout: a thin index.html, adp.js (the runtime), content.js (the copy as data), parts/ and styles/. Every piece is a part with a stable id, marked in the source and with data-part; comments and the What changed panel point at part ids.
   Before every publish: ADP check &lt;dir&gt; must say ok.
   How ADP works: the catalog entry guide.artifact-dataplane (kit/guides/artifact-dataplane.md).</pre>
-</details>
 </section>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
