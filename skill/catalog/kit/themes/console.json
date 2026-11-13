@@ -3,7 +3,7 @@
  "name": "Console",
  "about": "Mission-control telemetry: a green phosphor screen at night with a faint scanline and glow, a teletype printout by day, all monospaced, corners 2 to 4px.",
  "source": "the hub's Console skin and an earlier board's terminal skin",
- "fonts": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap",
+ "fonts": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap",
  "light": {
   "--bg": "#e9e8e1",
   "--panel": "#f4f3ee",

@@ -8,13 +8,13 @@
  * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --glow-a and --glow-b (the hero glow pair).
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
- * Fonts: https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=DM+Mono:wght@400;500&display=swap
+ * Fonts: https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Mono:wght@400;500&display=swap
  *
  * @id        theme.classic
  * @group     Themes
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-13
  * @summary   Violet on deep navy with a coral companion, Sora headings and soft hero glows; the hub's reference look.
  * @tags      palette, tokens, colours, dark mode, classic, violet, navy, coral, glow, sora, reference
  * @requires  none

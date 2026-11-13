@@ -3,7 +3,7 @@
  "name": "Kanban",
  "about": "The dense one: cool slate neutrals, an IDE blue with a syntax purple, 14px Geist, tight 5 to 8px corners, built for boards you work, not pages you read.",
  "source": "the hub's Kanban skin and an earlier board's slate-editor skin",
- "fonts": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap",
+ "fonts": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700;800&display=swap",
  "light": {
   "--bg": "#f4f6f9",
   "--panel": "#ffffff",

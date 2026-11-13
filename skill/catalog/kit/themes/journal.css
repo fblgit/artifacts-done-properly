@@ -8,13 +8,13 @@
  * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
- * Fonts: https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap
+ * Fonts: https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap
  *
  * @id        theme.journal
  * @group     Themes
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-13
  * @summary   Travel-magazine warmth: paper and cream cards by day, deep umber by night, terracotta and sea teal, Fraunces headlines.
  * @tags      palette, tokens, colours, dark mode, journal, magazine, travel, warm, serif, terracotta, paper
  * @requires  none

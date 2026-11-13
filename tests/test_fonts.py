@@ -87,6 +87,21 @@ class ThemeFonts(unittest.TestCase):
                         with self.subTest(theme=t, where=where, token=k):
                             self.assertIn(first_family(toks[k]), have)
 
+    def test_the_ui_and_display_families_are_requested_bold(self):
+        """pages set headings and labels at 600 to 800: a family requested only up to 500 or 600 is drawn as synthesized bold"""
+        for t in self.themes:
+            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
+            req = {unquote_plus(f).split(':')[0]: unquote_plus(f) for f in re.findall(r'[?&]family=([^&]+)', j['fonts'])}
+            for k in ('--f-display', '--f-ui'):
+                fam = first_family(j['light'][k])
+                if GENERIC.match(fam): continue
+                spec = req[fam].partition('@')[2]
+                axes = req[fam].partition(':')[2].partition('@')[0].split(',')
+                ws = [t.split(',')[axes.index('wght')] for t in spec.split(';')] if spec else ['400']
+                top = max(float(w.split('..')[-1]) for w in ws)
+                with self.subTest(theme=t, family=fam):
+                    self.assertGreaterEqual(top, 700)
+
     def test_css_and_json_agree_on_the_font_tokens(self):
         for t in self.themes:
             j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))['light']
@@ -105,6 +120,28 @@ class ThemeFonts(unittest.TestCase):
             if os.path.isfile(p) and p.endswith(('.js', '.json', '.css', '.md', '.txt', '.html')):
                 named |= set(re.findall(r'kit/themes/[a-z0-9-]+\.(?:css|json)', open(p, encoding='utf-8').read()))
         self.assertEqual(sorted(n for n in named if not os.path.isfile(os.path.join(ROOT, 'catalog', n))), [])
+
+
+
+class CatalogStageFonts(unittest.TestCase):
+    """The catalog page's own type (--cat-f-*) stops at the preview stage: a chrome rule that sets a --cat-f font on a bare element
+    (h3, code...) under the stage's ancestors would tie or beat a preview's own rule, and the preview would show the catalog's
+    font instead of the theme's (warroom's sample heading drew in Bricolage Grotesque, not Barlow Condensed)."""
+    ANCESTORS = {'stage-wrap', 'pv-wrap', 'panel', 'sheet', 'shell', 'wrap'}
+
+    def test_no_catalog_font_rule_reaches_into_the_stage(self):
+        css = re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'catalog', 'styles', 'catalog.css'), encoding='utf-8').read(), flags=re.S)
+        leaks = []
+        for sel, body in re.findall(r'([^{}]+)\{([^{}]*)\}', css):
+            font = ' '.join(re.findall(r'font(?:-family)?\s*:([^;]*)', body))
+            if 'var(--cat-f-' not in font or 'var(--f-' in font: continue       # the theme's token first, the catalog's as its fallback, is fine
+            for s in (x.strip() for x in sel.split(',')):
+                if s in ('body', 'html') or ':not(.stage *)' in s: continue
+                *anc, last = s.split()
+                bare = re.fullmatch(r'[a-z][a-z0-9]*(\[[^\]]*\])?(:[\w-]+)*', last)
+                if bare and (not anc or any(c in self.ANCESTORS for a in anc for c in re.findall(r'\.([\w-]+)', a))):
+                    leaks.append(s)
+        self.assertEqual(leaks, [])
 
 
 if __name__ == '__main__':
