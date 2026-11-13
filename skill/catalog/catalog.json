@@ -912,8 +912,8 @@
     {
      "path": "kit/themes/adr-drafting-table.css",
      "role": "style",
-     "sha256": "1c04a7c26b7eb9733cddee3c6dd2ef40f19621902e89543ee54bf527c8df4c5a",
-     "bytes": 6061
+     "sha256": "47d0ddb27ed7a79e15ae2cb678d362cd4c31621265dc98493a441d6a605e3db1",
+     "bytes": 6126
     },
     {
      "path": "kit/themes/adr-drafting-table.json",
@@ -971,7 +971,7 @@
     "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "Nothing in the palette. Added the alias block onto the kit names (--panel is --sheet, --ok is --st-accepted, the pens map oxblood, pine, slate, brass and plum)."
    ],
-   "hash": "03bd2d653bcb",
+   "hash": "5cdba472a4b9",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
