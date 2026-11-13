@@ -220,6 +220,14 @@ class HomeExamplesAndMindMap(unittest.TestCase):
             r = subprocess.run(['node', '--check', f], capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
 
+    def test_header_has_a_theme_switch_and_its_popovers_fold_on_an_outside_press(self):
+        app = self.app()
+        with open(os.path.join(TPL, 'assistant', 'index.html.txt'), encoding='utf-8') as f:
+            html = f.read()
+        self.assertIn('id="themeBtn"', html)
+        for needle in ("'adp-theme'", "light: 'dark'", "addEventListener('pointerdown', foldPopovers)", "e.key === 'Escape'", "look.mode"):
+            self.assertIn(needle, app, needle)
+
     def test_ideas_are_grouped_into_kinds_with_a_recommended_one_and_an_icon_each(self):
         app = self.app()
         ids = re.findall(r"\{id: '([a-z]+)', cat: '([a-z]+)'", app)

@@ -412,6 +412,31 @@ if (gear) {
   gear.addEventListener('click', () => show(view === 'settings' ? 'home' : 'settings'));
   if (window.ADP && ADP.config) ADP.config.ready.then(() => { gear.hidden = !(ADP.user && ADP.user.canEdit); });
 }
+/* The colour theme, a choice for this viewer only: system, light or dark, kept in this browser. Until it is chosen, the page follows the Colour mode setting. */
+const THEME_KEY = 'adp-theme', themeBtn = $('#themeBtn');
+const THEME_ICO = {
+  system: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  light: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8"/>',
+  dark: '<path d="M20 14.5A8.5 8.5 0 119.5 4a7 7 0 0010.5 10.5z"/>'
+};
+const themeMode = () => { try { const v = localStorage.getItem(THEME_KEY); return v === 'light' || v === 'dark' || v === 'system' ? v : null; } catch (e) { return null; } };
+const applyTheme = () => { const m = themeMode(), h = document.documentElement; if (!m) return; if (m === 'system') h.removeAttribute('data-theme'); else h.setAttribute('data-theme', m); };
+const paintTheme = () => { if (!themeBtn) return; const m = themeMode() || 'system'; themeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + THEME_ICO[m] + '</svg>';
+  themeBtn.setAttribute('aria-label', 'Colour theme: ' + m + '. Press to change.'); themeBtn.title = 'Colour theme: ' + m; };
+if (themeBtn) {
+  themeBtn.addEventListener('click', () => { const next = {system: 'light', light: 'dark', dark: 'system'}[themeMode() || 'system']; try { localStorage.setItem(THEME_KEY, next); } catch (e) {} applyTheme(); paintTheme(); });
+  if (window.ADP && ADP.config) ADP.config.on('look.mode', () => setTimeout(applyTheme, 0));
+  applyTheme(); paintTheme();
+}
+/* The header's pop-overs fold back: a press outside What changed or the how-to-start note closes it, and so does Escape. */
+const foldPopovers = e => {
+  const wc = $('#wc'), pr = $('#presence');
+  if (wc && wc.open && !(e.target && wc.contains(e.target))) wc.open = false;
+  const t = pr && pr.querySelector('.kit-pr-btn[aria-expanded="true"]');
+  if (t && !(e.target && pr.contains(e.target))) t.click();
+};
+document.addEventListener('pointerdown', foldPopovers);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') foldPopovers({target: null}); });
 addEventListener('hashchange', () => show(location.hash.slice(1)));
 show(location.hash.slice(1));
 
