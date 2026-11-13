@@ -217,6 +217,7 @@ const EXAMPLES = [
   {id: 'theme', cat: 'page', title: 'Wear a catalog theme', blurb: 'Journal, war room, blueprint', icon: 'theme', text: 'Show me this page in two catalog themes that would suit it (for example theme.journal or theme.blueprint), pick the one that fits best and keep every part and its id. Tell me which you chose and why.' + CATALOG_RULE},
   {id: 'search', cat: 'page', title: 'Search everything', blurb: 'Ctrl+K over sections and records', icon: 'search', text: 'Add a search to this page: Ctrl+K opens a box that finds sections and records and jumps to them. Take kit.palette.' + CATALOG_RULE},
   {id: 'adopt', cat: 'page', title: 'Adopt something', blurb: 'Let Claude suggest what fits', icon: 'adopt', text: 'Suggest three catalog components that would suit this page and say what each does, in your response, and stop there. I will reply with my choice and then you add it by taking it from the catalog.'},
+  {id: 'bring', cat: 'catalog', title: 'Adopt an existing artifact', blurb: 'Analyse it, then rebuild it from the catalog', icon: 'bring', rec: true, text: 'Adopt an existing artifact into ADP. Ask me for its link in your response and stop there. When I reply: open it, take screenshots of it if you have a browser, and list what you can identify: its views, components, styles and data. If I mark a region (a fenced area on a screenshot, or a part named in words) analyse only that region. For each thing, say which catalog entry would replace it and what would be kept as it is. Reply with that plan and wait for my go, then rebuild it from the catalog, keeping its content and data.' + CATALOG_RULE},
   {id: 'newkit', cat: 'catalog', title: 'Turn a view into a kit', blurb: 'Keep the best part for next time', icon: 'newkit', text: 'Pick the best view or component on this page and prepare it as a catalog entry: its files, what it requires, a sample and a header, ready to add. Tell me what you would name it and what it replaces.'},
   {id: 'newtheme', cat: 'catalog', title: 'A theme from my colours', blurb: 'Make it once, reuse it', icon: 'theme', text: 'Make a catalog theme from my brand: ask me for two or three colours and a typeface in your response and stop there; I will answer on this request and then you write the theme as a theme.* entry and wear it on this page.'},
 ];
@@ -249,35 +250,42 @@ const ICONS = {
   theme: '<path d="M12 3a9 9 0 100 18c1.5 0 2-1 1.5-2.2-.6-1.4.3-2.8 1.8-2.8H17a4 4 0 004-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/>',
   newkit: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12v9M12 12L4 7.5M12 12l8-4.5"/>',
+  bring: '<path d="M12 3v11M8 10l4 4 4-4"/><path d="M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"/>',
   translate: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
 };
 const icon = id => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[id] || '') + '</svg>';
-const LANGUAGES = [['🇪🇸', 'Spanish'], ['🇫🇷', 'French'], ['🇩🇪', 'German'], ['🇧🇷', 'Portuguese'], ['🇮🇹', 'Italian'], ['🇨🇳', 'Chinese'], ['🇯🇵', 'Japanese'], ['🇰🇷', 'Korean'], ['🇸🇦', 'Arabic'], ['🇮🇳', 'Hindi']];
+const LANGUAGES = [['🇪🇸', 'Spanish', 'ES'], ['🇫🇷', 'French', 'FR'], ['🇩🇪', 'German', 'DE'], ['🇧🇷', 'Portuguese', 'PT'], ['🇮🇹', 'Italian', 'IT'], ['🇨🇳', 'Chinese', 'ZH'], ['🇯🇵', 'Japanese', 'JA'], ['🇰🇷', 'Korean', 'KO'], ['🇸🇦', 'Arabic', 'AR'], ['🇮🇳', 'Hindi', 'HI']];
+/* The browser language: its two-letter code, and its English name when the table above has none for it. */
+const BROWSER = (() => { try { const c = String(navigator.language || 'en').slice(0, 2).toLowerCase(); let n = ''; try { n = new Intl.DisplayNames(['en'], {type: 'language'}).of(c) || ''; } catch (e) {} return {code: c, name: n}; } catch (e) { return {code: 'en', name: ''}; } })();
 const translateText = lang => 'Translate this whole page into ' + lang + ': the copy of every part (it lives in the content/<part id> docs), the tabs, the settings and the buttons. Keep every part id and every class and change no behaviour. Then set the Language setting (page.language) to ' + lang + ', and reply with what you translated and anything you left in the original language.';
 function mountExamples(){
   const box = $('[data-part="home.examples"]');
   if (!box) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-  const IDEAS = EXAMPLES.concat([{id: 'translate', cat: 'page', title: 'Translate this page', blurb: 'Into your language', icon: 'translate', rec: true}]);
+  const TR = {id: 'translate', cat: 'page', title: 'Translate this page', blurb: 'Into your language', icon: 'translate', rec: true};
+  const foreign = BROWSER.code !== 'en';
+  const IDEAS = foreign ? [TR].concat(EXAMPLES) : EXAMPLES.concat([TR]);
+  const LANGS = LANGUAGES.some(l => l[2].toLowerCase() === BROWSER.code) || !BROWSER.name || !foreign ? LANGUAGES : [['\u{1F310}', BROWSER.name, BROWSER.code.toUpperCase()]].concat(LANGUAGES);
+  let lang = (LANGS.find(l => l[2].toLowerCase() === BROWSER.code) || LANGS[0])[1];
   let cat = 'rec';
   const inCat = x => cat === 'rec' ? !!x.rec : x.cat === cat;
   box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
     + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '</div>'
     + '<div class="ex-split"><ul class="ex-ideas">'
     + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
-    + '<label class="ex-sel" hidden><span class="ex-sr">Language</span><select>' + LANGUAGES.map(l => `<option value="${esc(l[1])}">${l[0]}  ${esc(l[1])}</option>`).join('') + '</select></label></div>'
+    + '</div><div class="ex-langs" role="group" aria-label="Language" hidden>' + LANGS.map(l => `<button type="button" class="ex-lang" data-lang="${esc(l[1])}" title="${esc(l[1])}" aria-pressed="${l[1] === lang}"><span class="ex-flag" aria-hidden="true">${l[0]}</span><b>${esc(l[2])}</b></button>`).join('') + '</div>'
     + '<label class="ex-sr" for="exText">Your request to Claude</label><textarea id="exText" maxlength="1500" rows="6"></textarea>'
     + '<div class="ex-foot"><span class="muted ex-count"></span><span class="ex-acts"><button type="button" class="btn ex-ghost" data-reset>Start again</button><button type="submit" class="btn primary">Send to Claude</button></span></div></form></div>'
     + '<p class="ex-note muted" role="status" aria-live="polite"></p>';
   const note = box.querySelector('.ex-note'), form = box.querySelector('.ex-composer'), ta = form.querySelector('textarea'), cnt = form.querySelector('.ex-count'), submit = form.querySelector('button[type="submit"]');
-  const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-sel'), pick = sel.querySelector('select');
+  const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-langs');
   let cur = null, original = '', ok = false;
   const list = box.querySelector('.ex-ideas');
   const draw = () => { list.innerHTML = IDEAS.filter(inCat).map(x => `<li><button type="button" class="ex-idea" data-ex="${x.id}" aria-pressed="${!!cur && cur.id === x.id}"><span class="ex-ico">${icon(x.icon)}</span><span class="ex-t"><b>${esc(x.title)}</b><small>${esc(x.blurb)}</small></span></button></li>`).join('');
     box.querySelectorAll('.ex-cat').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === cat))); };
   const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight + 2, 420) + 'px'; };
   const count = () => { cnt.textContent = ta.value.length + ' / 1500'; submit.disabled = !ok || !ta.value.trim(); };
-  const textFor = () => cur.id === 'translate' ? translateText(pick.value) : cur.text;
+  const textFor = () => cur.id === 'translate' ? translateText(lang) : cur.text;
   const choose = id => {
     cur = IDEAS.find(x => x.id === id); if (!cur) return;
     box.querySelectorAll('.ex-idea').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
@@ -294,9 +302,9 @@ function mountExamples(){
     if (c) { cat = c.dataset.cat; const first = IDEAS.find(inCat); cur = IDEAS.find(x => inCat(x) && cur && x.id === cur.id) || first; draw(); choose(cur.id); return; }
     const b = e.target.closest('.ex-idea');
     if (b) { choose(b.dataset.ex); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
+    else if (e.target.closest('[data-lang]')) { lang = e.target.closest('[data-lang]').dataset.lang; sel.querySelectorAll('.ex-lang').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.lang === lang))); original = textFor(); ta.value = original; grow(); count(); }
     else if (e.target.closest('[data-reset]')) { ta.value = original; grow(); count(); ta.focus(); }
   });
-  pick.addEventListener('change', () => { original = textFor(); ta.value = original; grow(); count(); });
   ta.addEventListener('input', () => { grow(); count(); });
   form.addEventListener('submit', e => {
     e.preventDefault();
