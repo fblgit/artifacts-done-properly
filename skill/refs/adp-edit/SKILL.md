@@ -36,7 +36,7 @@ Copy lives in `content/<part id>`. Change it with an ArtifactData update with `i
 1. When a thread is sent to you, note the part its anchor sits in (anchors are part ids). Do not promise work in the thread.
 2. The holder of that part makes the change and publishes.
 3. Reply after the publish naming the version and the part ids.
-4. A page with the Work with Claude pane keeps `requests/`: `ADP requests DUMP.json` lists the open ones; `--ack RID --by NAME`, `--progress RID --text T`, `--done RID --response FILE` write the pinned update, and `presence/NAME` with it (the page reads watching while that is recent, five minutes by default). A request a reply reopened is answered with `--done RID --response FILE --turns TURNS.json`: it adds a turn and leaves `response` as it was.
+4. A page with the Work with Claude pane keeps `requests/`: `ADP requests DUMP.json` lists the open ones; `--ack RID --by NAME`, `--progress RID --text T`, `--done RID --response FILE` write the pinned update, and `presence/NAME` with it (the page reads watching while that is recent, five minutes by default). Each write raises the request's version, so for every step read the request again (ArtifactData `get`), save it as the dump and rerun the command: a pin taken from an earlier dump is refused. The page shows a request as done when `status` is `done`, whatever `state` still says. The presence `doing` the command writes is its own: overwrite it with how requests reach you (`polling` when you only read `requests/` each time the owner says go). A request a reply reopened is answered with `--done RID --response FILE --turns TURNS.json`: it adds a turn and leaves `response` as it was.
 
 ## Other
 
