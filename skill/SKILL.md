@@ -1,6 +1,7 @@
 ---
 name: adp
 description: ADP (Artifacts Done Properly) is the standard for claude.ai Artifacts that several agents or sessions work on, take comments over many versions, or are built from shared catalog components. Load it FIRST whenever the task is a new artifact page, board, tracker or record, using or adding catalog components, themes or templates, editing or publishing an artifact more than one agent touches, answering artifact comments, or putting an existing artifact on ADP. Also load it for the first-run setup of ADP. Skipping it risks a stale copy overwriting other versions.
+license: Apache-2.0
 metadata:
   version: "2.0.0"
 ---
