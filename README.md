@@ -34,7 +34,8 @@ A growing catalog gives you more to start from. Refinement becomes an investment
 
 ADP ships as `adp.skill`, a zip whose root folder is `adp/`. Get it from the
 [latest release](https://github.com/fblgit/artifacts-done-properly/releases/latest), or build it in a clone:
-`python3 tools/package.py` writes `dist/adp.skill`. Python 3 is the only requirement.
+`python3 tools/package.py` writes `dist/adp.skill`. If the release page shows 404, no release is published yet: build it.
+Python 3 is the only requirement.
 
 **Do not trust the `/reload-skills` message.** It can say "none added or removed" when skills were
 added. After every reload, check the skill list instead: the agent lists the skills named `adp*`.
@@ -44,7 +45,8 @@ added. After every reload, check the skill list instead: the agent lists the ski
 1. Open `adp.skill` with the app (double-click or drag it on).
    You should see the dialog **Add "adp" to your library?**
 2. Click **Add to library**.
-3. Go to "First run" below.
+   You should see `adp` in the skill list. If not, start a new session and check again.
+3. Go to "First run" below. Whether `setup` finds the library copy's `scripts/adp.py` is UNVERIFIED.
 
 ### Claude Code (CLI)
 
@@ -54,8 +56,8 @@ The CLI needs the unpacked folder. Loading the zip directly is UNVERIFIED; do no
 
        mkdir -p ~/.claude/skills
        unzip adp.skill -d ~/.claude/skills
-       # no unzip (stock Windows, minimal images):
-       python3 -m zipfile -e adp.skill ~/.claude/skills
+       # no unzip (stock Windows, minimal images); Python expands `~`, the shell may not. UNVERIFIED on Windows:
+       python3 -c "import os,zipfile; zipfile.ZipFile('adp.skill').extractall(os.path.expanduser('~/.claude/skills'))"
 
 2. Run `/reload-skills` (required; an open session does not see new skills otherwise).
    You should see `adp` in the skill list.
