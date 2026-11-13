@@ -18,14 +18,14 @@ Why: several agents change the page over many versions. The only lock is the `if
 ## Protocol
 
 1. **Export (read).** `ADP export DIR --url URL` without its inputs prints the Artifact and ArtifactData reads and exits 2. Run them, save the results, run it again with `--files-listing F.json --docs D.json [--version V]`. It builds `DIR.adp/` (`incoming/`, `state.json`, base/live/work, `report.json`) and merges live into work when nothing is held. `ADP classify BASE.json LIVE.json INCOMING.json` sorts parts and files into new, ours, theirs, applied, held, retired.
-2. **Hold.** `ADP hold DIR ID ... --by <you> [--hours H] [--pins P.json]` prints one pinned batch for the parts you will touch. A refused batch: export again. Someone else's live hold means hands off.
+2. **Hold.** `ADP hold DIR ID ... --by <you> [--hours H] (at most 2) [--pins P.json]` prints one pinned batch and the `hold_until` it set for the parts you will touch. A refused batch: export again. Someone else's live hold means hands off.
 3. **Edit** in DIR. Keep every marker and `data-part`; add both for a new part; never reuse a retired id.
 4. **Check.** `ADP check DIR`, `ADP manifest DIR`, then `ADP diff OLD.json NEW.json` or `ADP diff-pages OLD NEW` for the changed lines.
 5. **Publish** to the same URL with `ADP files DIR [--since MANIFEST.json]` (only changed files; null removes one) and a `label` of at most 60 characters. On a conflict, merge onto the newer version; never force. Over 250 files use the printed batches.
 6. **Record.** `ADP record OLD.json DIR --seq N --by <you> --summary "<what>" [--version V] [--threads T,..] [--pins P.json]` prints the batch (OLD.json is `manifest/current` as read; at most 50 writes, `manifest/current` last). Then `ADP ack DIR --result FILE` for the publish result.
 7. **By proposal** (a DIR with `.adp/state.json` from export): `ADP propose DIR --by <you> --summary S [--retire ID --reason R]` writes `incoming/<pid>` and its batch; exit 2 lists what is held, unretired or missing an export. Resolve it, do not bypass it. `ADP ack DIR --proposal PID` moves base once applied.
 
-`ADP config DIR` shows the switches. If `edit.locked` is true, stop and tell the user who locked it; `ADP config set KEY VALUE` changes one.
+`ADP config` shows the switches (a DIR is accepted and not read). If `edit.locked` is true, stop and tell the user who locked it; `ADP config set KEY VALUE` changes one.
 
 ## Wording fixes need no publish
 

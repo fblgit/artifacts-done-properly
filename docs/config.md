@@ -74,7 +74,7 @@ Defined in `skill/`:
 | `assist.shortcut` | text | Mod+Shift+K | | assist.js | assist.js, assist-panel.js |
 | `page.show-about` | bool | true | | `skill/templates/starter/parts/app.js.txt` and `skill/templates/assistant/parts/app.js.txt` | the same files: `ADP.config.on('page.show-about', ...)` hides `[data-part="home.about"]` |
 
-assist.js defines its five switches only when `H.config.define` exists, and reads each through a helper that falls back to its own default. inbox.js reads `assist.presence-minutes` as `Number(...) || 10`, so it uses 10 minutes when the switch is not defined or not a number; with the switch defined the value is 5 unless changed. docs/assist.md covers what the assist switches do.
+assist.js defines its five switches only when `H.config.define` exists, and reads each through a helper that falls back to its own default. inbox.js reads `assist.presence-minutes` as `Number(...) || 5`, so it uses 5 minutes when the switch is not defined or not a number; with the switch defined the value is also 5 unless changed. docs/assist.md covers what the assist switches do.
 
 ## 3. Soft layer and hard layer
 
@@ -135,14 +135,14 @@ On the first ready, each registered listener is called once with the current val
 
 `adp.py config set KEY VALUE [--doc C.json] [--by NAME] [--pins P.json] [--out DIR]` builds the same document and the same `changes/d-<ms>` record as files, as an ArtifactData batch (see `Batch` in adp.py); it does not call the database. It differs from the page in these observed ways:
 
-- VALUE is parsed as JSON when it parses, else taken as text. `check_value` validates it against `CORE` (text with no length limit, url `http://` or `https://`, datetime by regex), and exits with a message on a mismatch.
-- A key not in `CORE` is accepted if it matches `KEY`; the output then carries `"unknown": true`. The page rejects unknown keys.
+- VALUE is parsed as JSON when it parses, else taken as text. `check_value` validates it against `CORE` with the same rules as `check1`: text of at most 2000 characters, url `''` or `https://` only, datetime `''` or an ISO date or date-time that is a real moment (`real_date`: a regex for the shape, then `datetime.fromisoformat` with a trailing `Z` read as UTC, so `2026-13-45` and `T25:00` fail). A mismatch exits 1 with one line on stderr.
+- A key not in `CORE` is accepted if it matches `KEY`, and its value is not type-checked (Python cannot know its type); the output then carries `"unknown": true`. This is intentional: pages define their own switches (for example `assist.lanes`) that `CORE` does not list. The page rejects unknown keys.
 - Without `--doc`, it starts from empty `values` and `changed`, so the written doc replaces `config/current` with only this key. Pass `--doc` (the doc as read) to keep the others.
-- When the value equals the `CORE` default, the key is removed from both `values` and `changed`. The page removes it only from `values`.
+- When the value equals the `CORE` default, the key is removed from `values` and `changed[key]` is still written with this `by` and `at`, as the page does.
 - `by` defaults to `agent`. The doc is written with `exists=True`: without `--pins` carrying `config/current` the output has `needs_pin`, meaning read its version and pass `--pins P.json` (`{"config/current": <version>}`), so the write is version-pinned.
 - The change record is skipped when `log.data-changes` is false in `--doc`.
 
-`adp.py config DIR [--doc C.json]` prints `{defaults, values, locked, locked_parts, links}`: the `CORE` defaults, the merged values, whether `edit.locked` is true, `parts.locked`, and every `links.*` value. `DIR` must be present but is not read.
+`adp.py config DIR [--doc C.json]` prints `{defaults, values, locked, locked_parts, links}`: the `CORE` defaults, the merged values, whether `edit.locked` is true, `parts.locked`, and every `links.*` value. `DIR` is optional: it is accepted and not read.
 
 ## 5. The settings pattern
 
@@ -172,7 +172,7 @@ namespaces.js "Locked parts" lists each `parts.locked` prefix with the part ids 
 
 `adp.py hold DIR ID ... --by NAME [--hours H] [--pins P.json] [--config C.json] [--unlock PREFIX ...]` writes an ArtifactData batch (to `--out`, default `DIR.adp/`) with:
 
-- for each ID, an `update` of `parts/<ID>` with `{holder: NAME, hold_until: <UTC time>}`. `--hours` defaults to 2 and is capped at 2 (`min(hrs, 2)`).
+- for each ID, an `update` of `parts/<ID>` with `{holder: NAME, hold_until: <UTC time>}`. `--hours` defaults to 2 and is capped at 2 (`min(hrs, 2)`), so a larger value is accepted and writes two hours. The JSON output carries `hold_until`, the time written.
 - a `set` (or `update`, when `agents/<id>` is in `--pins`) of `agents/<agent_id(NAME)>` with `{last_seen, holds: [IDs]}`.
 
 `--config` runs `guard` with the IDs: `edit.locked` and `parts.locked` apply to a hold; `edit.require-hold` does not (no `deepest` is passed).
@@ -185,9 +185,7 @@ These are observed differences; the code is what this document follows.
 
 1. `edit.require-hold` help in adp.js says "A publish touching a part nobody holds is refused". The code refuses only in `record`, only changed parts that existed before, only the deepest changed ones, and needs `--holds`; the expiry in `hold_until` is not checked.
 2. `edit.locked` help says it "Freezes every control marked data-adp-edit". The code does this with CSS pointer events only; scripts can still call `ADP.config.set`.
-3. `adp.py config set` and `ADP.config.set` validate differently: url (`https://` only versus `http://` or `https://`), datetime (`Date.parse` versus a regex), text (2000-character limit versus none), and unknown keys (rejected versus accepted with `unknown: true`).
-4. On a write that returns a key to its default, adp.py drops `changed[key]` and adp.js keeps it.
-5. `comments.enabled`, `links.board` and `links.repo` are registered with no reader in `skill/`; `look.theme` and `look.density` only set an attribute nothing reads.
-6. settings.js labels the layer from `level`; every core switch has `level: 'page'`, so `parts.locked` and `edit.require-hold` also show "Enforced by the page" although adp.py also enforces them.
-7. inbox.js falls back to 10 minutes for `assist.presence-minutes`; the switch's default is 5.
-8. `adp.py hold --hours H` accepts larger values but writes at most 2 hours.
+3. `adp.py config set` and `ADP.config.set` differ on unknown keys (rejected versus accepted with `unknown: true`, on purpose). Url, text length and datetime real-ness agree for ISO values; `Date.parse` also accepts non-ISO text and overflowing days such as `2026-02-30` (read as 2 March) that `real_date` refuses.
+4. `comments.enabled`, `links.board` and `links.repo` are registered with no reader in `skill/`; `look.theme` and `look.density` only set an attribute nothing reads.
+5. settings.js labels the layer from `level`; every core switch has `level: 'page'`, so `parts.locked` and `edit.require-hold` also show "Enforced by the page" although adp.py also enforces them.
+6. `adp.py hold --hours H` accepts larger values but writes at most 2 hours; the usage line says so and the output states `hold_until`.
