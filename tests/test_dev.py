@@ -1,5 +1,5 @@
 """`adp.py dev`: the server a page runs against, and the session side: watch (messages in) and send (batches out)."""
-import glob, json, os, subprocess, sys, time, urllib.request
+import glob, json, os, subprocess, sys, time, urllib.error, urllib.request
 
 from test_setup import Base
 
@@ -34,6 +34,14 @@ class DevTests(Base):
         self.assertEqual(self.post('/__adp/db', {'op': 'update', 'path': 'a/b', 'data': {}})['error']['code'], 'invalid_argument')
         self.assertEqual(self.post('/__adp/db', {'op': 'set', 'path': 'a', 'data': {}})['error']['code'], 'invalid_argument')
         self.assertEqual(self.post('/__adp/inbox', {'text': 'hi'})['error']['code'], 'claude_unavailable')      # nobody watches
+        raw = urllib.request.Request(self.url + '__adp/db', b'{not json')
+        self.assertEqual(json.loads(urllib.request.urlopen(raw).read())['error']['code'], 'invalid_argument')
+        with self.assertRaises(urllib.error.HTTPError) as e: self.post('/__adp/nope', {})
+        self.assertEqual(e.exception.code, 404)
+        lost = os.path.join(self.cwd, 'lost'); os.makedirs(lost)      # a folder no server runs for
+        r = self.run_adp('dev', 'send', lost, os.devnull)
+        self.assertNotEqual(r.returncode, 0); self.assertIn('run adp.py dev serve', r.stderr)
+        self.assertIn('usage: adp.py dev', self.run_adp('dev', 'bogus').stderr)
 
     def test_request_goes_through_watch_and_its_answer_through_send(self):
         req = {'lane': 'task', 'text': 'fix', 'at': '2026-01-01T00:00:00Z', 'status': 'open'}
@@ -64,3 +72,21 @@ class DevTests(Base):
         r = self.run_adp('dev', 'send', self.d, out)      # the same batch again: its if_version is stale now
         self.assertEqual((r.returncode, json.loads(r.stdout)['results'][0]['error']['code']), (3, 'conflict'))
         self.assertEqual(json.loads(self.get('__adp/db'))['docs']['requests/r-1']['version'], 2)      # refused whole: nothing written
+
+        def step(*flags):      # the rest of the card's life: each step's dump is the previous send's output
+            with open(dump, 'w') as f: json.dump(json.loads(sent.stdout)['results'][0]['docs'][:1], f)
+            with open(out, 'w') as f: f.write(self.run_adp('requests', dump, *flags, '--out', os.path.join(self.tmp, 'req')).stdout)
+            return self.run_adp('dev', 'send', self.d, out)
+        sent = step('--progress', 'r-1', '--text', 'halfway')
+        self.assertEqual(json.loads(self.get('__adp/db'))['docs']['requests/r-1']['data']['state'], 'working')
+        resp = os.path.join(self.tmp, 'resp.md')
+        with open(resp, 'w') as f: f.write('Fixed.')
+        sent = step('--done', 'r-1', '--response', resp)
+        r1 = json.loads(self.get('__adp/db'))['docs']['requests/r-1']
+        self.assertEqual((sent.returncode, r1['data']['status'], r1['data']['response'], r1['version']), (0, 'done', 'Fixed.', 4))
+
+        with open(out, 'w') as f: json.dump([{'op': 'set', 'collection': 'notes', 'doc_id': 'n1', 'data': {'x': 1}},
+                                             {'op': 'update', 'collection': 'notes', 'doc_id': 'gone', 'data': {'x': 2}}], f)
+        r = self.run_adp('dev', 'send', self.d, out)      # one bad write fails its whole batch
+        self.assertEqual((r.returncode, json.loads(r.stdout)['results'][0]['error']['code']), (3, 'invalid_argument'))
+        self.assertNotIn('notes/n1', json.loads(self.get('__adp/db'))['docs'])
