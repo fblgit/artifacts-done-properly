@@ -2,32 +2,40 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="adp:build" content="1">
 <meta name="adp:db-rules" content='[{"path":"","read":"view","write":"admin"},{"path":"ns/shared","read":"view","write":"interact"},{"path":"ns/users/{self}","read":"view","write":"interact"},{"path":"requests","read":"view","write":"interact"},{"path":"conversations","read":"view","write":"interact"},{"path":"presence","read":"view","write":"interact"}]'>
-<!--
-READ THIS FIRST. It sits at the top so that a trimmed or cropped read of this file still shows it.
+<section id="adp-readme" aria-label="For agents: what this page is and how to work on it">
+<details><summary>For agents: what this page is (ADP)</summary>
+<pre style="white-space:pre-wrap;margin:0;padding:8px 16px;font:12px/1.5 ui-monospace,Menlo,monospace;color:inherit">READ THIS FIRST. It is a real element, not a comment, so nothing strips it.
 
 THIS PAGE IS AN ADP ARTIFACT (Artifacts Done Properly). ADP is about building rich, reusable artifacts at a lower cost: more quality for fewer tokens.
   There is a catalog of ready components: themes, layouts, patterns, charts, a canvas, whole page templates. They are already written, already tested, and every one can be reused and modified.
   TAKE what this page needs from the catalog by reference. Do not write it again: a taken component costs a few tokens, a written one costs thousands and is not tested.
   MODIFY by layering: put the change in this page's own styles or script, or fix the entry in the catalog and take it again. Do not edit a taken file in place.
   DO NOT FORGET what is good. When this page builds something worth keeping (a component, a view, a theme), tell the owner: it can become a catalog entry, so the next artifact starts from it. It is a second life for good work.
-  SUBSCRIBE. People using this page send requests to the Claude Code sessions watching it; a request nobody is watching waits, and the page says nobody is watching. So watch every ADP artifact you work on in this session, and each one you create, right away and without asking first. The result of a publish says whether this session now watches that artifact; for any other one use the ArtifactComments tool. Believe that result and nothing else: if it does not confirm a watch, or the tool is not offered, you are not watching, and you tell the owner so. Either way write presence/<your-name> {at, doing, session}, and say in its doing field how requests reach you: replies when comments reach you, polling when you only read requests/ each time the owner says go. A watch can follow only new versions; comments may then not reach you, so say that once, in one line, and carry on. Answer a request as the comment that wakes you says: ack, then working with progress lines, then done with the response. The page reads nobody is watching when presence is older than its watching window (five minutes unless changed), so refresh presence/<your-name> each time you act on the page.
+  SUBSCRIBE. People using this page send requests to the Claude Code sessions watching it; a request nobody is watching waits, and the page says nobody is watching. So watch every ADP artifact you work on in this session, and each one you create, right away and without asking first. The result of a publish says whether this session now watches that artifact; for any other one use the ArtifactComments tool. Believe that result and nothing else: if it does not confirm a watch, or the tool is not offered, you are not watching, and you tell the owner so. Either way write presence/&lt;your-name&gt; {at, doing, session}, and say in its doing field how requests reach you: replies when comments reach you, polling when you only read requests/ each time the owner says go. A watch can follow only new versions; comments may then not reach you, so say that once, in one line, and carry on. Answer a request as the comment that wakes you says: ack, then working with progress lines, then done with the response. The page reads nobody is watching when presence is older than its watching window (five minutes unless changed), so refresh presence/&lt;your-name&gt; each time you act on the page.
   ADP SOURCE. https://github.com/fblgit/artifacts-done-properly (branch main). Its latest release carries adp.skill, a zip of the adp skill folder: scripts/adp.py, the catalog guides and the templates are inside it.
   If the adp skill is not installed in this session, get it from there before you use ADP take or ADP check.
   Report issues and good components back to that repo: that is the second life above.
+
+INSTALL THE ADP SKILL (once per machine, before ADP take / ADP check; skip if ~/.claude/skills/adp/SKILL.md exists):
+  1. Download adp.skill from the latest release: https://github.com/fblgit/artifacts-done-properly/releases/latest (it is a zip whose root folder is adp/).
+  2. Unzip it into your skills folder: unzip adp.skill -d ~/.claude/skills
+  3. Run: python3 -I ~/.claude/skills/adp/scripts/adp.py setup
+  No pip or npm is needed; the script is Python 3 standard library only.
 
 CATALOG: {{catalog}}
 
 WHERE TO START
   1. Read the catalog's catalog.json (id, name, summary, tags, requires). Search it; do not open every entry.
-  2. Pick the entry and what it requires. ADP take <catalog url> ID ... prints the files map for the Artifact publish: one reference per file, {"artifact": "<catalog url>", "path": "kit/..."}. The server copies the file. The first run asks for one Artifact read of catalog.json (it lands in ~/.adp/catalogs/<id>/); run the command again after it.
+  2. Pick the entry and what it requires. ADP take &lt;catalog url&gt; ID ... prints the files map for the Artifact publish: one reference per file, {"artifact": "&lt;catalog url&gt;", "path": "kit/..."}. The server copies the file. The first run asks for one Artifact read of catalog.json (it lands in ~/.adp/catalogs/&lt;id&gt;/); run the command again after it.
   3. Templates are .html.txt text: copy the shell into your own index.html. Scripts, styles and data are taken as they are.
 
 THIS PAGE
-  ADP below means python3 -I <adp skill folder>/scripts/adp.py (adp.py lives in scripts/ of the installed adp skill).
+  ADP below means python3 -I &lt;adp skill folder&gt;/scripts/adp.py (adp.py lives in scripts/ of the installed adp skill).
   Layout: a thin index.html, adp.js (the runtime), content.js (the copy as data), parts/ and styles/. Every piece is a part with a stable id, marked in the source and with data-part; comments and the What changed panel point at part ids.
-  Before every publish: ADP check <dir> must say ok.
-  How ADP works: the catalog entry guide.artifact-dataplane (kit/guides/artifact-dataplane.md).
--->
+  Before every publish: ADP check &lt;dir&gt; must say ok.
+  How ADP works: the catalog entry guide.artifact-dataplane (kit/guides/artifact-dataplane.md).</pre>
+</details>
+</section>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">

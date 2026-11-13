@@ -1,5 +1,6 @@
 """Every index.html that `adp.py new` writes opens with the same READ THIS FIRST legend: what ADP is for, take by reference, modify by layering,
 do not forget good work. The catalog url is filled in when one is saved or given."""
+import html
 import os
 import re
 import unittest
@@ -8,7 +9,7 @@ from test_commands import Cmd, ADP
 
 TPL = os.path.join(os.path.dirname(ADP), '..', 'templates')
 URL = 'https://claude.ai/artifact/abc123'
-LEGEND = re.compile(r'<!--\nREAD THIS FIRST.*?-->', re.S)
+LEGEND = re.compile(r'<section id="adp-readme".*?</section>', re.S)
 
 
 def legend_of(text):
@@ -27,12 +28,14 @@ class Legend(Cmd):
 
     def test_it_says_what_it_must(self):
         with open(os.path.join(TPL, 'starter', 'index.html.txt'), encoding='utf-8') as f:
-            text = legend_of(f.read())
+            text = html.unescape(legend_of(f.read()))      # the text sits escaped inside a <pre>
         for needle in ('Artifacts Done Properly', 'lower cost', 'reusable', 'modified', 'TAKE', 'MODIFY', 'DO NOT FORGET', 'second life',
                        'SUBSCRIBE', 'ArtifactComments', 'presence/<your-name>', 'doing field', 'polling', 'right away and without asking', 'catalog.json', 'ADP take', 'ADP check', 'scripts/adp.py', '{{catalog}}', 'ADP SOURCE', 'https://github.com/fblgit/artifacts-done-properly', 'adp.skill'):
             self.assertIn(needle, text)
         self.assertNotIn('python3 adp.py', text)       # adp.py is not in the page's folder: it is called through the skill's scripts/
-        self.assertNotIn('--', text[4:-3])       # a double hyphen inside would end the comment early
+        self.assertNotIn('<!--', text)           # a real element: a comment can be stripped
+        for needle in ('INSTALL THE ADP SKILL', 'releases/latest', 'unzip adp.skill', 'adp.py setup'):
+            self.assertIn(needle, text)
 
     def test_generated_pages_open_with_it_and_keep_check_ok(self):
         for t in ('starter', 'assistant'):
