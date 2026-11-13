@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keep the gain · ADP</title>
+<meta name="description" content="A growing catalog gives you more to start from. Refinement becomes an investment you can carry across pages and projects.">
+<meta property="og:title" content="Keep the gain · ADP">
+<meta property="og:description" content="A growing catalog gives you more to start from. Refinement becomes an investment you can carry across pages and projects.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+<a class="mark" href="./"><b>ADP</b><span>Artifacts Done Properly</span></a>
+<nav class="nav" aria-label="The pitch">
+<a href="bring-it-in.html"><small>01</small><span>Bring it in</span></a>
+<a href="make-it-reusable.html"><small>02</small><span>Make it reusable</span></a>
+<a href="keep-the-gain.html" aria-current="page"><small>03</small><span>Keep the gain</span></a>
+<a class="gh" href="https://github.com/fblgit/artifacts-done-properly"><span>GitHub</span></a>
+</nav>
+</div></header>
+<main class="wrap">
+<article class="article">
+<header>
+<span class="eyebrow">03 / Keep the gain</span>
+<h1>Build on your best version.</h1>
+<p class="lead">A growing catalog gives you more to start from. Refinement becomes an investment you can carry across pages and projects.</p>
+</header>
+<figure class="media">
+  <!-- MEDIA: replace this caption with <img src="media/keep-the-gain.gif" alt="a second page built on the refined first one"> -->
+  <figcaption>Media coming: a second page built on the refined first one<br>media/keep-the-gain.gif</figcaption>
+</figure>
+<h2>More to start from</h2>
+<p>A page built with ADP doesn't start from a blank file. The v2.0.0 base catalog has 139 entries: components, patterns, charts, layouts, themes, templates and guides. Each one is versioned and hashed file by file.</p>
+<ul class="facts">
+<li><b>53</b><span>patterns</span></li>
+<li><b>30</b><span>charts and visualisations</span></li>
+<li><b>27</b><span>kit components</span></li>
+<li><b>13</b><span>themes</span></li>
+<li><b>9</b><span>layouts</span></li>
+</ul>
+
+<h2>Templates that stack</h2>
+<p>The three templates build on each other. <code>starter</code> is the shell, the runtime, a welcome view, settings and the What changed panel. <code>assistant</code> adds the Work with Claude pane, the Requests view and presence. <code>default</code> adds every theme, the canvas, 3D and the common kits, 82 catalog entries taken by reference.</p>
+<ul class="flow" aria-label="Template layers"><li>starter</li><li>assistant</li><li>default</li></ul>
+
+<h2>Find it before you rebuild it</h2>
+<p>Before building something by hand, ask the catalog:</p>
+<pre><code>adp.py suggest CATALOG --for "budget table with totals"</code></pre>
+<p>It ranks entries by how well they match on tags, name, summary and what they provide, and says why each matched. No model call is involved.</p>
+
+<h2>Refinement becomes an investment</h2>
+<p>When a component has been through rounds of refinement, that work doesn't have to stay in one page. Once it is in the catalog, the next page takes it by reference and starts from your best version, across pages and projects.</p>
+<div class="note"><p><b>Not there yet in v2.0.0:</b> the <code>full</code> template tier, and a command to add catalog entries. For now, an entry is added by editing files under <code>catalog/kit/</code> and <code>catalog.json</code> by hand.</p></div>
+<nav class="pager" aria-label="More articles">
+<a class="prev" href="make-it-reusable.html"><small>← 02 / Make it reusable</small><b>Keep the mechanics.</b></a>
+<a class="next" href="https://github.com/fblgit/artifacts-done-properly/releases/tag/v2.0.0"><small>Get v2.0.0 →</small><b>Download the release</b></a>
+</nav>
+</article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+<span><b>Great work deserves a second life.</b> The iteration ends. The value stays.</span>
+<span>ADP v2.0.0 · Apache License 2.0 · <a href="https://github.com/fblgit/artifacts-done-properly">Source on GitHub</a></span>
+</div></footer>
+</body>
+</html>

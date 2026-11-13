@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bring it in · ADP</title>
+<meta name="description" content="Bring interfaces, records, and artifacts into a project with your agents. Make the useful parts discoverable instead of burying them in a chat.">
+<meta property="og:title" content="Bring it in · ADP">
+<meta property="og:description" content="Bring interfaces, records, and artifacts into a project with your agents. Make the useful parts discoverable instead of burying them in a chat.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+<a class="mark" href="./"><b>ADP</b><span>Artifacts Done Properly</span></a>
+<nav class="nav" aria-label="The pitch">
+<a href="bring-it-in.html" aria-current="page"><small>01</small><span>Bring it in</span></a>
+<a href="make-it-reusable.html"><small>02</small><span>Make it reusable</span></a>
+<a href="keep-the-gain.html"><small>03</small><span>Keep the gain</span></a>
+<a class="gh" href="https://github.com/fblgit/artifacts-done-properly"><span>GitHub</span></a>
+</nav>
+</div></header>
+<main class="wrap">
+<article class="article">
+<header>
+<span class="eyebrow">01 / Bring it in</span>
+<h1>Give good work a home.</h1>
+<p class="lead">Bring interfaces, records, and artifacts into a project with your agents. Make the useful parts discoverable instead of burying them in a chat.</p>
+</header>
+<figure class="media">
+  <!-- MEDIA: replace this caption with <img src="media/bring-it-in.gif" alt="bringing a page in and working on it with Claude"> -->
+  <figcaption>Media coming: bringing a page in and working on it with Claude<br>media/bring-it-in.gif</figcaption>
+</figure>
+<h2>Every piece gets an address</h2>
+<p>On ADP, every piece of a page is a <em>part</em>: a block with a stable id, such as <code>triage.keys-table</code>, and a hash of its content. The id never changes once the page is published, so anything that points at it keeps pointing at the right place.</p>
+<p>That is what makes the page a place to work in rather than a file to replace. A comment anchors to a part id, not to a position on the screen. A change shows up on the part it touched and on every part that contains it.</p>
+
+<h2>Every change goes on the record</h2>
+<p>One ArtifactData layout records every change under a read, hold, publish, record protocol. Before anyone edits, they read the latest version, because a copy from an earlier session may predate other people's work. After they publish, the change is recorded with who made it, the parts it touched and a summary. The page shows the newest of those in its <b>What changed</b> panel.</p>
+<ul class="flow" aria-label="The protocol"><li>read</li><li>hold</li><li>publish</li><li>record</li></ul>
+
+<h2>Your agents work in it with you</h2>
+<p>The <code>assistant</code> template adds a <b>Work with Claude</b> pane. Pick a block, say what you want (a change, a fix, a design note or a question) and send it. The request is a record on the page, so you can follow it on <b>Requests</b>:</p>
+<ul class="flow" aria-label="Request states"><li>queued</li><li>seen</li><li>working</li><li>done</li></ul>
+<p>A line in the header says whether a Claude Code session is watching. Without one, <b>Ask now</b> still answers straight away, and anything you send waits in the queue.</p>
+
+<h2>Start new, or bring in what you have</h2>
+<p>A new page starts from a template:</p>
+<pre><code>python3 -I adp/scripts/adp.py new assistant my-page</code></pre>
+<p>An artifact you already have goes through the <code>adp-adopt</code> road. It wraps each view and section in part markers, checks them, and seeds the record, without changing how the page looks or behaves. That first step alone gives the page part ids and comment anchors.</p>
+<nav class="pager" aria-label="More articles">
+<a class="prev" href="./"><small>← Overview</small><b>Great work deserves a second life.</b></a>
+<a class="next" href="make-it-reusable.html"><small>02 / Make it reusable →</small><b>Keep the mechanics.</b></a>
+</nav>
+</article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+<span><b>Great work deserves a second life.</b> The iteration ends. The value stays.</span>
+<span>ADP v2.0.0 · Apache License 2.0 · <a href="https://github.com/fblgit/artifacts-done-properly">Source on GitHub</a></span>
+</div></footer>
+</body>
+</html>
