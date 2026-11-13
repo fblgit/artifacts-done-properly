@@ -34,7 +34,7 @@ class Legend(Cmd):
             self.assertIn(needle, text)
         self.assertNotIn('python3 adp.py', text)       # adp.py is not in the page's folder: it is called through the skill's scripts/
         self.assertNotIn('<!--', text)           # a real element: a comment can be stripped
-        for needle in ('INSTALL THE ADP SKILL', 'releases/latest', 'unzip adp.skill', 'adp.py setup'):
+        for needle in ('INSTALL THE ADP SKILL', 'releases/latest', 'unzip adp.skill', 'adp.py setup --dry-run'):
             self.assertIn(needle, text)
 
     def test_generated_pages_open_with_it_and_keep_check_ok(self):
