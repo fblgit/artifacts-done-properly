@@ -1,11 +1,11 @@
 /* part:page.style.kit.chrome */
-/* Kit css: chrome primitives    kit version 0.1.1    pairs with kit/chrome.js
+/* Kit css: chrome primitives    kit version 0.1.2    pairs with kit/chrome.js
    Buttons, inputs, labels, chips (base), dot, spinner, popover menu, title input, segmented control, empty note, modal scrim and dialog, toast, busy overlay, .mono (used by chrome.js).
    Text uses --ink and --ink-2 only (each 4.5:1 or more on --panel and --sunk in both boards' themes); --ink-3 marks borders and dots.
    Needs from the board: --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-ink --accent-soft --danger --ok --warn --shadow --f-ui --f-mono --f-display
    Lifted from: Journey Whiteboard app.css (controls, popover, modal, toast, busy). */
 /* ---------- controls ---------- */
-.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); background: var(--panel); border-radius: 7px; padding: 5px 10px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); background: var(--panel); border-radius: 7px; padding: 5px 10px; font-family: inherit; font-size: 13px; font-weight: 500; white-space: nowrap; }
 .btn:hover { border-color: var(--ink-3); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn.ghost { border-color: transparent; background: transparent; }
@@ -15,7 +15,7 @@
 .btn.sm { padding: 3px 8px; font-size: 12px; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn svg { width: 15px; height: 15px; flex: none; }
-.input, .select, .textarea { border: 1px solid var(--rule); background: var(--panel); border-radius: 7px; padding: 6px 9px; width: 100%; min-width: 0; }
+.input, .select, .textarea { font-family: inherit; border: 1px solid var(--rule); background: var(--panel); border-radius: 7px; padding: 6px 9px; width: 100%; min-width: 0; }
 .textarea { resize: vertical; line-height: 1.45; }
 .input:focus, .select:focus, .textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
 .label { font: 500 11px/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
