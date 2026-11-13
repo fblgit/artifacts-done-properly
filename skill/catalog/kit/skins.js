@@ -10,8 +10,9 @@
  * Attributes: data-skin="<name>" on the target, and data-theme="light" | "dark" (absent for system, so prefers-color-scheme decides, as the kit's themes expect).
  * API:
  *   Kit.skins.init({skins, skin, mode, modes, key, target, persist}) -> handle      call once, as early as you can
- *     skins    [{name, label, href, tokens: {light, dark}, json}]   href: a stylesheet file; tokens: {"--name": "value"} maps (the shape Kit.tokens.themeCss takes); json: a theme json file
+ *     skins    [{name, label, href, tokens: {light, dark}, json, fonts}]   href: a stylesheet file; tokens: {"--name": "value"} maps (the shape Kit.tokens.themeCss takes); json: a theme json file
  *              (kit/themes/<name>.json) fetched once, its light and dark maps used as tokens (the skin applies when it arrives; give href or tokens instead where a flash matters)
+ *              fonts: the web-font stylesheet url the skin's --f-* families need (a theme json's "fonts"), linked once when the skin is chosen; a json skin uses its json's fonts
  *     skin     the default skin name (default the first)       mode  the default mode: "system" (default) | "light" | "dark"       modes  the offered modes (default all three)
  *     key      storage prefix (default "kit-skins"; the keys are <key>:skin and <key>:mode)       persist  false keeps the choice in memory only
  *     target   the element that carries the attributes (default the document element). A target that is not the document element gets its own scoped tokens and a link-free skin, for a framed preview.
@@ -25,13 +26,13 @@
  * @id        kit.skins
  * @group     Board kit
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-13
  * @summary   An upgrade of layout.topbar: several whole-page skins in one page, applied before first paint, kept per viewer, followed across tabs and announced by an event; light and dark are separate from the skin.
  * @tags      skin, theme switch, dark mode, no flash, storage event, persist, light dark system, selector, view registry
  * @requires  layout.topbar, kit.tokens, kit.view-registry
  * @provides  Kit.skins.init, handle.render, handle.pairViews
- * @config    Kit.skins.init(opts) | skins [{name, label, href | tokens {light, dark} | json}], skin, mode system | light | dark, modes, key, target, persist; returns {skin, mode, resolved, set, setMode, list, render, on, pairViews, destroy}
+ * @config    Kit.skins.init(opts) | skins [{name, label, href | tokens {light, dark} | json, fonts}], skin, mode system | light | dark, modes, key, target, persist; returns {skin, mode, resolved, set, setMode, list, render, on, pairViews, destroy}
  * @config    kit:skin | a CustomEvent on the document, detail {skin, mode, resolved, source}
  * @config    theme css | skin stylesheets that scope their tokens on :root and [data-theme] work as they are (one link is enabled); token maps are scoped by the file
  * @tokens    --panel --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --seam?
@@ -75,16 +76,22 @@ function init(opts) {
     if (!l) { l = document.createElement('link'); l.rel = 'stylesheet'; l.href = s.href; l.dataset.skin = s.name; l.dataset.kitSkinsMade = ''; (document.head || document.documentElement).append(l); }
     links.set(s.name, l);
   }
+  function fonts(s) {       // the chosen skin's web fonts, linked once: without them its --f-* families fall back to system fonts
+    const u = s && (s.fonts || (s._json && s._json.fonts)); if (!u) return;
+    if ([...document.querySelectorAll('link[rel="stylesheet"]')].some(l => l.getAttribute('href') === u)) return;
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = u; l.dataset.kitSkinsFonts = ''; (document.head || document.documentElement).append(l);
+  }
   const resolved = () => mode === 'system' ? (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : mode;
   function apply() {
     if (skin) root.setAttribute('data-skin', skin);
     if (mode === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', mode);
     links.forEach((l, n) => { l.disabled = n !== skin; });
+    fonts(skins.find(s => s.name === skin));
   }
   const detail = source => ({ skin, mode, resolved: resolved(), source });
   function announce(source) { const d = detail(source); subs.forEach(f => { try { f(d); } catch (_) {} }); document.dispatchEvent(new CustomEvent('kit:skin', { detail: d })); }
   skins.forEach(linkFor); sheet(); apply();
-  skins.filter(s => s.json && !s.tokens).forEach(s => { fetch(s.json).then(r => r.ok ? r.json() : null).then(j => { if (j && j.light) { s._json = j; sheet(); } }).catch(() => {}); });
+  skins.filter(s => s.json && !s.tokens).forEach(s => { fetch(s.json).then(r => r.ok ? r.json() : null).then(j => { if (j && j.light) { s._json = j; sheet(); if (s.name === skin) fonts(s); } }).catch(() => {}); });
   if (window.matchMedia) { try { mq = matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener('change', () => { if (mode === 'system') announce('system'); }); } catch (_) {} }
   const onStorage = e => {
     if (e.key === K_SKIN && known(e.newValue) && e.newValue !== skin) { skin = e.newValue; apply(); announce('storage'); }

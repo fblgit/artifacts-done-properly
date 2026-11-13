@@ -3,7 +3,7 @@
  "name": "War room",
  "about": "Incident room: warm grey paper or near-black, square corners, uppercase condensed headings and 1.5px outlines, one signal red spent on one thing at a time.",
  "source": "the hub's War room skin and an earlier board's incident-room skin",
- "fonts": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+ "fonts": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap",
  "light": {
   "--bg": "#ecebe6",
   "--panel": "#ffffff",

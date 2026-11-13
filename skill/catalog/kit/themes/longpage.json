@@ -3,7 +3,7 @@
  "name": "Long page",
  "about": "The reading one: cool grey paper, ink blue, a stamp-red second voice, 15px on 1.6 with a 68ch measure, rounder 10 and 14px corners and soft tinted states.",
  "source": "the hub's Long page skin",
- "fonts": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+ "fonts": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Atkinson+Hyperlegible+Next:wght@200..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
  "light": {
   "--bg": "#f2f3f5",
   "--panel": "#ffffff",
@@ -50,7 +50,7 @@
   "--dot": "rgba(25, 28, 36, 0.12)",
   "--shadow": "0 1px 2px rgba(25, 28, 36, .10), 0 10px 24px -16px rgba(25, 28, 36, .22)",
   "--f-display": "\"Schibsted Grotesk\", \"Helvetica Neue\", Arial, sans-serif",
-  "--f-ui": "\"Atkinson Hyperlegible\", -apple-system, \"Segoe UI\", sans-serif",
+  "--f-ui": "\"Atkinson Hyperlegible Next\", -apple-system, \"Segoe UI\", sans-serif",
   "--f-mono": "\"IBM Plex Mono\", ui-monospace, Menlo, monospace",
   "--f-hand": "\"IBM Plex Mono\", ui-monospace, Menlo, monospace",
   "--outline": "#cfd5e2",

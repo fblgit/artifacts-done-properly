@@ -1,24 +1,24 @@
 /* part:page.style.kit.theme.classic */
 /**
  * Classic
- * Sora headings over DM Sans, DM Mono for ids, 10 and 14px corners. One violet for everything that acts, coral as the second voice. --glow-a and --glow-b are the hero glows, painted as two soft pools by --bg-image at the top of the ground. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ * Sora headings over DM Sans, IBM Plex Mono for ids, 10 and 14px corners. One violet for everything that acts, coral as the second voice. --glow-a and --glow-b are the hero glows, painted as two soft pools by --bg-image at the top of the ground. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
  *
- * Character: Sora headings over DM Sans, DM Mono for ids, 10 and 14px corners, one violet for everything that acts and coral kept for the second voice. --glow-a (violet) and --glow-b (coral) are the hero glows; --bg-image paints them as two soft radial pools at the top of the ground, and they are the only decoration. Note: this is a violet-on-navy look; pick it knowingly.
+ * Character: Sora headings over DM Sans, IBM Plex Mono for ids, 10 and 14px corners, one violet for everything that acts and coral kept for the second voice. --glow-a (violet) and --glow-b (coral) are the hero glows; --bg-image paints them as two soft radial pools at the top of the ground, and they are the only decoration. Note: this is a violet-on-navy look; pick it knowingly.
  * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
  * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --glow-a and --glow-b (the hero glow pair).
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
- * Fonts: https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=DM+Mono:wght@400;500&display=swap
+ * Fonts: https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  *
  * @id        theme.classic
  * @group     Themes
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-13
  * @summary   Violet on deep navy with a coral companion, Sora headings and soft hero glows; the hub's reference look.
  * @tags      palette, tokens, colours, dark mode, classic, violet, navy, coral, glow, sora, reference
  * @requires  none
- * @config    fonts | Sora, DM Sans and DM Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    fonts | Sora, DM Sans and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
@@ -73,8 +73,8 @@
   --shadow: 0 1px 2px rgba(20, 26, 40, .08), 0 12px 28px -14px rgba(20, 26, 40, .25);
   --f-display: "Sora", "DM Sans", "Helvetica Neue", Arial, sans-serif;
   --f-ui: "DM Sans", "Helvetica Neue", Arial, sans-serif;
-  --f-mono: "DM Mono", ui-monospace, Menlo, monospace;
-  --f-hand: "DM Mono", ui-monospace, Menlo, monospace;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --f-hand: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --outline: #cfd5e2;
   --bg-image: radial-gradient(circle 560px at 12% -120px, rgba(91, 78, 230, .14), transparent 70%), radial-gradient(circle 480px at 88% -80px, rgba(229, 84, 47, .10), transparent 70%);
   --glow-a: rgba(91, 78, 230, .14);

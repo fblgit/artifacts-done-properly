@@ -3,7 +3,7 @@
  "name": "Glaze depth",
  "about": "Glaze with its depth tokens: lit rim, pooled foot, gold seam stops, a bead and an ink for each meaning, neutral kind greys, a log block that stays dark.",
  "source": "the Control panel's Glaze skin (token contract and structural radii); extends theme.glaze",
- "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Kalam:wght@400;700&display=swap",
+ "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap",
  "light": {
   "--bg": "#e4eaec",
   "--panel": "#f9fbfb",

@@ -1,24 +1,24 @@
 /* part:page.style.kit.theme.journal */
 /**
  * Journal
- * Fraunces headlines, Source Sans 3 text at 17px, DM Mono labels. Terracotta leads, sea teal is the seam. A 7px dotted paper grain is --bg-image on the ground; panels are cream and lift with a hairline plus a long soft shadow. Tickets, perforations and the 6px edge bar are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
+ * Fraunces headlines, Source Sans 3 text at 17px, IBM Plex Mono labels. Terracotta leads, sea teal is the seam. A 7px dotted paper grain is --bg-image on the ground; panels are cream and lift with a hairline plus a long soft shadow. Tickets, perforations and the 6px edge bar are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.
  *
- * Character: Fraunces headlines at light-to-medium weight, 17px Source Sans reading text, DM Mono spaced-capital labels, tight corners with larger 12px containers, a 7px dotted paper grain as --bg-image (the ground only), shadows that are a hairline plus a long soft lift.
+ * Character: Fraunces headlines at light-to-medium weight, 17px Source Sans reading text, IBM Plex Mono spaced-capital labels, tight corners with larger 12px containers, a 7px dotted paper grain as --bg-image (the ground only), shadows that are a hairline plus a long soft lift.
  * Kit contract names throughout, so the kit files need no aliases. Extras a board may read: --seam (the skin's second voice; a mark, 3:1 on --panel), --focus, --info, --wait, a -soft tint per meaning, --outline (the drawn edge),
  * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture).
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
- * Fonts: https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap
+ * Fonts: https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  *
  * @id        theme.journal
  * @group     Themes
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-13
  * @summary   Travel-magazine warmth: paper and cream cards by day, deep umber by night, terracotta and sea teal, Fraunces headlines.
  * @tags      palette, tokens, colours, dark mode, journal, magazine, travel, warm, serif, terracotta, paper
  * @requires  none
- * @config    fonts | Fraunces, Source Sans 3 and DM Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    fonts | Fraunces, Source Sans 3 and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
@@ -73,7 +73,7 @@
   --shadow: 0 1px 0 #d9cbb6, 0 18px 28px -18px rgba(43, 33, 27, .65);
   --f-display: "Fraunces", Georgia, "Times New Roman", serif;
   --f-ui: "Source Sans 3", "Segoe UI", -apple-system, sans-serif;
-  --f-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --f-hand: "Fraunces", Georgia, "Times New Roman", serif;
   --outline: #a6937c;
   --bg-image: radial-gradient(rgba(43, 33, 27, .08) 1px, transparent 1.3px);

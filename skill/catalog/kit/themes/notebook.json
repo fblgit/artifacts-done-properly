@@ -3,7 +3,7 @@
  "name": "Notebook",
  "about": "A cream paper notebook on a dotted desk: pastel stickers for states, rounded Fredoka and a hand-lettered Caveat, 2px ink outlines, warm charcoal at night.",
  "source": "the hub's Notebook skin and an earlier board's notebook skin",
- "fonts": "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap",
+ "fonts": "https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
  "light": {
   "--bg": "#f3ead8",
   "--panel": "#fffdf6",
@@ -51,7 +51,7 @@
   "--shadow": "0 2px 2px rgba(80, 60, 30, .08), 0 10px 22px -6px rgba(80, 60, 30, .24)",
   "--f-display": "\"Fredoka\", \"Nunito\", ui-rounded, \"Arial Rounded MT Bold\", sans-serif",
   "--f-ui": "\"Nunito\", ui-rounded, -apple-system, \"Segoe UI\", sans-serif",
-  "--f-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
+  "--f-mono": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
   "--f-hand": "\"Caveat\", \"Bradley Hand\", \"Segoe Print\", cursive",
   "--outline": "#2d2823",
   "--bg-image": "radial-gradient(rgba(120, 90, 40, .16) 1px, transparent 1.3px)",

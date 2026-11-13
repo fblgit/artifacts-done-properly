@@ -3,7 +3,7 @@
  "name": "Journal",
  "about": "Travel-magazine warmth: paper and cream cards by day, deep umber by night, terracotta and sea teal, Fraunces headlines over a quiet sans.",
  "source": "the hub's Journal skin and an earlier board's travel-magazine skin",
- "fonts": "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap",
+ "fonts": "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
  "light": {
   "--bg": "#f4ece0",
   "--panel": "#fffaf2",
@@ -51,7 +51,7 @@
   "--shadow": "0 1px 0 #d9cbb6, 0 18px 28px -18px rgba(43, 33, 27, .65)",
   "--f-display": "\"Fraunces\", Georgia, \"Times New Roman\", serif",
   "--f-ui": "\"Source Sans 3\", \"Segoe UI\", -apple-system, sans-serif",
-  "--f-mono": "\"DM Mono\", ui-monospace, Menlo, monospace",
+  "--f-mono": "\"IBM Plex Mono\", ui-monospace, Menlo, monospace",
   "--f-hand": "\"Fraunces\", Georgia, \"Times New Roman\", serif",
   "--outline": "#a6937c",
   "--bg-image": "radial-gradient(rgba(43, 33, 27, .08) 1px, transparent 1.3px)",

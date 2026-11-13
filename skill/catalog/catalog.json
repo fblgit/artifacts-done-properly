@@ -897,7 +897,7 @@
    "name": "ADR Drafting Table",
    "summary": "Vellum by day, cutting mat by night; brass for the hand on the controls. The palette the owner approved, unchanged.",
    "about": "The ADR Drafting Table's token blocks (light, dark under the system setting, dark under the page toggle, and the type scale) with the values as the board has them, plus one block that names the same values under the kit contract, so every kit file draws in this palette.",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "tags": [
     "palette",
@@ -912,16 +912,17 @@
     {
      "path": "kit/themes/adr-drafting-table.css",
      "role": "style",
-     "sha256": "8ee4d715d7eae98ac3329edc33ed87bb87c15e6a23a48c43d7a2536c5cc194e6",
-     "bytes": 5975
+     "sha256": "47d0ddb27ed7a79e15ae2cb678d362cd4c31621265dc98493a441d6a605e3db1",
+     "bytes": 6126
     },
     {
      "path": "kit/themes/adr-drafting-table.json",
      "role": "data",
-     "sha256": "353f0fcb2687361b935b9fffb31cee8c2eb7b06c29c66f1e81da0d181abf3531",
-     "bytes": 4777
+     "sha256": "74339fab1f43dba6155ae96c9b510049e6ad1e308f969251d93f78a14d65221f",
+     "bytes": 4869
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Kalam:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -932,7 +933,7 @@
     "config": [
      [
       "fonts",
-      "Archivo, Public Sans and Kalam from Google Fonts (the link is in the file's header and in the json)"
+      "Archivo, Public Sans, Kalam and IBM Plex Mono from Google Fonts (the link is in the file's header and in the json)"
      ],
      [
       "json",
@@ -967,9 +968,10 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "Nothing in the palette. Added the alias block onto the kit names (--panel is --sheet, --ok is --st-accepted, the pens map oxblood, pine, slate, brass and plum)."
    ],
-   "hash": "2b1edd787508",
+   "hash": "5cdba472a4b9",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -980,7 +982,7 @@
    "name": "Journey Whiteboard",
    "summary": "A cool workbench: chalk ground, white panels, a blue accent and six pens. Its names are the kit contract.",
    "about": "The Journey Whiteboard's token blocks as the board has them. The kit files read these names, so this theme needs no aliases.",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "tags": [
     "palette",
@@ -994,16 +996,17 @@
     {
      "path": "kit/themes/journey-whiteboard.css",
      "role": "style",
-     "sha256": "759dd4be401c57486eb8ff05e5c724f0584a6a83244207e1407e41064cafe777",
-     "bytes": 3980
+     "sha256": "c1bfa8888c5d057cdc8e459fcd0bf92937bde0912e0cf382fd41b2124b0d1e28",
+     "bytes": 4000
     },
     {
      "path": "kit/themes/journey-whiteboard.json",
      "role": "data",
-     "sha256": "34a91cb736756d947126ce497fe0c1e2f4adabe2cc3b762dea5861a519cda251",
-     "bytes": 2668
+     "sha256": "32f0060d696278d97f90ca55e0bf61b6991fd676c784934ce2aee57f47f041c5",
+     "bytes": 2688
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -1048,9 +1051,10 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "Nothing in the palette."
    ],
-   "hash": "c0adb677ed2b",
+   "hash": "2f4aa860a4fb",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -1967,7 +1971,7 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Glaze",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "Porcelain by day, tenmoku by night, gold seams: moon-white panels on a blue-grey ground, a kiln-dark night and five glazes for meaning.",
    "about": "The owner's current direction as kit-contract tokens, so every kit file reads it without aliases. Beyond the contract it adds --seam (the one gold line: current link, selected tab, total row, focus), --gold-leaf, --focus, --info and --wait, and a -soft tint per meaning. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
@@ -1987,16 +1991,17 @@
     {
      "path": "kit/themes/glaze.css",
      "role": "style",
-     "sha256": "a5fe579067eb8aa29ba351ec60415a5e58c64a14cb76fc2b040d3afb12092cd1",
-     "bytes": 5700
+     "sha256": "0ccae9e1b1bb3e2ed6c33bfef92bea389c5058d25eef04ea5b7b0f4568fcc613",
+     "bytes": 5732
     },
     {
      "path": "kit/themes/glaze.json",
      "role": "data",
-     "sha256": "56aa10a25af0ebc7ad262a92cd3a7314bda747eb738f5f36e8fb698f0bb5940b",
-     "bytes": 3479
+     "sha256": "0107877050b0c98cf3341642e85835525d5a703f36551e1bcaa9d6f20ff8086d",
+     "bytes": 3511
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -2039,10 +2044,11 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "Text tokens deepened where a glaze colour was a fill (ok, warn) so each reads at 4.5:1 as text; the fills stay as -soft tints.",
     "The seam is darkened to 4:1 on porcelain so the current-item mark carries as a mark."
    ],
-   "hash": "0ba7115e190d",
+   "hash": "c1e557c4a0e7",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -6862,7 +6868,7 @@
   {
    "kind": "theme",
    "group": "Themes",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "theme.glaze-depth",
    "name": "Glaze depth",
@@ -6882,16 +6888,17 @@
     {
      "path": "kit/themes/glaze-depth.css",
      "role": "style",
-     "sha256": "9c12e086c76db91d4baffdad3835d3f7562477d1ed5fb16da0297c602103221d",
+     "sha256": "d5ded16d08b45d2b60ca39bc80e4b3be143def5a2318810937276b3ea721be52",
      "bytes": 5991
     },
     {
      "path": "kit/themes/glaze-depth.json",
      "role": "data",
-     "sha256": "13a9c942e719bafd15ec4bfaee0ae4228866507eac8f92acb408239262c215d5",
-     "bytes": 6160
+     "sha256": "1f45be47dd2ebeeb6459fc287efa54d7f81fbec2fecd68518e24440fb9ac4cde",
+     "bytes": 6192
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap",
    "requires": [
     "theme.glaze",
     "kit.tokens"
@@ -6940,11 +6947,12 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The skin's bright state colours became --<meaning>-bead; the catalog's text-safe values stay as --ok, --warn and the rest, and each bead has an -ink for the -soft tint.",
     "Dark follows the system, as Glaze does; the source pinned light as its default.",
     "The source's names were mapped onto the kit's (--s1 is --panel, --ink2 is --ink-2, --bad is --danger, the hardware key's green is --identity)."
    ],
-   "hash": "c962351d3430",
+   "hash": "a75e0d16f5df",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7564,6 +7572,7 @@
      "bytes": 4223
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7618,7 +7627,7 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Console",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "Mission-control telemetry: a green phosphor screen at night with a faint scanline and glow, a teletype printout by day, all monospaced.",
    "about": "JetBrains Mono and IBM Plex Mono, 13.5px on 1.6, corners 2 to 4px. At night the ground carries a scanline (--scan, also --bg-image) and the phosphor accent a glow (--glow, a text-shadow); by day both are none, so a printout is flat. The pulsing heartbeat dot and the 3px bottom-edge buttons are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
@@ -7639,16 +7648,17 @@
     {
      "path": "kit/themes/console.css",
      "role": "style",
-     "sha256": "2a8b625d1c983f173f36a61c198a8c312ba3708a54d95657027c823b0f207430",
-     "bytes": 7236
+     "sha256": "16aa48787860c59a5ce2c5dab3b7abc8c3a7b93d0bba06e50254e74e2c33db78",
+     "bytes": 7252
     },
     {
      "path": "kit/themes/console.json",
      "role": "data",
-     "sha256": "2e9f405122e0a52a38e6a3e83a4baac9dc627769ddac3aa81e2953d7123819a2",
-     "bytes": 3980
+     "sha256": "5d9836f9c8ac78b9b534fabb3133b32fa4d4ea2c46f1951f60010f6d73025198",
+     "bytes": 3996
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7691,10 +7701,11 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The terminal skin merged in as the same night palette.",
     "Faint tone lifted to 4.5:1 as --ink-3; glow and scanline are tokens that are none by day."
    ],
-   "hash": "b068cf992596",
+   "hash": "c8d73abf3913",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7703,10 +7714,10 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Journal",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "Travel-magazine warmth: paper and cream cards by day, deep umber by night, terracotta and sea teal, Fraunces headlines.",
-   "about": "Fraunces headlines, Source Sans 3 text at 17px, DM Mono labels. Terracotta leads, sea teal is the seam. A 7px dotted paper grain is --bg-image on the ground; panels are cream and lift with a hairline plus a long soft shadow. Tickets, perforations and the 6px edge bar are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
+   "about": "Fraunces headlines, Source Sans 3 text at 17px, IBM Plex Mono labels. Terracotta leads, sea teal is the seam. A 7px dotted paper grain is --bg-image on the ground; panels are cream and lift with a hairline plus a long soft shadow. Tickets, perforations and the 6px edge bar are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
    "tags": [
     "palette",
     "tokens",
@@ -7724,16 +7735,17 @@
     {
      "path": "kit/themes/journal.css",
      "role": "style",
-     "sha256": "37318991007b3b69f6983fa7934a62676139960c74145e5642ebed8914934d36",
-     "bytes": 6757
+     "sha256": "10847dd40cabeb6db5a328a0f4477d6bd6c3bd873fdc0e0d833ee9f7eac0c042",
+     "bytes": 6807
     },
     {
      "path": "kit/themes/journal.json",
      "role": "data",
-     "sha256": "683c8cba081ee23cdaf3103468c9301676e76b4b6d487004bffb8785e7f05a1d",
-     "bytes": 3793
+     "sha256": "1c314358a41153f98d0f7449f9b0abc720a35bb82c714a3bb98c4160369695c2",
+     "bytes": 3825
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7748,7 +7760,7 @@
     "config": [
      [
       "fonts",
-      "Fraunces, Source Sans 3 and DM Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
+      "Fraunces, Source Sans 3 and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
      ],
      [
       "json",
@@ -7776,10 +7788,11 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The travel-magazine skin merged in.",
     "Faint tone and the ochre info tone darkened or lightened to 4.5:1."
    ],
-   "hash": "eaa4ad050022",
+   "hash": "4c7d22939d8c",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7788,7 +7801,7 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Kanban",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "The dense one: cool slate neutrals, an IDE blue with a syntax purple, 14px Geist, tight 5 and 8px corners.",
    "about": "Kept beside Long page, which is also cool grey with a blue accent. They differ in use. Kanban is for working a board: 14px on 1.45, 8px padding, 5px controls and 8px panels, a purple second colour, a dark terminal ground (--code-bg, --code-ink). Long page is for reading: 15px on 1.6 in a 68ch measure, 14px padding, 10 and 14px corners, a stamp-red second colour. Columns, the explorer and the status bar are layout and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
@@ -7809,16 +7822,17 @@
     {
      "path": "kit/themes/kanban.css",
      "role": "style",
-     "sha256": "79d078ebc23f765df10fac6749a0e5ea51f7c17f6c0c94ab78d26a0b65a00589",
-     "bytes": 6824
+     "sha256": "11a43accd6e32dba5154ab4e158c5793c0731ebf212fea261ddecdc03a395048",
+     "bytes": 6836
     },
     {
      "path": "kit/themes/kanban.json",
      "role": "data",
-     "sha256": "c541913f56cd47df17fecb555bd17dea93005558adaef7c11639dd5b7e348b62",
-     "bytes": 3694
+     "sha256": "f4882c422275da2fd9e804e187e29bccc38a1b053f74e12e6dd0dbbf8484f00b",
+     "bytes": 3706
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700;800&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7861,10 +7875,11 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The slate-editor skin merged in.",
     "Faint tone lifted to 4.5:1 as --ink-3. Closest to Long page; the density tokens (--text-size, --leading, --pad, --radius) carry the difference."
    ],
-   "hash": "4ed73b510c64",
+   "hash": "6160f1cdeb25",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7873,10 +7888,10 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Long page",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "The reading one: cool grey paper, ink blue, a stamp-red second voice, 15px on 1.6 in a 68ch measure, rounder corners and soft tinted states.",
-   "about": "Kept beside Kanban, which is also cool grey with a blue accent. Long page is for a report read top to bottom: Schibsted Grotesk headings over Atkinson Hyperlegible, a stamp red as the second colour, 10 and 14px corners, 14px padding, and states as soft tints with coloured text, never solid fills. Kanban is the dense variant for working cards. The sticky section nav and the 4px gate edge are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
+   "about": "Kept beside Kanban, which is also cool grey with a blue accent. Long page is for a report read top to bottom: Schibsted Grotesk headings over Atkinson Hyperlegible Next, a stamp red as the second colour, 10 and 14px corners, 14px padding, and states as soft tints with coloured text, never solid fills. Kanban is the dense variant for working cards. The sticky section nav and the 4px gate edge are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
    "tags": [
     "palette",
     "tokens",
@@ -7894,16 +7909,17 @@
     {
      "path": "kit/themes/longpage.css",
      "role": "style",
-     "sha256": "de3d5ddac7c8fab57b7f920e80e3eed286897f30519c0b4773ebacdf1d836e0b",
-     "bytes": 6831
+     "sha256": "4c79f388c9939b8236fbfd1ee62a94df1e343eba07b7b71b51938ab41e614924",
+     "bytes": 6865
     },
     {
      "path": "kit/themes/longpage.json",
      "role": "data",
-     "sha256": "8402cc7b1f11bcfd01569bb0e9dd3dfb2e7c51328f12f9127ef7dcbaf8835d52",
-     "bytes": 3675
+     "sha256": "685f647f5f07a502a48ff0c576d71210b035929bdc2946174fcf1f3a6e338fd2",
+     "bytes": 3694
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Atkinson+Hyperlegible+Next:wght@200..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7918,7 +7934,7 @@
     "config": [
      [
       "fonts",
-      "Schibsted Grotesk, Atkinson Hyperlegible and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
+      "Schibsted Grotesk, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
      ],
      [
       "json",
@@ -7946,9 +7962,10 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "Faint tone lifted to 4.5:1 as --ink-3; ok, warn and the idea tone deepened a step. Closest to Kanban; the reading measure and the stamp red are the difference."
    ],
-   "hash": "35917b6a60fb",
+   "hash": "a631b26849ec",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -7957,7 +7974,7 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Manuscript",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "A controlled document: a sheet of paper on a desk, blue ink for the reader and red pen for what is open, one serif voice with small-caps labels.",
    "about": "Source Serif 4 for everything but code (Courier Prime), 17px on 1.6 in a 36rem measure. Labels are small caps (--label-caps), not capitals and not mono. Rules do the structure, corners are 2 and 4px, and colour never fills a pill: a state is a word. The skin read review as blue, the same as info; here --wait is a plum so review and open are not both blue or red. Clause numbering and stamps are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
@@ -7978,16 +7995,17 @@
     {
      "path": "kit/themes/manuscript.css",
      "role": "style",
-     "sha256": "6de65240613fd6c9b48d44b7efa000b87c8c348371c645aa7c7f262b1ef976cf",
-     "bytes": 6996
+     "sha256": "87d5d4ff26905ba6c6420a785d1abc85c4763444af3665f91d0a1ed87ad3c67a",
+     "bytes": 7020
     },
     {
      "path": "kit/themes/manuscript.json",
      "role": "data",
-     "sha256": "b200416c8b405cf5c5b93d1b100b216fb4ce5fa4a6a2b276489c4bdc79c6b33a",
-     "bytes": 3789
+     "sha256": "eb25cd1dd5472d36d67e9c200f557eea3f86f91d95ab2f649a94d4a995096d0a",
+     "bytes": 3813
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -8030,10 +8048,11 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The spec-document skin merged in.",
     "Review tone changed to plum (was blue like info); faint tone nudged to 4.5:1."
    ],
-   "hash": "d2db19b67db3",
+   "hash": "a6ee0781c4a4",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8042,7 +8061,7 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Notebook",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "A cream paper notebook on a dotted desk: pastel stickers for states, rounded Fredoka, a hand-lettered Caveat, warm charcoal at night.",
    "about": "Fredoka headings over Nunito, Caveat for notes (--f-hand). Outlines are 2px ink (--outline, --edge-w), small controls may take the hand-cut corner (--radius-wobble), the desk has a 20px dot grid (--bg-image, ground only). Meanings sit on pastel stickers with dark ink; at night the rule is a mid tone, not cream. Tape, lined paper, the highlighter swipe and punched tabs are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
@@ -8063,16 +8082,17 @@
     {
      "path": "kit/themes/notebook.css",
      "role": "style",
-     "sha256": "ea959356d62e5e552477ae465a2e5e988e7d2cb5ce7f29afe8591196ad546739",
-     "bytes": 7091
+     "sha256": "864f5ab8c83294d97c21825615b61975077ab230299c12c1d4ec3b64a2a0a41b",
+     "bytes": 7183
     },
     {
      "path": "kit/themes/notebook.json",
      "role": "data",
-     "sha256": "1deec41966e3a19d43a01fdc1fefb1983097948b03237889e27c8b17e938d2f9",
-     "bytes": 3908
+     "sha256": "7dbf10e9225550150da0bbbcc3ccc03c082fdf111cd7c22437f6acdf9d3362bb",
+     "bytes": 3987
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -8087,7 +8107,7 @@
     "config": [
      [
       "fonts",
-      "Fredoka, Nunito and Caveat from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
+      "Fredoka, Nunito, Caveat and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
      ],
      [
       "json",
@@ -8115,10 +8135,11 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The notebook skin merged in.",
     "Status text tones deepened to 4.5:1 on the pastel stickers; --rule softened from the ink outline, which moved to --outline."
    ],
-   "hash": "70b80165acc8",
+   "hash": "10aeae72a0bb",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8127,7 +8148,7 @@
    "kind": "theme",
    "group": "Themes",
    "name": "War room",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "Incident room: warm grey paper or near-black, square corners, uppercase condensed headings, one signal red spent on one thing at a time.",
    "about": "Barlow Condensed headings in capitals (--head-case), Inter text, JetBrains Mono labels. Every corner is square and every panel has a 1.5px outline. Spend --accent on one thing at a time. --stripe is the hazard stripe for one edge; the seam is a deepened amber so it can be a mark. Review was green like success in the skin; here --wait is a plum. Hazard stripes on a component, the siren and stamps are component styling and are not here. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
@@ -8148,16 +8169,17 @@
     {
      "path": "kit/themes/warroom.css",
      "role": "style",
-     "sha256": "f46d1f33390c9dd9ea589cd1ab78f420c31b8a6bd34403020d2ffd3a5ee66480",
-     "bytes": 7247
+     "sha256": "2081927d631d6558c92f1c9f7068aaeb12d1824f1c75b0fa70b293c1d878cc54",
+     "bytes": 7263
     },
     {
      "path": "kit/themes/warroom.json",
      "role": "data",
-     "sha256": "e20f64958755b26e671331d95613b1a184d55d521f8f2776e2e8069db14d953e",
-     "bytes": 3882
+     "sha256": "18b76b490492764e094c254f698fb8d21b229d9625a856e60fc394b75e5f6b05",
+     "bytes": 3898
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -8200,10 +8222,11 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The incident-room skin merged in.",
     "Seam deepened from the hazard yellow; review tone changed to plum (was green like success)."
    ],
-   "hash": "74eb5b5230a8",
+   "hash": "d36d75017b0a",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -8212,10 +8235,10 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Classic",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "Violet on deep navy with a coral companion, Sora headings and soft hero glows; the hub's reference look.",
-   "about": "Sora headings over DM Sans, DM Mono for ids, 10 and 14px corners. One violet for everything that acts, coral as the second voice. --glow-a and --glow-b are the hero glows, painted as two soft pools by --bg-image at the top of the ground. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
+   "about": "Sora headings over DM Sans, IBM Plex Mono for ids, 10 and 14px corners. One violet for everything that acts, coral as the second voice. --glow-a and --glow-b are the hero glows, painted as two soft pools by --bg-image at the top of the ground. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
    "tags": [
     "palette",
     "tokens",
@@ -8233,16 +8256,17 @@
     {
      "path": "kit/themes/classic.css",
      "role": "style",
-     "sha256": "e1efbee02ed3c2ac94794424f1d2a2f857610f9fa44f5f3e6906555b6aa2b246",
-     "bytes": 7289
+     "sha256": "962f2cb4befea4a4085f6d087dc3ae9318ffa8a0f8434f7ee2cd70fbe9a3910c",
+     "bytes": 7361
     },
     {
      "path": "kit/themes/classic.json",
      "role": "data",
-     "sha256": "a0d24dee16d7564cadc94416f612cb098cd7fe057112a9bcd9140d17a6cf3362",
-     "bytes": 4076
+     "sha256": "43fc760cec82922a397a32de221273381505a7920a9f324dd557f06e42c587ec",
+     "bytes": 4130
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -8257,7 +8281,7 @@
     "config": [
      [
       "fonts",
-      "Sora, DM Sans and DM Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
+      "Sora, DM Sans and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)"
      ],
      [
       "json",
@@ -8285,9 +8309,10 @@
     }
    ],
    "changed": [
+    "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "Status colours deepened to 4.5:1 as text in light; the soft tints are derived."
    ],
-   "hash": "cc81cae01981",
+   "hash": "fbc8c3c44333",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -12359,7 +12384,7 @@
   {
    "kind": "component",
    "group": "Board kit",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "kit.skins",
    "name": "Skin switch",
@@ -12381,8 +12406,8 @@
     {
      "path": "kit/skins.js",
      "role": "script",
-     "sha256": "56bc28e9cdd2181e835a96930781fb76cd925e34b6938a2b8298fd497ca03deb",
-     "bytes": 11296
+     "sha256": "b0871bae3ac54e80a6b1a5afce3457a643c4c6c148f4b79808fb1d88ecaf1e2c",
+     "bytes": 12055
     },
     {
      "path": "kit/skins.css",
@@ -12457,12 +12482,13 @@
     }
    ],
    "changed": [
+    "A skin links its web fonts when chosen: fonts on the skin, or the fonts url of its theme json.",
     "Extends layout.topbar as new files; topbar.js and topbar.css are unchanged.",
     "System is a mode of its own instead of defaulting to light.",
     "A skin can be tokens as well as a link; the target can be one element.",
     "pairViews ties a skin to kit.view-registry."
    ],
-   "hash": "7f9b1cca3dbd",
+   "hash": "aafa1ea98ea8",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -13114,7 +13140,7 @@
   {
    "kind": "component",
    "group": "Patterns",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "pattern.playground",
    "name": "Playground",
@@ -13134,8 +13160,8 @@
     {
      "path": "kit/patterns/playground.js",
      "role": "script",
-     "sha256": "58f4b3aee7c49d51583dbad856dedaa500912e0a4449e72df1496d9d74aa7e70",
-     "bytes": 18969
+     "sha256": "ab35050aff33bdbc93c7c4905c25107016be0b182a61198f3b110dab45fe0414",
+     "bytes": 19089
     },
     {
      "path": "kit/patterns/playground.css",
@@ -13146,8 +13172,8 @@
     {
      "path": "kit/samples/playground.json",
      "role": "sample",
-     "sha256": "aa2f22b0da6f97458ba015781e355ab7a65cbeba2a54c0c4c97790e556af12ba",
-     "bytes": 559
+     "sha256": "d5331fcdfd30efbecd8773512c9bb3d069cb10b67b347489710a1163035b2a3b",
+     "bytes": 583
     }
    ],
    "requires": [
@@ -13180,10 +13206,11 @@
     }
    ],
    "changed": [
+    "The stage links the theme json's fonts url, and the sample names the real drafting-table and whiteboard theme files.",
     "One component for the whole catalog; the workbench template is built for one entry.",
     "The stage takes its theme from the theme json, so the page's own theme is untouched."
    ],
-   "hash": "a2c27d9e96e1",
+   "hash": "951b761d699b",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.playground.mount(root, {catalog, base, themes, entry}) opens with a head: a filter box and a select of every entry grouped by kind, then the chosen entry's name in the display face with its summary and what it loads first. It loads the entry's requires first (no entry twice), then its styles, then its scripts, fetches the first sample and calls the Kit.<name>.mount named in provides on an isolated stage. An entry with no mount says so. A stage bar holds the theme select (the first theme is chosen at the start; Page tokens uses the page's own tokens and mode, and turns the mode segments off) and mode (light, dark, auto) and width (390 px, 768 px, full) as segments of native radios. The stage sits on a dotted bench with its width, theme and mode written above it. Theme, mode and width change the stage only, never the page: the kit's theme css only applies on :root, so the stage copies the custom properties from the theme's json instead, light then dark. The sample has its own panel with its path: Apply re-reads it (a JSON error is shown with its line and column, never thrown) and uses update(data) on the mounted instance when it has one, else mounts again; Reset sample puts the published one back. An error thrown by a mount is shown in a line, not thrown. When the page's playground.enabled switch is off, or enabled is false, it renders one line that says how to turn it on and nothing else. It writes nothing. The layout follows its container: the sample panel sits beside the bench from about 62rem and under it below that; at 390 px the controls stack and the stage scrolls inside its own frame. Every control is a labelled select, input, radio, textarea or button, reached by Tab in reading order.",

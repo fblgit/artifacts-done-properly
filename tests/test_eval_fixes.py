@@ -105,3 +105,25 @@ class ThemeTags(Cmd):
         self.assertEqual(html.count('href="kit/themes/glaze.css"'), 1)
         self.assertLess(html.index('href="styles/page.css"'), html.index('href="kit/themes/glaze.css"'))
         self.assertEqual(self.run_adp('check', self.p('pg')).returncode, 0)
+
+    def test_new_with_any_theme_links_its_web_fonts_once_before_the_page_css(self):
+        real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')
+        themes = [e for e in json.load(open(real, encoding='utf-8'))['entries'] if e['id'].startswith('theme.')]
+        self.assertEqual(len(themes), 13)
+        for e in themes:
+            with self.subTest(theme=e['id']):
+                d = 'pg-' + e['id']
+                self.ok('new', 'starter', d, '--theme', e['id'], '--catalog', real, '--url', KITURL)
+                html = open(self.p(d, 'index.html'), encoding='utf-8').read()
+                tag = f'<link rel="stylesheet" href="{e["fonts"]}">'
+                self.assertEqual(html.count(tag), 1)
+                self.assertLess(html.index(tag), html.index('href="styles/page.css"'))
+                self.assertNotIn('Bricolage+Grotesque', html)       # the template's placeholder fonts go: the theme brings its own
+                self.assertEqual(self.run_adp('check', self.p(d)).returncode, 0)
+
+    def test_take_prints_the_fonts_of_the_themes_it_takes(self):
+        real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')
+        by = {e['id']: e for e in json.load(open(real, encoding='utf-8'))['entries']}
+        out = self.ok('take', real, 'theme.glaze-depth', '--url', KITURL)
+        self.assertEqual(out['fonts'], {'theme.glaze': by['theme.glaze']['fonts'], 'theme.glaze-depth': by['theme.glaze-depth']['fonts']})
+        self.assertNotIn('fonts', self.ok('take', real, 'kit.dom', '--url', KITURL))
