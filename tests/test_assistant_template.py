@@ -202,6 +202,14 @@ class HomeExamplesAndMindMap(unittest.TestCase):
         for i in ('kanban', 'calendar', 'drafting', 'canvas', 'mindmap', 'rearrange', 'change', 'adopt'):
             self.assertIn(f"{{id: '{i}'", app, i)
 
+    def test_an_example_opens_an_editable_request_and_sends_only_on_submit(self):
+        app = self.app()
+        self.assertIn('<textarea', app)
+        self.assertIn("form.addEventListener('submit'", app)
+        self.assertEqual(app.count("engine.send({lane: 'task'"), 1)      # one send, from the form: no tile or language button sends by itself
+        for i in ('kanban', 'calendar', 'drafting', 'canvas', 'mindmap', 'rearrange', 'change', 'adopt', 'translate'):
+            self.assertIn(i + ': \'', app, i)                            # each has an icon
+
     def test_prompts_fit_the_comment_limit_and_name_only_real_catalog_ids(self):
         app = self.app()
         texts = re.findall(r"text: '((?:[^'\\]|\\.)*)'", app)
