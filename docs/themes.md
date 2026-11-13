@@ -10,13 +10,13 @@ A theme is a catalog entry `theme.<id>` (kind `theme`, group `Themes`) with two 
 |---|---|---|
 | stylesheet | `kit/themes/<id>.css`, role `style` | Tokens only, in three blocks: light on `:root`; dark under `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { … } }`; dark again under `:root[data-theme="dark"]`. The header follows `docs/catalog-header.md` and repeats the font url. |
 | data | `kit/themes/<id>.json`, role `data` | `id`, `name`, `about`, `source`, `fonts`, `light`, `dark`, `aliases`, `scale`. The `light` and `dark` maps carry the same tokens as the css. The catalog previews, `kit.skins` (a `json` skin) and `pattern.playground` read this file. |
-| fonts | `fonts` in the json and in the catalog entry (the same url) | One Google Fonts `css2` url with `display=swap` that loads the first family of each font token. `adp.py new --theme` and `adp.py take` read it from the entry. Without it the page falls back to system fonts. |
+| fonts | `fonts` in the json and in the catalog entry (the same url) | One Google Fonts `css2` url with `display=swap` that loads the first family of each font token, at every weight from 400 to 800 the family ships (pages set headings at 700 to 800; a missing weight is drawn as synthesized bold). `adp.py new --theme` and `adp.py take` read it from the entry. Without it the page falls back to system fonts. |
 
 Tokens use the kit contract names, so kit files draw in the theme without aliases: `--bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink`, the meanings (`--ok --warn --danger …`) and the four font tokens `--f-display`, `--f-ui`, `--f-mono` and `--f-hand` (the canvas). `Kit.tokens.contract(part)` lists the names a kit file reads. A theme that keeps its own names maps them in a second `:root` block (`theme.adr-drafting-table` sets `--f-ui: var(--f-body)`).
 
 A layer theme adds to another one: `theme.glaze-depth` requires `theme.glaze`, sets no font token and has the same `fonts` as Glaze.
 
-`tests/test_fonts.py` checks every theme: the json `fonts` equals the entry `fonts`, the url loads the first family of every font token in the css and the json, and the css and json agree on the font tokens.
+`tests/test_fonts.py` checks every theme: the json `fonts` equals the entry `fonts`, the url loads the first family of every font token in the css and the json at 700 or more for the display and UI families, and the css and json agree on the font tokens. It also checks that the catalog page's own fonts (`--cat-f-*`) never reach into a preview stage.
 
 ## Wear a theme
 
