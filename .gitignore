@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 /dist/
+.claude/
+.ruff_cache/
+.adp/
