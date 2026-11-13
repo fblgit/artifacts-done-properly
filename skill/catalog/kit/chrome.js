@@ -15,7 +15,7 @@
  * @id        kit.chrome
  * @group     Board kit
  * @status    new
- * @version   0.1.1
+ * @version   0.1.2
  * @updated   2026-10-24
  * @summary   Dialog with a field list, toast with an action, busy overlay with progress, click-twice button, auto-growing text field, outside-click hook, chips and one icon set.
  * @tags      modal, dialog, toast, busy, progress, icons, form, chrome, ui

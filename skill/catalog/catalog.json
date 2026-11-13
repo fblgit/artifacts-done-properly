@@ -1518,12 +1518,13 @@
   {
    "kind": "component",
    "group": "Board kit",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "status": "new",
    "globals": [
     "htm-preact"
    ],
    "changed": [
+    "0.1.2: .btn, .input, .select and .textarea take the page font (font-family: inherit); native buttons and fields otherwise draw in the system font.",
     "0.1.1 (this catalog’s copy): .label, .faint and .empty-note read --ink-2 instead of --ink-3, 4.5:1 or more in both themes; --ink-3 stays on borders and dots.",
     "0.1.1: .mono is defined in kit/chrome.css, so chrome.js no longer needs it from the board."
    ],
@@ -1546,14 +1547,14 @@
     {
      "path": "kit/chrome.js",
      "role": "script",
-     "sha256": "f37b85da93e6fcdc1f95ca19ba11b4ff7e1d6ad573d005a10010070b3e146229",
+     "sha256": "cba31ae4f6ff95045cd6a8a2aa993e1b31d12029576481a629a5a7d678243185",
      "bytes": 13275
     },
     {
      "path": "kit/chrome.css",
      "role": "style",
-     "sha256": "d8b88bfa39e0ac501b18f64d6980097360cc84feae00f08e832a75aabec1ff21",
-     "bytes": 6204
+     "sha256": "e2ce0c67659389eaa04d2d8b98698973ee186f08e7d5c5722d6019a91013deb7",
+     "bytes": 6248
     },
     {
      "path": "kit/samples/chrome.json",
@@ -1626,7 +1627,7 @@
      "what": "the same shapes (focus restore and stacked toasts not taken)"
     }
    ],
-   "hash": "b6555aad44fe",
+   "hash": "1025f39ccccb",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
