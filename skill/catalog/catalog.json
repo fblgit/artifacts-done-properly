@@ -922,6 +922,7 @@
      "bytes": 4777
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Kalam:wght@400;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -1004,6 +1005,7 @@
      "bytes": 2668
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -1997,6 +1999,7 @@
      "bytes": 3479
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Kalam:wght@400;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -6892,6 +6895,7 @@
      "bytes": 6160
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Kalam:wght@400;700&display=swap",
    "requires": [
     "theme.glaze",
     "kit.tokens"
@@ -7564,6 +7568,7 @@
      "bytes": 4223
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7649,6 +7654,7 @@
      "bytes": 3980
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7734,6 +7740,7 @@
      "bytes": 3793
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7819,6 +7826,7 @@
      "bytes": 3694
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7904,6 +7912,7 @@
      "bytes": 3675
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -7988,6 +7997,7 @@
      "bytes": 3789
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -8073,6 +8083,7 @@
      "bytes": 3908
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -8158,6 +8169,7 @@
      "bytes": 3882
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -8243,6 +8255,7 @@
      "bytes": 4076
     }
    ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=DM+Mono:wght@400;500&display=swap",
    "requires": [],
    "globals": [],
    "provides": [
@@ -12359,7 +12372,7 @@
   {
    "kind": "component",
    "group": "Board kit",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "kit.skins",
    "name": "Skin switch",
@@ -12381,8 +12394,8 @@
     {
      "path": "kit/skins.js",
      "role": "script",
-     "sha256": "56bc28e9cdd2181e835a96930781fb76cd925e34b6938a2b8298fd497ca03deb",
-     "bytes": 11296
+     "sha256": "b0871bae3ac54e80a6b1a5afce3457a643c4c6c148f4b79808fb1d88ecaf1e2c",
+     "bytes": 12055
     },
     {
      "path": "kit/skins.css",
@@ -12457,12 +12470,13 @@
     }
    ],
    "changed": [
+    "A skin links its web fonts when chosen: fonts on the skin, or the fonts url of its theme json.",
     "Extends layout.topbar as new files; topbar.js and topbar.css are unchanged.",
     "System is a mode of its own instead of defaulting to light.",
     "A skin can be tokens as well as a link; the target can be one element.",
     "pairViews ties a skin to kit.view-registry."
    ],
-   "hash": "7f9b1cca3dbd",
+   "hash": "aafa1ea98ea8",
    "at": "2026-10-24T00:00:00Z",
    "by": "product-designer"
   },
@@ -13114,7 +13128,7 @@
   {
    "kind": "component",
    "group": "Patterns",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "pattern.playground",
    "name": "Playground",
@@ -13134,8 +13148,8 @@
     {
      "path": "kit/patterns/playground.js",
      "role": "script",
-     "sha256": "58f4b3aee7c49d51583dbad856dedaa500912e0a4449e72df1496d9d74aa7e70",
-     "bytes": 18969
+     "sha256": "ab35050aff33bdbc93c7c4905c25107016be0b182a61198f3b110dab45fe0414",
+     "bytes": 19089
     },
     {
      "path": "kit/patterns/playground.css",
@@ -13146,8 +13160,8 @@
     {
      "path": "kit/samples/playground.json",
      "role": "sample",
-     "sha256": "aa2f22b0da6f97458ba015781e355ab7a65cbeba2a54c0c4c97790e556af12ba",
-     "bytes": 559
+     "sha256": "d5331fcdfd30efbecd8773512c9bb3d069cb10b67b347489710a1163035b2a3b",
+     "bytes": 583
     }
    ],
    "requires": [
@@ -13180,10 +13194,11 @@
     }
    ],
    "changed": [
+    "The stage links the theme json's fonts url, and the sample names the real drafting-table and whiteboard theme files.",
     "One component for the whole catalog; the workbench template is built for one entry.",
     "The stage takes its theme from the theme json, so the page's own theme is untouched."
    ],
-   "hash": "a2c27d9e96e1",
+   "hash": "951b761d699b",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.playground.mount(root, {catalog, base, themes, entry}) opens with a head: a filter box and a select of every entry grouped by kind, then the chosen entry's name in the display face with its summary and what it loads first. It loads the entry's requires first (no entry twice), then its styles, then its scripts, fetches the first sample and calls the Kit.<name>.mount named in provides on an isolated stage. An entry with no mount says so. A stage bar holds the theme select (the first theme is chosen at the start; Page tokens uses the page's own tokens and mode, and turns the mode segments off) and mode (light, dark, auto) and width (390 px, 768 px, full) as segments of native radios. The stage sits on a dotted bench with its width, theme and mode written above it. Theme, mode and width change the stage only, never the page: the kit's theme css only applies on :root, so the stage copies the custom properties from the theme's json instead, light then dark. The sample has its own panel with its path: Apply re-reads it (a JSON error is shown with its line and column, never thrown) and uses update(data) on the mounted instance when it has one, else mounts again; Reset sample puts the published one back. An error thrown by a mount is shown in a line, not thrown. When the page's playground.enabled switch is off, or enabled is false, it renders one line that says how to turn it on and nothing else. It writes nothing. The layout follows its container: the sample panel sits beside the bench from about 62rem and under it below that; at 390 px the controls stack and the stage scrolls inside its own frame. Every control is a labelled select, input, radio, textarea or button, reached by Tab in reading order.",

@@ -2,9 +2,11 @@
 (--f-ui, --f-display, --f-mono, and --f-hand for the canvas) or inherit it, and the kit's controls inherit the page font (native buttons and
 fields otherwise draw in the system font, which showed as Arial next to the page's own)."""
 import glob
+import json
 import os
 import re
 import unittest
+from urllib.parse import unquote_plus
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'skill')
 FILES = sorted(glob.glob(os.path.join(ROOT, 'templates', '*', 'styles', '*.txt'))
@@ -31,6 +33,78 @@ class Fonts(unittest.TestCase):
         for sel in ('.btn {', '.input, .select, .textarea {'):
             rule = css[css.index(sel):].split('}')[0]
             self.assertIn('font-family: inherit', rule, sel)
+
+
+
+THEMES = os.path.join(ROOT, 'catalog', 'kit', 'themes')
+FONT_TOKENS = ('--f-display', '--f-ui', '--f-mono', '--f-hand')
+GENERIC = re.compile(r'^(ui-|system-ui$|serif$|sans-serif$|monospace$|cursive$)')
+
+
+def families(url):
+    """the family names a Google Fonts css2 url loads"""
+    return {unquote_plus(f).split(':')[0] for f in re.findall(r'[?&]family=([^&]+)', url)}
+
+
+def first_family(v):
+    return v.split(',')[0].strip().strip('"\'')
+
+
+def css_tokens(css):
+    """the --f-* values a theme css sets in its plain :root blocks (light, the default), with var(--x) resolved among them"""
+    root = ''.join(body for sel, body in re.findall(r'([^{}]*)\{([^{}]*)\}', re.sub(r'/\*.*?\*/', '', css, flags=re.S)) if sel.strip() == ':root')
+    toks = dict((k, v.strip()) for k, v in re.findall(r'(--f-[\w-]+)\s*:\s*([^;]+);', root))
+    for k, v in toks.items():
+        m = re.fullmatch(r'var\((--f-[\w-]+)\)', v)
+        if m: toks[k] = toks.get(m.group(1), v)
+    return toks
+
+
+class ThemeFonts(unittest.TestCase):
+    """Every theme says which web fonts its --f-* families need (`fonts` in its json and in its catalog entry, the same url), and that url
+    loads every family the theme names first; `adp.py new --theme` and `take` read it from the entry (test_eval_fixes.ThemeTags)."""
+    def setUp(self):
+        self.cat = {e['id']: e for e in json.load(open(os.path.join(ROOT, 'catalog', 'catalog.json'), encoding='utf-8'))['entries']}
+        self.themes = sorted(os.path.basename(p)[:-5] for p in glob.glob(os.path.join(THEMES, '*.json')))
+
+    def test_every_theme_is_a_catalog_entry_with_its_json_fonts(self):
+        self.assertEqual(len(self.themes), 13)
+        for t in self.themes:
+            with self.subTest(theme=t):
+                j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
+                self.assertTrue(j.get('fonts', '').startswith('https://fonts.googleapis.com/css2?'), t)
+                self.assertIn('display=swap', j['fonts'])
+                self.assertEqual(self.cat['theme.' + t].get('fonts'), j['fonts'])
+
+    def test_the_fonts_url_loads_every_family_the_theme_names_first(self):
+        for t in self.themes:
+            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
+            css = css_tokens(open(os.path.join(THEMES, t + '.css'), encoding='utf-8').read())
+            have = families(j['fonts'])
+            for where, toks in (('json light', j['light']), ('json dark', j.get('dark', {})), ('css', css)):
+                for k in FONT_TOKENS:
+                    if k in toks and not GENERIC.match(first_family(toks[k])):
+                        with self.subTest(theme=t, where=where, token=k):
+                            self.assertIn(first_family(toks[k]), have)
+
+    def test_css_and_json_agree_on_the_font_tokens(self):
+        for t in self.themes:
+            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))['light']
+            css = css_tokens(open(os.path.join(THEMES, t + '.css'), encoding='utf-8').read())
+            with self.subTest(theme=t):
+                if not css:         # a layer over another theme (glaze-depth over glaze) wears that theme's fonts
+                    base = [r for r in self.cat['theme.' + t]['requires'] if r.startswith('theme.')]
+                    self.assertTrue(base, t + ' sets no --f-* token and requires no theme')
+                    self.assertEqual(self.cat[base[0]]['fonts'], self.cat['theme.' + t]['fonts'])
+                    continue
+                self.assertEqual({k: css[k] for k in FONT_TOKENS if k in css}, {k: j[k] for k in FONT_TOKENS if k in j})
+
+    def test_every_theme_file_the_skill_names_exists(self):
+        named = set()
+        for p in glob.glob(os.path.join(ROOT, '**', '*'), recursive=True):
+            if os.path.isfile(p) and p.endswith(('.js', '.json', '.css', '.md', '.txt', '.html')):
+                named |= set(re.findall(r'kit/themes/[a-z0-9-]+\.(?:css|json)', open(p, encoding='utf-8').read()))
+        self.assertEqual(sorted(n for n in named if not os.path.isfile(os.path.join(ROOT, 'catalog', n))), [])
 
 
 if __name__ == '__main__':
