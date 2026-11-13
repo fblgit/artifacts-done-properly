@@ -3,7 +3,7 @@ window.ADP_CONTENT = {
  "catalog.lead": {
   "part": "catalog.lead",
   "title": "Catalog description",
-  "html": "Building blocks for claude.ai artifacts: components, themes, templates and guides. Preview one, then take its files into your artifact by reference."
+  "html": "Keep the mechanics. A kit carries more than pixels: an interface, declared dependencies and examples another agent can inspect and compose. Preview one, then take its files into your artifact by reference."
  },
  "catalog.howto": {
   "part": "catalog.howto",
