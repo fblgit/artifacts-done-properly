@@ -53,6 +53,21 @@ class EvalFixes(Cmd):
         out = self.ok('export', d, '--url', URL)
         self.assertEqual(out['next'], 'clean: nothing to send')
 
+    def test_export_into_an_empty_folder_imports_the_live_files(self):
+        """a new session edits a page it did not build: no project folder, no docs yet; nothing is held, the folder is filled"""
+        import shutil
+        d = self.exported()
+        ad = d + '.adp'
+        for sub in ('state.json', 'repo'):
+            q = os.path.join(ad, sub)
+            shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
+        shutil.rmtree(d)
+        json.dump({}, open(os.path.join(ad, 'docs.json'), 'w'))
+        out = self.ok('export', d, '--url', URL)
+        self.assertEqual(out['report']['held'], [])
+        self.assertTrue(os.path.isfile(os.path.join(d, 'index.html')))
+        self.assertTrue(os.path.isfile(os.path.join(d, 'parts', 'app.js')))
+
     def test_export_refuses_a_listing_with_no_rows(self):
         d = self.exported()
         open(os.path.join(d + '.adp', 'listing.json'), 'w').write('nothing here')
