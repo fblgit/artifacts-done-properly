@@ -110,20 +110,26 @@ class ThemeFonts(unittest.TestCase):
                         with self.subTest(theme=t, where=where, token=k):
                             self.assertIn(first_family(toks[k]), have)
 
-    def test_the_ui_and_display_families_are_requested_bold(self):
-        """pages set headings and labels at 600 to 800: a family requested only up to 500 or 600 is drawn as synthesized bold"""
+    def test_the_ui_display_and_mono_families_are_requested_bold(self):
+        """pages set headings and labels at 600 to 800, and the kit sets mono ids and labels at 600 to 800 too: a family requested only
+        up to 500 or 600 is drawn as synthesized bold (DM Mono stopped at 500 in classic and journal), and a mono left to the system
+        stack draws in another face on every machine (adr-drafting-table, notebook)"""
+        kit_mono_bold = any(re.search(r'font(?:-weight)?\s*:\s*(?:italic\s+)?[6-9]00\b', body) for p in FILES
+                            for body in re.findall(r'\{([^{}]*var\(--f-mono[^{}]*)\}', open(p, encoding='utf-8').read()))
+        self.assertTrue(kit_mono_bold)
         for t in self.themes:
             j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
             req = {unquote_plus(f).split(':')[0]: unquote_plus(f) for f in re.findall(r'[?&]family=([^&]+)', j['fonts'])}
-            for k in ('--f-display', '--f-ui'):
+            for k in ('--f-display', '--f-ui', '--f-mono'):
                 fam = first_family(j['light'][k])
-                if GENERIC.match(fam): continue
-                spec = req[fam].partition('@')[2]
-                axes = req[fam].partition(':')[2].partition('@')[0].split(',')
-                ws = [t.split(',')[axes.index('wght')] for t in spec.split(';')] if spec else ['400']
-                top = max(float(w.split('..')[-1]) for w in ws)
                 with self.subTest(theme=t, family=fam):
-                    self.assertGreaterEqual(top, 700)
+                    if GENERIC.match(fam):
+                        self.assertNotEqual(k, '--f-mono', t + ' has no mono web font')
+                        continue
+                    spec = req[fam].partition('@')[2]
+                    axes = req[fam].partition(':')[2].partition('@')[0].split(',')
+                    ws = [t.split(',')[axes.index('wght')] for t in spec.split(';')] if spec else ['400']
+                    self.assertGreaterEqual(max(float(w.split('..')[-1]) for w in ws), 700)
 
     def test_css_and_json_agree_on_the_font_tokens(self):
         for t in self.themes:

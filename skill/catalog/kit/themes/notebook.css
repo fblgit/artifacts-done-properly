@@ -8,7 +8,7 @@
  * --radius and --radius-lg (corners), --edge-w, --text-size, --leading, --measure, --pad (density), --label-case and --label-caps (how a small label is set), --head-case, --bg-image and --bg-size (the texture), --radius-wobble.
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
- * Fonts: https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap
+ * Fonts: https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  *
  * @id        theme.notebook
  * @group     Themes
@@ -18,7 +18,7 @@
  * @summary   A cream paper notebook on a dotted desk: pastel stickers for states, rounded Fredoka, a hand-lettered Caveat, warm charcoal at night.
  * @tags      palette, tokens, colours, dark mode, notebook, stickers, pastel, hand-lettered, cream, friendly, dots
  * @requires  none
- * @config    fonts | Fredoka, Nunito and Caveat from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    fonts | Fredoka, Nunito, Caveat and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
@@ -73,7 +73,7 @@
   --shadow: 0 2px 2px rgba(80, 60, 30, .08), 0 10px 22px -6px rgba(80, 60, 30, .24);
   --f-display: "Fredoka", "Nunito", ui-rounded, "Arial Rounded MT Bold", sans-serif;
   --f-ui: "Nunito", ui-rounded, -apple-system, "Segoe UI", sans-serif;
-  --f-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --f-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
   --outline: #2d2823;
   --bg-image: radial-gradient(rgba(120, 90, 40, .16) 1px, transparent 1.3px);
