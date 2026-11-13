@@ -36,6 +36,29 @@ class Fonts(unittest.TestCase):
 
 
 
+class TemplateWearsTheTheme(unittest.TestCase):
+    """The templates' styles read the theme instead of fixing a look of their own: headings at weights every theme family ships (700; Fredoka,
+    Space Grotesk and Familjen Grotesk stop there, so 750 and 800 were synthesized bold) with no variation axes tuned for one family,
+    native controls in the page font, and corners, edges, heading case and text size from the theme's feel tokens with the old values as fallbacks."""
+    def setUp(self):
+        self.page = re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'templates', 'starter', 'styles', 'page.css.txt'), encoding='utf-8').read(), flags=re.S)
+        self.assist = open(os.path.join(ROOT, 'templates', 'assistant', 'styles', 'assist.css.txt'), encoding='utf-8').read()
+
+    def test_headings_stay_within_the_weights_themes_ship(self):
+        for sel, body in re.findall(r'(h[1-3])\{([^}]*)\}', self.page):
+            with self.subTest(sel=sel):
+                self.assertNotIn('font-variation-settings', body)
+                for w in re.findall(r'font-weight:(\d+)', body): self.assertLessEqual(int(w), 700)
+
+    def test_native_controls_take_the_page_font(self):
+        self.assertIn('button,input,select,textarea{font-family:inherit}', self.page)
+
+    def test_the_feel_tokens_are_read(self):
+        for tok in ('var(--radius-lg,14px)', 'var(--edge-w,1px)', 'var(--outline,var(--rule))', 'var(--head-case,none)', 'var(--text-size,15px)', 'var(--leading,1.55)', 'var(--bg-image,none)'):
+            with self.subTest(tok=tok): self.assertIn(tok, self.page)
+        self.assertEqual(re.findall(r'border-radius:(?:1[246]|20)px', self.assist), [])
+
+
 THEMES = os.path.join(ROOT, 'catalog', 'kit', 'themes')
 FONT_TOKENS = ('--f-display', '--f-ui', '--f-mono', '--f-hand')
 GENERIC = re.compile(r'^(ui-|system-ui$|serif$|sans-serif$|monospace$|cursive$)')
