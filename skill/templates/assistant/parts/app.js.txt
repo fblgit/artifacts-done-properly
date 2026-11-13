@@ -99,7 +99,7 @@ const claudeUse = n => (window.claude && claude.use ? Promise.resolve(claude.use
 const ready = hasAssist ? ADP.config.ready.then(() => {
   engine = Kit0.assist.start({
     page: window.ADP, config: ADP.config, titles: TITLES,
-    comments: claudeUse('comments'), sample: claudeUse('sample'), downloads: claudeUse('downloads'),
+    comments: claudeUse('comments'), sample: claudeUse('sample'),
     onPick: p => { setOpen(true); if (panel) panel.setScope(p, true); },
   });
   return engine.ready;
@@ -186,7 +186,7 @@ function mountMyCatalog(){
   });
 }
 /* The Home examples: each is a ready request. The button sends it to Claude through the assist engine (engine.send), so the person sees how a request is made, followed and answered.
-   A prompt names what is wanted and tells Claude to check the catalog first; keep each under about 600 characters, the comment that wakes the session has a 4 KiB limit. */
+   A prompt names what is wanted and tells Claude to check the catalog first; keep each under about 600 characters, the comment that wakes the session has a 4000 byte limit. */
 const CATALOG_RULE = ' Check the catalog first and take what already exists; build only what is missing, and tell me if it deserves a catalog entry.';
 const EXAMPLES = [
   {id: 'kanban', title: 'A drag and drop board', text: 'Add a Board view: columns To do, Doing and Done with cards I can drag between them and add, edit and delete, saved in the page database so everyone sees the same board.' + CATALOG_RULE},

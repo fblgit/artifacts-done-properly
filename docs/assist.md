@@ -222,7 +222,7 @@ db: rules
   requests              read view   write interact
   conversations         read view   write interact
   presence              read view   write interact
-user: {}   comments: {customAnchors: true}   artifact: {}   downloads: true   sample: {}
+user: {}   comments: {customAnchors: true}   artifact: {}   sample: {}
 ```
 
 The same rules are in the `adp:db-rules` meta tag of `index.html.txt`. The levels are `view`, `interact`, `admin`, `owner` (`Kit.namespaces.levels`).
@@ -242,7 +242,6 @@ The same rules are in the `adp:db-rules` meta tag of `index.html.txt`. The level
 | `comments` (`customAnchors: true`) | engine: `canSendToClaude`, `anchorFor`, `sendToClaude`; inbox: wake-up | `can().send` is `none`: sending is refused with code `none`; the panel says "This page cannot reach a session." Ask now still works. What the runtime does without `customAnchors` is not in this repo; the engine calls `anchorFor(el)` and, if that throws, the send fails with `upstream_error` and the request doc is deleted. |
 | `sample` | engine: Ask now | `can().ask` is false; "Ask now is not available on this page." |
 | `artifact` | inbox: `Apply` (`artifact.publish`) | Apply is disabled with "Apply needs the artifact capability, which this page does not declare." |
-| `downloads` | the engine takes no `downloads` option; neither the engine nor the panel nor the inbox reads it | nothing changes |
 
 When `ADP` or the assist kits are not on the page, the template hides the button and the Requests view says "Requests need the assist kit, and it is not available on this page." A failed engine start hides the button.
 

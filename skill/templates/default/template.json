@@ -44,7 +44,6 @@
    "customAnchors": true
   },
   "artifact": {},
-  "downloads": true,
   "sample": {}
  },
  "design": "The page opens on the assistant's views and the Work with Claude pane. Every listed kit is taken and available, but nothing beyond the assistant's views is mounted. Choose the theme with --theme; the look must be replaced before shipping.",

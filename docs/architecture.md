@@ -94,12 +94,11 @@ The record of a page is a set of ArtifactData collections. `adp.py` prints write
 | `""` (everything) | view | admin | yes | yes |
 | `ns/shared` | view | interact | yes | yes |
 | `ns/users/{self}` | view | interact | yes | yes |
-| `status` | view | interact | yes | no |
 | `requests` | view | interact | no | yes |
 | `conversations` | view | interact | no | yes |
 | `presence` | view | interact | no | yes |
 
-The templates also declare `user: {}`, `comments: {customAnchors: true}` and `artifact: {}`; `assistant` and `default` add `downloads: true` and `sample: {}`. `adp-adopt` suggests `{path: "", read: "view", write: "admin"}` alone for a page without the assistant (`skill/refs/adp-adopt/SKILL.md`).
+The templates also declare `user: {}`, `comments: {customAnchors: true}` and `artifact: {}`; `assistant` and `default` add `sample: {}`. `adp-adopt` suggests `{path: "", read: "view", write: "admin"}` alone for a page without the assistant (`skill/refs/adp-adopt/SKILL.md`).
 
 ## 5. The runtime
 

@@ -207,7 +207,7 @@ class HomeExamplesAndMindMap(unittest.TestCase):
         texts = re.findall(r"text: '((?:[^'\\]|\\.)*)'", app)
         self.assertGreaterEqual(len(texts), 8)
         for t in texts:
-            self.assertLess(len(t) + 300, 3000)       # the comment carries the instruction and trailer too, under 4 KiB
+            self.assertLess(len(t) + 300, 3000)       # the comment carries the instruction and trailer too, under 4000 bytes
         cat = {e['id'] for e in load(CATALOG)['entries']}
         for i in re.findall(r'\b((?:kit|pattern|viz|theme|template)\.[a-z0-9-]+)\b', ' '.join(texts)):
             self.assertIn(i, cat, i)
@@ -288,3 +288,14 @@ class Installed(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Capabilities(unittest.TestCase):
+    def test_no_template_declares_downloads_or_a_status_rule(self):
+        for t in ('starter', 'assistant', 'default'):
+            m = load(os.path.join(TPL, t, 'template.json'))
+            self.assertNotIn('downloads', m['capabilities'], t)
+            self.assertEqual([r['path'] for r in m['capabilities']['db']['rules'] if r['path'] == 'status'], [], t)
+            html = open(os.path.join(TPL, t, 'index.html.txt'), encoding='utf-8').read()
+            self.assertEqual(json.loads(re.search(r"adp:db-rules\" content='([^']+)'", html).group(1)), m['capabilities']['db']['rules'], t)
+        self.assertNotIn('downloads', open(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt'), encoding='utf-8').read())
