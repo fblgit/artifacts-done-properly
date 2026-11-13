@@ -17,7 +17,7 @@ The catalog is a published artifact whose files are kit entries, listed in its `
 
 ## Find
 
-- `ADP suggest CATALOG --for "free words" [--n 3] [--kind K]`: ranked by overlap with tags, name, summary, id, provides and about (the `why` field says which matched), no model call.
+- `ADP suggest CATALOG --for "free words" [--n 3] [--kind K]`: ranked by overlap with tags, name, summary, id, provides and about (the `why` field says which matched), no model call. `--n` counts per kind (viz, theme, pattern...), so it can print more than N lines; `takes` is how many files the entry brings.
 - `ADP kit list [CATALOG] [--kind K] [--tag T]`: one JSON line per entry. The kind is the id prefix (`viz`, `theme`, `layout`, `kit`, `pattern`, `runtime`, `template`, `guide`).
 - `ADP kit show ID [CATALOG]`: name, summary, about, tags, files, requires, provides.
 - `ADP kit describe ID [CATALOG]`: the mount signature: needs, provides, requires, file paths, the sample path.
@@ -28,7 +28,8 @@ The catalog is a published artifact whose files are kit entries, listed in its `
    `"kit/themes/glaze.css": {"artifact": "<catalog url>", "path": "kit/themes/glaze.css"}`
 2. A `warning` in the output means CATALOG was a local `catalog.json`, not the live catalog: do not publish from it. Local catalogs need `--url URL` to name the catalog artifact; `--config C.json` is accepted too.
 3. Publish with that `files` map (merge it into the page's own `files`), then `ADP check DIR`.
-4. `ADP new` can take entries for you: `--theme ID`, `--layout ID` and `--catalog CATALOG` put them into its publish object.
+4. A taken file is served, not loaded: in the page's `index.html` add a `<link rel="stylesheet">` for each taken `.css` and a `<script src>` for each taken `.js`, in the order of `entries` (requires first), the scripts before `parts/app.js`; the globals an entry `provides` (for example `Kit.timeline`) exist only after its script loaded. `ADP check` does not verify the loading.
+5. `ADP new` takes only a theme and a layout for you: `--theme ID`, `--layout ID` and `--catalog CATALOG` put them (and what they require) into its publish object and its index.html. Any other entry: `ADP take`, merge its `files`, add the tags of step 4.
 
 ## Rules
 
