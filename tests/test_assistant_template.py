@@ -253,7 +253,7 @@ class HomeExamplesAndMindMap(unittest.TestCase):
 
     def test_translate_table_has_flags_and_sets_the_language_setting(self):
         app = self.app()
-        self.assertGreaterEqual(len(re.findall(r"\['[\U0001F1E6-\U0001F1FF]{2}', '[A-Za-z]+'\]", app)), 10)
+        self.assertGreaterEqual(len(re.findall(r"\['[\U0001F1E6-\U0001F1FF]{2}', '[A-Za-z]+', '[A-Z]{2}'\]", app)), 10)
         self.assertIn('page.language', app)
 
     def test_language_setting_is_declared_with_default_english_in_both_templates(self):

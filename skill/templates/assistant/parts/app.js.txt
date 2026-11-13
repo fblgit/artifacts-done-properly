@@ -252,32 +252,38 @@ const ICONS = {
   translate: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
 };
 const icon = id => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[id] || '') + '</svg>';
-const LANGUAGES = [['🇪🇸', 'Spanish'], ['🇫🇷', 'French'], ['🇩🇪', 'German'], ['🇧🇷', 'Portuguese'], ['🇮🇹', 'Italian'], ['🇨🇳', 'Chinese'], ['🇯🇵', 'Japanese'], ['🇰🇷', 'Korean'], ['🇸🇦', 'Arabic'], ['🇮🇳', 'Hindi']];
+const LANGUAGES = [['🇪🇸', 'Spanish', 'ES'], ['🇫🇷', 'French', 'FR'], ['🇩🇪', 'German', 'DE'], ['🇧🇷', 'Portuguese', 'PT'], ['🇮🇹', 'Italian', 'IT'], ['🇨🇳', 'Chinese', 'ZH'], ['🇯🇵', 'Japanese', 'JA'], ['🇰🇷', 'Korean', 'KO'], ['🇸🇦', 'Arabic', 'AR'], ['🇮🇳', 'Hindi', 'HI']];
+/* The browser language: its two-letter code, and its English name when the table above has none for it. */
+const BROWSER = (() => { try { const c = String(navigator.language || 'en').slice(0, 2).toLowerCase(); let n = ''; try { n = new Intl.DisplayNames(['en'], {type: 'language'}).of(c) || ''; } catch (e) {} return {code: c, name: n}; } catch (e) { return {code: 'en', name: ''}; } })();
 const translateText = lang => 'Translate this whole page into ' + lang + ': the copy of every part (it lives in the content/<part id> docs), the tabs, the settings and the buttons. Keep every part id and every class and change no behaviour. Then set the Language setting (page.language) to ' + lang + ', and reply with what you translated and anything you left in the original language.';
 function mountExamples(){
   const box = $('[data-part="home.examples"]');
   if (!box) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-  const IDEAS = EXAMPLES.concat([{id: 'translate', cat: 'page', title: 'Translate this page', blurb: 'Into your language', icon: 'translate', rec: true}]);
+  const TR = {id: 'translate', cat: 'page', title: 'Translate this page', blurb: 'Into your language', icon: 'translate', rec: true};
+  const foreign = BROWSER.code !== 'en';
+  const IDEAS = foreign ? [TR].concat(EXAMPLES) : EXAMPLES.concat([TR]);
+  const LANGS = LANGUAGES.some(l => l[2].toLowerCase() === BROWSER.code) || !BROWSER.name || !foreign ? LANGUAGES : [['\u{1F310}', BROWSER.name, BROWSER.code.toUpperCase()]].concat(LANGUAGES);
+  let lang = (LANGS.find(l => l[2].toLowerCase() === BROWSER.code) || LANGS[0])[1];
   let cat = 'rec';
   const inCat = x => cat === 'rec' ? !!x.rec : x.cat === cat;
   box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
     + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '</div>'
     + '<div class="ex-split"><ul class="ex-ideas">'
     + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
-    + '<label class="ex-sel" hidden><span class="ex-sr">Language</span><select>' + LANGUAGES.map(l => `<option value="${esc(l[1])}">${l[0]}  ${esc(l[1])}</option>`).join('') + '</select></label></div>'
+    + '</div><div class="ex-langs" role="group" aria-label="Language" hidden>' + LANGS.map(l => `<button type="button" class="ex-lang" data-lang="${esc(l[1])}" title="${esc(l[1])}" aria-pressed="${l[1] === lang}"><span class="ex-flag" aria-hidden="true">${l[0]}</span><b>${esc(l[2])}</b></button>`).join('') + '</div>'
     + '<label class="ex-sr" for="exText">Your request to Claude</label><textarea id="exText" maxlength="1500" rows="6"></textarea>'
     + '<div class="ex-foot"><span class="muted ex-count"></span><span class="ex-acts"><button type="button" class="btn ex-ghost" data-reset>Start again</button><button type="submit" class="btn primary">Send to Claude</button></span></div></form></div>'
     + '<p class="ex-note muted" role="status" aria-live="polite"></p>';
   const note = box.querySelector('.ex-note'), form = box.querySelector('.ex-composer'), ta = form.querySelector('textarea'), cnt = form.querySelector('.ex-count'), submit = form.querySelector('button[type="submit"]');
-  const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-sel'), pick = sel.querySelector('select');
+  const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-langs');
   let cur = null, original = '', ok = false;
   const list = box.querySelector('.ex-ideas');
   const draw = () => { list.innerHTML = IDEAS.filter(inCat).map(x => `<li><button type="button" class="ex-idea" data-ex="${x.id}" aria-pressed="${!!cur && cur.id === x.id}"><span class="ex-ico">${icon(x.icon)}</span><span class="ex-t"><b>${esc(x.title)}</b><small>${esc(x.blurb)}</small></span></button></li>`).join('');
     box.querySelectorAll('.ex-cat').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === cat))); };
   const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight + 2, 420) + 'px'; };
   const count = () => { cnt.textContent = ta.value.length + ' / 1500'; submit.disabled = !ok || !ta.value.trim(); };
-  const textFor = () => cur.id === 'translate' ? translateText(pick.value) : cur.text;
+  const textFor = () => cur.id === 'translate' ? translateText(lang) : cur.text;
   const choose = id => {
     cur = IDEAS.find(x => x.id === id); if (!cur) return;
     box.querySelectorAll('.ex-idea').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
@@ -294,9 +300,9 @@ function mountExamples(){
     if (c) { cat = c.dataset.cat; const first = IDEAS.find(inCat); cur = IDEAS.find(x => inCat(x) && cur && x.id === cur.id) || first; draw(); choose(cur.id); return; }
     const b = e.target.closest('.ex-idea');
     if (b) { choose(b.dataset.ex); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
+    else if (e.target.closest('[data-lang]')) { lang = e.target.closest('[data-lang]').dataset.lang; sel.querySelectorAll('.ex-lang').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.lang === lang))); original = textFor(); ta.value = original; grow(); count(); }
     else if (e.target.closest('[data-reset]')) { ta.value = original; grow(); count(); ta.focus(); }
   });
-  pick.addEventListener('change', () => { original = textFor(); ta.value = original; grow(); count(); });
   ta.addEventListener('input', () => { grow(); count(); });
   form.addEventListener('submit', e => {
     e.preventDefault();
