@@ -32,6 +32,7 @@ class DevTests(Base):
         self.assertEqual(self.get('kit/x.js'), 'KIT')
         self.assertIn('window.__ADP_DEV={"user": "ann"}', self.get('__adp/shim.js'))
         self.assertEqual(self.post('/__adp/db', {'op': 'update', 'path': 'a/b', 'data': {}})['error']['code'], 'invalid_argument')
+        self.assertEqual(self.post('/__adp/db', {'op': 'set', 'path': 'a', 'data': {}})['error']['code'], 'invalid_argument')
         self.assertEqual(self.post('/__adp/inbox', {'text': 'hi'})['error']['code'], 'claude_unavailable')      # nobody watches
 
     def test_request_goes_through_watch_and_its_answer_through_send(self):

@@ -13,6 +13,8 @@ import contextlib, copy, http.server, json, mimetypes, os, queue, re, sys, threa
 
 A: types.ModuleType = types.ModuleType('adp')      # the adp module, set by adp.py at import
 SHIM = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'adp_dev.js')
+SEG = r'[A-Za-z0-9_\-.~:@+]{1,200}'
+DOC = re.compile(rf'{SEG}/{SEG}(/{SEG}/{SEG}){{0,7}}')      # a document path: an even number of segments, at most 16
 BEAT_FRESH = 15                 # seconds: a watcher that touched watch.beat this recently is listening
 
 
@@ -141,6 +143,7 @@ def handler(d, state, user):
             except ValueError: return self.send(fail('invalid_argument', 'body is not JSON'))
             path = self.path.split('?')[0]
             if path == '/__adp/db':
+                if not DOC.fullmatch(b.get('path') or ''): return self.send(fail('invalid_argument', f'bad document path {b.get("path")}'))
                 with store.mu: err = store.write(b.get('op'), b.get('path', ''), b.get('data'))
                 if not err: push([b.get('path')])
                 return self.send(err or {'ok': True})
