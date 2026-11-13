@@ -32,38 +32,49 @@ A growing catalog gives you more to start from. Refinement becomes an investment
 
 ## Install
 
-ADP ships as one file, `adp.skill` (a zip whose root folder is `adp/`). Get it from the
-[latest release](https://github.com/fblgit/artifacts-done-properly/releases/latest), or build it
-from a clone with `python3 tools/package.py` (output: `dist/adp.skill`). Then pick the path that
-matches where you run Claude.
+ADP ships as `adp.skill`, a zip whose root folder is `adp/`. Get it from the
+[latest release](https://github.com/fblgit/artifacts-done-properly/releases/latest), or build it in a clone:
+`python3 tools/package.py` writes `dist/adp.skill`. Python 3 is the only requirement.
 
-### Claude desktop app (Mac, Windows)
+**Do not trust the `/reload-skills` message.** It can say "none added or removed" when skills were
+added. After every reload, check the skill list instead: the agent lists the skills named `adp*`.
 
-1. Open `adp.skill` with the Claude desktop app (double-click it, or drag it onto the app).
-2. Review the contents in the **Add "adp" to your library?** dialog and click **Add to library**.
+### Claude desktop app
 
-### Claude Code in a terminal (CLI)
+1. Open `adp.skill` with the app (double-click or drag it on).
+   You should see the dialog **Add "adp" to your library?**
+2. Click **Add to library**.
+3. Go to "First run" below.
 
-The CLI loads skills from folders, not from a `.skill` zip, so you must unpack it yourself.
+### Claude Code (CLI)
 
-1. Copy `adp.skill` into your skills folder, then unzip it so that `~/.claude/skills/adp/SKILL.md` exists:
+The CLI needs the unpacked folder. Loading the zip directly is UNVERIFIED; do not rely on it.
+
+1. Unpack it so that `~/.claude/skills/adp/SKILL.md` exists:
 
        mkdir -p ~/.claude/skills
        unzip adp.skill -d ~/.claude/skills
        # no unzip (stock Windows, minimal images):
        python3 -m zipfile -e adp.skill ~/.claude/skills
 
-2. In your Claude Code session run `/reload-skills`. **This step is required.** A session that
-   was already open does not see the new skill until you reload, so skipping it looks like a failed install.
-3. Check it loaded: `adp` should be in the skill list.
+2. Run `/reload-skills` (required; an open session does not see new skills otherwise).
+   You should see `adp` in the skill list.
+3. Go to "First run" below.
 
-### First run (all paths)
+### First run (both)
 
-Ask your agent to set ADP up. It runs `python3 -I <skill folder>/scripts/adp.py setup --dry-run`,
-asks you which scope you want (`user`, `project` or `local`), then runs `setup --scope <answer>`.
-Setup copies the four road skills (`adp-new`, `adp-catalog`, `adp-edit`, `adp-adopt`) and writes
-`~/.adp/config.json`. It only prints the line it would add to your `CLAUDE.md`; nothing is added
-unless you agree. Python 3 is the only requirement; there is no pip or npm step.
+1. Ask your agent to set ADP up. It runs `python3 -I <skill folder>/scripts/adp.py setup --dry-run`
+   and asks you ONE question: scope `user`, `project` or `local`.
+2. Answer. It runs `setup --scope <answer>`, which copies four road skills
+   (`adp-new`, `adp-catalog`, `adp-edit`, `adp-adopt`) and writes `~/.adp/config.json`.
+   It adds its line to your `CLAUDE.md` only if you agree.
+3. CLI only: run `/reload-skills` again (required; the road skills are new).
+   You should see all four `adp-*` road skills plus `adp` in the skill list.
+
+`setup` does not record a catalog URL. If `~/.adp/config.json` already existed before your first
+`setup` (an earlier ADP run, for example), it may point at someone else's catalog. Check it with
+`cat ~/.adp/config.json`. If it has a `catalog` you did not choose, move the folder aside, do not
+delete it: `mv ~/.adp ~/.adp.bak`. What `setup` does to an existing config is UNVERIFIED.
 
 To verify a download, see "Verify a download" in `docs/RELEASING.md`.
 
