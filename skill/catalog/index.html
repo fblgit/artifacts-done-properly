@@ -2,19 +2,26 @@
 <title>Artifact Kit Catalog v2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="adp:build" content="1">
-<!--
-READ THIS FIRST. It sits at the top so that a trimmed or cropped read of this file still shows it.
+<section id="adp-readme" aria-label="For agents: what this page is and how to work on it">
+<details><summary>For agents: what this page is (ADP)</summary>
+<pre style="white-space:pre-wrap;margin:0;padding:8px 16px;font:12px/1.5 ui-monospace,Menlo,monospace;color:inherit">READ THIS FIRST. It is a real element, not a comment, so nothing strips it.
 
 ARTIFACT KIT CATALOG v2. Building blocks for claude.ai artifacts: components, themes, templates, guides.
 You TAKE an entry's files BY REFERENCE. You do not copy code by hand.
 This artifact's own URL is the catalog URL: https://claude.ai/artifact/LzGUCv8xCa8XLnqwF7Vemx
+
+INSTALL THE ADP SKILL (once per machine, before ADP take / ADP check; skip if ~/.claude/skills/adp/SKILL.md exists):
+  1. Download adp.skill from the latest release: https://github.com/fblgit/artifacts-done-properly/releases/latest (it is a zip whose root folder is adp/).
+  2. Unzip it into your skills folder: unzip adp.skill -d ~/.claude/skills
+  3. Run: python3 -I ~/.claude/skills/adp/scripts/adp.py setup
+  No pip or npm is needed; the script is Python 3 standard library only.
 
 WHERE TO START
   1. Read catalog.json (id, name, summary, tags). Do not open every page.
   2. Pick the entry and everything it requires (listed first, in load order).
 WHAT TO GET
   Put a files map in the files of your artifact's Artifact publish, one reference per file:
-  {"kit/tabs.js": {"artifact": "<catalog url>", "path": "kit/tabs.js"}}
+  {"kit/tabs.js": {"artifact": "&lt;catalog url&gt;", "path": "kit/tabs.js"}}
   The server copies the file. You must be able to open this artifact.
   Scripts, styles, data and images copy. HTML and XML pages do not: templates are .html.txt text,
   copy the shell into your own index.html. The Take it tab of each entry prints the exact map.
@@ -27,8 +34,9 @@ HOW ADP WORKS (guide: entry guide.artifact-dataplane, file kit/guides/artifact-d
   stable id, marked in the source and with data-part. Per-part hashes say what changed. Copy lives in
   content docs, with content.js as the fallback. Comment anchors are part ids. Several agents edit through
   read, hold, publish, record, with if_version pinned on every write. python3 -I adp.py check must say ok.
-THIS PAGE: entries load from catalog.json. The text of the how-to panel is content.js, key catalog.howto.
--->
+THIS PAGE: entries load from catalog.json. The text of the how-to panel is content.js, key catalog.howto.</pre>
+</details>
+</section>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Familjen+Grotesk:wght@500;700&family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Kalam:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">

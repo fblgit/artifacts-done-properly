@@ -32,7 +32,7 @@ Default to the assistant when people and Claude use the page together. Ask the u
 
 - Run the Artifact tool with the `publish` object `new` printed (`file_path`, `root`, `files`, `capabilities`); add a `label` of at most 60 characters and, on the first publish, an `icon`. Re-run `ADP files DIR` for the arguments after you changed files: it returns the local files and the kit references together (`kit_refs` counts them), the same `files` map `new` printed. It does not repeat `capabilities`: pass them on the first publish only, a republish keeps them. `file_path` and `root` are relative to where you ran the command; pass absolute paths when you are not in that folder.
 - Over 250 files `files` becomes `batches`: publish the page with the first and send the rest to the same url.
-- Record the publish result with `ADP ack DIR --result FILE` (or on stdin) after `ADP export DIR --url URL` has run once (road `adp-edit`). On a brand-new page skip it: `ack` answers `no export yet` until then, and the first export takes the live version (`--version V` from the publish result).
+- Record the publish result with `ADP ack DIR --result FILE` (or on stdin) after `ADP export DIR --url URL` has run once (road `adp-edit`). On a brand-new page skip it: `ack` answers `no export yet` until then, and the first export takes the live version (`--version V` from the publish result); the next republish of the page starts with that export (road `adp-edit`). `ADP check` prints one warning on every assistant page, `part roots without data-comment-target: page.assist`: the Claude pane is not a place to comment on, so it is expected.
 
 ## 4. The one-time editor open (seeds the database)
 

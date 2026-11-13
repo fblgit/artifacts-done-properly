@@ -254,6 +254,13 @@ def export(a):
         # the first export is the import: work and base start from live, so live is their ancestor (a work grown from
         # the empty root, as an older export left it, would meet live as add/add on every file)
         git(repo, 'branch', '-f', 'work', lsha); git(repo, 'branch', '-f', 'base', lsha)
+    if not prev.get('base') and not A.load(d)[0]:
+        # an empty or missing DIR (a new session editing a page it did not build): the import fills it with the live files,
+        # so work starts equal to live instead of every file reading as deleted here
+        for f in files:
+            src = os.path.join(inc, 'files', f['path'])
+            if not f['ref'] and os.path.isfile(src):
+                os.makedirs(os.path.dirname(os.path.join(d, f['path'])) or d, exist_ok=True); shutil.copyfile(src, os.path.join(d, f['path']))
     wm, wtree = work_tree(d, refs)
     commit_tree(repo, 'work', wtree, 'work', db_from='live')
     wman = work_manifest(d, refs)
