@@ -1,6 +1,6 @@
 ---
 name: adp
-description: ADP (Artifacts Done Properly) is the standard for claude.ai Artifacts that several agents or sessions work on, take comments over many versions, or are built from shared catalog components. Load it FIRST whenever the task is a new artifact page, board, tracker or record, using or adding catalog components, themes or templates, editing or publishing an artifact more than one agent touches, answering artifact comments, or putting an existing artifact on ADP. Also load it for the first-run setup of ADP. Skipping it risks a stale copy overwriting other versions.
+description: ADP (Artifacts Done Properly) is the standard for claude.ai Artifacts that more than one agent or session works on, that collect comments or requests from people, or that are built from shared catalog components. Load it FIRST, before writing any HTML and before calling the Artifact or ArtifactData tools, whenever the user wants a new artifact page, board, tracker, dashboard, assistant or record that will be kept, shared or edited again; wants to edit, republish or answer comments on an artifact that already exists or that another session touched; says ADP, adp.py, catalog, kit, theme, template, part id, watch the artifact, requests or presence; wants an existing artifact put on ADP; or is setting ADP up for the first time. Skipping it risks a stale copy overwriting newer versions and rebuilding by hand what the catalog already has.
 license: Apache-2.0
 metadata:
   version: "2.0.0"
@@ -16,7 +16,7 @@ ADP makes a shared Artifact safe to edit: every piece of the page is a part with
 
 `python3 -I <this skill's folder>/scripts/adp.py <subcommand>`
 
-Use `--help` or a subcommand with no arguments to see its usage; never guess a subcommand.
+Use `--help` or a subcommand with no arguments to see its usage; do not guess a subcommand, a guessed one does not exist and costs a turn.
 
 ## First run: check before anything else
 
@@ -41,5 +41,5 @@ Every `adp.py` command appends one JSON line to `log.jsonl`: in `./.adp/` when a
 
 ## Always
 
-- Read the latest version of an artifact before touching it; a local copy from an earlier session is never the source.
-- Anything not confirmed by a command or a read is marked UNVERIFIED in what you tell the user.
+- Read the latest version of an artifact before touching it; a local copy from an earlier session may predate other people's work, and publishing from it overwrites theirs.
+- Mark anything a command or a read did not confirm as UNVERIFIED when you tell the user, so they know what to check; this includes whether this session is watching an artifact (only the publish result or the ArtifactComments tool says so).

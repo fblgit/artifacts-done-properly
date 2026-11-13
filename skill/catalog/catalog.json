@@ -13728,8 +13728,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "800cd2eb7be8123fe5cc91c7ce8f0fb9a5492074b505f568101e9256abc4cadd",
-     "bytes": 32522
+     "sha256": "32190ac393bbefc9f194c57f96b5e80ea78a894634b736d2814e6cf8f25ab732",
+     "bytes": 33146
     },
     {
      "path": "kit/samples/assist.json",
@@ -13786,7 +13786,7 @@
     "pattern.answer-queue",
     "pattern.questions"
    ],
-   "hash": "e7f243564ae2",
+   "hash": "7696dc06baf5",
    "at": "2026-11-13T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session moves the request through ack, working (with progress lines) and done (response, changed parts, version), and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.",

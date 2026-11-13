@@ -186,20 +186,21 @@ function mountMyCatalog(){
   });
 }
 /* The Home examples: each is a ready request. The button sends it to Claude through the assist engine (engine.send), so the person sees how a request is made, followed and answered.
-   A prompt names what is wanted and tells Claude to check the catalog first; keep each under about 600 characters, the comment that wakes the session has a 4000 byte limit. */
+   A prompt names what is wanted and tells Claude to check the catalog first; keep each under about 600 characters, the comment that wakes the session has a 4000 byte limit.
+   A prompt that needs the person's choice says to ask it in the response and stop: a request ends at its response, and the person's answer reopens it as a reply. */
 const CATALOG_RULE = ' Check the catalog first and take what already exists; build only what is missing, and tell me if it deserves a catalog entry.';
 const EXAMPLES = [
   {id: 'kanban', title: 'A drag and drop board', text: 'Add a Board view: columns To do, Doing and Done with cards I can drag between them and add, edit and delete, saved in the page database so everyone sees the same board.' + CATALOG_RULE},
   {id: 'calendar', title: 'A calendar', text: 'Add a Calendar view: a month grid where I can add, move and delete events by dragging, saved in the page database, readable on a phone.' + CATALOG_RULE},
   {id: 'drafting', title: 'A drafting board', text: 'Add a Drafting view: a page to write a draft in sections, reorder the sections by dragging, and keep every saved version so I can go back.' + CATALOG_RULE},
   {id: 'canvas', title: 'A canvas for my topic', text: 'In the Canvas tab, add a ready-made canvas for planning a trip: a board with sticky notes for days, places and bookings, so it opens with something to move around instead of empty.' + CATALOG_RULE},
-  {id: 'mindmap', title: 'A mind map to start from', text: 'In the Canvas tab, make the Mind map open with a map of my project in place of the sample: ask me for its name and three main branches first.' + CATALOG_RULE},
-  {id: 'rearrange', title: 'Rearrange something', text: 'Reorder the tabs and the cards on Home so the most used come first, and tell me what you moved and why. Change nothing else.'},
-  {id: 'change', title: 'Change something', text: 'Change the look of this page to a calmer one, with larger text and more space, and keep every part and its id. Show me what changed.' + CATALOG_RULE},
-  {id: 'adopt', title: 'Adopt something', text: 'Show me three catalog components that would suit this page, say what each does, and add the one I choose by taking it from the catalog.'},
+  {id: 'mindmap', title: 'A mind map to start from', text: 'In the Canvas tab, make the Mind map open with a map of my project in place of the sample. Ask me for its name and three main branches in your response and stop there; I will answer on this request and then you build it.' + CATALOG_RULE},
+  {id: 'rearrange', title: 'Rearrange something', text: 'Reorder the tabs and the cards on Home into the order a first-time visitor needs them, and tell me what you moved and why. Change nothing else.'},
+  {id: 'change', title: 'Change something', text: 'Change the look of this page to a calmer one, with larger text and more space, and keep every part and its id. Tell me which parts changed.' + CATALOG_RULE},
+  {id: 'adopt', title: 'Adopt something', text: 'Suggest three catalog components that would suit this page and say what each does, in your response, and stop there. I will reply with my choice and then you add it by taking it from the catalog.'},
 ];
 const LANGUAGES = [['🇪🇸', 'Spanish'], ['🇫🇷', 'French'], ['🇩🇪', 'German'], ['🇧🇷', 'Portuguese'], ['🇮🇹', 'Italian'], ['🇨🇳', 'Chinese'], ['🇯🇵', 'Japanese'], ['🇰🇷', 'Korean'], ['🇸🇦', 'Arabic'], ['🇮🇳', 'Hindi']];
-const translateText = lang => 'Translate this whole page into ' + lang + ': every visible text, including the copy of each part, the tabs, the settings and the buttons. Keep every part id and every class, change no behaviour, then set the Language setting (page.language) to ' + lang + '. Reply with what you translated.';
+const translateText = lang => 'Translate this whole page into ' + lang + ': the copy of every part (it lives in the content/<part id> docs), the tabs, the settings and the buttons. Keep every part id and every class and change no behaviour. Then set the Language setting (page.language) to ' + lang + ', and reply with what you translated and anything you left in the original language.';
 function mountExamples(){
   const box = $('[data-part="home.examples"]');
   if (!box) return;
