@@ -59,3 +59,13 @@ class EvalFixes(Cmd):
         r = self.run_adp('export', d, '--url', URL)
         self.assertNotEqual(r.returncode, 0)
         self.assertIn('no file rows', r.stdout + r.stderr)
+
+    def test_content_builds_only_the_starter(self):
+        content = self.p('c.md')
+        open(content, 'w').write('## Lead\nL\n\n## View: A (id: a)\n### Section a.one - One\n```html\n<p>x</p>\n```\n')
+        r = self.run_adp('new', 'assistant', self.p('pg'), '--content', content)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn('use it with the starter', r.stdout + r.stderr)
+        self.assertFalse(os.path.exists(self.p('pg')))             # nothing half-written
+        self.ok('new', 'starter', self.p('ok'), '--content', content)
+        self.assertEqual(self.run_adp('check', self.p('ok')).returncode, 0)
