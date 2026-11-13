@@ -20,11 +20,6 @@
      "path": "ns/users/{self}",
      "read": "view",
      "write": "interact"
-    },
-    {
-     "path": "status",
-     "read": "view",
-     "write": "interact"
     }
    ]
   },
