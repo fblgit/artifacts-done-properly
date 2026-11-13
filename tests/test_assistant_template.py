@@ -223,5 +223,43 @@ class HomeExamplesAndMindMap(unittest.TestCase):
             self.assertIn("language: {type: 'text', default: 'English', label: 'Language'", src, t)
 
 
+class MyCatalog(unittest.TestCase):
+    def test_new_writes_the_catalog_index_and_publishes_it(self):
+        full = {e['id']: e for e in load(CATALOG)['entries']}
+        for name in ARGS:
+            d, out = generate(name)
+            mc = json.loads(read(d, 'my-catalog.json'))
+            self.assertEqual(mc['schema'], 'my-catalog/1')
+            self.assertEqual([e['id'] for e in mc['entries']], list(full))
+            self.assertEqual(set(mc['entries'][0]) - {'id', 'name', 'kind', 'group', 'summary', 'version', 'status', 'tags', 'requires'}, set())
+            self.assertLess(os.path.getsize(os.path.join(d, 'my-catalog.json')), 150000)      # the page fetches it whole
+            self.assertIn('my-catalog.json', out['publish']['files'], name)
+
+    def test_without_a_catalog_on_disk_nothing_is_written_and_check_is_ok(self):
+        d = os.path.join(tempfile.mkdtemp(), 'out')
+        env = dict(os.environ, ADP_HOME=tempfile.mkdtemp())
+        r = subprocess.run([sys.executable, ADP, 'new', 'assistant', d], capture_output=True, text=True, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertFalse(os.path.exists(os.path.join(d, 'my-catalog.json')))
+        c = subprocess.run([sys.executable, ADP, 'check', d], capture_output=True, text=True, env=env)
+        self.assertEqual(c.returncode, 0, c.stdout + c.stderr)
+
+    def test_starter_does_not_get_it(self):
+        d = os.path.join(tempfile.mkdtemp(), 'out')
+        r = subprocess.run([sys.executable, ADP, 'new', 'starter', d, '--catalog', CATALOG, '--url', URL], capture_output=True, text=True, env=dict(os.environ, ADP_HOME=tempfile.mkdtemp()))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertFalse(os.path.exists(os.path.join(d, 'my-catalog.json')))
+
+    def test_the_view_and_its_parts_are_in_the_generated_page(self):
+        for name in ARGS:
+            d, _ = generate(name)
+            app, content = read(d, 'parts/app.js'), read(d, 'content.js')
+            for p in ('mycatalog', 'mycatalog.intro', 'mycatalog.list'):
+                self.assertIn(f'data-part="{p}"', app, p)
+            self.assertIn("mycatalog: 'My catalog', 'mycatalog.intro': 'My catalog intro', 'mycatalog.list': 'My catalog list'", app)
+            self.assertIn('"mycatalog.intro"', content)
+            self.assertIn("fetch('my-catalog.json')", app)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,6 @@
 {
  "name": "default",
+ "my_catalog": true,
  "base": "assistant",
  "summary": "The assistant plus every theme, the canvas, 3D and the most useful common kits, so you can build your own page or tune an existing one.",
  "use_when": "Starting a page of your own, or reshaping an existing one, when you want the whole toolbox taken and at hand.",

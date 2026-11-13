@@ -42,6 +42,16 @@ const VIEWS = {
     </section>`,
   },
   /* /part:canvas */
+  /* part:mycatalog */
+  mycatalog: {
+    label: 'My catalog',
+    parts: ['mycatalog', 'mycatalog.intro', 'mycatalog.list'],
+    html: () => `<section class="view mycatalog-view" data-part="mycatalog" data-comment-target aria-label="My catalog">
+      <!-- part:mycatalog.intro --><div class="card" data-part="mycatalog.intro" data-comment-target></div><!-- /part:mycatalog.intro -->
+      <!-- part:mycatalog.list --><div class="card" data-part="mycatalog.list" data-comment-target aria-label="The owner's catalog"></div><!-- /part:mycatalog.list -->
+    </section>`,
+  },
+  /* /part:mycatalog */
   /* part:settings */
   settings: {
     label: 'Settings', hidden: true,      // reached from the gear and by #settings, not from the tabs
@@ -58,6 +68,7 @@ const VIEWS = {
 const TITLES = {'page.header': 'Header', 'page.lead': 'Lead', 'page.tabs': 'Views', 'page.changes': 'What changed', 'page.assist': 'Work with Claude',
   requests: 'Requests', 'requests.intro': 'Requests intro', 'requests.list': 'Request list',
   canvas: 'Canvas', 'canvas.intro': 'Canvas intro', 'canvas.board': 'Canvas board',
+  mycatalog: 'My catalog', 'mycatalog.intro': 'My catalog intro', 'mycatalog.list': 'My catalog list',
   home: 'Home', 'home.welcome': 'Welcome', 'home.examples': 'Examples', 'home.next': 'Next steps', 'home.about': 'How this page works',
   settings: 'Settings', 'settings.intro': 'Settings intro', 'settings.switches': 'Switches', 'settings.inbox': 'Incoming', 'settings.namespaces': 'Namespaces'};
 const COPY = new Set(Object.keys(window.ADP_CONTENT || {}));   // parts whose inner HTML is copy
@@ -137,6 +148,46 @@ function mountRequests(){
   };
   const off = list.on(paint); paint(list.get());
   mounted.push({destroy(){ off(); cards.forEach(c => c.m.destroy()); }});
+}
+/* The My catalog view lists the owner's catalog: my-catalog.json, written beside the page by adp.py new from the catalog it was given
+   (id, name, group, summary, version, tags, requires). It is a copy from that day: the line above the list says which catalog and which build.
+   "Add to this page" is a request to Claude, sent through the assist engine, to take that entry by reference. */
+function mountMyCatalog(){
+  const box = $('[data-part="mycatalog.list"]');
+  if (!box) return;
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  let dead = false, data = null, q = '', group = 'all';
+  const none = why => { box.innerHTML = '<p class="muted">' + why + '</p>'; };
+  mounted.push({destroy(){ dead = true; }});
+  fetch('my-catalog.json').then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); }).then(j => {
+    if (dead) return;
+    if (!j || !Array.isArray(j.entries) || !j.entries.length) return none('The catalog file has no entries.');
+    data = j;
+    box.innerHTML = '<p class="muted mc-src"></p><div class="mc-bar"><input type="search" class="mc-q" placeholder="Search by name, id, tag or what it does" aria-label="Search the catalog"><select class="mc-group" aria-label="Group"></select></div><p class="muted mc-count" role="status" aria-live="polite"></p><ul class="mc-list"></ul><p class="muted mc-note" role="status" aria-live="polite"></p>';
+    const groups = ['all'].concat([...new Set(j.entries.map(e => e.group).filter(Boolean))]);
+    box.querySelector('.mc-group').innerHTML = groups.map(g => `<option value="${esc(g)}">${g === 'all' ? 'All groups' : esc(g)}</option>`).join('');
+    box.querySelector('.mc-src').innerHTML = esc(j.entries.length) + ' entries from ' + (j.url ? `<a href="${esc(j.url)}" target="_blank" rel="noopener">your catalog</a>` : 'your catalog') + (j.built ? ', built ' + esc(String(j.built).slice(0, 10)) : '') + '. This is the copy made when the page was created.';
+    draw();
+  }).catch(() => { if (!dead) none('No catalog is connected to this page. In Claude Code, give your catalog link with <code>adp.py catalog &lt;url&gt;</code> and create the page again, or ask Claude to add <code>my-catalog.json</code>.'); });
+  const score = (e, ts) => { const hay = [e.id, e.name, e.summary, (e.tags || []).join(' ')].join(' ').toLowerCase(); let n = 0; for (const t of ts) { if (hay.indexOf(t) < 0) return 0; n += (e.id + ' ' + e.name).toLowerCase().indexOf(t) >= 0 ? 3 : 1; } return n || 1; };
+  function draw(){
+    const ts = q.toLowerCase().split(/\s+/).filter(Boolean);
+    const rows = data.entries.filter(e => group === 'all' || e.group === group).map(e => [e, ts.length ? score(e, ts) : 1]).filter(r => r[1] > 0);
+    if (ts.length) rows.sort((a, b) => b[1] - a[1]);
+    const shown = rows.slice(0, 60);
+    box.querySelector('.mc-count').textContent = rows.length + ' of ' + data.entries.length + (rows.length > shown.length ? ', first ' + shown.length + ' shown' : '');
+    box.querySelector('.mc-list').innerHTML = shown.map(([e]) => `<li class="mc-item"><div><b>${esc(e.name)}</b> <code>${esc(e.id)}</code> <span class="muted">${esc(e.group)} · ${esc(e.version)}</span><p class="muted">${esc(e.summary)}</p>${(e.requires || []).length ? `<p class="muted mc-req">Needs ${(e.requires).map(r => '<code>' + esc(r) + '</code>').join(' ')}</p>` : ''}</div><button type="button" class="btn" data-take="${esc(e.id)}">Add to this page</button></li>`).join('');
+  }
+  box.addEventListener('input', e => { if (e.target.classList.contains('mc-q')) { q = e.target.value; if (data) draw(); } });
+  box.addEventListener('change', e => { if (e.target.classList.contains('mc-group')) { group = e.target.value; if (data) draw(); } });
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button[data-take]'); if (!b || !data) return;
+    const note = box.querySelector('.mc-note'), id = b.dataset.take, c = engine ? engine.can() : null;
+    if (!engine || !c || c.send !== 'available') { note.textContent = !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c && c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c && c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to Claude is not possible here right now.'; return; }
+    b.disabled = true;
+    engine.send({lane: 'task', scope: null, text: 'Add the catalog entry ' + id + ' to this page. Take it by reference from my catalog' + (data.url ? ' (' + data.url + ')' : '') + ' together with what it requires, wire it where it fits, and tell me where you put it. Change nothing else.'})
+      .then(() => { note.textContent = 'Sent: ' + id + '. Follow it on Requests.'; show('requests'); }, err => { note.textContent = (err && err.message) || 'It could not be sent.'; }).finally(() => { b.disabled = false; });
+  });
 }
 /* The Home examples: each is a ready request. The button sends it to Claude through the assist engine (engine.send), so the person sees how a request is made, followed and answered.
    A prompt names what is wanted and tells Claude to check the catalog first; keep each under about 600 characters, the comment that wakes the session has a 4 KiB limit. */
@@ -269,6 +320,7 @@ function show(v){
   if (v === 'settings') mountSettings();
   else if (v === 'requests') { ready.then(mountRequests); }
   else if (v === 'canvas') mountCanvas();
+  else if (v === 'mycatalog') mountMyCatalog();
   else { mountExamples(); if (window.ADP && ADP.config) { const c = $('[data-part="home.about"]'); if (c) c.hidden = !ADP.config.get('page.show-about'); } }
   if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
 }
