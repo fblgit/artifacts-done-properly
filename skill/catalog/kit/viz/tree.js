@@ -29,7 +29,7 @@
  * @summary   Records as a left-to-right tree: each drawn once under its first parent, other parents as dashed edges, the selected node's whole lineage lit.
  * @tags      tree, lineage, graph, hierarchy, outline, journey, dag, diagram
  * @requires  viz.core
- * @files     kit/samples/viz-tree.json
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.Tree, Kit.viz.layoutTree, Kit.viz.lineage
  * @config    nodes | [{id, label, kind, status, code, chips, bucket, parents: [id], order, shape: card | pill, state}]
  * @config    kinds / statuses | {kind: {label, tone}} / {status: tone}
@@ -43,7 +43,7 @@
  * @globals   htm-preact
  * @db        note The board maps its records to nodes; the parent derivation is the board's.
  * @source    Journey Whiteboard | app.js | RANK, parentsOf, buildTree, lineage, TreeNode, TreeView
- * @preview   {"render": "viz.tree", "samples": ["kit/samples/viz-tree.json", "kit/samples/viz-replay.json"], "uses": ["viz.replay", "viz.focus"]}
+ * @preview   {"render": "viz.tree", "samples": ["kit/samples/viz.json#viz-tree", "kit/samples/viz.json#viz-replay"], "uses": ["viz.replay", "viz.focus"]}
  * @changed   Parents come with each node, so any board's relations can feed it; question paths became a general pill node.
  */
 (function () {

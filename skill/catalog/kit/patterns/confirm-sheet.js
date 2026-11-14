@@ -42,7 +42,7 @@
  * @summary   A dialog for a change that has consequences: the plan in order with before and after, what it needs and holds, how to undo it; for the dangerous ones a typed word that seals it.
  * @tags      confirm, dialog, risk, plan, type the word, undo, sheet, hand-off, destructive
  * @requires  kit.glaze-surfaces, kit.tokens
- * @files     kit/patterns/confirm-sheet.css, kit/samples/confirm-sheet.json
+ * @files     kit/patterns/confirm-sheet.css, kit/samples/patterns.json
  * @provides  Kit.confirm.open, Kit.confirm.result, Kit.confirm.define, Kit.confirm.close, Kit.confirm.kinds
  * @config    Kit.confirm.open(spec) | spec: kind, title, lede, steps [{label, from, to, why, mono}], bulk {label, items}, needs [{kind, label, detail, missing}], holds [string], undo, last, word, plan {ms}, hands {pin, touch, serial, touch()}, confirmLabel, host, tray
  * @config    Kit.confirm.result(spec) | spec.view is "failed" (what, todo, undo, holds) or "success" (steps, undo, last)
@@ -51,7 +51,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s confirm sheet | the plan with before and after chips, needs and holds, the undo line, the typed-word seal, the waiting-for-hands step, the fly into the tray, the failed and finished sheets
- * @preview   {"render": "pattern.confirm-sheet", "samples": ["kit/samples/confirm-sheet.json"]}
+ * @preview   {"render": "pattern.confirm-sheet", "samples": ["kit/samples/patterns.json#confirm-sheet"]}
  * @changed   Presets are a table you extend instead of a project’s own presets, and the project’s words and icon sprite are gone.
  */
 (function () {

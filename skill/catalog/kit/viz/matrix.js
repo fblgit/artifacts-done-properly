@@ -23,7 +23,7 @@
  * @summary   Rows against columns with a toggle per cell: which moves solve which problems, which options meet which drivers.
  * @tags      matrix, coverage, grid, table, links, cross, heatmap
  * @requires  viz.core
- * @files     kit/samples/viz-matrix.json
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.Matrix
  * @config    rows | [{id, code, label, tone}]
  * @config    cols | [{id, code, label}]
@@ -37,7 +37,7 @@
  * @globals   htm-preact
  * @db        note The board reads and writes its link field (Journey Whiteboard: items/<id>.problems).
  * @source    Journey Whiteboard | app.js | Coverage
- * @preview   {"render": "viz.matrix", "samples": ["kit/samples/viz-matrix.json"]}
+ * @preview   {"render": "viz.matrix", "samples": ["kit/samples/viz.json#viz-matrix"]}
  * @changed   Rows, columns and the link field come from config instead of the problem and solution kinds.
  */
 (function () {

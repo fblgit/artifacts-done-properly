@@ -111,7 +111,7 @@ Do not let one-doc-per-event grow without bound: roll old `changes/` entries int
 
 ## 6. Adopting an existing artifact
 
-**On adp/1.** Markers plus `data-part data-comment-target` on every view and its main sections, then `adp.py check`, then publish with `db` declared, then seed `manifest/current`, `parts/*`, `changes/000001` (summary "adp/1 adopted"), `decisions/*` (the owner decisions so far, quoted) and `threads/*` (open threads). Tell the owner in one line.
+**On adp/1.** Markers plus `data-part data-comment-target` on every view and its main sections, then `adp.py check`, then publish with `db` declared, then seed (an adp/1 page has no loader, so write these yourself in ArtifactData batches; an adp/2 page expands its own `seed.json` on the first editor open) `manifest/current`, `parts/*`, `changes/000001` (summary "adp/1 adopted"), `decisions/*` (the owner decisions so far, quoted) and `threads/*` (open threads). Tell the owner in one line.
 
 **Moving to adp/2.**
 1. Split the page into files: the shell, `adp.js`, `content.js`, `styles/*`, `parts/*`.

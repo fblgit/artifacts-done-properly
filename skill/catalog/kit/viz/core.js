@@ -22,7 +22,7 @@
  * @summary   The small marks every board view uses: kind and status chips, a tally strip of counts per step, a row of big figures.
  * @tags      chip, badge, status, tally, counts, stats, figures, kpi
  * @requires  none
- * @files     kit/viz/viz.css, kit/samples/viz-chips.json
+ * @files     kit/viz/viz.css, kit/samples/viz.json
  * @provides  Kit.viz.Chip, Kit.viz.KindChip, Kit.viz.StatusChip, Kit.viz.Tally, Kit.viz.Figures, Kit.viz.mount, Kit.viz.util
  * @config    Chip | {label, code, tone, title}: tone is a pen (ink red green amber blue violet) or a meaning (ok warn danger accent muted)
  * @config    KindChip | {kind, code, kinds}: kinds {kind: {label, tone}}
@@ -33,7 +33,7 @@
  * @globals   htm-preact
  * @db        none
  * @source    Journey Whiteboard | app.js | KindChip, StatusChip, EstChip, QueueStrip counts, the stats strip, pv-stats
- * @preview   {"render": "viz.core", "samples": ["kit/samples/viz-chips.json"]}
+ * @preview   {"render": "viz.core", "samples": ["kit/samples/viz.json#viz-chips"]}
  * @changed   Tones replace the board's fixed kind and status classes, so any enum maps to a colour by config.
  */
 (function () {

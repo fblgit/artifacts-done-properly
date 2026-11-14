@@ -31,7 +31,7 @@
  * @summary   A dialog with tabs for one item; answering opens the next waiting item, or says all caught up.
  * @tags      dialog, modal, queue, answer, next, caught up, decide, armed, two-step delete, toast
  * @requires  kit.tokens, kit.tabs, kit.vocab
- * @files     kit/patterns/answer-queue.css, kit/samples/answer-queue.json
+ * @files     kit/patterns/answer-queue.css, kit/samples/patterns.json
  * @provides  Kit.answerQueue.mount, Kit.answerQueue.armed
  * @config    Kit.answerQueue.mount({items, isWaiting, stateEnum, answeredState, tabs, onAnswer, onDelete, onChange, host, caughtUp, label}) | items [{id, title, state, note, choices: [{id, label}], fields: [[label, value]], history: [{at, text}]}]; returns {open(id), close(), next(), waiting(), update(items), dialog, destroy()}
  * @config    Kit.tabs | the dialog's tabs use Kit.tabs with hash:false
@@ -39,7 +39,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's card dialog | the state crown, tabs, advancing to the next card that waits on you, the all-caught-up toast and the two-step delete
- * @preview   {"render": "pattern.answer-queue", "samples": ["kit/samples/answer-queue.json"], "uses": ["kit.vocab", "kit.tabs"]}
+ * @preview   {"render": "pattern.answer-queue", "samples": ["kit/samples/patterns.json#answer-queue"], "uses": ["kit.vocab", "kit.tabs"]}
  * @changed   The board's own card fields became a small item shape with choices, fields and history; the answer tab and the tab list can be replaced.
  */
 (function () {

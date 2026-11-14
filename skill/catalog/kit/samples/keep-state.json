@@ -1,9 +1,0 @@
-{
- "note": "Invented reply threads from a seed-swap club.",
- "threads": [
-  { "id": "t1", "title": "Who has spare runner bean seed?", "by": "Odile", "replies": ["I have a handful of Scarlet Emperor.", "Same, plus Painted Lady."] },
-  { "id": "t2", "title": "Swap table: bring labels", "by": "Ravi", "replies": ["Labels and a pencil, please."] },
-  { "id": "t3", "title": "Date for the autumn swap", "by": "Tomasz", "replies": [] }
- ],
- "pokes": ["Maria added a seed packet", "A new thread was started", "Odile changed a title", "Ravi pinned a thread"]
-}

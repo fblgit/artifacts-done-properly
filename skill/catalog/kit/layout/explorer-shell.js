@@ -24,7 +24,7 @@
  * @summary   Sections as a file tree with kind badges, a pipeline of phases, and a status bar with live counts.
  * @tags      explorer, sidebar, file tree, pipeline, status bar, ide, shell, sections, counts
  * @requires  kit.tokens, kit.vocab
- * @files     kit/layout/explorer-shell.css, kit/samples/explorer-shell.json
+ * @files     kit/layout/explorer-shell.css, kit/samples/layout.json
  * @provides  Kit.explorer.mount
  * @config    Kit.explorer.mount(root, {groups, pipeline, sections, status, height, label, treeLabel}) | groups [{label, files: [{id, name, ext}]}], pipeline {label, stages: [{id, name, state}], words}, sections [{id, title, render(body)}], status {items: [{label, count, tone}], note}; returns {select(id), current(), setStatus(s), setPipeline(p), destroy()}
  * @config    theme | made for theme.kanban; reads --radius, --seam and --accent / --accent-ink for the status bar
@@ -32,7 +32,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's kanban skin | the explorer sidebar of sections, the pipeline of phases and the status bar with counts
- * @preview   {"render": "layout.explorer-shell", "samples": ["kit/samples/explorer-shell.json"], "uses": ["kit.vocab"]}
+ * @preview   {"render": "layout.explorer-shell", "samples": ["kit/samples/layout.json#explorer-shell"], "uses": ["kit.vocab"]}
  * @changed   The tree, the pipeline and the status bar are one component over plain data; the source drew them from a board's state.
  */
 (function () {

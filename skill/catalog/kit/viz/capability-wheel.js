@@ -26,7 +26,7 @@
  * @summary   Eight beads round a core: lit beads are what something may do, joined by gold seams; a text alternative lists them; a button bar can light everything that has one.
  * @tags      wheel, capability, permissions, abilities, ring, beads, role, toggle
  * @requires  kit.tokens
- * @files     kit/viz/capability-wheel.css, kit/samples/capability-wheel.json
+ * @files     kit/viz/capability-wheel.css, kit/samples/viz.json
  * @provides  Kit.capabilityWheel.make, Kit.capabilityWheel.bar, Kit.capabilityWheel.mount
  * @config    Kit.capabilityWheel.make(caps, allowed, {name, glyph, small}) | caps [{key, label, hint}] (3 to 12), allowed an array or Set of keys; returns an svg with role=img
  * @config    Kit.capabilityWheel.mount(box, {caps, wheels, bar}) | wheels [{id, name, sub, allowed, glyph}]; bar false leaves the button bar out
@@ -35,7 +35,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page | the capability wheel function and its beads, seams and label placement
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page | the ability buttons that light everything that has one
- * @preview   {"render": "viz.capability-wheel", "samples": ["kit/samples/capability-wheel.json"]}
+ * @preview   {"render": "viz.capability-wheel", "samples": ["kit/samples/viz.json#capability-wheel"]}
  * @changed   The count is any number from 3 to 12 (angles from n), the abilities and the lit set are config.
  */
 (function () {

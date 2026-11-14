@@ -37,7 +37,7 @@ HOW ADP WORKS (guide: entry guide.artifact-dataplane, file kit/guides/artifact-d
   stable id, marked in the source and with data-part. Per-part hashes say what changed. Copy lives in
   content docs, with content.js as the fallback. Comment anchors are part ids. Several agents edit through
   read, hold, publish, record, with if_version pinned on every write. python3 -I adp.py check must say ok.
-THIS PAGE: entries load from catalog.json. The text of the how-to panel is content.js, key catalog.howto.</pre>
+THIS PAGE: catalog.json is the index; the header comment of an entry's main file describes it. The text of the how-to panel is content.js, key catalog.howto.</pre>
 </section>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,6 +102,7 @@ THIS PAGE: entries load from catalog.json. The text of the how-to panel is conte
 <script src="parts/previews-b15.js"></script>
 <script src="parts/previews-b16.js"></script>
 <script src="parts/previews-b17.js"></script>
+<script src="parts/files.js"></script>
 <script src="parts/catalog.js"></script>
 
 </body></html>

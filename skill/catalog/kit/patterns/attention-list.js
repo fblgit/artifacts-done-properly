@@ -29,7 +29,7 @@
  * @summary   One sentence saying how things are, then the things that need a person, worst first, each with the one button that deals with it; or a calm empty state.
  * @tags      attention, needs you, inbox, to do, actions, empty state, sentence
  * @requires  kit.vocab, kit.glaze-surfaces
- * @files     kit/patterns/attention-list.css, kit/samples/attention-list.json
+ * @files     kit/patterns/attention-list.css, kit/samples/patterns.json
  * @provides  Kit.attentionList.mount, Kit.attentionList.rank, Kit.attentionList.sentence
  * @config    Kit.attentionList.mount(root, {items, sentence, lede, rank, heading, level, emptyTitle, emptyText, enum, onAction}) | items [{id, tone: wait | bad | warn | info, title, sub, action: {label, primary}}]; update(items) redraws
  * @config    Kit.vocab | the enum "attention" is defined here when the board has not defined its own
@@ -37,7 +37,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s opening page | the needs-you list ranked waiting, failed, soon; the sentence builder; the heading that takes the worst tone; focus restored by button
- * @preview   {"render": "pattern.attention-list", "samples": ["kit/samples/attention-list.json"]}
+ * @preview   {"render": "pattern.attention-list", "samples": ["kit/samples/patterns.json#attention-list"]}
  * @changed   Items are config; the console built them from its own data.
  */
 (function () {

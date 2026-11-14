@@ -25,7 +25,7 @@
  * @summary   Tiles that show a count per status and filter the view when pressed, with chip groups and a search box in a strip that can stay under a sticky bar.
  * @tags      filter, tiles, counts, status, chips, search, sticky, dashboard, work board
  * @requires  none
- * @files     kit/patterns/count-filters.css, kit/samples/count-filters.json
+ * @files     kit/patterns/count-filters.css, kit/samples/patterns.json
  * @provides  Kit.countFilters.mount
  * @config    Kit.countFilters.mount(root, opts) | tiles [{id, label, count, note, tone}], value, groups [{id, label, options [{value, label}]}], search {placeholder, label}, sticky, label, onChange
  * @config    --kit-topbar-h | optional, written by Kit.topbar: the strip sticks below it
@@ -33,7 +33,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | clickable count tiles and the sticky filter strip (node and repo chips, search) of a work-status board
- * @preview   {"render": "pattern.count-filters", "samples": ["kit/samples/count-filters.json"]}
+ * @preview   {"render": "pattern.count-filters", "samples": ["kit/samples/patterns.json#count-filters"]}
  * @changed   The pressed tile carries a check mark as well as its outline, so state does not depend on colour.
  */
 (function () {

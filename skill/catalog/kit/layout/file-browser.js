@@ -30,7 +30,7 @@
  * @summary   The published files of an ADP artifact as a tree you can walk, and a sheet per file: its hash, the versions that touched it, its parts with who holds them and their comments, and its history with a Compare for each step.
  * @tags      files, manifest, tree, parts, hash, holds, history, adp/2, browser, explorer, versions
  * @requires  kit.tokens, kit.dom
- * @files     kit/layout/file-browser.css, kit/samples/file-browser.json
+ * @files     kit/layout/file-browser.css, kit/samples/layout.json
  * @provides  Kit.fileBrowser.mount
  * @related   pattern.file-map
  * @config    Kit.fileBrowser.mount(root, opts) | manifest {page_hash, parts, files, parents, part_file}, sizes {path: bytes}, parts {id: parts doc}, changes [changes docs], manifests {version: {files, parts}} (optional), threads {id: threads doc}, content {id: content doc} or [ids], since, selected, now, views [{id, label}], timeZone, label; returns {select, update, setSince, destroy}
@@ -41,7 +41,7 @@
  * @db        reads manifest/current; parts; changes; threads; content / note The layout does not read the db itself: the page reads these docs and passes them in.
  * @source    Catalog batch 15, 2026-10-26 | kit/layout/file-browser.js 0.1.0 | folders, an extension badge and the parts of each file
  * @source    Catalog batch 15, 2026-10-26 | skills/artifact-dataplane/scripts/adp.py manifest() and diff() | the adp/2 manifest the tree is drawn from, and added, changed, removed
- * @preview   {"render": "layout.file-browser", "samples": ["kit/samples/file-browser.json"], "uses": ["pattern.file-map", "pattern.record-shelf"]}
+ * @preview   {"render": "layout.file-browser", "samples": ["kit/samples/layout.json#file-browser"], "uses": ["pattern.file-map", "pattern.record-shelf"]}
  * @changed   A tree with folders that open and close, walked with the arrow keys, instead of flat groups of buttons.
  */
 (function () {

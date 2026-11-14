@@ -31,7 +31,7 @@
  * @summary   A floating nav pill whose icon tabs open their label on the current page; pages register themselves with show and hide hooks; hash routing; a link to something inside a page opens that page.
  * @tags      shell, navigation, pages, routing, hash, tabs, pill, lifecycle, onshow, app
  * @requires  kit.tokens
- * @files     kit/layout/app-shell.css, kit/samples/app-shell.json
+ * @files     kit/layout/app-shell.css, kit/samples/layout.json
  * @provides  Kit.shell.mount, Kit.shell.icons
  * @config    Kit.shell.mount(root, {brand, label, storageKey, defaultPage, hash, height, actions}) | returns a shell with add(page), show(id, anchorId), current(), pages(), popover(button, panel), destroy()
  * @config    shell.add({id, title, icon, el, onShow, onHide}) | id is a bare token; icon is a name from Kit.shell.icons or an svg string; el is the page's root element
@@ -39,7 +39,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's app shell | the floating nav pill, the page registry with show and hide hooks, hash routing, links into a page, the look popover
- * @preview   {"render": "layout.app-shell", "samples": ["kit/samples/app-shell.json"]}
+ * @preview   {"render": "layout.app-shell", "samples": ["kit/samples/layout.json#app-shell"]}
  * @changed   The console's sprite icons became inline svg strings, and its skin switcher became a generic popover you fill yourself.
  */
 (function () {

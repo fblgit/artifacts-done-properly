@@ -29,7 +29,7 @@
  * @summary   Decision cards where one tap records the owner's answer and a status line shows where Claude is with it.
  * @tags      decisions, owner, record, answer, buttons, claude, status, ask claude, db
  * @requires  none
- * @files     kit/patterns/decisions.css, kit/samples/decisions.json
+ * @files     kit/patterns/decisions.css, kit/samples/patterns.json
  * @provides  Kit.decisions.mount
  * @config    Kit.decisions.mount(root, {decisions, records, collection, db \| save, who, canWrite}) | decisions [{id, order, question, why, options [{key, label}], allowOther}]; records is what is already recorded
  * @config    afterRecord(decision, doc, cardEl) | where the board sends the answer to Claude; with kit.claude-lane that is lane.sendRequest(text, cardEl, decision.id)
@@ -40,7 +40,7 @@
  * @db        reads decisions (or the configured collection), through the board's own snapshot, handed to setRecords / writes decisions/<decision id>: {question, order, answer, label, answeredBy, answeredAt} / note A real artifact declares the db capability, and the comments capability (ask Claude) when afterRecord forwards the answer. The Claude session writes {claude: {step, text}} on the same doc. kit.claude-lane is the optional way to forward and track the request; this file does not call it, so it is not required.
  * @source    Catalog harvest, 2026-10-25 | a proposal page's index.html | owner decision cards: record, change answer, something else, focus kept across redraws, live read of the collection
  * @source    Catalog harvest, 2026-10-25 | a register page's index.html | the open, sent and done pills of a decision register
- * @preview   {"render": "pattern.decisions", "samples": ["kit/samples/decisions.json"]}
+ * @preview   {"render": "pattern.decisions", "samples": ["kit/samples/patterns.json#decisions"]}
  * @changed   A status line for Claude's side (four steps, in words) is new; the source recorded the answer and stopped.
  */
 (function () {

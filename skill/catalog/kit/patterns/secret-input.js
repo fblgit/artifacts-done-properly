@@ -35,7 +35,7 @@
  * @summary   A form for putting a value in without ever showing what is stored: masked single or multi-line input with an eye toggle, a generate-instead switch, shape hints and a cleared field after sending.
  * @tags      secret, password, form, write-only, masked, input, generate, drawer
  * @requires  kit.drawer, kit.glaze-surfaces
- * @files     kit/patterns/secret-input.css, kit/samples/secret-input.json
+ * @files     kit/patterns/secret-input.css, kit/samples/patterns.json
  * @provides  Kit.secretInput.mount, Kit.secretInput.openDrawer, Kit.secretInput.check, Kit.secretInput.shapeFor, Kit.secretInput.nameProblem
  * @config    Kit.secretInput.mount(root, {names, shapes, exists, generateOnly, multiline, onSubmit, nameRule, labels}) | onSubmit({name, value, note, generate, replace}) -> Promise; shapes [{startsWith | endsWith | equals, what, hex | length, multiline}]
  * @config    Kit.secretInput.openDrawer({title, lede, host, opener, focus, ...mountOptions}) | the same form in kit.drawer with Store and Cancel in the foot
@@ -43,7 +43,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s deposit drawer | the name field with a list, the masked value with an eye, the generate switch, the shape hints and checks, the multi-line masked key, clearing the value before sending
- * @preview   {"render": "pattern.secret-input", "samples": ["kit/samples/secret-input.json"], "uses": ["pattern.confirm-sheet"]}
+ * @preview   {"render": "pattern.secret-input", "samples": ["kit/samples/patterns.json#secret-input"], "uses": ["pattern.confirm-sheet"]}
  * @changed   Shapes are data and the check has no patterns in it.
  */
 (function () {

@@ -26,7 +26,7 @@
  * @summary   Severity finding cards (critical, high, medium, low, clear) with a kind tag, the evidence, where/what pairs and a fix, sorted worst first with a count line.
  * @tags      findings, severity, review, audit, issues, triage, evidence, fix, chip
  * @requires  none
- * @files     kit/patterns/findings.css, kit/samples/findings.json
+ * @files     kit/patterns/findings.css, kit/samples/patterns.json
  * @provides  Kit.findings.render, Kit.findings.chip, Kit.findings.LEVELS
  * @config    Kit.findings.render(box, opts) | items [{severity: crit|high|med|low|ok, tag, title, body, evidence: [[key, value]], fix}], sort, summary, cols, label
  * @config    Kit.findings.chip(severity, label) | the severity chip alone
@@ -34,7 +34,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | severity cards with a kind tag, evidence and citations, a card with an icon and title, a triage card with a fix, and the severity chip with an icon
- * @preview   {"render": "pattern.findings", "samples": ["kit/samples/findings.json"]}
+ * @preview   {"render": "pattern.findings", "samples": ["kit/samples/patterns.json#findings"]}
  * @changed   No coloured left rail on the card: the tone is carried by the chip's glyph and word.
  */
 (function () {

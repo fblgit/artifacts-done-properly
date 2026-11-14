@@ -40,7 +40,7 @@
  * @summary   Twenty named type roles, each a font shorthand token and a class, so no two kinds of text look alike: statements, titles, labels, hints, numerals, units, buttons, chips, code.
  * @tags      typography, type scale, roles, headings, labels, numerals, fonts
  * @requires  kit.tokens
- * @files     kit/samples/type-roles.json
+ * @files     kit/samples/kit.json
  * @provides  none
  * @config    tokens | --f-display, --f-ui and --f-mono come from the theme
  * @config    scope | the --kit-t-* tokens are declared on :root and on .kit-tr; add .kit-tr to the element that carries your theme tokens when they are not on :root
@@ -48,7 +48,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's type specimen and roles stylesheet | the roles table and the size, weight, italic and tracking of each role
- * @preview   {"render": "kit.type-roles", "samples": ["kit/samples/type-roles.json"]}
+ * @preview   {"render": "kit.type-roles", "samples": ["kit/samples/kit.json#type-roles"]}
  * @changed   Rebuilt on the catalog's three families; the nine named families of the source are gone, and the role names no longer name faces.
  */
 :root, .kit-tr {

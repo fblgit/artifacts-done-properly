@@ -42,7 +42,7 @@
  * @summary   The engine of a page that works with Claude: pick a block, send it as a request a watching Claude Code session does and reports on, or ask Claude at once; requests, turns, conversations and presence live in the db.
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
  * @requires  kit.tokens, kit.dom
- * @files     kit/samples/assist.json
+ * @files     kit/samples/patterns.json
  * @provides  Kit.assist.start, Kit.assist.memory, Kit.assist.parseShortcut, Kit.assist.matches, Kit.assist.state
  * @related   pattern.assist-panel, pattern.request-card, pattern.answer-queue, pattern.questions
  * @config    Kit.assist.start(opts) | db, user, comments, sample, config (handles or the promises claude.use returns), page (window.ADP), project, now, titles {part id: title}, manifest (for hashes), words {lane: word}, frame (the Ask now framing), onPick(pick) after the shortcut, shortcut false, pingTimeout, seed (the memory store); returns the engine
@@ -57,7 +57,7 @@
  * @db        reads requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; presence; config/current / writes requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; changes / note presence/<session> is never written by the page, nor asked of a session. The page creates a request and reopens it on a reply; only a session moves it forward. Each send and reply also appends changes/d-<ms> unless log.data-changes is off.
  * @source    Catalog batch 16, 2026-10-26 | kit/patterns/assist.js 0.1.0 | requests with a scope and a quote, turns, Ask now, presence, ping, the block picker and the shortcut
  * @source    Catalog batch 16, 2026-10-26 | a drafting-table board's request engine | the request doc and its trailer comment, the queue, ack, working and done states, stuck after three minutes, ping with its 90 s nudge
- * @preview   {"render": "pattern.assist", "samples": ["kit/samples/assist.json"]}
+ * @preview   {"render": "pattern.assist", "samples": ["kit/samples/patterns.json#assist"]}
  * @changed   presence() also reads watching from the platform's own answer (canSendToClaude available), so a session that watches and has not acted lately is not shown as gone.
  */
 (function () {

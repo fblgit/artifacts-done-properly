@@ -22,7 +22,7 @@
  * @summary   Where something is in an ordered process: a compact rail for one request, and the numbered stage list of a guided flow.
  * @tags      stepper, progress, steps, request, queue, stages, wizard, claude lane
  * @requires  viz.core
- * @files     kit/samples/viz-stepper.json
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.StepTrack, Kit.viz.Stages
  * @config    StepTrack | {steps: [id], at: id, labels, hints, busy, meta, label}
  * @config    Stages | {steps: [{id, label, count, done}], current, onPick(id), compact}
@@ -30,7 +30,7 @@
  * @globals   htm-preact
  * @db        none
  * @source    Journey Whiteboard | app.js | REQ_STEPS, REQ_HINT, the rail in ReqLine, GuideSteps
- * @preview   {"render": "viz.stepper", "samples": ["kit/samples/viz-stepper.json"]}
+ * @preview   {"render": "viz.stepper", "samples": ["kit/samples/viz.json#viz-stepper"]}
  * @changed   The rail announces itself as one image: step n of m, its name and hint.
  */
 (function () {

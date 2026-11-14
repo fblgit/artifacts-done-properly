@@ -30,7 +30,7 @@
  * @summary   Status chips with counts, a search box and sortable column heads over a table; optional group rows and a total in the status line.
  * @tags      table, filter, search, sort, chips, counts, status, list, data, verdict
  * @requires  kit.table
- * @files     kit/patterns/filter-table.css, kit/samples/filter-table.json
+ * @files     kit/patterns/filter-table.css, kit/samples/patterns.json
  * @provides  Kit.filterTable.mount
  * @config    Kit.filterTable.mount(box, opts) | columns [{key, label, num, unit, decimals, fmt, cell, sort, status, bar}], rows, filter {key | by, label, all, value, options [{value, label, tone}]}, search {keys, placeholder, label}, sort {key, dir}, group, total {key, unit, decimals}, empty, label, caption, tall, onChange
  * @config    requires | kit.table: its css (the frame and table styles) and Kit.table.fmt
@@ -38,7 +38,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a verdict filter with search and a sortable size column, a flow list with direction segments and a text filter, and three review tables with recommendation chips
- * @preview   {"render": "pattern.filter-table", "samples": ["kit/samples/filter-table.json"]}
+ * @preview   {"render": "pattern.filter-table", "samples": ["kit/samples/patterns.json#filter-table"]}
  * @changed   The chip counts follow the search, so a chip says how many rows it would show.
  */
 (function () {

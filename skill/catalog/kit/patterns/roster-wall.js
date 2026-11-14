@@ -33,7 +33,7 @@
  * @summary   A wall of cards, one per person or agent (state and activity pills, what it holds, a queue count, a Live or Stale last-seen), a team table, and a claims table with expiry.
  * @tags      roster, presence, members, team, claims, last seen, live, stale, wall, drawer
  * @requires  kit.tokens, kit.vocab, kit.drawer, kit.keep-state
- * @files     kit/patterns/roster-wall.css, kit/samples/roster-wall.json
+ * @files     kit/patterns/roster-wall.css, kit/samples/patterns.json
  * @provides  Kit.rosterWall.mount
  * @config    Kit.rosterWall.mount(box, opts) | actors [{name, role, state, activity, holds [{name, kind}], queued, lastSeen, items [{id, title, state}]}], claims [{resource, holder, until, state}], now, liveMin, view wall | team | claims, filter, stateEnum, activityEnum, itemEnum, remember, onSend(name, text), onOpen, drawerHost, timeZone; returns {update, setView, setFilter, open, destroy}
  * @config    Kit.vocab.define({...}) | optional: your own actor-state and actor-activity tables (word, short, glyph, tone, motion per value); the file supplies small defaults when they are missing
@@ -43,7 +43,7 @@
  * @source    Catalog harvest, 2026-10-25 | a component family's member wall and roster | the member card (state, activity, holds, queue count, last seen) and the roster's send line
  * @source    Catalog harvest, 2026-10-25 | an earlier board's team and status pass | the live and stale beat
  * @source    Catalog harvest, 2026-10-25 | a task page's team table and claims table | the claims table with expiry
- * @preview   {"render": "pattern.roster", "samples": ["kit/samples/roster-wall.json"]}
+ * @preview   {"render": "pattern.roster", "samples": ["kit/samples/patterns.json#roster-wall"]}
  * @changed   Rebuilt as plain DOM over kit.vocab: no state is a hub value, and a state the table does not know is flagged, not hidden.
  */
 (function () {

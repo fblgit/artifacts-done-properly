@@ -31,7 +31,7 @@
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
  * @requires  kit.tokens, kit.dom
- * @files     kit/patterns/inbox.css, kit/samples/inbox.json
+ * @files     kit/patterns/inbox.css, kit/samples/patterns.json
  * @provides  Kit.inbox.mount
  * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or promise (default claude.use('artifact')), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms; returns {update, destroy}
  * @config    ADP.classify(base, live, incoming) | contract 4 of docs/architecture.md, in adp.js
@@ -40,7 +40,7 @@
  * @db        reads incoming; manifest/current; content; presence; requests / writes incoming; manifest/current; parts; content; changes / note Writes only for editors and only on Apply, Decline, a pick or the classification of a new proposal; incoming sits under the root rule.
  * @source    ADP 0.3.0, 2026-10-27 | docs/assist.md contracts 3 and 5 | the incoming document, the card's reads, writes, Apply and conflict path
  * @source    ADP 0.3.0, 2026-10-27 | the explainer's proposed-version card | one proposal applied by a person, generalised to the inbox
- * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/inbox.json"]}
+ * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/patterns.json#inbox"]}
  */
 (function () {
 'use strict';
@@ -186,7 +186,7 @@ function mount(root, opts) {
       }
       await D.doc('changes/' + seq).set({ version: res.version || '', at, by: by(), summary: p.summary || 'Proposal ' + p.pid,
         parts: parts.map(x => ({ id: x.id, from: x.from, to: x.retired ? null : x.to })), files: files.map(f => ({ path: f.path, from: f.ifMatch || null, to: (res.shas || {})[f.path] || null })), threads: p.threads || [] });
-      // the manifest goes last, as adp.py seed writes it: a write that fails before it leaves the records behind the manifest, never the manifest ahead of the records
+      // the manifest goes last, as the page's seed loader (seedFromFile in adp.js) writes it: a write that fails before it leaves the records behind the manifest, never the manifest ahead of the records
       await D.doc('manifest/current').set(Object.assign({}, m, { parts: mp, files: mf, content: mc, seq: n, version: res.version || m.version || '', at, by: by() }));
       await D.doc('incoming/' + p.pid).update({ status: 'applied', applied: { version: res.version || '', at } });
       await dataChange('Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)'));

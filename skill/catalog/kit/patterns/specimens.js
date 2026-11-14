@@ -32,7 +32,7 @@
  * @summary   Every state of a component side by side, with loading, empty and missing cells, and a switch that repaints the sheet in another skin.
  * @tags      specimens, states, hover, focus, skins, loading, empty, review, component sheet
  * @requires  none
- * @files     kit/patterns/specimens.css, kit/samples/specimens.json
+ * @files     kit/patterns/specimens.css, kit/samples/patterns.json
  * @provides  Kit.specimens.mount
  * @config    Kit.specimens.mount(host, opts) | title, skins [{id, label, vars}], skin, groups [{title, layout rows|grid, cols, items [{label, caption, state, render | html}]}], replay, label, onSkin
  * @config    states | the component styles [data-state="hover"] and "focus" as well as :hover and :focus-visible
@@ -40,7 +40,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, app.js and app.css | the states specimen sheet (row, pad and toast states, loading, empty and missing cells) and the two-skin direction switch
- * @preview   {"render": "pattern.specimens", "samples": ["kit/samples/specimens.json"]}
+ * @preview   {"render": "pattern.specimens", "samples": ["kit/samples/patterns.json#specimens"]}
  * @changed   Skins are data (custom properties on the sheet), not two stylesheets, so a board can add a third.
  */
 (function () {

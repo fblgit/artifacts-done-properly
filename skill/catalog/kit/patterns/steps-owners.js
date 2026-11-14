@@ -30,7 +30,7 @@
  * @summary   An upgrade of pattern.steps: a rail of step cards with who acts (stable tone and shape per owner), when it is done, the fact it emits, a failure line, a seam where the seat changes hands and a current-step ring.
  * @tags      steps, owners, actors, procedure, failure, handoff, seam, runbook, rail
  * @requires  kit.tokens
- * @files     kit/patterns/steps-owners.css, kit/samples/steps-owners.json
+ * @files     kit/patterns/steps-owners.css, kit/samples/patterns.json
  * @provides  Kit.stepsOwners.render, Kit.stepsOwners.toneOf
  * @extends   pattern.steps
  * @config    Kit.stepsOwners.render(box, opts) | intro, actors [{id, label}], steps [{id, name, who, done, fact, fail}], seam {after, label}, current, label, words; returns {setCurrent(id), destroy()}
@@ -38,7 +38,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's section rail | owners per step with stable tones and a legend, the failure line, the emitted fact, the seam, the current-step ring
- * @preview   {"render": "pattern.steps-owners", "samples": ["kit/samples/steps-owners.json"]}
+ * @preview   {"render": "pattern.steps-owners", "samples": ["kit/samples/patterns.json#steps-owners"]}
  * @changed   Extends pattern.steps as new files; steps.js and steps.css are unchanged.
  */
 (function () {

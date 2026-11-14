@@ -24,7 +24,7 @@ the zip install.
 - `secrets`: gitleaks over the full history.
 - `tests`: `python3 -m unittest discover -s tests -v`.
 - `skill`: `tools/package.py --check` (frontmatter of `skill/SKILL.md` and every
-  `skill/refs/*/SKILL.md`), `tools/check_catalog.py`, then a build uploaded as an
+  `skill/refs/*/SKILL.md`), `skill/scripts/adp_catalog.py`, then a build uploaded as an
   artifact. The release workflow repeats tests and checks.
 
 Build locally with `python3 tools/package.py` (output in `dist/`).

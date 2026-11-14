@@ -61,6 +61,17 @@ Inside it, the first line is the entry name and the first paragraph after it is 
 
 No other tag is allowed, and no tag appears twice except `@config`.
 
+## Samples are keys in a bundle
+
+The sample data of the previews lives in four bundles, one JSON object each: `kit/samples/kit.json`, `layout.json`, `patterns.json` and `viz.json` (the folder of the entries that own the samples). A key is the name the sample had as a file (`confirm-sheet`, `viz-chips`). An entry lists the bundle it previews on in `@files` and names its sample in `@preview` as `path#key`:
+
+```
+ * @files     kit/patterns/confirm-sheet.css, kit/samples/patterns.json
+ * @preview   {"render": "pattern.confirm-sheet", "samples": ["kit/samples/patterns.json#confirm-sheet"]}
+```
+
+An entry that previews on another folder's sample lists that bundle too (a theme lists `kit/samples/viz.json`). The check fails for a `#key` the bundle does not have, a bundle that is not in the entry's own `@files`, an entry that lists a bundle but names no key of it, and a key no entry's `@preview` names. A sample a template needs at run time (`kit/samples/expiry-board.json`, `tester.json`) stays its own file, named by plain path.
+
 ## Checking
 
-`python3 tools/check_headers.py [FILES...]` validates headers. A main file without a valid header fails, so a catalog file can only be committed once its header is complete. The pre-commit hook `catalog-headers` runs it on the staged files of `skill/catalog/`. With no file arguments it checks every main file; `--report` counts conformance per kind and per rule and always exits 0.
+`python3 skill/scripts/adp_catalog.py headers [FILES...]` validates headers (`adp_catalog.py` alone runs them with the other catalog checks). A main file without a valid header fails, so a catalog file can only be committed once its header is complete. The pre-commit hook `catalog-headers` runs it on the staged files of `skill/catalog/`. With no file arguments it checks every main file; `--report` counts conformance per kind and per rule and always exits 0.

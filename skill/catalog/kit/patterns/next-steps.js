@@ -29,7 +29,7 @@
  * @summary   Checklist of next steps that builds a copyable prompt (or a command) from the picked ones; reorder, notes, own steps, collapsible strip.
  * @tags      next steps, checklist, prompt, builder, copy, reorder, notes, command, strip
  * @requires  kit.copy
- * @files     kit/patterns/next-steps.css, kit/samples/next-steps.json
+ * @files     kit/patterns/next-steps.css, kit/samples/patterns.json
  * @provides  Kit.nextSteps.mount
  * @config    Kit.nextSteps.mount(root, {items, state, onChange, build, lead, allowAdd, collapsible, title, words}) | items [{id, title, sub, ref}]; state {done, picked, notes, order, extras}; onChange(state) after every change
  * @config    build(picked, ctx) | returns the text; the default builds the prompt, a command builder returns a command from ctx.items and the picks
@@ -40,7 +40,7 @@
  * @source    Catalog harvest, 2026-10-25 | a session board's index.html | next-steps list with done and pick ticks, arrows, notes, own steps and the prompt box
  * @source    Catalog harvest, 2026-10-25 | a proposal page's index.html | the collapsible next-steps strip with a pending count
  * @source    Catalog harvest, 2026-10-25 | a share manifest's index.html | folder picks that build a copy command with an exclude per unpicked folder
- * @preview   {"render": "pattern.next-steps", "samples": ["kit/samples/next-steps.json"]}
+ * @preview   {"render": "pattern.next-steps", "samples": ["kit/samples/patterns.json#next-steps"]}
  * @changed   The text is built by a function the board can replace, which covers the prompt and the command variants with one component.
  */
 (function () {

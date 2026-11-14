@@ -1,8 +1,0 @@
-{
- "note": "Invented: refusals from a made-up studio booking system.",
- "refusals": [
-  { "code": "Not while a firing is booked", "tone": "warn", "field": "kiln.status", "allowed": ["cancel the firing", "move the firing"], "message": "The east kiln is booked for Thursday, so its status cannot change to Under repair." },
-  { "code": "You cannot approve your own request", "tone": "danger", "field": "approval.by", "allowed": ["ask the studio lead", "ask a second technician"], "message": "The person who asked for the glaze order cannot sign it off." },
-  { "code": "The slot is already taken", "tone": "pending", "field": "slot", "allowed": [], "message": "Saturday 10:30 went to another booking a moment ago." }
- ]
-}

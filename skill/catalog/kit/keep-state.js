@@ -27,7 +27,7 @@
  * @summary   Save drafts, focus, selection and open sections before a live page redraws, and put them back after.
  * @tags      redraw, re-render, draft, focus, caret, state, live
  * @requires  none
- * @files     kit/samples/keep-state.json
+ * @files     kit/samples/kit.json
  * @provides  Kit.keepState.capture, Kit.keepState.restore, Kit.keepState.wrap
  * @config    Kit.keepState.wrap(root, render, {storageKey}) | redraw(...args) calls render(...args) between a capture and a restore; redraw.snap() and redraw.clear(key) manage the drafts
  * @config    markup | data-keep='key' on fields, details and scroll panes (with data-keep-scroll); data-keep-shown='key' on blocks whose hidden state is kept
@@ -36,7 +36,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's render | restoring its open history, reply and reject boxes
  * @source    Catalog harvest, 2026-10-25 | a task page's list | putting back half-typed drafts after every refresh
- * @preview   {"render": "kit.keep-state", "samples": ["kit/samples/keep-state.json"]}
+ * @preview   {"render": "kit.keep-state", "samples": ["kit/samples/kit.json#keep-state"]}
  * @changed   Rebuilt as a generic helper keyed by data-keep rather than the source's per-board sets; it needs no store.
  */
 (function () {

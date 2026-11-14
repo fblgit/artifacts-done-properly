@@ -39,7 +39,7 @@
  * @summary   Work in progress as capsules in a tray: running, waiting for you, done, failed; the log follows the end, waiting jobs come first, and the head says it in a sentence.
  * @tags      jobs, tray, progress, log, capsule, waiting for you, queue, status
  * @requires  kit.vocab, kit.glaze-surfaces
- * @files     kit/patterns/job-tray.css, kit/samples/job-tray.json
+ * @files     kit/patterns/job-tray.css, kit/samples/patterns.json
  * @provides  Kit.jobTray.mount
  * @config    Kit.jobTray.mount(root, {adapter, single, dock, label, titlePrefix, quietAfter, pollMs, enum, states, words, actions, onContinue, onEvent}) | adapter {start(kind, params) -> view, poll(id, since) -> view | null, resume?()}; view {id, title, kind, status: running | paused | done | failed, banner, log, next, startedAt, endedAt, now, leases, result}
  * @config    Kit.vocab | beads come from a vocabulary enum (default "state": running, waiting, done, failed, ended); load kit/vocab.js and kit/vocab.css first
@@ -47,7 +47,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s jobs tray | the job runtime with cursor polling and lost jobs, the capsule, the waiting-for-you block, the wave, the lease pills, the log that follows, the one-sentence summary and the tab title
- * @preview   {"render": "pattern.job-tray", "samples": ["kit/samples/job-tray.json"], "uses": ["pattern.confirm-sheet"]}
+ * @preview   {"render": "pattern.job-tray", "samples": ["kit/samples/patterns.json#job-tray"], "uses": ["pattern.confirm-sheet"]}
  * @changed   The transport is an adapter; the source talked to one server’s job API and kept a list in session storage.
  */
 (function () {

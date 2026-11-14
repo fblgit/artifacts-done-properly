@@ -22,14 +22,14 @@
  * @summary   Who holds each exclusive resource, who waits for its release, and, nested under it, each request that was turned away because of it.
  * @tags      lease, lock, claim, waiters, denied, resource, holder, expiry, graph
  * @requires  kit.tokens, kit.vocab
- * @files     kit/viz/lease-graph.css, kit/samples/lease-graph.json
+ * @files     kit/viz/lease-graph.css, kit/samples/viz.json
  * @provides  Kit.leaseGraph.mount
  * @config    Kit.leaseGraph.mount(box, opts) | holds [{resource {kind, name}, holder, until, state}], waits [{actor, resource, origin}], denials [{asker, resource, because {holder, until}, at}], now, timeZone, stateEnum, kindEnum, originEnum; returns {update, destroy}
  * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --rim? --pool? --glz-r-l? --glz-sh-1? --warn
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's claim graph and claim row | a held claim, the members subscribed to its release and the denials of the same key nested under it
- * @preview   {"render": "viz.lease-graph", "samples": ["kit/samples/lease-graph.json"]}
+ * @preview   {"render": "viz.lease-graph", "samples": ["kit/samples/viz.json#lease-graph"]}
  * @changed   Resources are {kind, name} pairs the page supplies, not the source's typed keys.
  */
 (function () {

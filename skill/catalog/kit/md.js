@@ -20,7 +20,7 @@
  * @summary   Markdown to sanitized HTML with marked and DOMPurify, a plain-text fallback, and styles for a .md container.
  * @tags      markdown, md, sanitize, dompurify, marked, rich text
  * @requires  none
- * @files     kit/md.css, kit/samples/md.json
+ * @files     kit/md.css, kit/samples/kit.json
  * @provides  Kit.md.create
  * @config    Kit.md.create({forbidTags, forbidAttrs, gfm, externalLinks}) | all optional
  * @config    container | render into an element with class md
@@ -29,7 +29,7 @@
  * @db        none
  * @source    Journey Whiteboard | app.js | mdToHtml
  * @source    ADR Drafting Table | core.js | forbid lists and external links (mermaid fences not taken)
- * @preview   {"render": "kit.md", "samples": ["kit/samples/md.json"]}
+ * @preview   {"render": "kit.md", "samples": ["kit/samples/kit.json#md"]}
  */
 (function () {
 'use strict';

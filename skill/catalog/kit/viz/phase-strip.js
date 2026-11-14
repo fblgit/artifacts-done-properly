@@ -26,7 +26,7 @@
  * @summary   One phase list in five forms: segmented gauge, flow boxes, itinerary, contents lines and divider tabs.
  * @tags      phases, progress, gauge, flow, itinerary, contents, tabs, stepper, roadmap
  * @requires  kit.tokens, kit.vocab
- * @files     kit/viz/phase-strip.css, kit/samples/viz-phase-strip.json
+ * @files     kit/viz/phase-strip.css, kit/samples/viz.json
  * @provides  Kit.phaseStrip.mount, Kit.phaseStrip.FORMS, Kit.phaseStrip.phaseEnum
  * @config    Kit.phaseStrip.mount(box, {phases, form, current, selected, allLabel, label, unitEnum, onSelect}) | phases [{id, name, state, what, exit, after, units: [{title, state}], done, total, waiting}]; returns {setForm(f), update(opts), select(id), destroy()}
  * @config    Kit.vocab | the file adds a 'phase' enum to Kit.vocab when none is defined; unit states use the 'state' enum
@@ -38,7 +38,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's journal skin | the itinerary of phases
  * @source    Catalog harvest, 2026-10-25 | an earlier board's manuscript skin | contents lines with leaders
  * @source    Catalog harvest, 2026-10-25 | an earlier board's notebook skin | divider tabs with counts and a waiting dot
- * @preview   {"render": "viz.phase-strip", "samples": ["kit/samples/viz-phase-strip.json"], "uses": ["kit.vocab"]}
+ * @preview   {"render": "viz.phase-strip", "samples": ["kit/samples/viz.json#viz-phase-strip"], "uses": ["kit.vocab"]}
  * @changed   Five skins' phase strips became one component with five forms; the data is one list, so a page can offer a choice of form.
  */
 (function () {

@@ -29,7 +29,7 @@
  * @summary   Cards in one column per state or per a key you switch, the waiting column widest, empty columns folded to a rail, a limit per lane, a hover glimpse, and a move that asks for a reason.
  * @tags      kanban, columns, lanes, board, status, wip limit, rail, drag, glimpse, group by
  * @requires  kit.tokens, kit.vocab, kit.keep-state
- * @files     kit/patterns/status-columns.css, kit/samples/status-columns.json
+ * @files     kit/patterns/status-columns.css, kit/samples/patterns.json
  * @provides  Kit.statusColumns.mount
  * @config    Kit.statusColumns.mount(box, opts) | cards [{id, title, state, owner, note, extras [[label, value]]}], groups [{key, label, field, enum, none}], group, limits {value: n} or limit, wide, reason, onMove(card, to, reason), remember, stateEnum, label; returns {setGroup, filter, update, group, destroy}
  * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --accent-ink? --warn --danger --seam? --shadow?
@@ -37,7 +37,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's kanban skin | columns per state with the waiting one widest, empty columns as rails, the hover glimpse of a card
  * @source    Catalog harvest, 2026-10-25 | a component family's task lanes | a switchable grouping key, a limit per lane that shows over-limit, a drop that asks to move
- * @preview   {"render": "pattern.status-columns", "samples": ["kit/samples/status-columns.json"]}
+ * @preview   {"render": "pattern.status-columns", "samples": ["kit/samples/patterns.json#status-columns"]}
  * @changed   Columns, words and tones come from a vocabulary enum; the source named its own states.
  */
 (function () {

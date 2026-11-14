@@ -24,7 +24,7 @@
  * @summary   Porcelain-made parts in CSS: glossy beads, lacquer buttons, sunken fields, a switch, soft rows, lit cards with a pooled foot, an avatar disc and the kiln fleck layer.
  * @tags      glaze, button, orb, chip, switch, segmented, card, row, avatar, empty state, porcelain, fleck
  * @requires  theme.glaze-depth, kit.tokens
- * @files     kit/glaze-surfaces.css, kit/samples/glaze-surfaces.json
+ * @files     kit/glaze-surfaces.css, kit/samples/kit.json
  * @provides  Kit.glaze.defs, Kit.glaze.speck, Kit.glaze.tone, Kit.glaze.switchOf, Kit.glaze.segOf, Kit.glaze.busy
  * @config    classes | kit-orb, kit-chip, kit-btn, kit-input, kit-switch, kit-seg, kit-card, kit-facts, kit-row, kit-ava, kit-empty; the state on the part or an ancestor: kit-is-ok | warn | bad | info | wait | idle
  * @config    Kit.glaze.defs(host?) | writes the gold and pebble gradients and the fleck filter into a hidden svg; call once before using kit-speck or url(#kit-g-gold)
@@ -33,7 +33,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's Glaze design system | orb, chip, button, forms, switch, segmented control, card, facts, row, avatar, empty state, the kiln flecks, the gold and pebble gradients
  * @source    Catalog harvest, 2026-10-25 | the same console's controls add-on | button and form edges, the loading button
- * @preview   {"render": "kit.glaze-surfaces", "samples": ["kit/samples/glaze-surfaces.json"]}
+ * @preview   {"render": "kit.glaze-surfaces", "samples": ["kit/samples/kit.json#glaze-surfaces"]}
  * @changed   Re-prefixed to kit-, scoped by the kit's token contract instead of a skin attribute; every depth token has a fallback built from the contract tokens.
  */
 (function () {

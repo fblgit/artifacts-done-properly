@@ -23,7 +23,7 @@
  * @summary   Proportional split bar, equal-weight score bar, carried-against-total bars, an option ladder and grouped columns, every length linear from zero.
  * @tags      bars, chart, split, proportion, score, columns, ladder, scale, legend, table view, pattern
  * @requires  kit.tooltip
- * @files     kit/viz/bars.css, kit/samples/bars.json
+ * @files     kit/viz/bars.css, kit/samples/viz.json
  * @provides  Kit.bars.split, Kit.bars.score, Kit.bars.hbars, Kit.bars.ladder, Kit.bars.columns, Kit.bars.swatch, Kit.bars.niceTicks
  * @config    Kit.bars.split(box, opts) | items [{id, label, value, tone, note}], unit, total, restLabel, caption, label, host
  * @config    Kit.bars.score(box, opts) | items [{id, label, level}], levels [{id, label, tone}], label, host
@@ -38,7 +38,7 @@
  * @source    Catalog harvest, 2026-10-25 | a disk-usage report, index.html | the proportional verdict split bar
  * @source    Catalog harvest, 2026-10-25 | a review page, index.html | the equal-weight score bar and legend, and the carried-against-total family bars with their scale
  * @source    Catalog harvest, 2026-10-25 | an options page, index.html | the ladder with a strength bar
- * @preview   {"render": "viz.bars", "samples": ["kit/samples/bars.json"]}
+ * @preview   {"render": "viz.bars", "samples": ["kit/samples/viz.json#bars"]}
  * @changed   Every length is linear from zero: the source scaled a mini-bar by a square root, which made small items look larger than they were.
  */
 (function () {

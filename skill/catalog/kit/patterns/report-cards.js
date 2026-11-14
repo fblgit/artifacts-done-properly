@@ -32,7 +32,7 @@
  * @summary   Nine fixed-shape reports (done, blocked, decision, handoff, ask, question, feedback, fault, status): a kind pill, the subject, who and when, then only that kind's fields in a fixed order.
  * @tags      report, status report, done, blocked, decision, handoff, fault, feedback, tests, divergence, unverified
  * @requires  kit.tokens, kit.vocab
- * @files     kit/patterns/report-cards.css, kit/samples/report-cards.json
+ * @files     kit/patterns/report-cards.css, kit/samples/patterns.json
  * @provides  Kit.reportCards.render, Kit.reportCards.mount, Kit.reportCards.kinds
  * @config    Kit.reportCards.render(report, {labels, timeZone}) | report {kind, subject, by, at, ref, ref2, body}; body fields by kind are listed in the file header
  * @config    Kit.reportCards.mount(box, {reports, labels, timeZone}) | returns {update, destroy}
@@ -40,7 +40,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's nine report cards | the done card's tests, divergence table and unverified list, and the blocked, decision, handoff, ask, question, feedback, fault and status shapes
- * @preview   {"render": "pattern.report-cards", "samples": ["kit/samples/report-cards.json"]}
+ * @preview   {"render": "pattern.report-cards", "samples": ["kit/samples/patterns.json#report-cards"]}
  * @changed   One renderer with a field spec per kind replaces nine components that each repeated the head and frame.
  */
 (function () {

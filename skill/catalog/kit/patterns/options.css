@@ -24,7 +24,7 @@
  * @summary   Option cards with pros and cons and a picked card, tier cards from strongest to partial, and the pill that marks a verdict in a comparison table row.
  * @tags      options, compare, pick, recommendation, pros and cons, tiers, decision, cards
  * @requires  kit.table
- * @files     kit/samples/options.json
+ * @files     kit/samples/patterns.json
  * @provides  none
  * @config    markup | div.kit-options > article.kit-option[data-pick] > p.kit-option-k + h4 + p + ul.kit-option-pc > li[data-pc=pro|con]
  * @config    markup | div.kit-tiers > article.kit-tier[data-tier=1|2|3] > p.kit-tier-l + h4 + p
@@ -33,7 +33,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | an option comparison table with the picked row, pick-highlighted cards, tier cards from strongest to partial, and principle cards
- * @preview   {"render": "pattern.options", "samples": ["kit/samples/options.json"]}
+ * @preview   {"render": "pattern.options", "samples": ["kit/samples/patterns.json#options"]}
  * @changed   The picked card is outlined all round and labelled, not marked by a coloured edge.
  */
 .kit-options, .kit-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; margin: 0; padding: 0; min-width: 0; }

@@ -23,7 +23,7 @@
  * @summary   Numbered clauses with an aside in the margin for state, owner, answer and acknowledgement; history as footnotes.
  * @tags      clause, margin, aside, footnote, numbered, document, spec, history, change bar, manuscript
  * @requires  kit.tokens, kit.vocab
- * @files     kit/layout/margin-notes.css, kit/samples/margin-notes.json
+ * @files     kit/layout/margin-notes.css, kit/samples/layout.json
  * @provides  Kit.marginNotes.mount
  * @config    Kit.marginNotes.mount(box, {sections, label, stateEnum, words, bar}) | sections [{id, title, intro, clauses: [{id, title, text, state, owner, answer: {label, text, at}, ack: {by, at}, history: [{at, text}]}]}]; returns {update(opts), destroy()}
  * @config    theme | optional tokens from theme.manuscript: --label-caps, --label-case, --measure, --seam; each has a fallback
@@ -31,7 +31,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's manuscript skin | numbered clauses, the margin aside for state, owner, answer and acknowledgement, history as footnotes, change bars for what waits on someone
- * @preview   {"render": "layout.margin-notes", "samples": ["kit/samples/margin-notes.json"], "uses": ["kit.vocab"]}
+ * @preview   {"render": "layout.margin-notes", "samples": ["kit/samples/layout.json#margin-notes"], "uses": ["kit.vocab"]}
  * @changed   Taken out of one skin: the clause is plain data, and the state words can be replaced (Settled, Awaiting you) without touching the vocabulary.
  */
 (function () {

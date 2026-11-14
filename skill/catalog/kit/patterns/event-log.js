@@ -28,7 +28,7 @@
  * @summary   Every move newest first: days that fold with a count and a dot strip, repeats folded into one row with a count chip, and a sticky panel for the selected move with Newer and Older.
  * @tags      event log, activity, feed, history, timeline, days, fold, repeat, detail panel, sticky
  * @requires  kit.tokens, kit.vocab, kit.keep-state
- * @files     kit/patterns/event-log.css, kit/samples/event-log.json
+ * @files     kit/patterns/event-log.css, kit/samples/patterns.json
  * @provides  Kit.eventLog.mount
  * @config    Kit.eventLog.mount(box, opts) | events [{id, at, by, what, subject, status}], statusEnum, timeZone, openLimit, fold, remember, onSelect, label; returns {select, step, expandAll, collapseAll, selected, update, destroy}
  * @config    --kit-topbar-h | optional custom property: the height of a sticky top bar, so the panel sticks beneath it
@@ -38,7 +38,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's timeline | days that fold, the sticky event panel with step buttons and the Expand all control
  * @source    Catalog harvest, 2026-10-25 | a component family's delivery feed and delivery stamp | repeats folded into one row with a count
  * @source    Catalog harvest, 2026-10-25 | a component family's task history | a move with what it carried, in order
- * @preview   {"render": "pattern.event-log", "samples": ["kit/samples/event-log.json"]}
+ * @preview   {"render": "pattern.event-log", "samples": ["kit/samples/patterns.json#event-log"]}
  * @changed   Rebuilt over events {id, at, by, what, subject, status} instead of the source's task log; the status is a vocabulary row.
  */
 (function () {

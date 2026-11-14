@@ -22,7 +22,7 @@
  * @tokens    --accent? --accent-soft? --f-ui? --ink? --ink-3? --panel? --rule? --sunk? --warn?
  * @globals   none
  * @db        reads content; changes; decisions; incoming; manifest/current; config/current / writes status/integrity (attempted for any viewer with a db: it lands only where the db rules allow); checks/latest (editors only); config/current and a changes/d-<time> record when a setting is saved; the seed docs on first open
- * @source    this repository | skill/assets/adp.js | the same bytes; tools/check_catalog.py keeps the two equal
+ * @source    this repository | skill/assets/adp.js | the same bytes
  * @preview   {"render": "runtime.adp", "samples": []}
  * @changed   The catalog runs the same runtime as every page the skill makes: adds ADP.config, ADP.user, ADP.ns, ADP.db, integrity and seeding on first open.
  */

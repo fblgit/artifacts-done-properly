@@ -19,7 +19,7 @@
  * @summary   Tracks drawn on one scale, each cut into segments: used, allocated but unused, unallocated, and flagged.
  * @tags      shelf, capacity, disk, storage, quota, segments, scale, used, free, status
  * @requires  kit.tooltip
- * @files     kit/viz/shelf.css, kit/samples/shelf.json
+ * @files     kit/viz/shelf.css, kit/samples/viz.json
  * @provides  Kit.shelf.mount
  * @config    Kit.shelf.mount(box, opts) | units [{id, name, sub, capacity, segments [{id, label, size, used, kind, tone, flag, note}], chips [{text, tone}]}], unit, labelAbove, legend, label, caption, host
  * @config    requires | kit.tooltip
@@ -27,7 +27,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a disk-usage report, index.html | drawDrives: tracks to scale, hatched allocations with a solid used fill, dashed unallocated space, a ringed segment, status chips
- * @preview   {"render": "viz.shelf", "samples": ["kit/samples/shelf.json"]}
+ * @preview   {"render": "viz.shelf", "samples": ["kit/samples/viz.json#shelf"]}
  * @changed   Names, devices and sizes are config; the chips carry a mark (check, bang, cross) as well as a tone.
  */
 (function () {

@@ -23,7 +23,7 @@
  * @summary   Step through a board's history in creation order, with ticks placed to scale on the real time axis.
  * @tags      timeline, replay, history, scrubber, time, slider
  * @requires  viz.core
- * @files     kit/samples/viz-replay.json
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.Replay, Kit.viz.timeline, Kit.viz.cutAt
  * @config    events | [{id, t, label, kind}]: t in ms
  * @config    step, onStep | null for now, or n; onStep(step | null)
@@ -34,7 +34,7 @@
  * @globals   htm-preact
  * @db        note The board passes creation stamps it already has.
  * @source    Journey Whiteboard | app.js | timeline, the Replay button, range and label inside TreeView
- * @preview   {"render": "viz.replay", "samples": ["kit/samples/viz-replay.json"]}
+ * @preview   {"render": "viz.replay", "samples": ["kit/samples/viz.json#viz-replay"]}
  * @changed   A component of its own instead of part of the tree.
  */
 (function () {

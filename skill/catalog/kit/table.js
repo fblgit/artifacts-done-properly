@@ -27,7 +27,7 @@
  * @summary   A table in its own scroll frame with a sticky head, numeric columns, group rows with subtotals, a total row, highlighted rows and signed figures.
  * @tags      table, data, numbers, totals, subtotal, group, budget, scroll, sticky header, tabular
  * @requires  none
- * @files     kit/table.css, kit/samples/table.json
+ * @files     kit/table.css, kit/samples/kit.json
  * @provides  Kit.table.render, Kit.table.fmt
  * @config    Kit.table.render(box, opts) | columns [{key, label, num, signed, sum, decimals, unit, fmt, cell}], rows, group, groupTotals, total, highlight(row), caption, note, label, tall
  * @config    markup | div.kit-table-box[role=region][tabindex=0] > table.kit-table, for hand-written tables
@@ -35,7 +35,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a scroll-framed table, scroll-box tables, a table box, a numeric table with a total and +/− column, and a milestone table with group rows
- * @preview   {"render": "kit.table", "samples": ["kit/samples/table.json"]}
+ * @preview   {"render": "kit.table", "samples": ["kit/samples/kit.json#table"]}
  * @changed   The sticky head needs the frame to scroll vertically (.tall or tall: true); inside a frame that only scrolls sideways a sticky head cannot stick to the page.
  */
 (function () {

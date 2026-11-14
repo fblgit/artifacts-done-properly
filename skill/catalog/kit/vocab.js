@@ -33,7 +33,7 @@
  * @summary   One table gives every state its word, short word, glyph, tone and motion; pills, chips, orbs, checkbox tiles, lane heads and a key all read it, and a silent value draws nothing.
  * @tags      state, status, vocabulary, pill, chip, orb, glyph, tone, lane head, legend, checkbox, silent
  * @requires  kit.tokens
- * @files     kit/vocab.css, kit/samples/vocab.json
+ * @files     kit/vocab.css, kit/samples/kit.json
  * @provides  Kit.vocab.define, Kit.vocab.get, Kit.vocab.pill, Kit.vocab.chip, Kit.vocab.orb, Kit.vocab.tile, Kit.vocab.head, Kit.vocab.key, Kit.vocab.glyph, Kit.vocab.registerGlyph, Kit.vocab.tones, Kit.vocab.motions, Kit.vocab.glyphs, Kit.vocab.values, Kit.vocab.enums, Kit.vocab.on
  * @config    Kit.vocab.define({enum: {value: {word, short, glyph, tone, motion}}}) | the state table; null for a silent value; tone is one of Kit.vocab.tones, glyph one of Kit.vocab.glyphs, motion none | breathe | turn | nudge
  * @config    Kit.vocab.pill(enum, value, {short, glyph}) / chip / orb(…, {size, label}) / tile(…, {style}) / head(…, {count}) | each returns an Element, or null for a silent value; {unknown: 'skip'} hides unknown values instead of flagging them
@@ -44,7 +44,7 @@
  * @source    Catalog harvest, 2026-10-25 | a component family's state pill, source chip, tag and vocabulary table | the word, short word, icon and signal per enum value; a silent row draws nothing
  * @source    Catalog harvest, 2026-10-25 | an earlier board's blueprint and console skins | a hand-drawn checkbox frame with a mark, and terminal characters with short words
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's design system | state orbs with a glyph, the cascade of colour variables, a person-wait state with its own motion
- * @preview   {"render": "kit.vocab", "samples": ["kit/samples/vocab.json"]}
+ * @preview   {"render": "kit.vocab", "samples": ["kit/samples/kit.json#vocab"]}
  * @changed   Rebuilt as plain DOM over a table the page supplies; no enum, name or colour is built in, and the table is data so a theme can swap glyphs.
  */
 (function () {

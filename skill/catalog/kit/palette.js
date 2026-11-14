@@ -24,14 +24,14 @@
  * @summary   A keyboard-opened search over a page's sections and records: Ctrl+K, arrow keys, Enter, Escape.
  * @tags      search, command palette, keyboard, navigation, combobox, ctrl k, modal, jump
  * @requires  none
- * @files     kit/palette.css, kit/samples/palette.json
+ * @files     kit/palette.css, kit/samples/kit.json
  * @provides  Kit.palette.create
  * @config    Kit.palette.create(opts) | items [{id, group, label, hint, keys, target}], host, label, placeholder, hotkey, limit, emptyText, onPick(item), onOpen, onClose
  * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --shadow? --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a runbook's command palette: the overlay, openPal, runPal, the INDEX of sections and records
- * @preview   {"render": "kit.palette", "samples": ["kit/samples/palette.json"]}
+ * @preview   {"render": "kit.palette", "samples": ["kit/samples/kit.json#palette"]}
  * @changed   A combobox with announced results and a count, instead of buttons only.
  */
 (function () {

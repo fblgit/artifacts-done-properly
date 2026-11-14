@@ -18,7 +18,7 @@
  * @summary   Line and bar sparklines that state their range, and a waveform slider with marked windows.
  * @tags      sparkline, waveform, trend, line, bars, seek, audio, marks, inline
  * @requires  kit.tooltip
- * @files     kit/viz/sparkline.css, kit/samples/sparkline.json
+ * @files     kit/viz/sparkline.css, kit/samples/viz.json
  * @provides  Kit.sparkline.line, Kit.sparkline.bars, Kit.sparkline.wave
  * @config    Kit.sparkline.line(box, opts) | values, labels, unit, decimals, height, area, tone, caption, label, host
  * @config    Kit.sparkline.bars(box, opts) | values, labels, unit, decimals, height, tone, highlight, caption, label, host
@@ -29,7 +29,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a secret-scan report, index.html | the entropy sparkline under a character sweep
  * @source    Catalog harvest, 2026-10-25 | a music-library page, parts/base.js | the waveform with window marks and a played part
- * @preview   {"render": "viz.sparkline", "samples": ["kit/samples/sparkline.json"]}
+ * @preview   {"render": "viz.sparkline", "samples": ["kit/samples/viz.json#sparkline"]}
  * @changed   The sweep animation is dropped; the line states its range in words; the waveform is a real slider with a keyboard.
  */
 (function () {

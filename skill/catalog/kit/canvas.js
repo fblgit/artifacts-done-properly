@@ -29,7 +29,7 @@
  * @summary   A free drawing surface: select, move, resize, marquee, pan and pinch zoom, pen, highlighter, eraser, shapes, arrows that attach, text, sticky notes, record cards, undo and redo.
  * @tags      canvas, whiteboard, drawing, pen, shapes, arrows, sticky notes, zoom, pan, undo, svg
  * @requires  kit.store, kit.chrome
- * @files     kit/canvas.css, kit/samples/canvas.json
+ * @files     kit/canvas.css, kit/samples/kit.json
  * @provides  Kit.canvas.slots, Kit.canvas.create
  * @config    Kit.canvas.create({store, db, chrome, colors, tints, part, scopeSlot, words, applySnap, renderRef, openRef}) | colors need --c-<name>; tints need a .tint-<name> class in the board css
  * @config    applySnap(name, snap) | hook: apply a collection snapshot to state
@@ -39,7 +39,7 @@
  * @globals   htm-preact
  * @db        reads canvases; els / writes canvases {name, order, created, author}; els {canvasId, type, x, y, w, h, x2, y2, fromId, toId, pts, sw, hl, color, tint, fill, font, fs, text, refKind, refId, z, author, created}
  * @source    Journey Whiteboard | app.js | canvas geometry, history, CanvasView, Board, Editor
- * @preview   {"render": "kit.canvas", "samples": ["kit/samples/canvas.json"]}
+ * @preview   {"render": "kit.canvas", "samples": ["kit/samples/kit.json#canvas"]}
  * @changed   0.1.1 (this catalog’s copy): the hint reads --ink-2 instead of --ink-3, 4.5:1 or more in both themes.
  */
 (function () {

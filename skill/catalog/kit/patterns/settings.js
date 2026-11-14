@@ -36,7 +36,7 @@
  * @summary   The generic settings page of the config switches: one panel per group, one row per switch with the right control, the help, the layer that enforces it, who changed it and the default when it differs, saved at once with an Undo.
  * @tags      settings, config, switches, freeze, preferences, admin, registry, undo, export
  * @requires  kit.tokens, kit.dom
- * @files     kit/patterns/settings.css, kit/samples/settings.json
+ * @files     kit/patterns/settings.css, kit/samples/patterns.json
  * @provides  Kit.settings.mount
  * @config    Kit.settings.mount(root, opts) | config {all, get, set, reset, on} (default window.ADP.config), user {canEdit} (default ADP.user), groups [names] to order or filter, labels {group: heading}, onChange(key, value, previous), download(filename, text), timeZone; returns {update, destroy}
  * @config    ADP.config.all() / get / set / reset / on('*') | read the registry and the values, save one switch, reset all, redraw on a change
@@ -46,7 +46,7 @@
  * @db        reads config/current / writes config/current / note Only through ADP.config; the component never touches the db. A write also appends changes/d-<ms> in the runtime, unless log.data-changes is off.
  * @source    Catalog batch 14, 2026-10-26 | docs/config.md and the ADP.config registry in adp.js | the all() shape, the two enforcement layers, the freeze and the unlock exception
  * @source    Catalog batch 14, 2026-10-26 | the board template's switch rows | label, help, who changed it and when
- * @preview   {"render": "pattern.settings", "samples": ["kit/samples/settings.json"]}
+ * @preview   {"render": "pattern.settings", "samples": ["kit/samples/patterns.json#settings"]}
  */
 (function () {
 'use strict';

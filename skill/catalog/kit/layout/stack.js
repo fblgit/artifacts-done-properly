@@ -26,7 +26,7 @@
  * @summary   Full-height sections that rise over each other, with the tall-section fix, a progress bar, step N of M and previous and next footers.
  * @tags      sticky, stacked, sections, scroll, progress, step, footer, previous, next, story
  * @requires  kit.tokens
- * @files     kit/layout/stack.css, kit/samples/stack.json
+ * @files     kit/layout/stack.css, kit/samples/layout.json
  * @provides  Kit.stack.mount, Kit.stack.bind
  * @config    Kit.stack.mount(root, {items, label, scroller, top, barLabel, footers}) | items [{id, title, eyebrow, render(body, i) | node}]; returns {current(), count(), go(indexOrId), update(), destroy()}
  * @config    Kit.stack.bind(root, opts) | for hand-written markup: root > section, each with an id and a heading
@@ -34,7 +34,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's journey page | sticky stacked sections, the tall-section fix, the progress bar, step count and previous and next section footers
- * @preview   {"render": "layout.stack", "samples": ["kit/samples/stack.json"]}
+ * @preview   {"render": "layout.stack", "samples": ["kit/samples/layout.json#stack"]}
  * @changed   The wheel hijack that held a section at its detent is dropped: it fights the viewer's own scrolling. The fall back to normal flow on phones and with reduced motion is added.
  */
 (function () {

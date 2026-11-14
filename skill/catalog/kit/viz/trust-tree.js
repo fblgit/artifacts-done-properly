@@ -41,7 +41,7 @@
  * @summary   A signing hierarchy drawn as porcelain medallions on gold seams: pick or hover one and the chain up to the root lights; arrow keys walk it; phones get a nested list.
  * @tags      trust, tree, hierarchy, certificate, authority, signing, chain, medallion, seam, keyboard, porcelain
  * @requires  viz.seal, kit.vocab, kit.callout, kit.glaze-surfaces, theme.glaze-depth
- * @files     kit/viz/trust-tree.css, kit/samples/trust-tree.json
+ * @files     kit/viz/trust-tree.css, kit/samples/viz.json
  * @provides  Kit.trustTree.mount, Kit.trustTree.chainEl
  * @config    Kit.trustTree.mount(box, {authorities, leaves, kinds, groups, holders, captions, onOpen}) | authorities [{id, name, parent, sub, glyph, state, life, left, ghost, caps, facts}], leaves [{id, authority, kind, label, state, life, left, short, subject, group, facts}], kinds {key: {label, short, plural, mark, authority, limits}}; layout is computed (override with x, y, r)
  * @config    onOpen(id, opener) | the host opens its detail (kit.drawer) with handle.detailEl(id); handle.pin(null) when it closes
@@ -52,7 +52,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate trust page | the medallion family tree with gold seams, the lit chain, the roving-focus keyboard, the phone stack
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate trust page | hardware-key holders, who may sign what, subject lanes, limits pebbles, the chain breadcrumb with hops, the detail content
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page stylesheet | tree, medallions, seams, stack, lanes, passes
- * @preview   {"render": "viz.trust-tree", "samples": ["kit/samples/trust-tree.json"], "uses": ["viz.capability-wheel", "kit.drawer"]}
+ * @preview   {"render": "viz.trust-tree", "samples": ["kit/samples/viz.json#trust-tree"], "uses": ["viz.capability-wheel", "kit.drawer"]}
  * @changed   Authorities, kinds, groups, holders and every sentence are config; the source had its own hierarchy, names and name-matching rules built in.
  */
 (function () {

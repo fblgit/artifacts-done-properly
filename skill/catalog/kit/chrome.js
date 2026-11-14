@@ -21,7 +21,7 @@
  * @summary   Dialog with a field list, toast with an action, busy overlay with progress, click-twice button, auto-growing text field, outside-click hook, chips and one icon set.
  * @tags      modal, dialog, toast, busy, progress, icons, form, chrome, ui
  * @requires  kit.store
- * @files     kit/chrome.css, kit/samples/chrome.json
+ * @files     kit/chrome.css, kit/samples/kit.json
  * @provides  Kit.icons, Kit.chrome.create
  * @config    Kit.chrome.create({store, kinds, parts}) | store from Kit.store.create; kinds {kind: {label}}; parts {modal: part id} puts data-part on the dialog scrim
  * @config    state slots | S.modal, S.toast, S.busy
@@ -31,7 +31,7 @@
  * @db        none
  * @source    Journey Whiteboard | app.js | Modal, Toast, Busy, ArmedButton, AutoText, useOutside, KindChip, StatusChip, I
  * @source    ADR Drafting Table | uishared.js, modals.js | the same shapes (focus restore and stacked toasts not taken)
- * @preview   {"render": "kit.chrome", "samples": ["kit/samples/chrome.json"]}
+ * @preview   {"render": "kit.chrome", "samples": ["kit/samples/kit.json#chrome"]}
  * @changed   0.1.2: .btn, .input, .select and .textarea take the page font (font-family: inherit); native buttons and fields otherwise draw in the system font.
  */
 (function () {

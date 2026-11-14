@@ -62,5 +62,5 @@ These are separate from the theme. The `look.mode` setting (`auto`, `light`, `da
 2. Add its entry to `skill/catalog/catalog.json`: the fields every entry has (`docs/architecture.md`, section 7), `kind: "theme"`, both files with `sha256` and `bytes`, `fonts` (the json's url), `requires` (`[]`, or the base theme for a layer), `preview.render: "theme.<id>"` and the entry `hash`.
 3. Set every token `theme.default` sets (section "One convention"); the test names what is missing. No template lists themes and no test pins a count: the assistant and default templates take `theme.*`.
 4. For the catalog page's preview, register `P['theme.<id>']` in `skill/catalog/parts/`. The list at the end of `previews-b8.js` gives a theme the shared preview, which also loads its fonts.
-5. Run `python3 tools/check_catalog.py`, `python3 tools/check_headers.py` and `python3 -m unittest discover -s tests`.
+5. Run `python3 skill/scripts/adp_catalog.py` (it checks the headers too) and `python3 -m unittest discover -s tests`.
 6. Publishing the catalog artifact is the owner's step (`tools/publish_catalog.py plan` writes the publish batches). Pages built against the live catalog get the new entry, and its `fonts`, only after that publish.

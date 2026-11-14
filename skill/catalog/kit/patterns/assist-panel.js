@@ -30,7 +30,7 @@
  * @summary   The page's lane to Claude in one panel: whether a session watches, a composer (kind, block, words) that sends to a session or asks Claude at once, and the feed of request cards or the current conversation.
  * @tags      assist, claude, composer, chat, ask, task, fix, design, panel, requests, conversation, presence
  * @requires  kit.tokens, kit.vocab, kit.keep-state, pattern.assist, pattern.block-picker, pattern.request-card, pattern.presence, kit.dom
- * @files     kit/patterns/assist-panel.css, kit/samples/assist-panel.json
+ * @files     kit/patterns/assist-panel.css, kit/samples/patterns.json
  * @provides  Kit.assistPanel.mount
  * @related   pattern.assist, pattern.request-card, pattern.answer-queue, pattern.questions
  * @config    Kit.assistPanel.mount(box, opts) | engine (a Kit.assist engine, required), lanes, project, titles, onReveal(partId), artifactUrl, me, names, shortcut, words {title, kind, lanes, help, send}; returns {setScope, pick, show, focus, destroy}
@@ -41,7 +41,7 @@
  * @db        note none directly; the engine writes requests/, conversations/ and their changes/ entries
  * @source    Catalog batch 16, 2026-10-26 | a drafting board's bottom composer | the mode switch, the kept draft, the byte count, Ctrl+Enter, the reason line
  * @source    Catalog batch 16, 2026-10-26 | the same board's Claude pane | open or all requests, the session line and Ping above them
- * @preview   {"render": "pattern.assist-panel", "samples": ["kit/samples/assist-panel.json"]}
+ * @preview   {"render": "pattern.assist-panel", "samples": ["kit/samples/patterns.json#assist-panel"]}
  * @changed   Ask now (an immediate answer) and the session lanes share one composer; the source had a separate bar per lane.
  */
 (function () {

@@ -141,11 +141,11 @@ class UrlTests(Base):
         self.assertEqual(code, 1)
         self.assertEqual(text.count("\n  "), 1)
 
-    def test_real_copy_set_url_keeps_check_catalog_passing(self):
+    def test_real_copy_set_url_keeps_adp_catalog_passing(self):
         copy = self.tmp / "real"
         shutil.copytree(REPO / "skill" / "catalog", copy)
         self.assertEqual(run("set-url", URL1, "--catalog-dir", str(copy))[0], 0)
-        r = subprocess.run([sys.executable, str(REPO / "tools" / "check_catalog.py"), str(copy)], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, str(REPO / "skill" / "scripts" / "adp_catalog.py"), str(copy)], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(run("check", URL1, "--catalog-dir", str(copy))[0], 0)
 

@@ -27,7 +27,7 @@
  * @summary   One work item as a card: id, title, state, verdict, owner, what it expects, open questions, what it holds, how it ended, and who wrote what the card shows.
  * @tags      work item, task card, outcome, stamp, provenance, freshness, stale, read receipt, verdict, owner
  * @requires  kit.tokens, kit.vocab
- * @files     kit/patterns/work-card.css, kit/samples/work-card.json
+ * @files     kit/patterns/work-card.css, kit/samples/patterns.json
  * @provides  Kit.workCard.render, Kit.workCard.mount
  * @config    Kit.workCard.render(item, opts) | item {id, title, rawTitle, state, verdict, owner, expects, openAsks, holds {kind, name}, outcome {kind, ref {type, value, recordKind}}, answered {answer, state, by, at}, authored {by, kind, at, version}, version}; opts {stateEnum, onOpen, timeZone}
  * @config    Kit.workCard.mount(box, {items, ...opts}) | returns {update, destroy}
@@ -37,7 +37,7 @@
  * @source    Catalog harvest, 2026-10-25 | a component family's task card | id, title over the raw title, state, verdict, assignee, expects, open questions, the claim it holds
  * @source    Catalog harvest, 2026-10-25 | a component family's outcome stamp and answered stamp | how it ended and onto what; the answer and the delivery that read it
  * @source    Catalog harvest, 2026-10-25 | a component family's provenance badge | who wrote what is shown and whether the record moved since
- * @preview   {"render": "pattern.work-card", "samples": ["kit/samples/work-card.json"]}
+ * @preview   {"render": "pattern.work-card", "samples": ["kit/samples/patterns.json#work-card"]}
  * @changed   The hub's enums became vocabulary rows; the card reads them by name and never by a hub value.
  */
 (function () {

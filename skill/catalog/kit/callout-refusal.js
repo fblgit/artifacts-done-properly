@@ -24,7 +24,7 @@
  * @summary   An upgrade of kit.callout: an error that names the code, the field refused, what is allowed now and the system's own message.
  * @tags      refusal, error, callout, allowed, validation, denied, alert
  * @requires  kit.callout
- * @files     kit/callout-refusal.css, kit/samples/callout-refusal.json
+ * @files     kit/callout-refusal.css, kit/samples/kit.json
  * @provides  Kit.refusal.make
  * @extends   kit.callout
  * @config    Kit.refusal.make(opts) | code, tone warn | danger | pending, field, allowed [string], message, label, none; returns the aside element
@@ -33,7 +33,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's refusal callout | the code by its vocabulary, the field, the allowed values, the message
- * @preview   {"render": "kit.callout-refusal", "samples": ["kit/samples/callout-refusal.json"]}
+ * @preview   {"render": "kit.callout-refusal", "samples": ["kit/samples/kit.json#callout-refusal"]}
  * @changed   Extends kit.callout as new files; callout.css is unchanged.
  */
 (function () {

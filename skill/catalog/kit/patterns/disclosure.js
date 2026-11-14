@@ -31,7 +31,7 @@
  * @summary   Native details cards with a summary line (cadence or date) and an expand-all and collapse-all bar; task, letter and numbered-clause looks.
  * @tags      accordion, details, disclosure, expand all, collapse all, runbook, tasks, cadence, letter, clause, reader
  * @requires  none
- * @files     kit/patterns/disclosure.css, kit/samples/disclosure.json
+ * @files     kit/patterns/disclosure.css, kit/samples/patterns.json
  * @provides  Kit.disclosure.render, Kit.disclosure.bind
  * @config    Kit.disclosure.render(box, opts) | items [{id, title, when, num, norm, body, steps, fields, open}], variant card | letter | clause, bar, label, printOpen, onToggle(id, open); returns {expandAll, collapseAll, openCount, update, destroy}
  * @config    --kit-topbar-h | optional: the reader bar sticks below it
@@ -39,7 +39,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | two runbooks' task cards with a cadence, a policy reader's expand-all bar and clause reasoning, and a letter archive's expand and collapse cards
- * @preview   {"render": "pattern.disclosure", "samples": ["kit/samples/disclosure.json"]}
+ * @preview   {"render": "pattern.disclosure", "samples": ["kit/samples/patterns.json#disclosure"]}
  * @changed   One component for the five looks; the looks differ in css, not in behaviour.
  */
 (function () {

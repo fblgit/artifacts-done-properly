@@ -21,7 +21,7 @@
  * @summary   SVG node diagram in zones with links; picking a node fills a detail panel.
  * @tags      topology, network, nodes, diagram, svg, detail, zones, links
  * @requires  kit.tooltip
- * @files     kit/viz/topology.css, kit/samples/topology.json
+ * @files     kit/viz/topology.css, kit/samples/viz.json
  * @provides  Kit.topology.mount
  * @config    Kit.topology.mount(box, opts) | width, height, minWidth, zones, nodes, links, notes, detail(node), selected, onSelect, empty, label, caption, host
  * @config    requires | kit.tooltip
@@ -29,7 +29,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network report, index.html | topoSVG with zones and links, the .tn nodes as buttons, showNode filling a detail panel
- * @preview   {"render": "viz.topology", "samples": ["kit/samples/topology.json"]}
+ * @preview   {"render": "viz.topology", "samples": ["kit/samples/viz.json#topology"]}
  * @changed   Positions, names and text are config and the detail panel is a callback; the source hard-coded one network.
  */
 (function () {

@@ -26,14 +26,14 @@
  * @summary   What happens in each scenario under each configuration, with a verdict word per cell and a response column; also a happy-path and error-path ledger.
  * @tags      scenarios, failure modes, matrix, verdict, ledger, happy path, error path, runbook, resilience
  * @requires  kit.table
- * @files     kit/patterns/scenarios.css, kit/samples/scenarios.json
+ * @files     kit/patterns/scenarios.css, kit/samples/patterns.json
  * @provides  Kit.scenarios.render
  * @config    Kit.scenarios.render(box, opts) | columns [{id, label}], rows [{name, flag, cells: {<id>: {verdict, tone, text}}, response, pick}], scenarioLabel, responseLabel (null for none), caption, note, label, legend
  * @tokens    --panel --ink --ink-2 --rule-2 --f-ui --f-mono --accent-soft --ok --warn --danger
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | a failure matrix by cluster size, a scenario by configuration verdict table, a happy and error path ledger and a reality table
- * @preview   {"render": "pattern.scenarios", "samples": ["kit/samples/scenarios.json"]}
+ * @preview   {"render": "pattern.scenarios", "samples": ["kit/samples/patterns.json#scenarios"]}
  * @changed   Draft in the plan; judged from the sources and kept: the four tables are one pattern with different columns.
  */
 (function () {

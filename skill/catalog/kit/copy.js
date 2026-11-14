@@ -24,7 +24,7 @@
  * @summary   Labelled code blocks with a copy button, a click-to-copy command grid, and the fallback that selects the text where the clipboard is refused.
  * @tags      copy, clipboard, code, snippet, command, shell, button, fallback
  * @requires  none
- * @files     kit/copy.css, kit/samples/copy.json
+ * @files     kit/copy.css, kit/samples/kit.json
  * @provides  Kit.copy.text, Kit.copy.wire, Kit.copy.mount, Kit.copy.block
  * @config    Kit.copy.mount(root) | enhances .kit-code > pre, [data-copy] and [data-copy-from] buttons
  * @config    Kit.copy.text(text, {select}) | -> copied | selected | failed
@@ -32,7 +32,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a code block's copy button, a copy-on-hover dark block, a copy with a selection fallback, a click-to-copy command grid, and an answers copy fallback
- * @preview   {"render": "kit.copy", "samples": ["kit/samples/copy.json"]}
+ * @preview   {"render": "kit.copy", "samples": ["kit/samples/kit.json#copy"]}
  * @changed   The copy button is always shown, not only on hover, so touch and keyboard reach it.
  */
 (function () {

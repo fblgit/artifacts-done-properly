@@ -10,8 +10,8 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO / "tools"))
-import adp_inventory as inv  # noqa: E402
+sys.path.insert(0, str(REPO / "skill" / "scripts"))
+import adp_catalog as inv  # noqa: E402
 
 # A small tree that carries the cases a scanner gets wrong. Every name in PROSE sits where nothing reads it.
 PROSE = {"--header-prose", "--js-header", "--commented", "--line-comment", "--block-comment", "--in-string", "--in-comment",
@@ -113,7 +113,7 @@ FILES = {
 def run(*argv):
     out, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-        code = inv.main(list(argv))
+        code = inv.main(["inventory", *argv])
     return code, out.getvalue(), err.getvalue()
 
 
@@ -312,7 +312,7 @@ class RealCatalogTests(unittest.TestCase):
                     self.assertEqual(sum(u["files"].get(f, 0) for u in x["uses"].values()), plain, (i, f))
 
     def test_cli(self):
-        cmd = [sys.executable, "-I", str(REPO / "tools" / "adp_inventory.py")]
+        cmd = [sys.executable, "-I", str(REPO / "skill" / "scripts" / "adp_catalog.py"), "inventory"]
         a, b = (subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", cwd=os.sep) for _ in range(2))
         self.assertEqual((a.returncode, a.stderr), (0, ""))
         self.assertEqual(a.stdout, b.stdout)

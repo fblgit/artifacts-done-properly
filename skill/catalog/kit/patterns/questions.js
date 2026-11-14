@@ -32,7 +32,7 @@
  * @summary   Owner questions with options and a recommendation, a sticky bar counting answers, take-all, submit-all and a copy fallback.
  * @tags      questions, answers, owner input, options, recommendation, sticky bar, submit, decisions, db
  * @requires  kit.copy
- * @files     kit/patterns/questions.css, kit/samples/questions.json
+ * @files     kit/patterns/questions.css, kit/samples/patterns.json
  * @provides  Kit.questions.mount
  * @config    Kit.questions.mount(root, {questions, answers, collection, db \| save, canWrite}) | questions [{id, title, why, facts, options [{id, label, detail}], recommended, reason, allowOther}]; answers is what is already saved; db is the object Kit.db.create returns, or save(id, doc) -> Promise
  * @config    hooks | onSubmit(doc) after a save, onState(text) for the status line; setAnswers(map) from the board's live subscription
@@ -42,7 +42,7 @@
  * @db        reads answers (or the configured collection), through the board's own snapshot, handed to setAnswers / writes answers/<question id>: {q, choice, label, note, at} / note A real artifact declares the db capability. Claude may add {claude, claudeAt, log: [{at, by, what}]} to the same doc and the card shows it. With no db the cards still work and the answers copy out as text.
  * @source    Catalog harvest, 2026-10-25 | a decisions board's index.html | question cards with options, a recommendation, a note, and the sticky answer bar with take-all, submit-all and copy
  * @source    Catalog harvest, 2026-10-25 | a task list's index.html | option cards with a reply box, Claude's note on the answer and a history
- * @preview   {"render": "pattern.questions", "samples": ["kit/samples/questions.json"]}
+ * @preview   {"render": "pattern.questions", "samples": ["kit/samples/patterns.json#questions"]}
  * @changed   Written as one mount call over plain data, not as page markup; the question list is data the board supplies.
  */
 (function () {

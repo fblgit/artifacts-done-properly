@@ -26,7 +26,7 @@
  * @summary   One tooltip that follows the pointer and keyboard focus for marks in charts and grids; the shared tooltip of the visualizations.
  * @tags      tooltip, hover, focus, chart, marks, keyboard, popover, label
  * @requires  none
- * @files     kit/tooltip.css, kit/samples/tooltip.json
+ * @files     kit/tooltip.css, kit/samples/kit.json
  * @provides  Kit.tooltip.attach, Kit.tooltip.show, Kit.tooltip.hide, Kit.tooltip.text
  * @config    Kit.tooltip.attach(root, opts) | selector (default [data-tip]), host (the themed element it is appended to), focusable (default true), content(el) -> string | {title, text, rows} | Node; returns {refresh, hide, destroy}
  * @config    Kit.tooltip.show(el, content, opts) | x and y in viewport coordinates, host
@@ -34,7 +34,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a disk-usage report's showTip() and #tip that follow the pointer and focus
- * @preview   {"render": "kit.tooltip", "samples": ["kit/samples/tooltip.json"]}
+ * @preview   {"render": "kit.tooltip", "samples": ["kit/samples/kit.json#tooltip"]}
  * @changed   Keyboard-safe: tipped marks become focusable and named, the tooltip is described-by, and Escape closes it.
  */
 (function () {

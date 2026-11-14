@@ -27,7 +27,7 @@
  * @summary   A report hero with stamp, summary chips and count-up figures, and four figure layouts: hairline grid, status tiles, three-up strip and facts.
  * @tags      figures, hero, stats, kpi, tiles, summary, count up, facts, report
  * @requires  none
- * @files     kit/patterns/figures.css, kit/samples/figures.json
+ * @files     kit/patterns/figures.css, kit/samples/patterns.json
  * @provides  Kit.figures.render, Kit.figures.hero
  * @extends   viz.core
  * @config    Kit.figures.render(box, opts) | variant grid|tiles|strip|facts; items per variant (grid {value, label, unit, hot, count}; tiles {label, value, note, tone}; strip and facts {label, value, note}); countUp, label
@@ -36,7 +36,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 7 artifacts' index.html | a hairline key-figure grid, a hero with count-up stats, a hero with summary chips, a status tile row, one-screen summary tiles, a three-up state strip and a facts strip
- * @preview   {"render": "pattern.figures", "samples": ["kit/samples/figures.json"]}
+ * @preview   {"render": "pattern.figures", "samples": ["kit/samples/patterns.json#figures"]}
  * @changed   New file beside kit/viz/core.js; core.js and viz.css are unchanged.
  */
 (function () {

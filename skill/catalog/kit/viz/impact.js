@@ -24,7 +24,7 @@
  * @summary   What a change does before anyone applies it: new, changed, lost, and which targets gain or lose their last cover.
  * @tags      impact, diff, preview, dry run, proposal, changes, coverage
  * @requires  viz.core
- * @files     kit/samples/viz-impact.json
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.impactOf, Kit.viz.ImpactList, Kit.viz.PreviewBanner
  * @config    impactOf(before, after, options) | snapshots {id: {kind, status, label, code, ...}}; options {fields, linkField, target, live, negative}
  * @config    ImpactList | {impact, after, kinds, words}
@@ -33,7 +33,7 @@
  * @globals   htm-preact
  * @db        note The board builds the after snapshot (the Journey Whiteboard projects Claude's proposed actions onto a copy).
  * @source    Journey Whiteboard | app.js | coverage, impactOf, ImpactList, PreviewBanner
- * @preview   {"render": "viz.impact", "samples": ["kit/samples/viz-impact.json", "kit/samples/viz-tree.json"], "uses": ["viz.tree"]}
+ * @preview   {"render": "viz.impact", "samples": ["kit/samples/viz.json#viz-impact", "kit/samples/viz.json#viz-tree"], "uses": ["viz.tree"]}
  * @changed   Kinds, the link field, live statuses and compared fields come from the board.
  */
 (function () {

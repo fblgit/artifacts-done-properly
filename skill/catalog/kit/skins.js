@@ -35,7 +35,7 @@
  * @summary   An upgrade of layout.topbar: several whole-page skins in one page, applied before first paint, kept per viewer, followed across tabs and announced by an event; light and dark are separate from the skin.
  * @tags      skin, theme switch, dark mode, no flash, storage event, persist, light dark system, selector, view registry
  * @requires  layout.topbar, kit.tokens, kit.view-registry
- * @files     kit/skins.css, kit/samples/skins.json
+ * @files     kit/skins.css, kit/samples/kit.json
  * @provides  Kit.skins.init, Kit.skins.modes
  * @extends   layout.topbar
  * @config    Kit.skins.init(opts) | skins [{name, label, href | tokens {light, dark} | json, fonts}], skin, mode system | light | dark, modes, key, target, persist; returns {skin, mode, resolved, set, setMode, list, render, on, pairViews, destroy}
@@ -45,7 +45,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's skin engine | attributes set at once, one skin link left enabled, light and dark apart from the skin, the storage event, the change event, the selector
- * @preview   {"render": "kit.skins", "samples": ["kit/samples/skins.json"], "uses": ["kit.view-registry"]}
+ * @preview   {"render": "kit.skins", "samples": ["kit/samples/kit.json#skins"], "uses": ["kit.view-registry"]}
  * @changed   A skin links its web fonts when chosen: fonts on the skin, or the fonts url of its theme json.
  */
 (function () {

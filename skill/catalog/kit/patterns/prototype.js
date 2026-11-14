@@ -36,7 +36,7 @@
  * @summary   An app mock-up at its real size, scaled to fit, that takes the keyboard when clicked; numbered markers, a legend and a table of every key.
  * @tags      prototype, mock-up, keyboard, shortcuts, markers, scale, keys table, stage
  * @requires  kit.table
- * @files     kit/patterns/prototype.css, kit/samples/prototype.json
+ * @files     kit/patterns/prototype.css, kit/samples/patterns.json
  * @provides  Kit.proto.stage, Kit.proto.keymap, Kit.proto.pin, Kit.proto.legend, Kit.proto.keysTable
  * @config    Kit.proto.stage(host, opts) | width, height (or auto), caption, sub, label, render(frame, api), onKey(event, api), pins, legend, live, idle, maxScale, inert, extra
  * @config    Kit.proto.keymap(bindings, getState) | [{keys, when, run}] -> onKey handler; specs "j", "ArrowDown", "Shift+L", "1-9"
@@ -46,7 +46,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, parts and styles | the scaled 1:1 stage, the keyboard-driven triage prototype, the numbered shortcut markers with their legend and the keys inventory table
- * @preview   {"render": "pattern.prototype", "samples": ["kit/samples/prototype.json"]}
+ * @preview   {"render": "pattern.prototype", "samples": ["kit/samples/patterns.json#prototype"]}
  * @changed   Markers are --ink on --panel with a --seam ring, not a fixed amber, so they read on any mock-up in both themes.
  */
 (function () {

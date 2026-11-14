@@ -1,0 +1,16 @@
+/* part:page.style.kit.templates.tester */
+/* Kit template css: step-by-step test harness    kit version 0.1.0    pairs with kit/templates/tester.html.txt and kit/templates/tester.js
+   .tester (a card's content) > h3, .ctl (the button row), .ledger (dl of dt/dd counters), .logl (the log list; li.l-ok, li.l-bad, li.l-step, time). The buttons (.btn), the toasts and the busy bar are kit/chrome.css; the rail is kit/viz/viz.css. */
+.tester h3{margin:0 0 10px;font:600 13px var(--f-mono);color:var(--ink-2)}
+.tester .ctl{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.ledger{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:0}
+.ledger div{background:var(--sunk);border-radius:8px;padding:8px 10px;min-width:0}
+.ledger dt{font:500 11px var(--f-mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.ledger dd{margin:2px 0 0;font:600 15px var(--f-ui);color:var(--ink);overflow-wrap:anywhere}
+.logl{list-style:none;margin:0;padding:8px 10px;max-height:340px;overflow:auto;background:var(--sunk);border-radius:8px;font:12px/1.55 var(--f-mono)}
+.logl li{padding:1px 0;overflow-wrap:anywhere}
+.logl time{color:var(--ink-3);margin-right:6px}
+.logl .l-ok{color:var(--ok,var(--accent))}
+.logl .l-bad{color:var(--danger)}
+.logl .l-step{color:var(--ink);font-weight:600;border-top:1px solid var(--rule);margin-top:4px;padding-top:4px}
+/* /part:page.style.kit.templates.tester */

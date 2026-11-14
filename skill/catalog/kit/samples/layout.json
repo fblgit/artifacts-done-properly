@@ -1,0 +1,1836 @@
+{
+ "app-shell": {
+  "note": "Invented: a three-page app for a bike co-op's tool library.",
+  "brand": "Tool library",
+  "pages": [
+   {
+    "id": "overview",
+    "title": "Overview",
+    "icon": "home",
+    "lead": "What is out and what is due back this week."
+   },
+   {
+    "id": "items",
+    "title": "Items",
+    "icon": "list",
+    "lead": "Every tool the library holds."
+   },
+   {
+    "id": "settings",
+    "title": "Settings",
+    "icon": "gear",
+    "lead": "Opening hours and loan rules."
+   }
+  ],
+  "items": [
+   {
+    "name": "Cordless drill",
+    "status": "Out until Sat",
+    "note": "Lent to Tomasz"
+   },
+   {
+    "name": "Chain whip",
+    "status": "On the shelf",
+    "note": "Bench 2"
+   },
+   {
+    "name": "Torque wrench",
+    "status": "On the shelf",
+    "note": "Calibrated in March"
+   },
+   {
+    "name": "Soldering iron",
+    "status": "Out until Tue",
+    "note": "Lent to Odile"
+   },
+   {
+    "name": "Spoke key set",
+    "status": "On the shelf",
+    "note": "Bench 2"
+   }
+  ],
+  "sections": [
+   {
+    "id": "hours",
+    "title": "Opening hours",
+    "text": "Tuesday and Thursday evening, 6 to 8, and the first Saturday of the month from 10."
+   },
+   {
+    "id": "loans",
+    "title": "Loan rules",
+    "text": "Two tools at a time for two weeks. Power tools go out with their charger and a signed card."
+   },
+   {
+    "id": "fees",
+    "title": "Deposits",
+    "text": "Five for a hand tool, twenty for a power tool, returned when the tool is back and works."
+   }
+  ]
+ },
+ "carousel": {
+  "note": "Invented phases of a cabinet-making project.",
+  "phases": [
+   {
+    "n": 1,
+    "title": "Measure the alcove",
+    "text": "Three heights and three widths; the wall is out of true by 6 mm.",
+    "state": "done"
+   },
+   {
+    "n": 2,
+    "title": "Cut the carcass",
+    "text": "18 mm birch ply, nested on two sheets with 4 mm kerf.",
+    "state": "done"
+   },
+   {
+    "n": 3,
+    "title": "Dry fit",
+    "text": "Dominos in every joint, clamped without glue for a day.",
+    "state": "running"
+   },
+   {
+    "n": 4,
+    "title": "Glue up",
+    "text": "Two people, one open time of twelve minutes.",
+    "state": "queued"
+   },
+   {
+    "n": 5,
+    "title": "Hang the doors",
+    "text": "Concealed hinges, 2 mm reveal all round.",
+    "state": "queued"
+   },
+   {
+    "n": 6,
+    "title": "Oil the fronts",
+    "text": "Two coats, a day apart, rubbed back between.",
+    "state": "queued"
+   },
+   {
+    "n": 7,
+    "title": "Fit and scribe",
+    "text": "Scribe the end panel to the wall with a compass.",
+    "state": "waiting"
+   }
+  ],
+  "few": [
+   {
+    "n": 1,
+    "title": "Order the ply",
+    "text": "Two sheets, delivered Thursday.",
+    "state": "done"
+   },
+   {
+    "n": 2,
+    "title": "Book the van",
+    "text": "Saturday morning, two hours.",
+    "state": "queued"
+   }
+  ]
+ },
+ "doc-shell": {
+  "note": "Invented: a pottery studio's handbook.",
+  "brand": {
+   "name": "Studio handbook",
+   "sub": "Porcelain, cone 6, electric kiln"
+  },
+  "sections": [
+   {
+    "id": "open",
+    "group": "Before a firing",
+    "title": "Opening the studio",
+    "note": [
+     [
+      "08:30",
+      "doors open"
+     ],
+     [
+      "fan",
+      "on first"
+     ]
+    ],
+    "body": [
+     "Switch the vent fan on before anything else, then check the kiln room is above 10 °C: cold shelves crack.",
+     "Read yesterday's firing log and note any cone that bent short."
+    ]
+   },
+   {
+    "id": "mix",
+    "title": "Mixing glazes",
+    "note": [
+     [
+      "500 g",
+      "batch"
+     ],
+     [
+      "80",
+      "mesh sieve"
+     ]
+    ],
+    "body": [
+     "Weigh dry materials to the gram, add water to a cream consistency and sieve twice.",
+     "Label every bucket with the recipe, the date and your initials."
+    ]
+   },
+   {
+    "id": "load",
+    "group": "The firing",
+    "title": "Loading the kiln",
+    "note": [
+     [
+      "6 mm",
+      "between pots"
+     ]
+    ],
+    "body": [
+     "Wipe glaze off every foot. Leave a finger's width between pots and keep the cone pack visible from the spy hole.",
+     "Load heavy pieces low and the thin porcelain on the top shelf."
+    ]
+   },
+   {
+    "id": "fire",
+    "title": "Firing and cooling",
+    "note": [
+     [
+      "1222 °C",
+      "cone 6"
+     ],
+     [
+      "10 min",
+      "hold"
+     ]
+    ],
+    "body": [
+     "Fire on the medium-speed schedule to cone 6 with a ten-minute hold, then let it cool closed.",
+     "Open below 100 °C. Crackle in a celadon keeps forming for days; that is the glaze, not a fault."
+    ]
+   }
+  ]
+ },
+ "explorer-shell": {
+  "note": "Invented: the working files of a repair-cafe season.",
+  "groups": [
+   {
+    "label": "season",
+    "files": [
+     {
+      "id": "overview",
+      "name": "overview",
+      "ext": "md"
+     },
+     {
+      "id": "budget",
+      "name": "budget",
+      "ext": "csv"
+     },
+     {
+      "id": "rota",
+      "name": "rota",
+      "ext": "csv"
+     }
+    ]
+   },
+   {
+    "label": "docs",
+    "files": [
+     {
+      "id": "rules",
+      "name": "house-rules",
+      "ext": "md"
+     },
+     {
+      "id": "checklist",
+      "name": "closing-checklist",
+      "ext": "sh"
+     },
+     {
+      "id": "notes",
+      "name": "meeting-notes",
+      "ext": "md"
+     }
+    ]
+   }
+  ],
+  "pipeline": {
+   "label": "Season pipeline",
+   "stages": [
+    {
+     "id": "p1",
+     "name": "Prepare",
+     "state": "done"
+    },
+    {
+     "id": "p2",
+     "name": "Recruit",
+     "state": "running"
+    },
+    {
+     "id": "p3",
+     "name": "First night",
+     "state": "queued"
+    },
+    {
+     "id": "p4",
+     "name": "Look back",
+     "state": "queued"
+    }
+   ],
+   "words": {
+    "done": "passed",
+    "running": "running",
+    "queued": "queued"
+   }
+  },
+  "status": {
+   "items": [
+    {
+     "label": "waiting on you",
+     "count": 3,
+     "tone": "attention"
+    },
+    {
+     "label": "to read",
+     "count": 2,
+     "tone": "review"
+    },
+    {
+     "label": "running",
+     "count": 1,
+     "tone": "active"
+    },
+    {
+     "label": "blocked",
+     "count": 0,
+     "tone": "danger"
+    }
+   ],
+   "note": "Last read by Claude 4 min ago"
+  },
+  "sections": [
+   {
+    "id": "overview",
+    "title": "overview.md",
+    "lines": [
+     "Six repairers, one hall, the first Saturday of every month from October.",
+     "The season runs in four stages: prepare the hall, find the repairers, run the first night and look back."
+    ]
+   },
+   {
+    "id": "budget",
+    "title": "budget.csv",
+    "lines": [
+     "Hall hire: 40 per night. Tea and biscuits: 12. Parts fund: whatever the raffle jar holds.",
+     "The season is planned to cost 312 across six nights, paid from the co-op account."
+    ]
+   },
+   {
+    "id": "rota",
+    "title": "rota.csv",
+    "lines": [
+     "Door: Lena, then Tomasz. Electrics: Ravi. Bikes: Marcus and Anya. Sewing: Odile. Tea: whoever arrives first.",
+     "Swaps are agreed in the group chat and written here the same night."
+    ]
+   },
+   {
+    "id": "rules",
+    "title": "house-rules.md",
+    "lines": [
+     "Show, do not take over. Test anything mains-powered before it leaves. Turn away gas and medical equipment kindly.",
+     "The full clauses are drafted as numbered rules in the margin-notes layout."
+    ]
+   },
+   {
+    "id": "checklist",
+    "title": "closing-checklist.sh",
+    "lines": [
+     "Wipe the benches. Count the log. Return the urn washed. Lock the side door, then the front.",
+     "Photograph the whiteboard before it is wiped."
+    ]
+   },
+   {
+    "id": "notes",
+    "title": "meeting-notes.md",
+    "lines": [
+     "5 Oct: agreed one item each when more than twelve are waiting.",
+     "19 Oct: Odile confirmed for sewing; the second bike stand is still to be found."
+    ]
+   }
+  ]
+ },
+ "file-browser": {
+  "note": "An invented adp/2 artifact (a tide board for four made-up stations) published six times. The manifest, the sizes and every hash in changes/ come from running adp.py manifest on the invented files of each version; the people are agent names and every date is made up.",
+  "now": "2026-10-24T15:00:00Z",
+  "manifest": {
+   "schema": "adp/2",
+   "page_hash": "2d848b5b596f",
+   "parts": {
+    "_rest:adp.js": "5750a411b931",
+    "_rest:content.js": "e3b0c44298fc",
+    "_rest:index.html": "7ababa1135ab",
+    "_rest:kit/gate.css": "16a7b73bf5b9",
+    "_rest:kit/gate.js": "2743c317f0d0",
+    "_rest:parts/crew.js": "fa26f3fa3057",
+    "_rest:parts/notes.js": "2efdf0340ce2",
+    "_rest:parts/tides.js": "deec3399423f",
+    "_rest:styles/page.css": "7a2368eb1ebb",
+    "crew": "1365f83eff94",
+    "crew.roster": "d2b1d3b9f28e",
+    "crew.shifts": "0cf540baae2f",
+    "notes": "c77e4cd8c474",
+    "notes.form": "7f2744aec571",
+    "notes.list": "f20d060ee953",
+    "page.changes": "24c0dd294dca",
+    "page.header": "09dad5c44fc3",
+    "page.lead": "897de66fb771",
+    "page.script.adp": "123f90ee8d73",
+    "page.script.content": "7bd345227873",
+    "page.script.kit.gate": "3d495c435c71",
+    "page.shell": "2dc10cf397f0",
+    "page.style": "221057d68594",
+    "page.style.crew": "cff735648463",
+    "page.style.kit.gate": "35e632f9666a",
+    "page.style.tides": "e8bafa4f627f",
+    "page.tabs": "cfa8d7969176",
+    "tides": "19884e125ef3",
+    "tides.chart": "e20103680062",
+    "tides.table": "f0b9a4b9841f"
+   },
+   "files": {
+    "adp.js": "edf7ed4e938b",
+    "content.js": "9ec2caf6e387",
+    "index.html": "c198128da248",
+    "data/stations.json": "96764290b2ca",
+    "img/harbour.png": "b3604b161507",
+    "kit/gate.css": "b57aeb124efa",
+    "kit/gate.js": "d59d184e79f8",
+    "parts/crew.js": "ff2f78bbcd46",
+    "parts/notes.js": "3bd143199159",
+    "parts/tides.js": "3b6f6762e6b7",
+    "styles/page.css": "2ad308df44fb"
+   },
+   "parents": {
+    "_rest:adp.js": "",
+    "_rest:content.js": "",
+    "_rest:index.html": "",
+    "_rest:kit/gate.css": "",
+    "_rest:kit/gate.js": "",
+    "_rest:parts/crew.js": "",
+    "_rest:parts/notes.js": "",
+    "_rest:parts/tides.js": "",
+    "_rest:styles/page.css": "",
+    "crew": "",
+    "crew.roster": "crew",
+    "crew.shifts": "crew",
+    "notes": "",
+    "notes.form": "notes",
+    "notes.list": "notes",
+    "page.changes": "page.shell",
+    "page.header": "page.shell",
+    "page.lead": "page.header",
+    "page.script.adp": "",
+    "page.script.content": "",
+    "page.script.kit.gate": "",
+    "page.shell": "",
+    "page.style": "",
+    "page.style.crew": "page.style",
+    "page.style.kit.gate": "",
+    "page.style.tides": "page.style",
+    "page.tabs": "page.shell",
+    "tides": "",
+    "tides.chart": "tides",
+    "tides.table": "tides"
+   },
+   "elements": {
+    "_rest:adp.js": 0,
+    "_rest:content.js": 0,
+    "_rest:index.html": 6,
+    "_rest:kit/gate.css": 0,
+    "_rest:kit/gate.js": 0,
+    "_rest:parts/crew.js": 0,
+    "_rest:parts/notes.js": 0,
+    "_rest:parts/tides.js": 0,
+    "_rest:styles/page.css": 0,
+    "crew": 0,
+    "crew.roster": 0,
+    "crew.shifts": 0,
+    "notes": 0,
+    "notes.form": 0,
+    "notes.list": 0,
+    "page.changes": 3,
+    "page.header": 2,
+    "page.lead": 1,
+    "page.script.adp": 0,
+    "page.script.content": 0,
+    "page.script.kit.gate": 0,
+    "page.shell": 3,
+    "page.style": 0,
+    "page.style.crew": 0,
+    "page.style.kit.gate": 0,
+    "page.style.tides": 0,
+    "page.tabs": 4,
+    "tides": 0,
+    "tides.chart": 0,
+    "tides.table": 0
+   },
+   "part_file": {
+    "_rest:adp.js": "adp.js",
+    "_rest:content.js": "content.js",
+    "_rest:index.html": "index.html",
+    "_rest:kit/gate.css": "kit/gate.css",
+    "_rest:kit/gate.js": "kit/gate.js",
+    "_rest:parts/crew.js": "parts/crew.js",
+    "_rest:parts/notes.js": "parts/notes.js",
+    "_rest:parts/tides.js": "parts/tides.js",
+    "_rest:styles/page.css": "styles/page.css",
+    "crew": "parts/crew.js",
+    "crew.roster": "parts/crew.js",
+    "crew.shifts": "parts/crew.js",
+    "notes": "parts/notes.js",
+    "notes.form": "parts/notes.js",
+    "notes.list": "parts/notes.js",
+    "page.changes": "index.html",
+    "page.header": "index.html",
+    "page.lead": "index.html",
+    "page.script.adp": "adp.js",
+    "page.script.content": "content.js",
+    "page.script.kit.gate": "kit/gate.js",
+    "page.shell": "index.html",
+    "page.style": "styles/page.css",
+    "page.style.crew": "styles/page.css",
+    "page.style.kit.gate": "kit/gate.css",
+    "page.style.tides": "styles/page.css",
+    "page.tabs": "index.html",
+    "tides": "parts/tides.js",
+    "tides.chart": "parts/tides.js",
+    "tides.table": "parts/tides.js"
+   },
+   "version": "v6",
+   "at": "2026-10-24T13:31:00Z",
+   "by": "agent-data"
+  },
+  "sizes": {
+   "adp.js": 3465,
+   "content.js": 140,
+   "index.html": 1020,
+   "data/stations.json": 152,
+   "img/harbour.png": 28000,
+   "kit/gate.css": 1412,
+   "kit/gate.js": 1904,
+   "parts/crew.js": 1329,
+   "parts/notes.js": 1049,
+   "parts/tides.js": 2118,
+   "styles/page.css": 339
+  },
+  "parts": {
+   "crew": {
+    "title": "Crew view",
+    "parent": "",
+    "file": "parts/crew.js",
+    "hash": "1365f83eff94",
+    "version": "v4",
+    "at": "2026-10-21T16:22:00Z",
+    "by": "agent-layout",
+    "summary": "Crew shifts read as a week grid; the tide table keeps its header in view.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "crew.roster": {
+    "title": "Roster",
+    "parent": "crew",
+    "file": "parts/crew.js",
+    "hash": "d2b1d3b9f28e",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "holder": "agent-copy",
+    "hold_until": "2026-10-24T11:00:00Z"
+   },
+   "crew.shifts": {
+    "title": "Shift grid",
+    "parent": "crew",
+    "file": "parts/crew.js",
+    "hash": "0cf540baae2f",
+    "version": "v4",
+    "at": "2026-10-21T16:22:00Z",
+    "by": "agent-layout",
+    "summary": "Crew shifts read as a week grid; the tide table keeps its header in view.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "notes": {
+    "title": "Notes view",
+    "parent": "",
+    "file": "parts/notes.js",
+    "hash": "c77e4cd8c474",
+    "version": "v5",
+    "at": "2026-10-23T11:48:00Z",
+    "by": "agent-layout",
+    "summary": "Approval gate taken from the kit for the notes form.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "notes.form": {
+    "title": "Note form",
+    "parent": "notes",
+    "file": "parts/notes.js",
+    "hash": "7f2744aec571",
+    "version": "v5",
+    "at": "2026-10-23T11:48:00Z",
+    "by": "agent-layout",
+    "summary": "Approval gate taken from the kit for the notes form.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "notes.list": {
+    "title": "Note list",
+    "parent": "notes",
+    "file": "parts/notes.js",
+    "hash": "f20d060ee953",
+    "version": "v3",
+    "at": "2026-10-20T10:05:00Z",
+    "by": "agent-copy",
+    "summary": "Notes view added: a form and the list of notes.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.changes": {
+    "title": "What changed panel",
+    "parent": "page.shell",
+    "file": "index.html",
+    "hash": "24c0dd294dca",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.header": {
+    "title": "Header",
+    "parent": "page.shell",
+    "file": "index.html",
+    "hash": "09dad5c44fc3",
+    "version": "v6",
+    "at": "2026-10-24T13:30:00Z",
+    "by": "agent-data",
+    "summary": "Tide table rounds heights to 0.1 m; the header names the season; a fifth station.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.lead": {
+    "title": "Lead",
+    "parent": "page.header",
+    "file": "index.html",
+    "hash": "897de66fb771",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.script.adp": {
+    "title": "",
+    "parent": "",
+    "file": "adp.js",
+    "hash": "123f90ee8d73",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.script.content": {
+    "title": "",
+    "parent": "",
+    "file": "content.js",
+    "hash": "7bd345227873",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.script.kit.gate": {
+    "title": "",
+    "parent": "",
+    "file": "kit/gate.js",
+    "hash": "3d495c435c71",
+    "version": "v5",
+    "at": "2026-10-23T11:48:00Z",
+    "by": "agent-layout",
+    "summary": "Approval gate taken from the kit for the notes form.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.shell": {
+    "title": "Page shell",
+    "parent": "",
+    "file": "index.html",
+    "hash": "2dc10cf397f0",
+    "version": "v6",
+    "at": "2026-10-24T13:30:00Z",
+    "by": "agent-data",
+    "summary": "Tide table rounds heights to 0.1 m; the header names the season; a fifth station.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.style": {
+    "title": "",
+    "parent": "",
+    "file": "styles/page.css",
+    "hash": "221057d68594",
+    "version": "v4",
+    "at": "2026-10-21T16:22:00Z",
+    "by": "agent-layout",
+    "summary": "Crew shifts read as a week grid; the tide table keeps its header in view.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.style.crew": {
+    "title": "",
+    "parent": "page.style",
+    "file": "styles/page.css",
+    "hash": "cff735648463",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.style.kit.gate": {
+    "title": "",
+    "parent": "",
+    "file": "kit/gate.css",
+    "hash": "35e632f9666a",
+    "version": "v5",
+    "at": "2026-10-23T11:48:00Z",
+    "by": "agent-layout",
+    "summary": "Approval gate taken from the kit for the notes form.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.style.tides": {
+    "title": "",
+    "parent": "page.style",
+    "file": "styles/page.css",
+    "hash": "e8bafa4f627f",
+    "version": "v4",
+    "at": "2026-10-21T16:22:00Z",
+    "by": "agent-layout",
+    "summary": "Crew shifts read as a week grid; the tide table keeps its header in view.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "page.tabs": {
+    "title": "View tabs",
+    "parent": "page.shell",
+    "file": "index.html",
+    "hash": "cfa8d7969176",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "tides": {
+    "title": "Tides view",
+    "parent": "",
+    "file": "parts/tides.js",
+    "hash": "19884e125ef3",
+    "version": "v6",
+    "at": "2026-10-24T13:30:00Z",
+    "by": "agent-data",
+    "summary": "Tide table rounds heights to 0.1 m; the header names the season; a fifth station.",
+    "holder": "agent-data",
+    "hold_until": "2026-10-24T16:10:00Z"
+   },
+   "tides.chart": {
+    "title": "Tide chart",
+    "parent": "tides",
+    "file": "parts/tides.js",
+    "hash": "e20103680062",
+    "version": "v2",
+    "at": "2026-10-19T14:40:00Z",
+    "by": "agent-data",
+    "summary": "The tide chart draws the spring range as a band.",
+    "holder": "",
+    "hold_until": ""
+   },
+   "tides.table": {
+    "title": "Tide table",
+    "parent": "tides",
+    "file": "parts/tides.js",
+    "hash": "f0b9a4b9841f",
+    "version": "v6",
+    "at": "2026-10-24T13:30:00Z",
+    "by": "agent-data",
+    "summary": "Tide table rounds heights to 0.1 m; the header names the season; a fifth station.",
+    "holder": "agent-data",
+    "hold_until": "2026-10-24T16:10:00Z"
+   }
+  },
+  "changes": [
+   {
+    "id": "000001",
+    "version": "v1",
+    "at": "2026-10-18T09:12:00Z",
+    "by": "agent-layout",
+    "summary": "First publish on adp/2: the shell, tides and crew.",
+    "parts": [
+     {
+      "id": "_rest:adp.js",
+      "from": "",
+      "to": "5750a411b931"
+     },
+     {
+      "id": "_rest:content.js",
+      "from": "",
+      "to": "e3b0c44298fc"
+     },
+     {
+      "id": "_rest:index.html",
+      "from": "",
+      "to": "7ababa1135ab"
+     },
+     {
+      "id": "_rest:parts/crew.js",
+      "from": "",
+      "to": "fa26f3fa3057"
+     },
+     {
+      "id": "_rest:parts/tides.js",
+      "from": "",
+      "to": "deec3399423f"
+     },
+     {
+      "id": "_rest:styles/page.css",
+      "from": "",
+      "to": "7a2368eb1ebb"
+     },
+     {
+      "id": "crew",
+      "from": "",
+      "to": "0acc3424e496"
+     },
+     {
+      "id": "crew.roster",
+      "from": "",
+      "to": "d2b1d3b9f28e"
+     },
+     {
+      "id": "crew.shifts",
+      "from": "",
+      "to": "48940ce29e50"
+     },
+     {
+      "id": "page.changes",
+      "from": "",
+      "to": "24c0dd294dca"
+     },
+     {
+      "id": "page.header",
+      "from": "",
+      "to": "0a0d2d7f36df"
+     },
+     {
+      "id": "page.lead",
+      "from": "",
+      "to": "897de66fb771"
+     },
+     {
+      "id": "page.script.adp",
+      "from": "",
+      "to": "123f90ee8d73"
+     },
+     {
+      "id": "page.script.content",
+      "from": "",
+      "to": "7bd345227873"
+     },
+     {
+      "id": "page.shell",
+      "from": "",
+      "to": "8fd5e710e88f"
+     },
+     {
+      "id": "page.style",
+      "from": "",
+      "to": "6312e33a5551"
+     },
+     {
+      "id": "page.style.crew",
+      "from": "",
+      "to": "cff735648463"
+     },
+     {
+      "id": "page.style.tides",
+      "from": "",
+      "to": "c3f83bdb699d"
+     },
+     {
+      "id": "page.tabs",
+      "from": "",
+      "to": "cfa8d7969176"
+     },
+     {
+      "id": "tides",
+      "from": "",
+      "to": "a81214befe51"
+     },
+     {
+      "id": "tides.chart",
+      "from": "",
+      "to": "0fc24065471d"
+     },
+     {
+      "id": "tides.table",
+      "from": "",
+      "to": "5dfd0311d17f"
+     }
+    ],
+    "threads": []
+   },
+   {
+    "id": "000002",
+    "version": "v2",
+    "at": "2026-10-19T14:40:00Z",
+    "by": "agent-data",
+    "summary": "The tide chart draws the spring range as a band.",
+    "parts": [
+     {
+      "id": "tides",
+      "from": "a81214befe51",
+      "to": "0b6c9653c380"
+     },
+     {
+      "id": "tides.chart",
+      "from": "0fc24065471d",
+      "to": "e20103680062"
+     }
+    ],
+    "threads": []
+   },
+   {
+    "id": "000003",
+    "version": "v3",
+    "at": "2026-10-20T10:05:00Z",
+    "by": "agent-copy",
+    "summary": "Notes view added: a form and the list of notes.",
+    "parts": [
+     {
+      "id": "_rest:parts/notes.js",
+      "from": "",
+      "to": "2efdf0340ce2"
+     },
+     {
+      "id": "notes",
+      "from": "",
+      "to": "7b874f9dbb19"
+     },
+     {
+      "id": "notes.form",
+      "from": "",
+      "to": "77f4b5954bba"
+     },
+     {
+      "id": "notes.list",
+      "from": "",
+      "to": "f20d060ee953"
+     }
+    ],
+    "threads": []
+   },
+   {
+    "id": "000004",
+    "version": "v4",
+    "at": "2026-10-21T16:22:00Z",
+    "by": "agent-layout",
+    "summary": "Crew shifts read as a week grid; the tide table keeps its header in view.",
+    "parts": [
+     {
+      "id": "crew",
+      "from": "0acc3424e496",
+      "to": "1365f83eff94"
+     },
+     {
+      "id": "crew.shifts",
+      "from": "48940ce29e50",
+      "to": "0cf540baae2f"
+     },
+     {
+      "id": "page.style",
+      "from": "6312e33a5551",
+      "to": "221057d68594"
+     },
+     {
+      "id": "page.style.tides",
+      "from": "c3f83bdb699d",
+      "to": "e8bafa4f627f"
+     }
+    ],
+    "threads": [
+     "t-header"
+    ]
+   },
+   {
+    "id": "d-1761141600000",
+    "version": "",
+    "at": "2026-10-22T14:00:00Z",
+    "by": "page",
+    "summary": "A note was added from the page.",
+    "parts": [],
+    "data": [
+     {
+      "doc": "notes/n-0004",
+      "from": 0,
+      "to": 1
+     }
+    ]
+   },
+   {
+    "id": "000005",
+    "version": "v5",
+    "at": "2026-10-23T11:48:00Z",
+    "by": "agent-layout",
+    "summary": "Approval gate taken from the kit for the notes form.",
+    "parts": [
+     {
+      "id": "_rest:kit/gate.css",
+      "from": "",
+      "to": "16a7b73bf5b9"
+     },
+     {
+      "id": "_rest:kit/gate.js",
+      "from": "",
+      "to": "2743c317f0d0"
+     },
+     {
+      "id": "notes",
+      "from": "7b874f9dbb19",
+      "to": "c77e4cd8c474"
+     },
+     {
+      "id": "notes.form",
+      "from": "77f4b5954bba",
+      "to": "7f2744aec571"
+     },
+     {
+      "id": "page.script.kit.gate",
+      "from": "",
+      "to": "3d495c435c71"
+     },
+     {
+      "id": "page.style.kit.gate",
+      "from": "",
+      "to": "35e632f9666a"
+     }
+    ],
+    "threads": []
+   },
+   {
+    "id": "000006",
+    "version": "v6",
+    "at": "2026-10-24T13:30:00Z",
+    "by": "agent-data",
+    "summary": "Tide table rounds heights to 0.1 m; the header names the season; a fifth station.",
+    "parts": [
+     {
+      "id": "page.header",
+      "from": "0a0d2d7f36df",
+      "to": "09dad5c44fc3"
+     },
+     {
+      "id": "page.shell",
+      "from": "8fd5e710e88f",
+      "to": "2dc10cf397f0"
+     },
+     {
+      "id": "tides",
+      "from": "0b6c9653c380",
+      "to": "19884e125ef3"
+     },
+     {
+      "id": "tides.table",
+      "from": "5dfd0311d17f",
+      "to": "f0b9a4b9841f"
+     }
+    ],
+    "threads": []
+   }
+  ],
+  "threads": {
+   "t-chart": {
+    "part": "tides.chart",
+    "status": "open",
+    "holder": "",
+    "done_in": "",
+    "note": "Asked for the neap range too."
+   },
+   "t-form": {
+    "part": "notes.form",
+    "status": "working",
+    "holder": "agent-copy",
+    "done_in": "",
+    "note": "Wording of the submit button."
+   },
+   "t-header": {
+    "part": "page.header",
+    "status": "done",
+    "holder": "",
+    "done_in": "v4",
+    "note": "Header named the season."
+   },
+   "t-roster": {
+    "part": "crew.roster",
+    "status": "open",
+    "holder": "",
+    "done_in": "",
+    "note": "Sort by call sign."
+   }
+  },
+  "content": {
+   "page.header": {
+    "part": "page.header",
+    "title": "Header",
+    "at": "2026-10-22T09:00:00Z",
+    "by": "agent-copy"
+   },
+   "page.lead": {
+    "part": "page.lead",
+    "title": "Lead",
+    "at": "2026-10-22T09:00:00Z",
+    "by": "agent-copy"
+   },
+   "tides": {
+    "part": "tides",
+    "title": "Tides view",
+    "at": "2026-10-22T09:00:00Z",
+    "by": "agent-copy"
+   },
+   "crew": {
+    "part": "crew",
+    "title": "Crew view",
+    "at": "2026-10-22T09:00:00Z",
+    "by": "agent-copy"
+   },
+   "notes": {
+    "part": "notes",
+    "title": "Notes view",
+    "at": "2026-10-22T09:00:00Z",
+    "by": "agent-copy"
+   },
+   "notes.form": {
+    "part": "notes.form",
+    "title": "Note form",
+    "at": "2026-10-22T09:00:00Z",
+    "by": "agent-copy"
+   }
+  },
+  "checks": {
+   "build": "6",
+   "at": "2026-10-24T13:40:00Z",
+   "view": "tides",
+   "width": 390,
+   "ok": true,
+   "missing": [],
+   "unmarked": [],
+   "overflow_x": false,
+   "errors": [],
+   "content": {
+    "source": "db",
+    "db_docs": 6,
+    "file_docs": 2
+   },
+   "anchors": {
+    "threads": 4,
+    "placed": 4,
+    "unknown": []
+   }
+  },
+  "manifests": {
+   "v1": {
+    "page_hash": "f6a4be15b5fe",
+    "parts": {
+     "_rest:adp.js": "5750a411b931",
+     "_rest:content.js": "e3b0c44298fc",
+     "_rest:index.html": "7ababa1135ab",
+     "_rest:parts/crew.js": "fa26f3fa3057",
+     "_rest:parts/tides.js": "deec3399423f",
+     "_rest:styles/page.css": "7a2368eb1ebb",
+     "crew": "0acc3424e496",
+     "crew.roster": "d2b1d3b9f28e",
+     "crew.shifts": "48940ce29e50",
+     "page.changes": "24c0dd294dca",
+     "page.header": "0a0d2d7f36df",
+     "page.lead": "897de66fb771",
+     "page.script.adp": "123f90ee8d73",
+     "page.script.content": "7bd345227873",
+     "page.shell": "8fd5e710e88f",
+     "page.style": "6312e33a5551",
+     "page.style.crew": "cff735648463",
+     "page.style.tides": "c3f83bdb699d",
+     "page.tabs": "cfa8d7969176",
+     "tides": "a81214befe51",
+     "tides.chart": "0fc24065471d",
+     "tides.table": "5dfd0311d17f"
+    },
+    "files": {
+     "adp.js": "edf7ed4e938b",
+     "content.js": "9ec2caf6e387",
+     "index.html": "5230e973ce85",
+     "data/stations.json": "fa67fa9c0f2c",
+     "img/harbour.png": "b3604b161507",
+     "parts/crew.js": "9eee643f8e27",
+     "parts/tides.js": "11e3893fcf8b",
+     "styles/page.css": "47b2104bef24"
+    }
+   },
+   "v2": {
+    "page_hash": "a4abdced9b88",
+    "parts": {
+     "_rest:adp.js": "5750a411b931",
+     "_rest:content.js": "e3b0c44298fc",
+     "_rest:index.html": "7ababa1135ab",
+     "_rest:parts/crew.js": "fa26f3fa3057",
+     "_rest:parts/tides.js": "deec3399423f",
+     "_rest:styles/page.css": "7a2368eb1ebb",
+     "crew": "0acc3424e496",
+     "crew.roster": "d2b1d3b9f28e",
+     "crew.shifts": "48940ce29e50",
+     "page.changes": "24c0dd294dca",
+     "page.header": "0a0d2d7f36df",
+     "page.lead": "897de66fb771",
+     "page.script.adp": "123f90ee8d73",
+     "page.script.content": "7bd345227873",
+     "page.shell": "8fd5e710e88f",
+     "page.style": "6312e33a5551",
+     "page.style.crew": "cff735648463",
+     "page.style.tides": "c3f83bdb699d",
+     "page.tabs": "cfa8d7969176",
+     "tides": "0b6c9653c380",
+     "tides.chart": "e20103680062",
+     "tides.table": "5dfd0311d17f"
+    },
+    "files": {
+     "adp.js": "edf7ed4e938b",
+     "content.js": "9ec2caf6e387",
+     "index.html": "5230e973ce85",
+     "data/stations.json": "fa67fa9c0f2c",
+     "img/harbour.png": "b3604b161507",
+     "parts/crew.js": "9eee643f8e27",
+     "parts/tides.js": "0860ea3d9d52",
+     "styles/page.css": "47b2104bef24"
+    }
+   },
+   "v3": {
+    "page_hash": "2b838377342a",
+    "parts": {
+     "_rest:adp.js": "5750a411b931",
+     "_rest:content.js": "e3b0c44298fc",
+     "_rest:index.html": "7ababa1135ab",
+     "_rest:parts/crew.js": "fa26f3fa3057",
+     "_rest:parts/notes.js": "2efdf0340ce2",
+     "_rest:parts/tides.js": "deec3399423f",
+     "_rest:styles/page.css": "7a2368eb1ebb",
+     "crew": "0acc3424e496",
+     "crew.roster": "d2b1d3b9f28e",
+     "crew.shifts": "48940ce29e50",
+     "notes": "7b874f9dbb19",
+     "notes.form": "77f4b5954bba",
+     "notes.list": "f20d060ee953",
+     "page.changes": "24c0dd294dca",
+     "page.header": "0a0d2d7f36df",
+     "page.lead": "897de66fb771",
+     "page.script.adp": "123f90ee8d73",
+     "page.script.content": "7bd345227873",
+     "page.shell": "8fd5e710e88f",
+     "page.style": "6312e33a5551",
+     "page.style.crew": "cff735648463",
+     "page.style.tides": "c3f83bdb699d",
+     "page.tabs": "cfa8d7969176",
+     "tides": "0b6c9653c380",
+     "tides.chart": "e20103680062",
+     "tides.table": "5dfd0311d17f"
+    },
+    "files": {
+     "adp.js": "edf7ed4e938b",
+     "content.js": "9ec2caf6e387",
+     "index.html": "5230e973ce85",
+     "data/stations.json": "fa67fa9c0f2c",
+     "img/harbour.png": "b3604b161507",
+     "parts/crew.js": "9eee643f8e27",
+     "parts/notes.js": "df275b480e64",
+     "parts/tides.js": "0860ea3d9d52",
+     "styles/page.css": "47b2104bef24"
+    }
+   },
+   "v4": {
+    "page_hash": "38b5f866da25",
+    "parts": {
+     "_rest:adp.js": "5750a411b931",
+     "_rest:content.js": "e3b0c44298fc",
+     "_rest:index.html": "7ababa1135ab",
+     "_rest:parts/crew.js": "fa26f3fa3057",
+     "_rest:parts/notes.js": "2efdf0340ce2",
+     "_rest:parts/tides.js": "deec3399423f",
+     "_rest:styles/page.css": "7a2368eb1ebb",
+     "crew": "1365f83eff94",
+     "crew.roster": "d2b1d3b9f28e",
+     "crew.shifts": "0cf540baae2f",
+     "notes": "7b874f9dbb19",
+     "notes.form": "77f4b5954bba",
+     "notes.list": "f20d060ee953",
+     "page.changes": "24c0dd294dca",
+     "page.header": "0a0d2d7f36df",
+     "page.lead": "897de66fb771",
+     "page.script.adp": "123f90ee8d73",
+     "page.script.content": "7bd345227873",
+     "page.shell": "8fd5e710e88f",
+     "page.style": "221057d68594",
+     "page.style.crew": "cff735648463",
+     "page.style.tides": "e8bafa4f627f",
+     "page.tabs": "cfa8d7969176",
+     "tides": "0b6c9653c380",
+     "tides.chart": "e20103680062",
+     "tides.table": "5dfd0311d17f"
+    },
+    "files": {
+     "adp.js": "edf7ed4e938b",
+     "content.js": "9ec2caf6e387",
+     "index.html": "5230e973ce85",
+     "data/stations.json": "fa67fa9c0f2c",
+     "img/harbour.png": "b3604b161507",
+     "parts/crew.js": "ff2f78bbcd46",
+     "parts/notes.js": "df275b480e64",
+     "parts/tides.js": "0860ea3d9d52",
+     "styles/page.css": "2ad308df44fb"
+    }
+   },
+   "v5": {
+    "page_hash": "72938568a602",
+    "parts": {
+     "_rest:adp.js": "5750a411b931",
+     "_rest:content.js": "e3b0c44298fc",
+     "_rest:index.html": "7ababa1135ab",
+     "_rest:kit/gate.css": "16a7b73bf5b9",
+     "_rest:kit/gate.js": "2743c317f0d0",
+     "_rest:parts/crew.js": "fa26f3fa3057",
+     "_rest:parts/notes.js": "2efdf0340ce2",
+     "_rest:parts/tides.js": "deec3399423f",
+     "_rest:styles/page.css": "7a2368eb1ebb",
+     "crew": "1365f83eff94",
+     "crew.roster": "d2b1d3b9f28e",
+     "crew.shifts": "0cf540baae2f",
+     "notes": "c77e4cd8c474",
+     "notes.form": "7f2744aec571",
+     "notes.list": "f20d060ee953",
+     "page.changes": "24c0dd294dca",
+     "page.header": "0a0d2d7f36df",
+     "page.lead": "897de66fb771",
+     "page.script.adp": "123f90ee8d73",
+     "page.script.content": "7bd345227873",
+     "page.script.kit.gate": "3d495c435c71",
+     "page.shell": "8fd5e710e88f",
+     "page.style": "221057d68594",
+     "page.style.crew": "cff735648463",
+     "page.style.kit.gate": "35e632f9666a",
+     "page.style.tides": "e8bafa4f627f",
+     "page.tabs": "cfa8d7969176",
+     "tides": "0b6c9653c380",
+     "tides.chart": "e20103680062",
+     "tides.table": "5dfd0311d17f"
+    },
+    "files": {
+     "adp.js": "edf7ed4e938b",
+     "content.js": "9ec2caf6e387",
+     "index.html": "5230e973ce85",
+     "data/stations.json": "fa67fa9c0f2c",
+     "img/harbour.png": "b3604b161507",
+     "kit/gate.css": "b57aeb124efa",
+     "kit/gate.js": "d59d184e79f8",
+     "parts/crew.js": "ff2f78bbcd46",
+     "parts/notes.js": "3bd143199159",
+     "parts/tides.js": "0860ea3d9d52",
+     "styles/page.css": "2ad308df44fb"
+    }
+   },
+   "v6": {
+    "page_hash": "2d848b5b596f",
+    "parts": {
+     "_rest:adp.js": "5750a411b931",
+     "_rest:content.js": "e3b0c44298fc",
+     "_rest:index.html": "7ababa1135ab",
+     "_rest:kit/gate.css": "16a7b73bf5b9",
+     "_rest:kit/gate.js": "2743c317f0d0",
+     "_rest:parts/crew.js": "fa26f3fa3057",
+     "_rest:parts/notes.js": "2efdf0340ce2",
+     "_rest:parts/tides.js": "deec3399423f",
+     "_rest:styles/page.css": "7a2368eb1ebb",
+     "crew": "1365f83eff94",
+     "crew.roster": "d2b1d3b9f28e",
+     "crew.shifts": "0cf540baae2f",
+     "notes": "c77e4cd8c474",
+     "notes.form": "7f2744aec571",
+     "notes.list": "f20d060ee953",
+     "page.changes": "24c0dd294dca",
+     "page.header": "09dad5c44fc3",
+     "page.lead": "897de66fb771",
+     "page.script.adp": "123f90ee8d73",
+     "page.script.content": "7bd345227873",
+     "page.script.kit.gate": "3d495c435c71",
+     "page.shell": "2dc10cf397f0",
+     "page.style": "221057d68594",
+     "page.style.crew": "cff735648463",
+     "page.style.kit.gate": "35e632f9666a",
+     "page.style.tides": "e8bafa4f627f",
+     "page.tabs": "cfa8d7969176",
+     "tides": "19884e125ef3",
+     "tides.chart": "e20103680062",
+     "tides.table": "f0b9a4b9841f"
+    },
+    "files": {
+     "adp.js": "edf7ed4e938b",
+     "content.js": "9ec2caf6e387",
+     "index.html": "c198128da248",
+     "data/stations.json": "96764290b2ca",
+     "img/harbour.png": "b3604b161507",
+     "kit/gate.css": "b57aeb124efa",
+     "kit/gate.js": "d59d184e79f8",
+     "parts/crew.js": "ff2f78bbcd46",
+     "parts/notes.js": "3bd143199159",
+     "parts/tides.js": "3b6f6762e6b7",
+     "styles/page.css": "2ad308df44fb"
+    }
+   }
+  },
+  "selected": "parts/tides.js",
+  "since": "v5"
+ },
+ "margin-notes": {
+  "note": "Invented: the house rules of a repair cafe, drafted as numbered clauses.",
+  "words": {
+   "done": "Settled",
+   "waiting": "Awaiting you",
+   "running": "In drafting",
+   "review": "Read, not yet accepted",
+   "queued": "Not started"
+  },
+  "sections": [
+   {
+    "id": "doors",
+    "title": "Doors and sign-in",
+    "intro": "How people arrive, wait and are looked after.",
+    "clauses": [
+     {
+      "id": "d1",
+      "title": "Doors open at six",
+      "text": "The hall is opened by the lead repairer at six and visitors may enter from then. No item is accepted after eight forty.",
+      "state": "done",
+      "owner": "Priya",
+      "answer": {
+       "label": "Option a",
+       "text": "Six, as in the old hall.",
+       "at": "2 Oct"
+      },
+      "ack": {
+       "by": "Claude",
+       "at": "3 Oct"
+      }
+     },
+     {
+      "id": "d2",
+      "title": "One item each on a full night",
+      "text": "When more than twelve people are waiting, each visitor may bring one item to the bench until the queue clears.",
+      "state": "waiting",
+      "owner": "Marcus"
+     }
+    ]
+   },
+   {
+    "id": "bench",
+    "title": "At the bench",
+    "intro": "What repairers do and do not do.",
+    "clauses": [
+     {
+      "id": "b1",
+      "title": "Show, do not take over",
+      "text": "A repairer explains each step and lets the owner hold the tool wherever it is safe to do so.",
+      "state": "done",
+      "owner": "Odile",
+      "answer": {
+       "label": "Agreed",
+       "text": "This is the point of the night.",
+       "at": "2 Oct"
+      },
+      "ack": {
+       "by": "Claude",
+       "at": "3 Oct"
+      },
+      "history": [
+       {
+        "at": "28 Sep",
+        "text": "Draft said repairers should finish the job; changed after the first meeting."
+       },
+       {
+        "at": "2 Oct",
+        "text": "Wording about holding the tool added."
+       }
+      ]
+     },
+     {
+      "id": "b2",
+      "title": "Mains items are tested before they leave",
+      "text": "Any lamp or appliance that was opened is tested at the electrical bench, and the result is written in the log.",
+      "state": "review",
+      "owner": "Ravi",
+      "answer": {
+       "label": "Option b",
+       "text": "Two people sign the log line.",
+       "at": "5 Oct"
+      }
+     },
+     {
+      "id": "b3",
+      "title": "No repairs on gas or medical equipment",
+      "text": "Gas appliances, heaters with a pilot light and anything used for care are turned away with a kind word and a suggestion of who to ask.",
+      "state": "queued",
+      "owner": "Priya"
+     }
+    ]
+   },
+   {
+    "id": "close",
+    "title": "Closing",
+    "intro": "Leaving the hall as we found it.",
+    "clauses": [
+     {
+      "id": "c1",
+      "title": "The log is counted before the lights go off",
+      "text": "Items looked at, fixed and not fixed are added up by the door counter and written on the whiteboard photo.",
+      "state": "running",
+      "owner": "Lena",
+      "history": [
+       {
+        "at": "5 Oct",
+        "text": "Door counter added to the kit list."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "stack": {
+  "note": "Invented: the plan for a repair-cafe season, four stacked sections. The third is taller than the screen.",
+  "sections": [
+   {
+    "id": "why",
+    "eyebrow": "The idea",
+    "title": "Fix it together, first Saturday of the month",
+    "text": [
+     "People bring a broken lamp, a flat bike, a coat with a split seam. Someone who knows how sits with them and shows how to fix it.",
+     "Nothing is mended for them while they watch the clock. That is the whole idea, and it is why the evening works."
+    ]
+   },
+   {
+    "id": "people",
+    "eyebrow": "Who comes",
+    "title": "Six repairers and a desk",
+    "text": [
+     "Two for bikes, two for lamps and small electrics, one for sewing and one on the door.",
+     "Each repairer brings their own tools. The co-op supplies the benches, the light and the tea."
+    ]
+   },
+   {
+    "id": "kit",
+    "eyebrow": "What we need",
+    "title": "The long list, bench by bench",
+    "text": [
+     "Everything below has an owner by the end of the month. This section is taller than the screen on purpose: it sticks when its bottom meets the bottom of the screen, so all of it can be read before the next one covers it."
+    ],
+    "list": [
+     {
+      "name": "Floor tape",
+      "text": "Marks where visitors wait so the benches stay clear."
+     },
+     {
+      "name": "Parts bins",
+      "text": "Sorted by size: screws, washers, fuses, bulbs, plugs."
+     },
+     {
+      "name": "Lamp tester",
+      "text": "One mains tester at the electrical bench, checked every night."
+     },
+     {
+      "name": "Bike stand",
+      "text": "Two stands, one for kids' bikes."
+     },
+     {
+      "name": "Tea urn",
+      "text": "Borrowed from the church hall; return it washed."
+     },
+     {
+      "name": "Repair log",
+      "text": "One sheet per item: what, who, fixed or not."
+     },
+     {
+      "name": "Sign-in desk",
+      "text": "A table by the door with a pen on a string."
+     },
+     {
+      "name": "First-aid kit",
+      "text": "Checked before each night, restocked from the petty cash."
+     },
+     {
+      "name": "Spare fuses",
+      "text": "3 A, 5 A and 13 A, in a labelled tin."
+     },
+     {
+      "name": "Soldering mat",
+      "text": "Heat-proof, kept on the electrical bench only."
+     },
+     {
+      "name": "Needle tin",
+      "text": "Sewing needles counted in and out."
+     },
+     {
+      "name": "Glue shelf",
+      "text": "Contact glue stays on the top shelf, away from the tea."
+     },
+     {
+      "name": "Extension leads",
+      "text": "Six, tagged with the date they were last tested."
+     },
+     {
+      "name": "Cable ties",
+      "text": "A jar of black and a jar of white."
+     },
+     {
+      "name": "Torches",
+      "text": "Two, for looking inside things."
+     },
+     {
+      "name": "Waste box",
+      "text": "Beyond repair goes to the recycling run on Sunday."
+     },
+     {
+      "name": "Raffle jar",
+      "text": "Coins for the parts fund; empty it on the way out."
+     },
+     {
+      "name": "Coat rack",
+      "text": "Visitors' coats go here, not on the benches."
+     },
+     {
+      "name": "Magnifier lamp",
+      "text": "Shared between sewing and electrics."
+     },
+     {
+      "name": "Whiteboard",
+      "text": "Tonight's repairers and what they can fix."
+     },
+     {
+      "name": "Photo release",
+      "text": "Ask before photographing anyone's repair."
+     },
+     {
+      "name": "Quiet corner",
+      "text": "For people waiting on a long repair."
+     },
+     {
+      "name": "Door counter",
+      "text": "A click counter for the evening's visitors."
+     },
+     {
+      "name": "Lost property",
+      "text": "A box. Anything left is kept for a month."
+     }
+    ]
+   },
+   {
+    "id": "open",
+    "eyebrow": "The night",
+    "title": "Doors at six, last repair at nine",
+    "text": [
+     "Visitors sign in, wait for a free bench and leave with their item mended or with a plain answer about why it cannot be.",
+     "At nine the benches are wiped, the log is counted and the tea urn goes back to the church hall."
+    ]
+   }
+  ]
+ },
+ "topbar": {
+  "note": "Invented.",
+  "brand": {
+   "name": "Studio handbook",
+   "sub": "Porcelain, cone 6, electric kiln"
+  },
+  "links": [
+   {
+    "href": "#tb-open",
+    "label": "Opening"
+   },
+   {
+    "href": "#tb-mix",
+    "label": "Glazes"
+   },
+   {
+    "href": "#tb-load",
+    "label": "Loading"
+   },
+   {
+    "href": "#tb-fire",
+    "label": "Firing"
+   },
+   {
+    "href": "#tb-log",
+    "label": "Firing log"
+   }
+  ],
+  "sections": [
+   {
+    "id": "tb-open",
+    "title": "Opening the studio",
+    "body": [
+     "Switch the vent fan on before anything else, then check the kiln room is above 10 °C: cold shelves crack.",
+     "Read yesterday's firing log and note any cone that bent short."
+    ]
+   },
+   {
+    "id": "tb-mix",
+    "title": "Mixing glazes",
+    "body": [
+     "Weigh dry materials to the gram, add water to a cream consistency and sieve twice.",
+     "Label every bucket with the recipe, the date and your initials."
+    ]
+   },
+   {
+    "id": "tb-load",
+    "title": "Loading the kiln",
+    "body": [
+     "Wipe glaze off every foot. Leave a finger's width between pots and keep the cone pack visible from the spy hole.",
+     "Load heavy pieces low and the thin porcelain on the top shelf."
+    ]
+   },
+   {
+    "id": "tb-fire",
+    "title": "Firing and cooling",
+    "body": [
+     "Fire on the medium-speed schedule to cone 6 with a ten-minute hold, then let it cool closed.",
+     "Open below 100 °C. Crackle in a celadon keeps forming for days; that is the glaze, not a fault."
+    ]
+   },
+   {
+    "id": "tb-log",
+    "title": "Firing log",
+    "body": [
+     "One line per firing: date, schedule, cone result and what came out wrong.",
+     "Keep it next to the kiln, not on a phone."
+    ]
+   }
+  ]
+ },
+ "viewer3d": {
+  "note": "Invented: a printed case for a small circuit board.",
+  "title": "Sensor case",
+  "text": "A box with a lid for a 70 by 50 mm board. Change a wall or a size and the case is rebuilt and measured again.",
+  "params": [
+   {
+    "id": "width",
+    "label": "Outside width",
+    "value": 90,
+    "min": 60,
+    "max": 140,
+    "step": 1,
+    "unit": "mm"
+   },
+   {
+    "id": "depth",
+    "label": "Outside depth",
+    "value": 68,
+    "min": 50,
+    "max": 120,
+    "step": 1,
+    "unit": "mm"
+   },
+   {
+    "id": "height",
+    "label": "Outside height",
+    "value": 34,
+    "min": 20,
+    "max": 80,
+    "step": 1,
+    "unit": "mm"
+   },
+   {
+    "id": "wall",
+    "label": "Wall thickness",
+    "value": 2.4,
+    "min": 0.4,
+    "max": 6,
+    "step": 0.2,
+    "unit": "mm"
+   }
+  ],
+  "view": [
+   {
+    "id": "explode",
+    "label": "Explode",
+    "type": "range",
+    "value": 0,
+    "min": 0,
+    "max": 1,
+    "step": 0.01
+   },
+   {
+    "id": "lid",
+    "label": "Lid",
+    "type": "check",
+    "value": true
+   },
+   {
+    "id": "board",
+    "label": "Board",
+    "type": "check",
+    "value": true
+   }
+  ],
+  "fixed": [
+   [
+    "Board",
+    "70 × 50 × 1.6 mm"
+   ],
+   [
+    "Tallest part",
+    "12 mm above board"
+   ],
+   [
+    "Print minimum wall",
+    "2.0 mm"
+   ],
+   [
+    "Fit clearance",
+    "1 mm a side"
+   ]
+  ],
+  "legend": [
+   {
+    "label": "printed case",
+    "token": "--accent"
+   },
+   {
+    "label": "board",
+    "token": "--ok"
+   },
+   {
+    "label": "lid",
+    "token": "--ink-2"
+   }
+  ]
+ }
+}

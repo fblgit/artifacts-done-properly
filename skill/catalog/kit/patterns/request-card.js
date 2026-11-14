@@ -33,7 +33,7 @@
  * @summary   One request to Claude as its sender follows it: kind, block, a four-station track from queued to done, the conversation with Claude's answer, progress lines, the blocks it changed, and a reply box.
  * @tags      request, task, claude, progress, track, thread, reply, conversation, assist, status
  * @requires  kit.tokens, kit.vocab, kit.keep-state, kit.dom
- * @files     kit/patterns/request-card.css, kit/samples/request-card.json
+ * @files     kit/patterns/request-card.css, kit/samples/patterns.json
  * @provides  Kit.requestCard.mount, Kit.requestCard.state, Kit.requestCard.steps, Kit.requestCard.vocab
  * @related   pattern.assist, pattern.assist-panel, pattern.answer-queue, pattern.questions
  * @optional  pattern.assist, kit.md
@@ -43,7 +43,7 @@
  * @globals   none
  * @db        note none directly; with an engine, the engine reads requests/<rid> and its turns and writes the reply
  * @source    Catalog batch 16, 2026-10-26 | a drafting board's request card | the lane eyebrow, the state pill, the four-segment track, the thread, the progress log, the changed chips, the reply box
- * @preview   {"render": "pattern.request-card", "samples": ["kit/samples/request-card.json"]}
+ * @preview   {"render": "pattern.request-card", "samples": ["kit/samples/patterns.json#request-card"]}
  * @changed   The track is one seam with a word under every station; the source coloured four segments.
  */
 (function () {

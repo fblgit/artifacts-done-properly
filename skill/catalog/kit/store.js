@@ -22,7 +22,7 @@
  * @summary   Board state in one object with a subscribe hook, and a queued write layer over the db capability: put, update, delete, optimistic local patches, retries, the connect sequence.
  * @tags      state, store, db, data layer, writes, optimistic, connect, capabilities, localstorage, util
  * @requires  none
- * @files     kit/samples/store.json
+ * @files     kit/samples/kit.json
  * @provides  Kit.util, Kit.store.create, Kit.db.create
  * @config    Kit.store.create({lsPrefix, state}) | lsPrefix names the localStorage keys; state is the board’s initial state object
  * @config    Kit.db.create({store, toast, pathTemplate, scopeSlot, words, caps}) | pathTemplate "s/{scope}/{name}" says where a collection lives; caps are the capabilities besides db and user
@@ -32,7 +32,7 @@
  * @db        note Reads and writes whatever collections the board names, at pathTemplate; it has none of its own.
  * @source    Journey Whiteboard | app.js | store, data layer, utils
  * @source    ADR Drafting Table | core.js, data.js | the same shapes with another path
- * @preview   {"render": "kit.store", "samples": ["kit/samples/store.json"]}
+ * @preview   {"render": "kit.store", "samples": ["kit/samples/kit.json#store"]}
  */
 (function () {
 'use strict';

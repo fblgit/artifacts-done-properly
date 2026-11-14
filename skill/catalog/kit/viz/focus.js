@@ -21,7 +21,7 @@
  * @summary   The side pane for one node of a tree: what it hangs under, the record itself, and what hangs under it, grouped by kind.
  * @tags      inspector, detail, side pane, preview, focus, record card
  * @requires  viz.core
- * @files     none
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.Focus, Kit.viz.MiniCard
  * @config    id | the focused node id
  * @config    nodes | the same list the Tree takes
@@ -32,7 +32,7 @@
  * @globals   htm-preact
  * @db        none
  * @source    Journey Whiteboard | app.js | MovePreview, MiniCard
- * @preview   {"render": "viz.focus", "samples": ["kit/samples/viz-tree.json"]}
+ * @preview   {"render": "viz.focus", "samples": ["kit/samples/viz.json#viz-tree"]}
  * @changed   Board actions (open panel, propose a move, alternatives) moved out; the board passes them in as extra.
  */
 (function () {

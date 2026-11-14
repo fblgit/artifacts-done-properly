@@ -29,7 +29,7 @@
  * @summary   A page view that says whether an artifact's live files, its database records and its holds agree: a verdict with a Run button, then files, changes, holds and the self-check on one seam.
  * @tags      integrity, manifest, hash, files, holds, changes, self-check, verdict, audit
  * @requires  kit.tokens, kit.vocab, kit.dom
- * @files     kit/patterns/integrity.css, kit/samples/integrity.json
+ * @files     kit/patterns/integrity.css, kit/samples/patterns.json
  * @provides  Kit.integrity.mount
  * @config    Kit.integrity.mount(root, opts) | manifest (the manifest/current doc), parts (parts docs, array or map), changes (changes docs), checks (checks/latest), config (config/current), files {path: live sha256} optional, now ISO string, fetchFile(path) => Promise of the live text, onVerdict(key, counts); returns {update, run, destroy}
  * @config    fetchFile | optional: without it the Files section shows recorded hashes only and there is no Run button
@@ -37,7 +37,7 @@
  * @globals   none
  * @db        reads manifest/current; changes; parts; checks/latest; config/current / note The board reads these docs and passes them in as plain objects; the pattern never touches the db.
  * @source    Catalog batch 14, 2026-10-26 | the manifest and self-check documents of the reference build | recorded file hashes, last change against manifest version, holds with expiry, the checks/latest fields
- * @preview   {"render": "pattern.integrity", "samples": ["kit/samples/integrity.json"]}
+ * @preview   {"render": "pattern.integrity", "samples": ["kit/samples/patterns.json#integrity"]}
  */
 (function () {
 'use strict';

@@ -28,7 +28,7 @@
  * @summary   An upgrade of kit.chrome: a dialog for one record with a crown in its state colour, a tinted header (crumbs, id, close, title, tags), underline tabs and a two-column answer tab from 900px.
  * @tags      dialog, modal, tabs, record, crown, header, crumbs, detail, answer
  * @requires  kit.tokens, kit.tabs, kit.vocab
- * @files     kit/record-dialog.css, kit/samples/record-dialog.json
+ * @files     kit/record-dialog.css, kit/samples/kit.json
  * @provides  Kit.recordDialog.open
  * @extends   kit.chrome
  * @config    Kit.recordDialog.open(opts) | title, id, crumbs [{label, onClick}], tags [{label, tone}], tone, tabs [{id, label, count, render(panel) | node}], selected, actions, label, host, opener, onClose, onTab; returns {close, select, panel, setTone, isOpen, el}
@@ -37,7 +37,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's modal and tabs | an accent crown, a tinted header with crumbs, id and close, underline tabs, a body that scrolls
- * @preview   {"render": "kit.record-dialog", "samples": ["kit/samples/record-dialog.json"], "uses": ["kit.vocab"]}
+ * @preview   {"render": "kit.record-dialog", "samples": ["kit/samples/kit.json#record-dialog"], "uses": ["kit.vocab"]}
  * @changed   Extends kit.chrome as new files; chrome.js and chrome.css are unchanged.
  */
 (function () {

@@ -29,12 +29,12 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.1
- * @updated   2026-11-13
+ * @version   0.1.2
+ * @updated   2026-11-15
  * @summary   Try any catalog entry live on a page: pick it, edit its sample, switch the stage's theme, mode and width.
  * @tags      playground, try, preview, sample, theme, width, workbench, catalog, tools
  * @requires  kit.tokens, kit.dom
- * @files     kit/patterns/playground.css, kit/samples/playground.json
+ * @files     kit/patterns/playground.css, kit/samples/patterns.json
  * @provides  Kit.playground.mount
  * @config    Kit.playground.mount(root, opts) | catalog [entries] or {entries}, base url prefix (default ''), themes [{id, name, css}] with css relative to base, entry opened first, load(url, kind) optional loader, enabled, label; returns {open, update, destroy}
  * @config    catalog | the entries list the picker shows; each needs id, name, kind, files, requires, provides, preview.samples
@@ -45,8 +45,8 @@
  * @db        reads config/current, through ADP.config.get('playground.enabled'), only when the runtime exists
  * @source    Catalog batch 14, 2026-10-26 | the kit workbench template (parts/bench.js) | theme, mode and width on a stage, the sample fetch
  * @source    Catalog batch 14, 2026-10-26 | the catalog page's entry loader | requires first, styles then scripts, cached by path
- * @preview   {"render": "pattern.playground", "samples": ["kit/samples/playground.json"]}
- * @changed   The stage links the theme json's fonts url, and the sample names the real drafting-table and whiteboard theme files.
+ * @preview   {"render": "pattern.playground", "samples": ["kit/samples/patterns.json#playground"]}
+ * @changed   An entry's sample may be path#key, one sample out of a bundle file; the sample path above the editor shows it as written.
  */
 (function () {
 'use strict';
@@ -187,7 +187,8 @@ function mount(root, opts) {
       for (const x of chain) for (const f of x.files || []) if (f.role === 'script' && /\.js$/.test(f.path)) await get(url(f.path), 'script');
       if (!(id in samples)) {
         const sp = e.preview && e.preview.samples && e.preview.samples[0] || (e.files || []).filter(f => f.role === 'sample').map(f => f.path)[0];
-        try { samples[id] = sp ? await get(url(sp), 'json') : null; } catch (_) { samples[id] = null; }
+        // a sample is a path, or path#key: one sample out of a bundle file (fetched once)
+        try { const at = sp ? sp.indexOf('#') : -1, j = sp ? await get(url(at < 0 ? sp : sp.slice(0, at)), 'json') : null; samples[id] = at < 0 || j == null ? j : j[sp.slice(at + 1)]; } catch (_) { samples[id] = null; }
         samplePath[id] = sp || '';
       }
       src.textContent = samplePath[id] || 'no sample';

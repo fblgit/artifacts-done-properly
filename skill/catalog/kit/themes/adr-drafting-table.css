@@ -15,7 +15,7 @@
  * @summary   Vellum by day, cutting mat by night; brass for the hand on the controls. The palette the owner approved, unchanged.
  * @tags      palette, tokens, colours, dark mode, brass, vellum, adr
  * @requires  none
- * @files     kit/themes/adr-drafting-table.json
+ * @files     kit/themes/adr-drafting-table.json, kit/samples/viz.json
  * @provides  none
  * @config    fonts | Archivo, Public Sans, Kalam and IBM Plex Mono from Google Fonts (the link is in the file's header and in the json)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss, the aliases and the type scale
@@ -24,7 +24,7 @@
  * @fonts     https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Kalam:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  * @db        none
  * @source    ADR Drafting Table | styles/tokens.css | part page.style.tokens, adp/2 build adp2-1
- * @preview   {"render": "theme", "samples": ["kit/themes/adr-drafting-table.json", "kit/samples/viz-chips.json", "kit/samples/viz-stepper.json", "kit/samples/viz-matrix.json"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
+ * @preview   {"render": "theme", "samples": ["kit/themes/adr-drafting-table.json", "kit/samples/viz.json#viz-chips", "kit/samples/viz.json#viz-stepper", "kit/samples/viz.json#viz-matrix"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
  * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
  */
 /* Layout: a drafting table in panes. Top bar (dashboard breadcrumb and record switcher, the Refresher Bar, Claude Code and PING), the shell (records pane · one page at a time · glance or Claude pane), and the Product-Designer Bar pinned under it. Vellum by day, cutting mat by night; brass for the hand on the controls. */

@@ -27,7 +27,7 @@
  * @summary   Machines as glazed pebbles joined by gold seams; a seam flows while its link is up, breaks with a badge when it is down and shows a ring while connecting; a wide layout and a phone layout.
  * @tags      map, network, nodes, links, pebbles, estate, replication, ring, status
  * @requires  kit.vocab, kit.glaze-surfaces, theme.glaze-depth
- * @files     kit/viz/pebble-map.css, kit/samples/pebble-map.json
+ * @files     kit/viz/pebble-map.css, kit/samples/viz.json
  * @provides  Kit.pebbleMap.mount, Kit.pebbleMap.mid, Kit.pebbleMap.states
  * @config    Kit.pebbleMap.mount(box, {layout, nodes, hub, holders, source, compact, compactBelow, flow, caption, onPick}) | nodes [{id, label, sub, state, glyph, href, link: {state, words}}]; layout estate | fan | ring; the seam that ends at a node carries that node's link
  * @config    states | values of the Kit.vocab enums 'node' (healthy, look, down, checking, waiting, standby, primary) and 'link' (up, cut, connecting, idle); defined here unless the board defines its own
@@ -37,7 +37,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's overview page | the estate map: pebbles, the wide and tall layouts, the seam that carries each node's tunnel
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's services page | the primary and standby pebbles and the ring of peers
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheets | the link, halo, ring and badge, the flowing beads, the cut seam and the connecting ring
- * @preview   {"render": "viz.pebble-map", "samples": ["kit/samples/pebble-map.json"]}
+ * @preview   {"render": "viz.pebble-map", "samples": ["kit/samples/viz.json#pebble-map"]}
  * @changed   Positions are computed from the node count; the node and link states are vocab tables; the words of every seam are also a caption line.
  */
 (function () {

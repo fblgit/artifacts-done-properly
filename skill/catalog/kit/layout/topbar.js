@@ -31,7 +31,7 @@
  * @summary   A sticky header with brand, section links that mark the one in view, and a three-state theme button; clears the phone's safe-area band.
  * @tags      layout, header, top bar, navigation, theme, toggle, dark mode, light mode, sticky, safe area
  * @requires  none
- * @files     kit/layout/topbar.css, kit/samples/topbar.json
+ * @files     kit/layout/topbar.css, kit/samples/layout.json
  * @provides  Kit.theme.create, Kit.topbar.mount
  * @config    Kit.topbar.mount(header, opts) | brand {name, sub, href}, links [{href, label}], theme (Kit.theme options or false), spy, scroller, heightOn
  * @config    Kit.theme.create(opts) | target (default the root element), storageKey (default none), modes, onChange(mode, resolved)
@@ -40,7 +40,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | sticky headers with a brand, a mono section nav and a theme button, and two theme-toggle scripts
- * @preview   {"render": "layout.topbar", "samples": ["kit/samples/topbar.json"]}
+ * @preview   {"render": "layout.topbar", "samples": ["kit/samples/layout.json#topbar"]}
  * @changed   Three states instead of two, so a viewer can go back to following the OS.
  */
 (function () {

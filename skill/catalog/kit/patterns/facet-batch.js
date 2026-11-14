@@ -37,7 +37,7 @@
  * @summary   Count chips whose counts say what pressing them gives, digit keys that switch the filter, a group-by and sort bar, selectable rows and a bar that acts on the selection.
  * @tags      facets, filter, counts, batch, selection, group by, sort, keyboard, upgrade
  * @requires  pattern.count-filters, viz.seal, kit.vocab, kit.glaze-surfaces
- * @files     kit/patterns/facet-batch.css, kit/samples/facet-batch.json
+ * @files     kit/patterns/facet-batch.css, kit/samples/patterns.json
  * @provides  Kit.facetBatch.mount, Kit.facetBatch.matches, Kit.facetBatch.grouped
  * @extends   pattern.count-filters
  * @config    Kit.facetBatch.mount(root, {records, facets, search, groups, group, sorts, sort, row, actions, stateEnum, digitKeys, onAction}) | facets [{key, label, field, tiles, allLabel, options: [{value, label, tone, lte, gte, test}]}]; groups [{key, label, field | by, bands, order, none}]; sorts [{key, label, field, dir | cmp}]
@@ -48,7 +48,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s inventory page | chips with live counts that skip their own group, group-by with ordered bands, sort, selectable rows with a batch bar, the show-only bar, the search box that keeps its caret
  * @source    Catalog harvest, 2026-10-25 | an earlier board’s console skin | the digit keys with keycap chips
- * @preview   {"render": "pattern.facet-batch", "samples": ["kit/samples/facet-batch.json"]}
+ * @preview   {"render": "pattern.facet-batch", "samples": ["kit/samples/patterns.json#facet-batch"]}
  * @changed   Facets, groups and sorts are data, and the filter and the grouping are pure, exported functions.
  */
 (function () {

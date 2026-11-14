@@ -21,7 +21,7 @@
  * @summary   The look every ADP page starts with, stated in full: cool greys, a carmine accent, Bricolage Grotesque over Atkinson Hyperlegible Next, the canvas pens, and the templates' own text size and edges.
  * @tags      palette, tokens, colours, dark mode, default, starting look, carmine, grey, bricolage, convention
  * @requires  none
- * @files     kit/themes/default.json
+ * @files     kit/themes/default.json, kit/samples/viz.json
  * @provides  none
  * @config    fonts | Bricolage Grotesque, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
@@ -31,7 +31,7 @@
  * @db        none
  * @source    ADP starter template | styles/page.css | the :root, prefers-color-scheme and [data-theme] blocks
  * @source    ADP assistant template | styles/canvas.css | the pens, stickies, --canvas, --dot and --f-hand of the Canvas view
- * @preview   {"render": "theme", "samples": ["kit/themes/default.json", "kit/samples/viz-chips.json", "kit/samples/viz-stepper.json", "kit/samples/viz-matrix.json"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
+ * @preview   {"render": "theme", "samples": ["kit/themes/default.json", "kit/samples/viz.json#viz-chips", "kit/samples/viz.json#viz-stepper", "kit/samples/viz.json#viz-matrix"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
  * @changed   Stated in full, from the templates' own code: the canvas pens and stickies, --canvas, --dot and --f-hand, the meanings (--warn, --info, --wait) with a -soft tint each, --seam, --gold-leaf, --focus, the six --k-* kinds, and the feel page.css falls back to (--outline, --edge-w, --text-size, --leading, --head-case, no ground texture). It is the reference for the shared convention: every theme sets each name it sets.
  */
 /* Layout: none; a palette, type and a feel for any page. */

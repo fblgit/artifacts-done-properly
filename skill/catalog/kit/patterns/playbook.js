@@ -26,7 +26,7 @@
  * @summary   Tabs of playbooks, each a numbered list of copyable commands; and a pipeline stepper whose open stage shows its detail.
  * @tags      playbook, runbook, tabs, commands, copy, pipeline, stepper, procedure
  * @requires  kit.tabs, kit.copy, pattern.steps
- * @files     kit/patterns/playbook.css, kit/samples/playbook.json
+ * @files     kit/patterns/playbook.css, kit/samples/patterns.json
  * @provides  Kit.playbook.render, Kit.playbook.pipeline
  * @config    Kit.playbook.render(box, opts) | playbooks [{id, title, count, steps: [{title, body, cmd, label}]}], label, hash (default false), initial
  * @config    Kit.playbook.pipeline(box, opts) | steps [{id, title, sub, kind: gate|risk, heading, body, bullets}], label, hash, initial
@@ -34,7 +34,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | playbook tabs with a numbered, copyable command per step, and a pipeline stepper with a tab panel
- * @preview   {"render": "pattern.playbook", "samples": ["kit/samples/playbook.json"]}
+ * @preview   {"render": "pattern.playbook", "samples": ["kit/samples/patterns.json#playbook"]}
  * @changed   Built on Kit.tabs and Kit.copy instead of its own handlers, so the keyboard, the roving tabindex and the clipboard fallback are the kit's.
  */
 (function () {

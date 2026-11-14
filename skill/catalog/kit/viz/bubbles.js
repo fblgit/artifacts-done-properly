@@ -29,7 +29,7 @@
  * @summary   The same records drawn as clusters of packed bubbles in a seam ring, or as strips on a square-root time axis that keeps overlapping items apart, with a lens line for the one in focus.
  * @tags      bubbles, clusters, lanes, scale, square root, sunflower, lens, records, inventory
  * @requires  viz.seal, kit.vocab, kit.tooltip
- * @files     kit/viz/bubbles.css, kit/samples/bubbles.json
+ * @files     kit/viz/bubbles.css, kit/samples/viz.json
  * @provides  Kit.bubbles.mount, Kit.bubbles.packing
  * @config    Kit.bubbles.mount(box, {records, groups, layout, scale, filter, lens, onPick, onAction, orbits}) | records [{id, group, value, state, glyph, label, sub, ring}], groups [{key, label}], scale {name, f, ticks, max, nowLabel}; layout clusters | lanes (| orbits with orbits: true)
  * @config    handle | {setLayout(name), setFilter(fn), select(id), update(patch), destroy()}
@@ -38,7 +38,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | the bubble mark, the cluster, lane and orbit pictures and the lens line
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the pool, seam ring, halo and gloss
- * @preview   {"render": "viz.bubbles", "samples": ["kit/samples/bubbles.json"]}
+ * @preview   {"render": "viz.bubbles", "samples": ["kit/samples/viz.json#bubbles"]}
  * @changed   Groups, state words, the scale and its ticks are config; the axis names its scale and places its ticks with the same function as the bubbles.
  */
 (function () {

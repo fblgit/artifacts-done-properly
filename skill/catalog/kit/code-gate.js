@@ -23,7 +23,7 @@
  * @summary   A short-lived code in large type with a draining ring and the seconds left in words. The default code is a demonstration, not a secret.
  * @tags      code, one-time, countdown, ring, timer, activation, gate, rotating
  * @requires  none
- * @files     kit/code-gate.css, kit/samples/code-gate.json
+ * @files     kit/code-gate.css, kit/samples/kit.json
  * @provides  Kit.codeGate.mount, Kit.codeGate.demoCode
  * @config    Kit.codeGate.mount(el, {period, digits, group, code, label, note, onRotate}) | code(step) -> string | Promise<string>; step is floor(unix seconds / period); default is the stand-in Kit.codeGate.demoCode
  * @config    words | label, note, left(n), loading, failed
@@ -31,7 +31,7 @@
  * @globals   none
  * @db        note None. A real code function calls the board's own service; that call and any capability it needs belong to the board.
  * @source    Catalog harvest, 2026-10-25 | a security proposal's index.html | the activation-code card: six digits, a 30 second ring, seconds left
- * @preview   {"render": "kit.code-gate", "samples": ["kit/samples/code-gate.json"]}
+ * @preview   {"render": "kit.code-gate", "samples": ["kit/samples/kit.json#code-gate"]}
  * @changed   Kept after review: it is a general countdown card for any time-boxed code. The source's code was a hash of a fixed phrase, so the generator is now a named stand-in and the real code is a function the board supplies.
  */
 (function () {

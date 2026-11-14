@@ -32,7 +32,7 @@
  * @summary   A text box that runs detectors live and lists hits; a probe table that runs async checks with timeouts and timings.
  * @tags      sandbox, detector, test, probe, table, timeout, entropy, live, check
  * @requires  none
- * @files     kit/patterns/sandbox.css, kit/samples/sandbox.json
+ * @files     kit/patterns/sandbox.css, kit/samples/patterns.json
  * @provides  Kit.sandbox.detect, Kit.sandbox.probe, Kit.sandbox.regexDetector, Kit.sandbox.entropy
  * @config    Kit.sandbox.detect(root, {detectors, examples, text, label, note, maxMatch, onRun}) | detectors [{id, label, test(text) -> null | {match, note}}]
  * @config    Kit.sandbox.probe(root, {probes, timeout, autorun, onDone}) | probes [{id, what, target, run(target) -> Promise<string>}]; onDone(results) with {id: {status, detail, ms}}
@@ -42,7 +42,7 @@
  * @db        note None of its own. A probe page that reports to Claude writes onDone(results) to its own db collection (for example runs), which needs the db capability.
  * @source    Catalog harvest, 2026-10-25 | a share-readiness sheet's index.html | the live detector box: paste a line, see which rules fire, with entropy for the generic key rule
  * @source    Catalog harvest, 2026-10-25 | a network probe page's index.html | the probe table: parallel tests, a timeout, results with detail
- * @preview   {"render": "pattern.sandbox", "samples": ["kit/samples/sandbox.json"]}
+ * @preview   {"render": "pattern.sandbox", "samples": ["kit/samples/patterns.json#sandbox"]}
  * @changed   Kept after review: two sources of the same shape (named checks, a state, a detail), so one component serves both.
  */
 (function () {

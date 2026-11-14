@@ -22,7 +22,7 @@
  * @summary   Two versions of an ADP artifact side by side: a version line, a tally, the parts added, removed and changed between them, who changed each and when, a line diff of the text, and the data changes in between.
  * @tags      versions, diff, changes, manifest, parts, hash, history, adp
  * @requires  kit.tokens, kit.dom
- * @files     kit/viz/version-compare.css, kit/samples/version-compare.json
+ * @files     kit/viz/version-compare.css, kit/samples/viz.json
  * @provides  Kit.versionCompare.mount
  * @config    Kit.versionCompare.mount(root, opts) | changes [changes/<nnnnnn> docs: {version, at, by, summary, parts [{id, from, to}], data}], manifests {version: manifest}, content {version: {partId: html}}, from, to, onPart(id), label, timeZone, words; returns {set, update, destroy}
  * @config    update(data) | any of {changes, manifests, content}; the choice of versions is kept when it still exists
@@ -30,7 +30,7 @@
  * @globals   none
  * @db        reads changes; manifest/current; content / note The board reads the docs and passes them in; the component never opens the db.
  * @source    Catalog batch 14, 2026-10-26 | adp.py diff and the changes/ docs of SKILL.md section 3 | added, removed and changed parts from two manifests; folding the change docs between two versions
- * @preview   {"render": "viz.version-compare", "samples": ["kit/samples/version-compare.json"]}
+ * @preview   {"render": "viz.version-compare", "samples": ["kit/samples/viz.json#version-compare"]}
  */
 (function () {
 'use strict';

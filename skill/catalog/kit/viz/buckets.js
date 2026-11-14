@@ -23,7 +23,7 @@
  * @summary   Cards sorted into ordered buckets (MoSCoW, now/next/later): drag with a drop line, or use each card's Move to menu.
  * @tags      kanban, moscow, buckets, columns, drag and drop, priority, board
  * @requires  viz.core
- * @files     kit/samples/viz-buckets.json
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.Buckets
  * @config    buckets | [{id, label, hint, tone}]
  * @config    cards | [{id, bucket, order, label, code, kind, status, chips, value}]
@@ -34,7 +34,7 @@
  * @globals   htm-preact
  * @db        note The board writes the bucket and order fields (Journey Whiteboard: items/<id>.moscow and .order).
  * @source    Journey Whiteboard | app.js | BUCKETS, MoscowView, moveBucket
- * @preview   {"render": "viz.buckets", "samples": ["kit/samples/viz-buckets.json"]}
+ * @preview   {"render": "viz.buckets", "samples": ["kit/samples/viz.json#viz-buckets"]}
  * @changed   Buckets, kinds and the summed field come from config; the background estimate stays board code (call it from onMove).
  */
 (function () {

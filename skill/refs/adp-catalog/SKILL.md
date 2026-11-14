@@ -35,8 +35,8 @@ The catalog is a published artifact whose files are kit entries, listed in its `
 
 - Templates and files an artifact does not serve are kept with a `.txt` suffix; HTML cannot be copied server-side. Read such a file and write it to your project without the `.txt`.
 - Never copy a kit file by retyping it; take it.
-- UNVERIFIED: no sha256 check command exists in `adp.py`; `tools/check_catalog.py` in the repo verifies sizes and hashes of the local catalog build only.
+- UNVERIFIED: no sha256 check command exists in `adp.py`; `scripts/adp_catalog.py` (next to `adp.py`; run `python3 -I <adp skill folder>/scripts/adp_catalog.py [catalog dir]`) verifies sizes and hashes of the local catalog build only, and also checks the headers.
 
 ## Add or update entries
 
-No `adp.py` command adds an entry. An entry is files under `catalog/kit/` plus its record in `catalog.json` (id, kind, name, summary, about, tags, files, requires, provides; a theme also `fonts`, the url in its json); `python3 tools/check_catalog.py` must pass. To publish the catalog artifact use `ADP files DIR` (over 250 files it splits into batches: publish the first, send the rest to the same url) and `ADP pins publish-1.json=VERSION_ID ... --out vermap.json`. Ask the user before publishing a catalog others use.
+No `adp.py` command adds an entry. An entry is files under `catalog/kit/` plus its record in `catalog.json` (id, kind, name, summary, about, tags, files, requires, provides; a theme also `fonts`, the url in its json); `python3 -I <adp skill folder>/scripts/adp_catalog.py` must pass. To publish the catalog artifact use `ADP files DIR` (over 250 files it splits into batches: publish the first, send the rest to the same url) and `ADP pins publish-1.json=VERSION_ID ... --out vermap.json`. Ask the user before publishing a catalog others use.

@@ -29,7 +29,7 @@
  * @summary   A request to allow an action: who asks and for what, its risk and reversibility, a preview of the change, then Approve, Reject with a reason the asker reads, or Withdraw.
  * @tags      approval, gate, permission, sign-off, risk, diff, reject, reason, ticket, console
  * @requires  kit.tokens, kit.vocab, kit.keep-state
- * @files     kit/patterns/gate.css, kit/samples/gate.json
+ * @files     kit/patterns/gate.css, kit/samples/patterns.json
  * @provides  Kit.gate.mount, Kit.gate.looks
  * @config    Kit.gate.mount(box, opts) | gates [{id, action, by, tool, risk, reversible, preview, verdict {state, by, at, reason} | null, locked, refusal {code, field, allowed, message}}], look plain | console | ticket | two-key, me, canWrite, onVerdict(id, {state, reason}), now, timeZone; returns {update, setLook, verdicts, destroy}
  * @config    onVerdict | optional: where a board writes the verdict (for example to its tasks collection); the pattern keeps the verdict in memory either way
@@ -39,7 +39,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's approval gate | risk, reversibility, the preview, approve, reject with a reason, withdraw
  * @source    Catalog harvest, 2026-10-25 | an earlier board's console, war-room and journal dressings | arm and abort, the two-key panel, the ticket with a tear-off stub, the preview as a diff
  * @source    Catalog harvest, 2026-10-25 | a component family's permission card and refusal callout | who asked and for which tool; code, field, what is allowed now and the message
- * @preview   {"render": "pattern.gate", "samples": ["kit/samples/gate.json"]}
+ * @preview   {"render": "pattern.gate", "samples": ["kit/samples/patterns.json#gate"]}
  * @changed   One gate with four css dressings; the source had one rewrite of the markup per board.
  */
 (function () {

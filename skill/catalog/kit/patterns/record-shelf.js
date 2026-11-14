@@ -26,7 +26,7 @@
  * @summary   One card for each ADP record beside the files (the manifest, changes, parts, threads, content and the self-check), each with its figure, one line and a state in words, opening the view that shows it.
  * @tags      records, manifest, changes, parts, holds, threads, content, checks, adp/2, overview, navigation
  * @requires  kit.tokens, kit.dom
- * @files     kit/patterns/record-shelf.css, kit/samples/file-browser.json
+ * @files     kit/patterns/record-shelf.css, kit/samples/layout.json
  * @provides  Kit.recordShelf.mount
  * @config    Kit.recordShelf.mount(root, opts) | manifest, changes, parts, threads, content, checks (each optional; one not passed reads Not read), now, timeZone, current files | changes | parts | threads | content | checks, onOpen(name), label; returns {update, setCurrent, destroy}
  * @tokens    --panel --sunk --ink --ink-2 --rule --accent --ok --warn --danger --f-ui --f-mono --f-display? --seam? --radius?
@@ -34,7 +34,7 @@
  * @db        reads manifest/current; changes; parts; threads; content; checks/latest / note The pattern does not read the db itself: the page passes the docs in.
  * @source    Catalog batch 15, 2026-10-26 | skills/artifact-dataplane/references/record.md and references/adp2.md | the canonical collections and their fields
  * @source    Catalog batch 15, 2026-10-26 | the What changed panel of the reference page | the latest changes and the active decisions beside the page
- * @preview   {"render": "pattern.record-shelf", "samples": ["kit/samples/file-browser.json"]}
+ * @preview   {"render": "pattern.record-shelf", "samples": ["kit/samples/layout.json#file-browser"]}
  * @changed   One card per collection with a state in words, not only the latest changes.
  */
 (function () {

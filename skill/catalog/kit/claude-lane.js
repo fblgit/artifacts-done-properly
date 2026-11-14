@@ -33,7 +33,7 @@
  * @summary   Sends a request to the Claude Code session that has the page open, queues it on the board when nobody listens, and shows each request’s answer state: queued, acknowledged, working, answered.
  * @tags      claude, claude code, requests, queue, answer states, stepper, comments, sendtoclaude, presence
  * @requires  kit.store, kit.chrome
- * @files     kit/claude-lane.css, kit/samples/claude-lane.json
+ * @files     kit/claude-lane.css, kit/samples/kit.json
  * @provides  Kit.claudeLane.create
  * @config    Kit.claudeLane.create({store, db, chrome, collection, presenceSlot, presenceKey, who, steps, hints, …}) | every name has a default: collection "requests", steps queue/ack/pending/done, who "Claude Code"
  * @config    workingState, ackStates, doneStatus, recordField | which request fields mean which step (defaults working; ack, seen; done; itemId)
@@ -44,7 +44,7 @@
  * @db        reads requests (or the configured collection); presence/claude-code / writes requests: {text, itemId, status, delivered, author, created}, then {delivered, why, sentAt} / note The Claude Code session writes state working with progress[{text}] on long work, and status done with response.
  * @source    Journey Whiteboard | app.js | sendToCode, answerArrived, reqState, REQ_STEPS, pollListen, ListenHint, ReqLine, QueueStrip, ReqList
  * @source    ADR Drafting Table | data.js | the same lane with ping and refresh states, which stay board code
- * @preview   {"render": "kit.claude-lane", "samples": ["kit/samples/claude-lane.json"]}
+ * @preview   {"render": "kit.claude-lane", "samples": ["kit/samples/kit.json#claude-lane"]}
  * @changed   0.1.3: the header asks a session for working on long work and done; no ack names or times.
  */
 (function () {

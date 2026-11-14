@@ -33,7 +33,7 @@
  * @summary   Who can write where on an ADP artifact, read-only: each db rule as a path, a sentence and a ladder of the four levels, what you can do there, and the locked part prefixes with the parts they cover.
  * @tags      namespaces, permissions, db-rules, locks, parts, read-only, settings, access
  * @requires  kit.tokens, kit.dom
- * @files     kit/patterns/namespaces.css, kit/samples/namespaces.json
+ * @files     kit/patterns/namespaces.css, kit/samples/patterns.json
  * @provides  Kit.namespaces.mount, Kit.namespaces.levels
  * @config    Kit.namespaces.mount(root, opts) | rules [{path, read, write}] (default the adp:db-rules meta), locks [prefix] (default ADP.config.get('parts.locked'), re-read on change), user {canEdit} (default ADP.user), parts [id] (default every [data-part]), titles {id: title}, label; returns {update, destroy}
  * @config    parts.locked | read through ADP.config; optional, the component renders from the options alone
@@ -41,7 +41,7 @@
  * @globals   none
  * @db        reads config/current (through ADP.config)
  * @source    Catalog batch 14, 2026-10-26 | the settings page's list of namespaces and its lock badges | the rules by path, who reads and writes, the locked prefixes
- * @preview   {"render": "pattern.namespaces", "samples": ["kit/samples/namespaces.json"]}
+ * @preview   {"render": "pattern.namespaces", "samples": ["kit/samples/patterns.json#namespaces"]}
  */
 (function () {
 'use strict';

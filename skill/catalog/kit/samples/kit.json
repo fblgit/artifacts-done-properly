@@ -1,0 +1,1793 @@
+{
+ "callout": {
+  "note": "Invented.",
+  "callouts": [
+   {
+    "tone": "note",
+    "k": "Note",
+    "body": "Celadon needs iron in the glaze, not in the clay. Porcelain keeps the colour clean."
+   },
+   {
+    "tone": "ok",
+    "k": "Verified",
+    "body": "The new shelves held at cone 6 for three firings without warping."
+   },
+   {
+    "tone": "warn",
+    "k": "Check first",
+    "body": "The vent fan runs off the kiln room's own breaker. Switch it on before you start a firing."
+   },
+   {
+    "tone": "danger",
+    "k": "Stop",
+    "body": "Never open the kiln above 200 °C. Thermal shock cracks the shelves and the pots."
+   },
+   {
+    "tone": "pending",
+    "k": "Waiting on you",
+    "body": "Two answers before the next firing:",
+    "list": [
+     "Slow or medium schedule?",
+     "Do the test tiles go on the top shelf?"
+    ]
+   }
+  ]
+ },
+ "callout-refusal": {
+  "note": "Invented: refusals from a made-up studio booking system.",
+  "refusals": [
+   {
+    "code": "Not while a firing is booked",
+    "tone": "warn",
+    "field": "kiln.status",
+    "allowed": [
+     "cancel the firing",
+     "move the firing"
+    ],
+    "message": "The east kiln is booked for Thursday, so its status cannot change to Under repair."
+   },
+   {
+    "code": "You cannot approve your own request",
+    "tone": "danger",
+    "field": "approval.by",
+    "allowed": [
+     "ask the studio lead",
+     "ask a second technician"
+    ],
+    "message": "The person who asked for the glaze order cannot sign it off."
+   },
+   {
+    "code": "The slot is already taken",
+    "tone": "pending",
+    "field": "slot",
+    "allowed": [],
+    "message": "Saturday 10:30 went to another booking a moment ago."
+   }
+  ]
+ },
+ "canvas": {
+  "component": "canvas",
+  "file": "kit/canvas.js",
+  "about": "A canvas with one canvas doc and three elements, no refs: tool rail, pen colours, zoom.",
+  "store": {
+   "lsPrefix": "demo",
+   "state": {
+    "conn": "live",
+    "canWrite": true,
+    "me": "u1",
+    "scopeId": "s1"
+   }
+  },
+  "db": {
+   "pathTemplate": "scopes/{scope}/{name}",
+   "scopeSlot": "scopeId"
+  },
+  "chrome": {},
+  "canvas": {
+   "colors": [
+    "ink",
+    "blue"
+   ],
+   "tints": [
+    "yellow"
+   ],
+   "scopeSlot": "scopeId"
+  },
+  "data": {
+   "canvases": {
+    "c1": {
+     "name": "Main",
+     "order": 1,
+     "created": 1
+    }
+   },
+   "els": {
+    "e1": {
+     "canvasId": "c1",
+     "type": "rect",
+     "x": 40,
+     "y": 40,
+     "w": 180,
+     "h": 90,
+     "fill": "none",
+     "text": "Hello",
+     "color": "ink",
+     "sw": 3,
+     "z": 1
+    },
+    "e2": {
+     "canvasId": "c1",
+     "type": "sticky",
+     "x": 300,
+     "y": 60,
+     "w": 200,
+     "h": 140,
+     "tint": "yellow",
+     "text": "A note",
+     "z": 2
+    },
+    "e3": {
+     "canvasId": "c1",
+     "type": "arrow",
+     "x": 220,
+     "y": 85,
+     "x2": 300,
+     "y2": 110,
+     "color": "blue",
+     "sw": 3,
+     "z": 3
+    }
+   }
+  },
+  "render": [
+   "CanvasView"
+  ],
+  "expect": {
+   "selectors": [
+    ".cv .cv-bar",
+    ".surface svg.layer",
+    ".toolrail",
+    ".zoom",
+    ".el-sticky"
+   ]
+  }
+ },
+ "chrome": {
+  "component": "chrome",
+  "file": "kit/chrome.js",
+  "about": "The dialog on its own: a title, a text and a checkbox field, Save and Cancel.",
+  "store": {
+   "lsPrefix": "demo",
+   "state": {
+    "modal": null,
+    "toast": null,
+    "busy": null,
+    "canWrite": true
+   }
+  },
+  "chrome": {
+   "kinds": {
+    "note": {
+     "label": "Note"
+    }
+   },
+   "parts": {}
+  },
+  "open": {
+   "title": "New note",
+   "body": "A note has a name and can be pinned.",
+   "fields": [
+    {
+     "id": "name",
+     "label": "Name",
+     "value": ""
+    },
+    {
+     "id": "pin",
+     "label": "Pin it",
+     "type": "checkbox",
+     "value": false
+    }
+   ],
+   "ok": "Save"
+  },
+  "render": [
+   "Modal",
+   "Toast",
+   "Busy"
+  ],
+  "expect": {
+   "selectors": [
+    ".scrim .dialog h2",
+    ".dialog input#f-name",
+    ".dialog input#f-pin",
+    ".dialog button[type=submit]"
+   ]
+  }
+ },
+ "claude-lane": {
+  "component": "claude-lane",
+  "file": "kit/claude-lane.js",
+  "about": "The request card and the queue strip with every default: four steps, collection requests, the session named Claude Code.",
+  "store": {
+   "lsPrefix": "demo",
+   "state": {
+    "conn": "live",
+    "canWrite": true,
+    "me": "u1",
+    "requests": {
+     "r1": {
+      "text": "Look at the gateway",
+      "itemId": "x",
+      "status": "open",
+      "delivered": false,
+      "created": 1000
+     },
+     "r2": {
+      "text": "Read both files",
+      "itemId": "x",
+      "status": "open",
+      "delivered": true,
+      "state": "working",
+      "ackBy": "claude-code",
+      "progress": [
+       {
+        "at": 2000,
+        "text": "Reading"
+       }
+      ],
+      "created": 2000
+     }
+    },
+    "presence": {},
+    "listen": "available",
+    "answered": 0
+   }
+  },
+  "db": {
+   "pathTemplate": "{name}",
+   "caps": [
+    "comments"
+   ]
+  },
+  "chrome": {},
+  "lane": {},
+  "render": [
+   "ListenHint",
+   "QueueStrip",
+   "ReqList"
+  ],
+  "props": {
+   "ReqList": {
+    "recordId": "x"
+   }
+  },
+  "expect": {
+   "selectors": [
+    ".listen.on",
+    ".qstrip .q-queue",
+    ".reqs .req.queue",
+    ".reqs .req.pending"
+   ]
+  }
+ },
+ "code-gate": {
+  "component": "code-gate",
+  "file": "kit/code-gate.js",
+  "about": "An invented six digit code from the stand-in generator, on a 30 second ring.",
+  "label": "Join code",
+  "note": "Read this to the person joining the counter tablet. It stops working when the ring empties.",
+  "periods": [
+   {
+    "s": 30,
+    "label": "30 seconds"
+   },
+   {
+    "s": 8,
+    "label": "8 seconds, to watch it change"
+   }
+  ]
+ },
+ "copy": {
+  "note": "Invented commands.",
+  "snippet": {
+   "label": "shell",
+   "code": "git switch -c glaze/celadon\nmake check\nmake serve PORT=8791"
+  },
+  "ink": {
+   "label": "recipe.json",
+   "code": "{\n  \"name\": \"Celadon\",\n  \"cone\": 6,\n  \"iron\": 1.0\n}"
+  },
+  "commands": [
+   {
+    "cmd": "make check",
+    "what": "Lint and run the tests"
+   },
+   {
+    "cmd": "make serve",
+    "what": "Serve the site on port 8791"
+   },
+   {
+    "cmd": "make shots",
+    "what": "Screenshot every page, light and dark"
+   },
+   {
+    "cmd": "make clean",
+    "what": "Remove the build folder"
+   }
+  ]
+ },
+ "dial": {
+  "component": "dial",
+  "file": "kit/dial.js",
+  "about": "A three-way audience dial over a made-up order note; the identifiers in it are invented.",
+  "label": "Preview as",
+  "options": [
+   {
+    "id": "stranger",
+    "label": "A stranger",
+    "hint": "Someone outside the bakery and its suppliers"
+   },
+   {
+    "id": "supplier",
+    "label": "The flour supplier",
+    "hint": "Sees orders for its own products"
+   },
+   {
+    "id": "team",
+    "label": "The team",
+    "hint": "Everyone who works at the counter"
+   }
+  ],
+  "verdicts": {
+   "order": {
+    "stranger": "redact",
+    "supplier": "fine",
+    "team": "fine"
+   },
+   "email": {
+    "stranger": "redact",
+    "supplier": "held",
+    "team": "fine"
+   },
+   "phone": {
+    "stranger": "held",
+    "supplier": "held",
+    "team": "fine"
+   },
+   "path": {
+    "stranger": "redact",
+    "supplier": "redact",
+    "team": "fine"
+   }
+  },
+  "readers": {
+   "stranger": "A stranger sees none of the identifiers. Order numbers and the folder path are redacted, and the customer's contact details are held back.",
+   "supplier": "The supplier already holds its own order numbers. The customer's email and phone number stay with the bakery, and the local folder path means nothing to them.",
+   "team": "The team already knows every identifier on this page. Nothing needs hiding."
+  },
+  "text": [
+   [
+    "Order "
+   ],
+   [
+    "ORD-48213",
+    "order"
+   ],
+   [
+    " was placed by "
+   ],
+   [
+    "anna.sample@mail.invalid",
+    "email"
+   ],
+   [
+    ", who can be reached on "
+   ],
+   [
+    "+00 555 0142",
+    "phone"
+   ],
+   [
+    ". The bake sheet was saved to "
+   ],
+   [
+    "/Users/shop/bakesheets/week-43.pdf",
+    "path"
+   ],
+   [
+    " for pickup on Saturday."
+   ]
+  ]
+ },
+ "drawer": {
+  "note": "Invented loan records from a tool library.",
+  "records": [
+   {
+    "id": "r1",
+    "name": "Tile saw",
+    "sub": "On loan to Marta",
+    "tone": "info",
+    "state": "Out",
+    "facts": [
+     [
+      "Borrowed",
+      "Mon 12 Oct"
+     ],
+     [
+      "Due back",
+      "Mon 26 Oct"
+     ],
+     [
+      "Deposit",
+      "40 paid"
+     ],
+     [
+      "Shelf",
+      "C3"
+     ]
+    ],
+    "chain": [
+     "Reserved on 9 Oct",
+     "Collected 12 Oct",
+     "Reminder sent 23 Oct"
+    ]
+   },
+   {
+    "id": "r2",
+    "name": "Post-hole digger",
+    "sub": "Overdue by three days",
+    "tone": "bad",
+    "state": "Late",
+    "facts": [
+     [
+      "Borrowed",
+      "Fri 2 Oct"
+     ],
+     [
+      "Due back",
+      "Fri 16 Oct"
+     ],
+     [
+      "Deposit",
+      "25 held"
+     ],
+     [
+      "Shelf",
+      "A1"
+     ]
+    ],
+    "chain": [
+     "Collected 2 Oct",
+     "Extended once",
+     "Two reminders sent"
+    ]
+   },
+   {
+    "id": "r3",
+    "name": "Orbital sander",
+    "sub": "Back on the shelf",
+    "tone": "ok",
+    "state": "In",
+    "facts": [
+     [
+      "Last loan",
+      "Sat 17 Oct"
+     ],
+     [
+      "Condition",
+      "New pad fitted"
+     ],
+     [
+      "Deposit",
+      "none"
+     ],
+     [
+      "Shelf",
+      "B2"
+     ]
+    ],
+    "chain": [
+     "Returned 17 Oct",
+     "Pad replaced",
+     "Shelved"
+    ]
+   }
+  ]
+ },
+ "glaze-surfaces": {
+  "note": "Invented glaze-room content.",
+  "orbs": [
+   {
+    "tone": "ok",
+    "word": "Fired"
+   },
+   {
+    "tone": "warn",
+    "word": "Cooling too fast",
+    "run": false
+   },
+   {
+    "tone": "bad",
+    "word": "Cracked"
+   },
+   {
+    "tone": "info",
+    "word": "Firing",
+    "run": true
+   },
+   {
+    "tone": "wait",
+    "word": "Needs your hand",
+    "ring": true
+   },
+   {
+    "tone": "idle",
+    "word": "Cold"
+   }
+  ],
+  "rows": [
+   {
+    "tone": "ok",
+    "title": "Celadon test tile",
+    "sub": "Cone 10, reduction, 14 hours"
+   },
+   {
+    "tone": "wait",
+    "title": "Shino bowl",
+    "sub": "Waiting for you to approve the thickness"
+   },
+   {
+    "tone": "bad",
+    "title": "Copper red jar",
+    "sub": "Ran off the foot"
+   }
+  ],
+  "facts": [
+   {
+    "k": "Kiln",
+    "v": "Two"
+   },
+   {
+    "k": "Peak",
+    "v": "1,280 C"
+   },
+   {
+    "k": "Load",
+    "v": "36 pieces"
+   }
+  ]
+ },
+ "keep-state": {
+  "note": "Invented reply threads from a seed-swap club.",
+  "threads": [
+   {
+    "id": "t1",
+    "title": "Who has spare runner bean seed?",
+    "by": "Odile",
+    "replies": [
+     "I have a handful of Scarlet Emperor.",
+     "Same, plus Painted Lady."
+    ]
+   },
+   {
+    "id": "t2",
+    "title": "Swap table: bring labels",
+    "by": "Ravi",
+    "replies": [
+     "Labels and a pencil, please."
+    ]
+   },
+   {
+    "id": "t3",
+    "title": "Date for the autumn swap",
+    "by": "Tomasz",
+    "replies": []
+   }
+  ],
+  "pokes": [
+   "Maria added a seed packet",
+   "A new thread was started",
+   "Odile changed a title",
+   "Ravi pinned a thread"
+  ]
+ },
+ "md": {
+  "component": "md",
+  "file": "kit/md.js",
+  "about": "Markdown to sanitized HTML with the defaults, links opened in a new tab.",
+  "md": {
+   "externalLinks": true
+  },
+  "input": "# Title\n\nSome **bold** text and a [link](https://example.com).\n\n- one\n- two\n",
+  "expect": {
+   "selectors": [
+    ".md h1",
+    ".md strong",
+    ".md a[target=_blank]",
+    ".md li"
+   ]
+  }
+ },
+ "mermaid": {
+  "note": "Invented.",
+  "flow": {
+   "title": "A glaze firing",
+   "meta": "Left to right; scrolls sideways at phone width",
+   "label": "A glaze firing, from bisque to inspection",
+   "src": "flowchart LR\n  B[Bisque ware] --> G[Dip in glaze]\n  G --> W{Feet wiped?}\n  W -- no --> G\n  W -- yes --> L[Load the kiln]\n  L --> F[Fire to cone 6]\n  F --> C[Cool closed]\n  C --> I[Inspect]\n  I -->|crazing| G\n  class I done\n  class F hot\n  classDef done fill:%ok/18%,stroke:%ok%,color:%ink%\n  classDef hot fill:%warn/18%,stroke:%warn%,color:%ink%"
+  },
+  "seq": {
+   "title": "The controller during a firing",
+   "meta": "A sequence diagram",
+   "label": "Potter, kiln controller and log during a firing",
+   "src": "sequenceDiagram\n  autonumber\n  participant P as Potter\n  participant K as Kiln controller\n  participant L as Firing log\n  P->>K: Start schedule (cone 6, hold 10 min)\n  K-->>P: Ramping at 150 °C an hour\n  Note over K: Hold at 1222 °C\n  K->>L: Peak and hold reached\n  P->>L: Cone pack result"
+  },
+  "legend": [
+   [
+    "ok",
+    "Done"
+   ],
+   [
+    "warn",
+    "In the kiln"
+   ]
+  ]
+ },
+ "palette": {
+  "note": "Invented sections and records.",
+  "items": [
+   {
+    "id": "s1",
+    "group": "section",
+    "label": "Kiln schedule",
+    "keys": "firing night rates",
+    "target": "pv2-pal-kiln"
+   },
+   {
+    "id": "s2",
+    "group": "section",
+    "label": "Glaze recipes",
+    "keys": "celadon tenmoku shino",
+    "target": "pv2-pal-glaze"
+   },
+   {
+    "id": "s3",
+    "group": "section",
+    "label": "Clay bodies",
+    "keys": "porcelain stoneware",
+    "target": "pv2-pal-clay"
+   },
+   {
+    "id": "s4",
+    "group": "section",
+    "label": "Orders and deadlines",
+    "keys": "market wedding",
+    "target": "pv2-pal-orders"
+   },
+   {
+    "id": "r1",
+    "group": "record",
+    "label": "Celadon on porcelain, thin dip",
+    "hint": "pass",
+    "keys": "glaze test cone 6",
+    "target": "pv2-pal-glaze"
+   },
+   {
+    "id": "r2",
+    "group": "record",
+    "label": "Tenmoku, double dip",
+    "hint": "fail",
+    "keys": "glaze test cone 10",
+    "target": "pv2-pal-glaze"
+   },
+   {
+    "id": "r3",
+    "group": "record",
+    "label": "Wedding order, 24 plates",
+    "hint": "drawn",
+    "keys": "order porcelain",
+    "target": "pv2-pal-orders"
+   },
+   {
+    "id": "r4",
+    "group": "record",
+    "label": "Kiln A, firing 41",
+    "hint": "Sunday",
+    "keys": "kiln log",
+    "target": "pv2-pal-kiln"
+   },
+   {
+    "id": "r5",
+    "group": "record",
+    "label": "Porcelain, 100 kg",
+    "hint": "on order",
+    "keys": "clay supplier",
+    "target": "pv2-pal-clay"
+   }
+  ],
+  "sections": [
+   {
+    "id": "pv2-pal-kiln",
+    "title": "Kiln schedule",
+    "text": "Kiln A fires Sunday at 22:00, Kiln B on Tuesday. Night rates start at 22:00."
+   },
+   {
+    "id": "pv2-pal-glaze",
+    "title": "Glaze recipes",
+    "text": "Twenty test tiles so far: ten pass, seven need a second look, three failed."
+   },
+   {
+    "id": "pv2-pal-clay",
+    "title": "Clay bodies",
+    "text": "Porcelain fires to cone 6, stoneware to cone 10. One hundred kilos of porcelain are on order."
+   },
+   {
+    "id": "pv2-pal-orders",
+    "title": "Orders and deadlines",
+    "text": "The wedding set of 24 plates is due in three weeks; the market stock is already packed."
+   }
+  ]
+ },
+ "record-dialog": {
+  "note": "Invented: a repair-cafe booking for a toaster.",
+  "title": "Toaster that trips the fuse",
+  "id": "RC-2041",
+  "crumbs": [
+   {
+    "label": "Repair cafe"
+   },
+   {
+    "label": "Saturday bookings"
+   },
+   {
+    "label": "RC-2041"
+   }
+  ],
+  "tags": [
+   {
+    "label": "Waiting for you",
+    "tone": "attention"
+   },
+   {
+    "label": "Electrical",
+    "tone": "neutral"
+   }
+  ],
+  "tabs": [
+   {
+    "id": "overview",
+    "label": "Overview",
+    "facts": [
+     [
+      "Owner",
+      "Ines, bench 3"
+     ],
+     [
+      "Item",
+      "Two-slot toaster, about nine years old"
+     ],
+     [
+      "Symptom",
+      "The fuse trips when the lever goes down"
+     ],
+     [
+      "Booked",
+      "Saturday, 10:30"
+     ],
+     [
+      "Volunteer",
+      "Tomas (electrical)"
+     ]
+    ],
+    "text": "The element looks intact. Tomas suspects the lever contacts, which are cheap to replace, and will check insulation first."
+   },
+   {
+    "id": "history",
+    "label": "History",
+    "count": 3,
+    "events": [
+     [
+      "Tue 18:02",
+      "Ines booked the slot and described the fault."
+     ],
+     [
+      "Wed 09:40",
+      "Tomas asked for a photo of the base."
+     ],
+     [
+      "Wed 20:15",
+      "Ines sent the photo: scorch mark near the lever."
+     ]
+    ]
+   },
+   {
+    "id": "answer",
+    "label": "Answer",
+    "question": "Replace the lever contacts, or advise the owner to retire the toaster?",
+    "why": "A scorch mark near live contacts can mean the fault is bigger than the contacts. Retiring it is safe but costs the owner a toaster.",
+    "options": [
+     "Replace the contacts and test",
+     "Retire the toaster"
+    ]
+   }
+  ]
+ },
+ "save-status": {
+  "component": "save-status",
+  "file": "kit/save-status.js",
+  "about": "A stand-in doc and a text box; the scenarios set how the stand-in db answers.",
+  "lsKey": "catalog-preview:save-status",
+  "path": "board/state",
+  "doc": {
+   "text": "Order two seeded loaves for Saturday."
+  },
+  "scenarios": [
+   {
+    "id": "shared",
+    "label": "The db saves it"
+   },
+   {
+    "id": "none",
+    "label": "No db"
+   },
+   {
+    "id": "refused",
+    "label": "The db refuses writes"
+   },
+   {
+    "id": "offline",
+    "label": "Offline"
+   }
+  ]
+ },
+ "skins": {
+  "note": "Invented page text. The three skins are the stage themes, read from their theme json files (light and dark token maps).",
+  "key": "kit-skins-demo",
+  "default": "glaze",
+  "skins": [
+   {
+    "name": "glaze",
+    "label": "Glaze",
+    "json": "kit/themes/glaze.json"
+   },
+   {
+    "name": "adr",
+    "label": "ADR table",
+    "json": "kit/themes/adr-drafting-table.json"
+   },
+   {
+    "name": "whiteboard",
+    "label": "Whiteboard",
+    "json": "kit/themes/journey-whiteboard.json"
+   }
+  ],
+  "page": {
+   "title": "Autumn firing plan",
+   "lead": "Three kilns, one booking sheet. Choose a skin and a light or dark mode; the choice stays for the next visit.",
+   "rows": [
+    {
+     "name": "East kiln",
+     "when": "Thursday",
+     "state": "Booked"
+    },
+    {
+     "name": "West kiln",
+     "when": "Friday",
+     "state": "Free"
+    },
+    {
+     "name": "Raku pit",
+     "when": "Saturday",
+     "state": "Booked"
+    }
+   ]
+  }
+ },
+ "store": {
+  "component": "store",
+  "file": "kit/store.js",
+  "about": "State object, subscribe hook and the db write layer on their own: create a store and a db, write one document, see it in state.",
+  "store": {
+   "lsPrefix": "demo",
+   "state": {
+    "conn": "connecting",
+    "canWrite": true,
+    "scopeId": "s1",
+    "notes": {}
+   }
+  },
+  "toast": "console",
+  "db": {
+   "pathTemplate": "scopes/{scope}/{name}",
+   "scopeSlot": "scopeId",
+   "caps": []
+  },
+  "run": [
+   {
+    "call": "newId",
+    "args": [
+     "notes"
+    ],
+    "as": "id"
+   },
+   {
+    "call": "put",
+    "args": [
+     "notes",
+     "$id",
+     {
+      "text": "hello"
+     }
+    ]
+   },
+   {
+    "call": "localSet",
+    "args": [
+     "notes",
+     "$id",
+     {
+      "text": "hello"
+     }
+    ]
+   }
+  ],
+  "expect": {
+   "state": "notes has one entry whose text is hello",
+   "db": "scopes/s1/notes/<id> holds { text: hello }"
+  }
+ },
+ "table": {
+  "note": "Invented figures.",
+  "caption": "Studio budget, third quarter",
+  "sub": "Planned against spent, in euros. Difference is planned minus spent.",
+  "rows": [
+   {
+    "group": "Materials",
+    "item": "Porcelain clay, 100 kg",
+    "planned": 240,
+    "spent": 228
+   },
+   {
+    "group": "Materials",
+    "item": "Glaze materials",
+    "planned": 180,
+    "spent": 214.5
+   },
+   {
+    "group": "Materials",
+    "item": "Pyrometric cones",
+    "planned": 36,
+    "spent": 36
+   },
+   {
+    "group": "Firing",
+    "item": "Electricity",
+    "planned": 420,
+    "spent": 465.2,
+    "flag": "over"
+   },
+   {
+    "group": "Firing",
+    "item": "Kiln shelves and posts",
+    "planned": 150,
+    "spent": 0
+   },
+   {
+    "group": "Studio",
+    "item": "Rent share",
+    "planned": 600,
+    "spent": 600
+   },
+   {
+    "group": "Studio",
+    "item": "Vent fan service",
+    "planned": 90,
+    "spent": 72
+   }
+  ]
+ },
+ "tabs": {
+  "note": "Invented.",
+  "label": "Glaze record",
+  "tabs": [
+   {
+    "id": "recipe",
+    "label": "Recipe",
+    "lead": "Celadon, cone 6, oxidation. Parts by weight, 100 before additions.",
+    "rows": [
+     [
+      "Custer feldspar",
+      27
+     ],
+     [
+      "Silica",
+      25
+     ],
+     [
+      "Whiting",
+      20
+     ],
+     [
+      "Kaolin",
+      18
+     ],
+     [
+      "Talc",
+      10
+     ],
+     [
+      "Red iron oxide (addition)",
+      1
+     ]
+    ]
+   },
+   {
+    "id": "firings",
+    "label": "Firings",
+    "count": 4,
+    "items": [
+     "14 Oct: even sea-green, fine crackle",
+     "7 Oct: thin on rims, dip for 3 s next time",
+     "30 Sep: pinholes; the bisque was dusty",
+     "23 Sep: first test tiles"
+    ]
+   },
+   {
+    "id": "notes",
+    "label": "Notes",
+    "text": "Thicker than three seconds runs at cone 6. Stir before every dip: the iron settles."
+   }
+  ]
+ },
+ "tokens": {
+  "component": "tokens",
+  "file": "kit/tokens.js",
+  "about": "The three theme blocks written from two maps, then checked against the Markdown contract.",
+  "themeCss": {
+   "light": {
+    "--sunk": "#eceee9",
+    "--rule": "#dcdfd8",
+    "--ink-2": "#525a69"
+   },
+   "dark": {
+    "--sunk": "#22262d",
+    "--rule": "#2d323b",
+    "--ink-2": "#a5acb9"
+   }
+  },
+  "check": [
+   "md"
+  ],
+  "expect": {
+   "missing": [],
+   "css": "a :root block, a prefers-color-scheme block guarded by :root:not([data-theme=\"light\"]), and a :root[data-theme=\"dark\"] block"
+  }
+ },
+ "tooltip": {
+  "note": "Invented firing figures.",
+  "unit": "firings",
+  "bars": [
+   {
+    "label": "Mon",
+    "value": 3,
+    "title": "Monday",
+    "rows": [
+     [
+      "Firings",
+      "3"
+     ],
+     [
+      "Pieces",
+      "46"
+     ],
+     [
+      "Kiln",
+      "A"
+     ]
+    ]
+   },
+   {
+    "label": "Tue",
+    "value": 5,
+    "title": "Tuesday",
+    "rows": [
+     [
+      "Firings",
+      "5"
+     ],
+     [
+      "Pieces",
+      "71"
+     ],
+     [
+      "Kiln",
+      "A and B"
+     ]
+    ]
+   },
+   {
+    "label": "Wed",
+    "value": 2,
+    "title": "Wednesday",
+    "rows": [
+     [
+      "Firings",
+      "2"
+     ],
+     [
+      "Pieces",
+      "30"
+     ],
+     [
+      "Kiln",
+      "B"
+     ]
+    ]
+   },
+   {
+    "label": "Thu",
+    "value": 6,
+    "title": "Thursday",
+    "rows": [
+     [
+      "Firings",
+      "6"
+     ],
+     [
+      "Pieces",
+      "88"
+     ],
+     [
+      "Kiln",
+      "A and B"
+     ]
+    ]
+   },
+   {
+    "label": "Fri",
+    "value": 4,
+    "title": "Friday",
+    "rows": [
+     [
+      "Firings",
+      "4"
+     ],
+     [
+      "Pieces",
+      "52"
+     ],
+     [
+      "Kiln",
+      "A"
+     ]
+    ]
+   }
+  ]
+ },
+ "type-roles": {
+  "note": "The roles table (role, class, where used) and invented copy for a pottery studio.",
+  "roles": [
+   [
+    "hero",
+    "A one-line statement",
+    "All quiet in the studio."
+   ],
+   [
+    "title",
+    "The page title",
+    "Autumn glaze trials"
+   ],
+   [
+    "sect",
+    "A section title",
+    "What is in the kiln"
+   ],
+   [
+    "card",
+    "A card title",
+    "Celadon test tile"
+   ],
+   [
+    "body",
+    "Reading text",
+    "Twelve tiles went into the second firing. Three picked up pinholes near the rim, which usually means the bisque was dusty."
+   ],
+   [
+    "lede",
+    "The sentence under a title",
+    "Six glazes, two clays, one kiln, and a week to choose."
+   ],
+   [
+    "meta",
+    "Captions, who and when",
+    "Logged by Ines, Tuesday 9:40"
+   ],
+   [
+    "label",
+    "A form label",
+    "Peak temperature"
+   ],
+   [
+    "input",
+    "Input text",
+    "1,280"
+   ],
+   [
+    "hint",
+    "A hint under a field",
+    "Use the cone pack reading, not the controller."
+   ],
+   [
+    "error",
+    "An error",
+    "Peak temperature must be between 900 and 1,320."
+   ],
+   [
+    "btn",
+    "A button",
+    "Start firing"
+   ],
+   [
+    "chip",
+    "A chip",
+    "Reduction"
+   ],
+   [
+    "nav",
+    "A navigation label",
+    "Kiln log"
+   ],
+   [
+    "numeral",
+    "A big figure",
+    "14"
+   ],
+   [
+    "unit",
+    "The unit under it",
+    "hours at peak"
+   ],
+   [
+    "meter",
+    "A dashboard figure",
+    "36"
+   ],
+   [
+    "mono",
+    "An identifier",
+    "batch/2026-10-24/k2"
+   ],
+   [
+    "empty",
+    "An empty state headline",
+    "Nothing on the shelf yet."
+   ],
+   [
+    "sheet",
+    "A confirm sheet title",
+    "Open the kiln now?"
+   ]
+  ]
+ },
+ "view-registry": {
+  "note": "Invented: a three-block board over a repair cafe's tasks, crew and events, and one layout the registry refuses.",
+  "kinds": {
+   "tasks": {
+    "label": "Tasks",
+    "fields": {
+     "title": {
+      "type": "string"
+     },
+     "notes": {
+      "type": "content"
+     },
+     "status": {
+      "type": "enum",
+      "values": [
+       "todo",
+       "doing",
+       "blocked",
+       "done"
+      ]
+     },
+     "points": {
+      "type": "integer"
+     },
+     "urgent": {
+      "type": "bool"
+     },
+     "owner": {
+      "type": "message",
+      "fields": {
+       "team": {
+        "type": "enum",
+        "values": [
+         "bikes",
+         "electrics",
+         "sewing",
+         "door"
+        ]
+       }
+      }
+     }
+    }
+   },
+   "crew": {
+    "label": "Crew",
+    "fields": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "enum",
+      "values": [
+       "lead",
+       "repairer",
+       "door",
+       "tea"
+      ]
+     },
+     "active": {
+      "type": "bool"
+     }
+    }
+   },
+   "events": {
+    "label": "Events",
+    "fields": {
+     "text": {
+      "type": "string"
+     },
+     "level": {
+      "type": "enum",
+      "values": [
+       "info",
+       "warn",
+       "problem"
+      ]
+     }
+    }
+   }
+  },
+  "rows": {
+   "tasks": [
+    {
+     "id": "T-1",
+     "title": "Test the extension leads",
+     "notes": "Six leads, tagged.",
+     "status": "doing",
+     "points": 2,
+     "urgent": true,
+     "owner": {
+      "team": "electrics"
+     }
+    },
+    {
+     "id": "T-2",
+     "title": "Fix the second bike stand",
+     "notes": "Weld is cracked.",
+     "status": "blocked",
+     "points": 5,
+     "urgent": false,
+     "owner": {
+      "team": "bikes"
+     }
+    },
+    {
+     "id": "T-3",
+     "title": "Print the sign-in sheets",
+     "notes": "",
+     "status": "todo",
+     "points": 1,
+     "urgent": false,
+     "owner": {
+      "team": "door"
+     }
+    },
+    {
+     "id": "T-4",
+     "title": "Label the parts bins",
+     "notes": "Sizes on the lids.",
+     "status": "done",
+     "points": 2,
+     "urgent": false,
+     "owner": {
+      "team": "electrics"
+     }
+    },
+    {
+     "id": "T-5",
+     "title": "Hem the curtain for the quiet corner",
+     "notes": "",
+     "status": "todo",
+     "points": 3,
+     "urgent": false,
+     "owner": {
+      "team": "sewing"
+     }
+    },
+    {
+     "id": "T-6",
+     "title": "Borrow the tea urn",
+     "notes": "Return washed.",
+     "status": "doing",
+     "points": 1,
+     "urgent": true,
+     "owner": {
+      "team": "door"
+     }
+    }
+   ],
+   "crew": [
+    {
+     "name": "Priya",
+     "role": "lead",
+     "active": true
+    },
+    {
+     "name": "Marcus",
+     "role": "repairer",
+     "active": true
+    },
+    {
+     "name": "Odile",
+     "role": "repairer",
+     "active": true
+    },
+    {
+     "name": "Ravi",
+     "role": "repairer",
+     "active": true
+    },
+    {
+     "name": "Lena",
+     "role": "door",
+     "active": true
+    },
+    {
+     "name": "Tomasz",
+     "role": "tea",
+     "active": false
+    }
+   ],
+   "events": [
+    {
+     "text": "Hall booked for six nights",
+     "level": "info"
+    },
+    {
+     "text": "Second bike stand cracked at the weld",
+     "level": "problem"
+    },
+    {
+     "text": "Odile has not confirmed sewing yet",
+     "level": "warn"
+    },
+    {
+     "text": "Extension leads tested: five of six pass",
+     "level": "info"
+    }
+   ]
+  },
+  "layout": {
+   "regions": [
+    {
+     "id": "top",
+     "shape": "row",
+     "blocks": [
+      {
+       "id": "work",
+       "title": "Open work",
+       "view": {
+        "data": "tasks",
+        "view": "lanes",
+        "views": [
+         "table"
+        ],
+        "lanes": {
+         "filter": [
+          {
+           "field": "status",
+           "op": "in",
+           "value": [
+            "todo",
+            "doing",
+            "blocked"
+           ]
+          }
+         ]
+        }
+       }
+      },
+      {
+       "id": "crew",
+       "title": "Crew on the rota",
+       "view": {
+        "data": "crew",
+        "view": "roster"
+       }
+      }
+     ]
+    },
+    {
+     "id": "low",
+     "shape": "stack",
+     "blocks": [
+      {
+       "id": "feed",
+       "title": "What happened",
+       "view": {
+        "data": "events",
+        "view": "feed",
+        "feed": {
+         "filter": [
+          {
+           "field": "level",
+           "op": "in",
+           "value": [
+            "warn",
+            "problem"
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "refused": {
+   "regions": [
+    {
+     "id": "bad",
+     "shape": "row",
+     "blocks": [
+      {
+       "id": "chart",
+       "title": "Burn-up",
+       "view": {
+        "data": "tasks",
+        "view": "burn"
+       }
+      },
+      {
+       "id": "search",
+       "title": "Find by name",
+       "view": {
+        "data": "tasks",
+        "view": "table",
+        "table": {
+         "filter": [
+          {
+           "field": "title",
+           "op": "eq",
+           "value": "Test the extension leads"
+          },
+          {
+           "field": "notes",
+           "op": "eq",
+           "value": "Six leads, tagged."
+          },
+          {
+           "field": "colour",
+           "op": "eq",
+           "value": "red"
+          }
+         ]
+        }
+       }
+      },
+      {
+       "id": "mixed",
+       "title": "Cards with table options",
+       "view": {
+        "data": "crew",
+        "view": "roster",
+        "table": {
+         "columns": [
+          "name"
+         ]
+        }
+       }
+      },
+      {
+       "id": "cols",
+       "title": "Table with a stray column",
+       "view": {
+        "data": "tasks",
+        "view": "table",
+        "table": {
+         "columns": [
+          "title",
+          "status",
+          "secret"
+         ]
+        }
+       }
+      },
+      {
+       "id": "nokind",
+       "title": "Missing kind",
+       "view": {
+        "data": "invoices",
+        "view": "table"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "vocab": {
+  "note": "Invented states of a pottery studio, in three enums. 'glazed-note' is silent on purpose; 'seconds' is missing from the table to show the unknown mark.",
+  "enums": {
+   "batch": {
+    "wedged": {
+     "word": "Clay wedged",
+     "short": "wedged",
+     "glyph": "ring",
+     "tone": "neutral"
+    },
+    "thrown": {
+     "word": "Thrown on the wheel",
+     "short": "thrown",
+     "glyph": "pulse",
+     "tone": "active",
+     "motion": "breathe"
+    },
+    "drying": {
+     "word": "Drying slowly",
+     "short": "drying",
+     "glyph": "hourglass",
+     "tone": "info"
+    },
+    "bisque": {
+     "word": "Waiting for the bisque firing",
+     "short": "bisque",
+     "glyph": "hand",
+     "tone": "attention",
+     "motion": "turn"
+    },
+    "inspect": {
+     "word": "At the glaze check",
+     "short": "check",
+     "glyph": "eye",
+     "tone": "review"
+    },
+    "cracked": {
+     "word": "Cracked in the kiln",
+     "short": "cracked",
+     "glyph": "cross",
+     "tone": "danger"
+    },
+    "shelf": {
+     "word": "On the shelf",
+     "short": "shelf",
+     "glyph": "check",
+     "tone": "success"
+    },
+    "sold": {
+     "word": "Sold and gone",
+     "short": "sold",
+     "glyph": "moon",
+     "tone": "ended"
+    },
+    "glazed-note": null
+   },
+   "order": {
+    "open": {
+     "word": "Open",
+     "short": "open",
+     "glyph": "question",
+     "tone": "attention"
+    },
+    "answered": {
+     "word": "Answered",
+     "short": "answered",
+     "glyph": "reply",
+     "tone": "info"
+    },
+    "packed": {
+     "word": "Packed",
+     "short": "packed",
+     "glyph": "diamond",
+     "tone": "review"
+    },
+    "shipping": {
+     "word": "On its way",
+     "short": "ship",
+     "glyph": "play",
+     "tone": "active",
+     "motion": "nudge"
+    },
+    "delivered": {
+     "word": "Delivered",
+     "short": "done",
+     "glyph": "check",
+     "tone": "success"
+    },
+    "returned": {
+     "word": "Returned",
+     "short": "back",
+     "glyph": "stop",
+     "tone": "danger"
+    }
+   },
+   "kiln": {
+    "cold": {
+     "word": "Cold",
+     "short": "cold",
+     "glyph": "moon",
+     "tone": "ended"
+    },
+    "ramping": {
+     "word": "Heating up",
+     "short": "ramp",
+     "glyph": "pulse",
+     "tone": "active",
+     "motion": "breathe"
+    },
+    "holding": {
+     "word": "Holding at peak",
+     "short": "hold",
+     "glyph": "pause",
+     "tone": "review"
+    },
+    "fault": {
+     "word": "Element fault",
+     "short": "fault",
+     "glyph": "cross",
+     "tone": "danger"
+    }
+   }
+  },
+  "rows": [
+   {
+    "name": "Tea bowl, set of four",
+    "enum": "batch",
+    "value": "bisque"
+   },
+   {
+    "name": "Ash-glaze vase",
+    "enum": "batch",
+    "value": "inspect"
+   },
+   {
+    "name": "Fluted planter",
+    "enum": "batch",
+    "value": "glazed-note"
+   },
+   {
+    "name": "Salt cellar",
+    "enum": "batch",
+    "value": "seconds"
+   },
+   {
+    "name": "Order 1042",
+    "enum": "order",
+    "value": "shipping"
+   },
+   {
+    "name": "Kiln two",
+    "enum": "kiln",
+    "value": "ramping"
+   }
+  ],
+  "lanes": {
+   "enum": "batch",
+   "counts": {
+    "wedged": 4,
+    "thrown": 7,
+    "drying": 12,
+    "bisque": 3,
+    "inspect": 2,
+    "cracked": 1,
+    "shelf": 18,
+    "sold": 40,
+    "glazed-note": 5
+   }
+  }
+ }
+}

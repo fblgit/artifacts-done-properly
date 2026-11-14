@@ -28,7 +28,7 @@
  * @summary   A switch per capability that says what it needs; turning one on includes its prerequisites, and a sentence states the order it will run; kinds that cannot mix say so.
  * @tags      capability, switch, prerequisites, dependencies, preset, order, onboarding, steps
  * @requires  kit.vocab, kit.glaze-surfaces
- * @files     kit/patterns/capability-picker.css, kit/samples/capability-picker.json
+ * @files     kit/patterns/capability-picker.css, kit/samples/patterns.json
  * @provides  Kit.capabilityPicker.mount, Kit.capabilityPicker.closure, Kit.capabilityPicker.steps
  * @config    Kit.capabilityPicker.mount(root, {capabilities, groups, presets, exclusive, value, label, onChange}) | capabilities {key: {title, group, needs: [key], note}}; presets {key: {label, keys}}; onChange({chosen, included, order, groups, valid, problem})
  * @config    Kit.capabilityPicker.steps({capabilities, keys, done, na, label}) | needs Kit.vocab for the chips
@@ -36,7 +36,7 @@
  * @globals   none
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s onboarding form | the capability catalog with prerequisites, the closure, the presets, the order sentence, the warning when two kinds mix, the per-node step chips
- * @preview   {"render": "pattern.capability-picker", "samples": ["kit/samples/capability-picker.json"]}
+ * @preview   {"render": "pattern.capability-picker", "samples": ["kit/samples/patterns.json#capability-picker"]}
  * @changed   The closure is pure, exported, has a cycle guard and puts prerequisites first.
  */
 (function () {
