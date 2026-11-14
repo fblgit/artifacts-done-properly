@@ -81,7 +81,7 @@ The record of a page is a set of ArtifactData collections. `adp.py` prints write
 | `checks/latest` | `adp.js`, only when the viewer can edit | no code in this repo reads it (the guide, section 7, says to read it after a publish) | section 5 |
 | `status/integrity` | `adp.js` at open | no code in this repo reads it | section 5 |
 | `status/seed` | `adp.js` while and after seeding | no code in this repo reads it | while seeding: `state: 'seeding'`, `done`, `total`, `from`, `opened_by`, `at`; at the end: `state: 'done'`, `from`, `version`, `by`, `opened_by`, `docs`, `packs`, `at` |
-| `requests/<rid>`, `requests/<rid>/turns/<NNNN>`, `presence/<name>` | the page (`docs/assist.md`); `adp.py requests` writes the replies | `export` (pending replies); `adp.py requests` | `docs/assist.md` |
+| `requests/<rid>`, `requests/<rid>/turns/<NNNN>`, `presence/<name>` | the page (`docs/assist.md`); a session writes the replies | `export` (pending replies); `adp.py requests` | `docs/assist.md` |
 | `conversations` | declared in the `assistant` and `default` rules only; neither `adp.py` nor `adp.js` touches it | | `docs/assist.md` |
 | `ns/<name>/...` | page code through `ADP.ns(name)`, which returns `{doc, collection}` under the prefix `ns/<name>/` | | the page's own |
 

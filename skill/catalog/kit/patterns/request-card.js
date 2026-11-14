@@ -1,9 +1,9 @@
 /* part:page.script.kit.request-card */
 /**
  * Request card
- * Kit.requestCard.mount(box, {engine, rid}) follows one request through the assist engine (engine.thread and engine.reply); mount(box, {request, thread, onReply}) draws the same card from data. The header says what kind of request it is (question, task, fix, design note) with a glyph, which block it is about (a button that shows the block when onReveal is given) and when it was sent. The track is four stations on one seam: queued, seen, working, done; passed segments fill in the seam colour, the current station has its bead and its word in bold, and the word sits under every bead, so the state never rides on colour. A request queued for more than three minutes says it is still queued and that nothing failed. Below: the conversation in order (the person's words, Claude's answer in Markdown when kit.md and its libraries are loaded, plain paragraphs otherwise, then every reply), the block as it was sent, the session's progress lines with their times (open while it works), and the blocks it changed. Once Claude has answered, a reply box appears; Ctrl or Cmd + Enter sends, the reply reopens the request, and a draft survives a redraw. When sending is not available to the viewer it says so instead. Changes of state are announced. At 390 px the header wraps and the track keeps its four stations.
+ * Kit.requestCard.mount(box, {engine, rid}) follows one request through the assist engine (engine.thread and engine.reply); mount(box, {request, thread, onReply}) draws the same card from data. The header says what kind of request it is (task, fix, design note) with a glyph, which block it is about (a button that shows the block when onReveal is given) and when it was sent. The track is four stations on one seam: queued, seen, working, done; passed segments fill in the seam colour, the current station has its bead and its word in bold, and the word sits under every bead, so the state never rides on colour. A request queued for more than three minutes says it is still queued and that nothing failed. Below: the conversation in order (the person's words, Claude's answer in Markdown when kit.md and its libraries are loaded, plain paragraphs otherwise, then every reply), the block as it was sent, the session's progress lines with their times (open while it works), and the blocks it changed. Once Claude has answered, a reply box appears; Ctrl or Cmd + Enter sends, the reply reopens the request, and a draft survives a redraw. When sending is not available to the viewer it says so instead. Changes of state are announced. At 390 px the header wraps and the track keeps its four stations.
  *
- * What it is: one request to Claude as the person who sent it follows it: what kind it is (ask, task, fix, design note), which block it is about (a button that shows the block),
+ * What it is: one request to Claude as the person who sent it follows it: what kind it is (task, fix, design note), which block it is about (a button that shows the block),
  * when it was sent, then a four-station track (queued, seen, working, done) drawn as one seam that fills as the session moves it, with the station's word under each bead so the
  * state never rides on colour. A request queued for more than three minutes says it is stuck and why that is not a failure. Below: the conversation (the person's words, Claude's
  * answer in Markdown, then every reply in order), the session's progress lines with their times, the blocks it changed (buttons), and a reply box once Claude has answered.
@@ -26,8 +26,8 @@
  * @id        pattern.request-card
  * @group     Patterns
  * @status    new
- * @version   0.1.0
- * @updated   2026-11-13
+ * @version   0.1.1
+ * @updated   2026-11-14
  * @summary   One request to Claude as its sender follows it: kind, block, a four-station track from queued to done, the conversation with Claude's answer, progress lines, the blocks it changed, and a reply box.
  * @tags      request, task, claude, progress, track, thread, reply, conversation, assist, status
  * @requires  kit.tokens, kit.vocab, kit.keep-state, kit.dom
