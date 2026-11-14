@@ -6,7 +6,10 @@ description: The standard for a claude.ai Artifact that more than one agent or s
 Artifact dataplane (ADP)
 The standard for an artifact more than one agent works on: part ids, per-part hashes, comment anchors that are part ids, the ArtifactData layout, the read, hold, publish, record protocol, and the adp/2 layout. Read it before building, editing or publishing such an artifact. This catalog follows it.
 
+Provides (no global): the protocol.
+
 @id        guide.artifact-dataplane
+@kind      guide
 @group     Guides
 @status    stable
 @version   0.1.1
@@ -14,8 +17,14 @@ The standard for an artifact more than one agent works on: part ids, per-part ha
 @summary   The standard every shared artifact follows: part ids, hashes, the db layout, the read, hold, publish, record protocol, and the adp/2 layout.
 @tags      adp, standard, protocol, guide, db, hashes, parts, adp/2
 @requires  none
+@files     none
+@provides  none
+@tokens    none
 @globals   none
 @db        none
+@source    eventhub plugin | skills/artifact-dataplane/SKILL.md | commit f1098e86, 2026-10-25; reduced to the standard itself
+@preview   {"render": "guide", "samples": ["kit/guides/artifact-dataplane.md"]}
+@changed   Copied byte for byte from SKILL.md at commit f1098e86 (before: c2f889b8). That commit adds reveal(id, key) for keyed anchors and records the page’s own data by doc under changes/<seq>.data.
 -->
 
 # Artifact dataplane (adp/1, adp/2)

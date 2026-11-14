@@ -13,6 +13,7 @@
  * Modal fields: {id, label, type: text (default) | textarea | checkbox | checklist, value, rows, list, options, disabled}; openModal({title, body, fields, ok, noCancel, danger, onOk(values)}) where onOk may return false to stay open.
  *
  * @id        kit.chrome
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.2
@@ -20,13 +21,18 @@
  * @summary   Dialog with a field list, toast with an action, busy overlay with progress, click-twice button, auto-growing text field, outside-click hook, chips and one icon set.
  * @tags      modal, dialog, toast, busy, progress, icons, form, chrome, ui
  * @requires  kit.store
+ * @files     kit/chrome.css, kit/samples/chrome.json
  * @provides  Kit.icons, Kit.chrome.create
  * @config    Kit.chrome.create({store, kinds, parts}) | store from Kit.store.create; kinds {kind: {label}}; parts {modal: part id} puts data-part on the dialog scrim
  * @config    state slots | S.modal, S.toast, S.busy
  * @config    openModal(m) | {title, body, fields: [{id, label, type, value, rows, options}], ok, noCancel, danger, onOk(values)}
- * @tokens    --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-ink --accent-soft --danger --ok --warn --shadow --f-ui --f-mono --f-display
+ * @tokens    --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-ink --accent-soft --danger --ok --shadow --f-mono --f-display
  * @globals   htm-preact
  * @db        none
+ * @source    Journey Whiteboard | app.js | Modal, Toast, Busy, ArmedButton, AutoText, useOutside, KindChip, StatusChip, I
+ * @source    ADR Drafting Table | uishared.js, modals.js | the same shapes (focus restore and stacked toasts not taken)
+ * @preview   {"render": "kit.chrome", "samples": ["kit/samples/chrome.json"]}
+ * @changed   0.1.2: .btn, .input, .select and .textarea take the page font (font-family: inherit); native buttons and fields otherwise draw in the system font.
  */
 (function () {
 'use strict';

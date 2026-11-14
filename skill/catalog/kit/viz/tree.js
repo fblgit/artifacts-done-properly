@@ -18,8 +18,10 @@
  *
  * The board maps its own records to nodes (the Journey Whiteboard: problems, solves, about, from, paths, page sources).
  * Tone colours: --c-<pen> for each pen tone used.
+ * Tokens: no file of this entry reads a custom property. Its rules are the "tree" section of kit/viz/viz.css (entry viz.core, which it requires); they read --accent --accent-soft --danger --f-mono --f-ui --ink --ink-2 --ink-3 --ok --panel --rule --rule-2 --warn; and with a fallback --c-amber --c-blue --c-green --canvas --dot --kv-c.
  *
  * @id        viz.tree
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -27,6 +29,7 @@
  * @summary   Records as a left-to-right tree: each drawn once under its first parent, other parents as dashed edges, the selected node's whole lineage lit.
  * @tags      tree, lineage, graph, hierarchy, outline, journey, dag, diagram
  * @requires  viz.core
+ * @files     kit/samples/viz-tree.json
  * @provides  Kit.viz.Tree, Kit.viz.layoutTree, Kit.viz.lineage
  * @config    nodes | [{id, label, kind, status, code, chips, bucket, parents: [id], order, shape: card | pill, state}]
  * @config    kinds / statuses | {kind: {label, tone}} / {status: tone}
@@ -36,8 +39,12 @@
  * @config    marks | {id: new | change | loss | good}
  * @config    bar, banner | vnodes for the toolbar and above the tree (a Replay, a PreviewBanner)
  * @config    legend, words, height | [[style, text]], {loose, empty}, css height
+ * @tokens    none
  * @globals   htm-preact
- * @db        none
+ * @db        note The board maps its records to nodes; the parent derivation is the board's.
+ * @source    Journey Whiteboard | app.js | RANK, parentsOf, buildTree, lineage, TreeNode, TreeView
+ * @preview   {"render": "viz.tree", "samples": ["kit/samples/viz-tree.json", "kit/samples/viz-replay.json"], "uses": ["viz.replay", "viz.focus"]}
+ * @changed   Parents come with each node, so any board's relations can feed it; question paths became a general pill node.
  */
 (function () {
 'use strict';

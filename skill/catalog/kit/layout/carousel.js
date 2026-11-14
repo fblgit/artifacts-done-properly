@@ -14,6 +14,7 @@
  * State attributes on .kit-car: data-start="more" when cards wait on the left, data-end="more" when they wait on the right, data-fit="true" when everything fits (no arrows, no fades).
  *
  * @id        layout.carousel
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -21,11 +22,17 @@
  * @summary   A sideways strip of cards: snap scrolling, arrow buttons that disable at the ends, edge fades only where more cards wait, mouse drag and arrow keys.
  * @tags      carousel, strip, scroll, snap, cards, drag, arrows
  * @requires  kit.tokens
+ * @files     kit/layout/carousel.css, kit/samples/carousel.json
  * @provides  Kit.carousel.mount, Kit.carousel.bind
  * @config    Kit.carousel.mount(box, {items, render(item, i), label, cardWidth, gap, arrows, onVisible}) | render returns a Node or a string; the card gets class kit-car-card
- * @tokens    --bg --panel --ink --rule --accent --shadow? --seam?
+ * @tokens    --bg --panel --ink --rule --accent --shadow? --seam? --kit-car-fade?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's phase and page carousels | the scroll-state classes for fades and arrows
+ * @source    Catalog harvest, 2026-10-25 | a component family's carousel | ResizeObserver, drag and keys
+ * @source    Catalog harvest, 2026-10-25 | a kanban strip | the horizontal scroll
+ * @preview   {"render": "layout.carousel", "samples": ["kit/samples/carousel.json"], "uses": ["kit.vocab"]}
+ * @changed   One strip for phases, pages and columns; fades and arrows follow measured scroll state, so neither appears when it would do nothing.
  */
 (function () {
 'use strict';

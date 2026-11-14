@@ -24,8 +24,10 @@
  *     pairViews     board is what Kit.views.mount returns (kit/view-registry.js); map is {skinName: {blockId: viewName}}. When the skin changes each listed block is switched to its view
  *                   (board.choose), so a skin can bring its own view of the data. Blocks that do not offer the view are left alone.
  * requires layout.topbar (Kit.theme is the sibling for one look; not called), kit.tokens, kit.view-registry (only for pairViews)
+ * Also provides (not globals): the kit:skin event, a CustomEvent on the document; and render and pairViews, methods of the handle init returns.
  *
  * @id        kit.skins
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.2
@@ -33,13 +35,18 @@
  * @summary   An upgrade of layout.topbar: several whole-page skins in one page, applied before first paint, kept per viewer, followed across tabs and announced by an event; light and dark are separate from the skin.
  * @tags      skin, theme switch, dark mode, no flash, storage event, persist, light dark system, selector, view registry
  * @requires  layout.topbar, kit.tokens, kit.view-registry
- * @provides  Kit.skins.init, handle.render, handle.pairViews
+ * @files     kit/skins.css, kit/samples/skins.json
+ * @provides  Kit.skins.init, Kit.skins.modes
+ * @extends   layout.topbar
  * @config    Kit.skins.init(opts) | skins [{name, label, href | tokens {light, dark} | json, fonts}], skin, mode system | light | dark, modes, key, target, persist; returns {skin, mode, resolved, set, setMode, list, render, on, pairViews, destroy}
  * @config    kit:skin | a CustomEvent on the document, detail {skin, mode, resolved, source}
  * @config    theme css | skin stylesheets that scope their tokens on :root and [data-theme] work as they are (one link is enabled); token maps are scoped by the file
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --seam?
+ * @tokens    --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's skin engine | attributes set at once, one skin link left enabled, light and dark apart from the skin, the storage event, the change event, the selector
+ * @preview   {"render": "kit.skins", "samples": ["kit/samples/skins.json"], "uses": ["kit.view-registry"]}
+ * @changed   A skin links its web fonts when chosen: fonts on the skin, or the fonts url of its theme json.
  */
 (function () {
 'use strict';

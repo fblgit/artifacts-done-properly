@@ -13,8 +13,10 @@ Load before the script at the end: kit/layout/doc-shell.js
 Section ids are bare tokens; the contents rail is filled from them. Sections number themselves (CSS counter): add or delete one and the rest renumber.
 
 Delete this comment when you copy the template into your page.
+Provides (no global): .kit-tdoc title block and meta strip; .kit-tdoc-sec self-numbered sections; .kit-tdoc-part part head; .kit-tdoc-ex example block; .kit-tdoc-fill slot; .kit-tdoc-check list.
 
 @id        template.doc
+@kind      template
 @group     Templates
 @status    new
 @version   0.1.0
@@ -22,12 +24,17 @@ Delete this comment when you copy the template into your page.
 @summary   A long-document body on the doc shell: title block with a meta strip, numbered sections, guide and example blocks, part heads, a fill-in slot and a checklist. Taken as text.
 @tags      template, document, proposal, postmortem, form, sections, guide, example, numbered, part head
 @requires  layout.doc-shell, kit.callout, kit.table
+@files     kit/templates/doc.css
+@provides  none
 @config    copy | kit/templates/doc.html.txt into your page; take kit/templates/doc.css, kit/layout/doc-shell.css and .js, kit/callout.css and kit/table.css by reference
 @config    html | one .kit-tdoc article: .kit-tdoc-head, then .kit-doc.kit-tdoc-shell with .kit-doc-sec.kit-tdoc-sec sections; ids are bare tokens
 @config    script | Kit.docShell.mount(document.getElementById("doc-shell"))
-@tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --warn --f-ui --f-display --f-mono --seam? --gold-leaf?
+@tokens    --panel --sunk --ink --ink-2 --rule --warn --f-ui --f-display --f-mono --seam? --gold-leaf?
 @globals   none
 @db        none
+@source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a proposal document, a postmortem guide with guide and example blocks, a fill-in template shell, a numbered-section page and a part-head page
+@preview   {"render": "template.doc", "samples": ["kit/templates/doc.html.txt"]}
+@changed   The numbers are a CSS counter on the shell, not typed into headings.
 -->
 <!-- part:kit.template.doc -->
 <link rel="stylesheet" href="kit/layout/doc-shell.css">

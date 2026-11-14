@@ -16,8 +16,10 @@
  *     me         the name that reads as "You" (default none: names are shown as given)
  *     stateEnum  vocabulary enum of a move's state (default "state")       timeZone  for days and clock times (default: the viewer's; the preview passes "UTC")
  *     maxNodes   most nodes on the track (default 8)
+ * Methods of what Kit.cardHistory.mount returns: update(data), jump(index)
  *
  * @id        pattern.card-history
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -25,11 +27,15 @@
  * @summary   One record's story: a track with a node where its state changed, the turns as ask, answer and reply, then moves grouped by day.
  * @tags      history, activity, turns, conversation, journey, track, moves, record
  * @requires  kit.tokens, kit.vocab
+ * @files     kit/patterns/card-history.css, kit/samples/card-history.json
  * @provides  Kit.cardHistory.mount
  * @config    Kit.cardHistory.mount(box, opts) | moves [{at, by, what, state}], turns [{n, ask {by, text}, answer {by, choice, reply, approval, at} | null, reply {by, text}}], me, stateEnum, timeZone, maxNodes; returns {update, jump, destroy}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --accent-soft? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's card history | the journey track, the conversation of turns and the moves by day
+ * @preview   {"render": "pattern.card-history", "samples": ["kit/samples/card-history.json"]}
+ * @changed   Generalised from one board's card log: moves and turns are plain lists the page supplies.
  */
 (function () {
 'use strict';

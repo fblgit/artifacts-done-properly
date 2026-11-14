@@ -34,6 +34,7 @@
  * The picker: the page dims, the [data-part] under the pointer is ringed with its title, arrows move between blocks, Enter or a click picks, Esc leaves; announced through role=status.
  *
  * @id        pattern.assist
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.2
@@ -41,7 +42,9 @@
  * @summary   The engine of a page that works with Claude: pick a block, send it as a request a watching Claude Code session does and reports on, or ask Claude at once; requests, turns, conversations and presence live in the db.
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
  * @requires  kit.tokens, kit.dom
- * @provides  Kit.assist.start, Kit.assist.memory, Kit.assist.parseShortcut
+ * @files     kit/samples/assist.json
+ * @provides  Kit.assist.start, Kit.assist.memory, Kit.assist.parseShortcut, Kit.assist.matches, Kit.assist.state
+ * @related   pattern.assist-panel, pattern.request-card, pattern.answer-queue, pattern.questions
  * @config    Kit.assist.start(opts) | db, user, comments, sample, config (handles or the promises claude.use returns), page (window.ADP), project, now, titles {part id: title}, manifest (for hashes), words {lane: word}, frame (the Ask now framing), onPick(pick) after the shortcut, shortcut false, pingTimeout, seed (the memory store); returns the engine
  * @config    assist.enabled | switch, bool, default true: the lane exists on the page (button, shortcut, panel)
  * @config    assist.lanes | switch, list, default ask, task, fix, design: the lanes the composer offers
@@ -49,8 +52,13 @@
  * @config    assist.presence-minutes | switch, enum 2 | 5 | 15, default 5: how fresh a presence doc must be to read watching
  * @config    assist.shortcut | switch, text, default Mod+Shift+K: the picker's key combination
  * @config    capabilities | db with requests/, conversations/ and presence/ writable at edit, user, comments {customAnchors: true}, sample (docs/assist.md)
+ * @tokens    --ink --panel --rule --accent --accent-ink --f-ui --seam? --radius? --shadow?
  * @globals   none
- * @db        reads requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; presence; config/current / writes requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; changes / presence/<session> is never written by the page, nor asked of a session. The page creates a request and reopens it on a reply; only a session moves it forward. Each send and reply also appends changes/d-<ms> unless log.data-changes is off.
+ * @db        reads requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; presence; config/current / writes requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; changes / note presence/<session> is never written by the page, nor asked of a session. The page creates a request and reopens it on a reply; only a session moves it forward. Each send and reply also appends changes/d-<ms> unless log.data-changes is off.
+ * @source    Catalog batch 16, 2026-10-26 | kit/patterns/assist.js 0.1.0 | requests with a scope and a quote, turns, Ask now, presence, ping, the block picker and the shortcut
+ * @source    Catalog batch 16, 2026-10-26 | a drafting-table board's request engine | the request doc and its trailer comment, the queue, ack, working and done states, stuck after three minutes, ping with its 90 s nudge
+ * @preview   {"render": "pattern.assist", "samples": ["kit/samples/assist.json"]}
+ * @changed   presence() also reads watching from the platform's own answer (canSendToClaude available), so a session that watches and has not acted lately is not shown as gone.
  */
 (function () {
 'use strict';

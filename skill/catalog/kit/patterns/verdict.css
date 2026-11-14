@@ -10,8 +10,10 @@
  *
  * Masthead:      <header class="kit-mast"> <p class="kit-mast-stamp">Draft for review</p> <h1>Title</h1> <p class="kit-mast-dek">Subtitle.</p> <p class="kit-mast-verdict" aria-live="polite">One sentence that states the claim.</p> <p class="kit-mast-meta"><span>Author</span><span>Date</span></p> </header>
  *                .kit-mast-verdict.swap fades the sentence out (toggle it around a text change; reduced motion skips the fade).
+ * CSS classes: .kit-verdict .kit-status .kit-mast
  *
  * @id        pattern.verdict
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -19,12 +21,17 @@
  * @summary   An assessment verdict box, a status banner with a badge and a masthead with a stamp and a swappable claim sentence.
  * @tags      verdict, status, banner, badge, masthead, stamp, assessment, claim, ready, blocked
  * @requires  none
+ * @files     kit/samples/verdict.json
+ * @provides  none
  * @config    markup | aside.kit-verdict[data-tone] > p.kit-verdict-k + p.kit-verdict-w + ul
  * @config    markup | div.kit-status[data-tone][role=status] > span.kit-status-badge + p + p.kit-status-meta
  * @config    markup | header.kit-mast > p.kit-mast-stamp + h1 + p.kit-mast-dek + p.kit-mast-verdict + p.kit-mast-meta
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --ok --warn --danger --info? --shadow
+ * @tokens    --panel --ink --ink-2 --accent --f-ui --f-mono --f-display --ok --warn --danger --info?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | an assessment verdict box, a status banner with a badge, a masthead with a stamp and a masthead claim with a swapping verdict sentence
+ * @preview   {"render": "pattern.verdict", "samples": ["kit/samples/verdict.json"]}
+ * @changed   The status banner has no coloured left edge; the badge carries a dot and a word.
  */
 .kit-verdict { --tone: var(--ink-2); display: grid; gap: 8px; padding: 16px 20px; border-radius: 14px; background: color-mix(in srgb, var(--tone) 7%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--panel)); color: var(--ink); font: 15px/1.55 var(--f-ui); min-width: 0; }
 .kit-verdict[data-tone="ok"], .kit-status[data-tone="ok"] { --tone: var(--ok); }

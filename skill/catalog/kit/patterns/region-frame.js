@@ -17,6 +17,7 @@
  *   icon: a Node, an svg string, or an icon name (looked up in Kit.iconset when it is loaded, otherwise ignored)
  *
  * @id        pattern.region-frame
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -24,12 +25,16 @@
  * @summary   The anatomy that opens any region: an accent lead-in, icon chip, number, eyebrow, title and lede; a section label with a count; a panel led by an accent label; and a designed empty state.
  * @tags      header, section, region, panel, empty state, label, eyebrow, lede
  * @requires  kit.tokens
+ * @files     kit/patterns/region-frame.css, kit/samples/region-frame.json
  * @provides  Kit.region.header, Kit.region.label, Kit.region.panel, Kit.region.empty, Kit.region.section
  * @config    Kit.region.section({header: {title, lede, eyebrow, num, icon}, body}) | body takes a Node, a string or an array
  * @config    Kit.icons | optional: an icon given by name is looked up in Kit.iconset when kit/icons.js is loaded
- * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-soft --accent-ink --f-ui --f-display --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-soft --accent-ink --f-ui --f-display? --f-mono --gold-leaf? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a component family's pane header, section label, info panel and empty state | the anatomy of each
+ * @preview   {"render": "pattern.region-frame", "samples": ["kit/samples/region-frame.json"], "uses": ["kit.icons"]}
+ * @changed   The four pieces share one stylesheet, and the empty state is the piece the catalog lacked.
  */
 (function () {
 'use strict';

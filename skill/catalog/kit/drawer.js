@@ -19,6 +19,7 @@
  * Optional custom properties: --scrim --rim --pool --glz-r-xl.
  *
  * @id        kit.drawer
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -26,11 +27,16 @@
  * @summary   A floating panel at the right with a head, a scrolling body and a pinned foot; Escape closes it and focus goes back to the button that opened it.
  * @tags      drawer, side panel, detail, sheet, modal, focus
  * @requires  kit.tokens
+ * @files     kit/drawer.css, kit/samples/drawer.json
  * @provides  Kit.drawer.open, Kit.drawer.current, Kit.drawer.close
  * @config    Kit.drawer.open({title, head, body, foot, modal, host, opener, onClose}) | head, body and foot take a Node, a string or an array of Nodes; host must be a positioned element, default document.body
- * @tokens    --panel --ink --ink-2 --rule --rule-2 --shadow --f-ui --f-display --accent
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --shadow --f-ui --f-display? --accent --glz-r-xl? --rim? --scrim? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's detail drawer | open, close and replace on another record
+ * @source    Catalog harvest, 2026-10-25 | the same console's deposit drawer | the scrim, Escape and the modal mode
+ * @preview   {"render": "kit.drawer", "samples": ["kit/samples/drawer.json"]}
+ * @changed   One API for both modes the sources had (beside the page, and modal with a scrim); a bottom sheet at phone width instead of dropping below the page.
  */
 (function () {
 'use strict';

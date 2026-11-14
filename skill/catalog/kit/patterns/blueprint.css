@@ -12,8 +12,10 @@
  *   <span class="kit-bp-feel" data-feel="lo|mid|hi">Anxious</span>   the feeling as a word, with a dot that repeats low, middle or high
  *   <span class="kit-bp-pain">…</span>, <span class="kit-bp-opp">…</span>   a pain point and an opportunity, each led by its own word
  *   <span class="kit-bp-has">…</span>   the support a step leans on, in small mono
+ * CSS classes: .kit-bp .kit-bp-line .kit-bp-mot .kit-bp-feel
  *
  * @id        pattern.blueprint
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -21,10 +23,15 @@
  * @summary   Swimlane table: touchpoints, what the person does and feels, frontstage, backstage and support, per step, with the lines of interaction and visibility.
  * @tags      blueprint, service blueprint, swimlane, journey, touchpoints, frontstage, backstage, moment of truth, lanes
  * @requires  kit.table
+ * @files     kit/samples/blueprint.json
+ * @provides  none
  * @config    markup | div.kit-table-box.kit-bp > table.kit-table > thead (Lane + steps), tbody > tr > th[scope=row] + td, tr.kit-bp-line > td[colspan] > div > span
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --ok --warn --danger --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --ok --warn --danger --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a service blueprint table with line-of-interaction rows, moment-of-truth tags, feeling words and pain and opportunity notes
+ * @preview   {"render": "pattern.blueprint", "samples": ["kit/samples/blueprint.json"]}
+ * @changed   The feeling is a word first; the dot (red, amber, green) only repeats it.
  */
 .kit-bp { min-width: 0; max-width: 100%; }
 .kit-bp .kit-table { min-width: 1180px; font-size: 14px; }

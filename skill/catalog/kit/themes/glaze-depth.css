@@ -8,8 +8,10 @@
  * contract, so a part still draws, flat.
  * Kit.tokens CONTRACT lists them as glaze-surfaces: the tokens of this file plus --panel --sunk --ink --ink-2 --ink-3 --accent --accent-ink --f-ui --f-mono.
  * Light on :root, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]; Glaze follows the system (the source theme pinned light).
+ * Provides (no global): :root depth tokens (light, dark, toggle); --rim; --pool; --seam-0..4; --ok-bead; --ok-ink.
  *
  * @id        theme.glaze-depth
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.1.2
@@ -17,12 +19,18 @@
  * @summary   The tokens the glossy Glaze parts read and the flat Glaze lacks: a lit rim, a pooled foot, gold seam stops, a bead and an ink for each meaning, neutral kind greys.
  * @tags      glaze, depth, porcelain, tenmoku, gold seam, bead, tokens, gloss
  * @requires  theme.glaze, kit.tokens
+ * @files     kit/themes/glaze-depth.json
+ * @provides  none
  * @config    fonts | the same as Glaze: Newsreader, Nunito, JetBrains Mono and Kalam from Google Fonts (the URL is in the json)
  * @config    load order | kit/themes/glaze.css, then kit/themes/glaze-depth.css; the json is the merged light and dark maps
  * @config    Kit.tokens CONTRACT | kit/tokens.js is not edited here: add the depth tokens to a 'glaze-surfaces' part of CONTRACT with both themes' values (they are listed in the css header)
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's Glaze skin | the token contract: ground, light and depth, edges, gold, the five glazes, ornaments, the job log, identity and kind greys; the structural radii and shadows
+ * @preview   {"render": "theme.glaze-depth", "samples": ["kit/themes/glaze-depth.json"]}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
  */
 :root {
   --sunk-2: #dce4e7;

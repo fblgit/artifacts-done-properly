@@ -21,6 +21,7 @@
  * Also load kit/vocab.css.
  *
  * @id        viz.bubbles
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -28,12 +29,17 @@
  * @summary   The same records drawn as clusters of packed bubbles in a seam ring, or as strips on a square-root time axis that keeps overlapping items apart, with a lens line for the one in focus.
  * @tags      bubbles, clusters, lanes, scale, square root, sunflower, lens, records, inventory
  * @requires  viz.seal, kit.vocab, kit.tooltip
+ * @files     kit/viz/bubbles.css, kit/samples/bubbles.json
  * @provides  Kit.bubbles.mount, Kit.bubbles.packing
  * @config    Kit.bubbles.mount(box, {records, groups, layout, scale, filter, lens, onPick, onAction, orbits}) | records [{id, group, value, state, glyph, label, sub, ring}], groups [{key, label}], scale {name, f, ticks, max, nowLabel}; layout clusters | lanes (| orbits with orbits: true)
  * @config    handle | {setLayout(name), setFilter(fn), select(id), update(patch), destroy()}
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --seam? --seam-0? --seam-1? --seam-2? --seam-3? --seam-4? --hi? --pebble-hi? --rim? --pool? --sunk-2?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --seam? --seam-<n>? --hi? --pebble-hi? --rim? --pool? --sunk-2? --danger --danger-ink? --edge? --edge-gold? --glz-r-l? --glz-r-m? --on-state?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | the bubble mark, the cluster, lane and orbit pictures and the lens line
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the pool, seam ring, halo and gloss
+ * @preview   {"render": "viz.bubbles", "samples": ["kit/samples/bubbles.json"]}
+ * @changed   Groups, state words, the scale and its ticks are config; the axis names its scale and places its ticks with the same function as the bubbles.
  */
 (function () {
 'use strict';

@@ -8,8 +8,10 @@
  * Text pairs (--ink, --ink-2, --ok, --warn, --danger, --info, --accent on --panel, --sunk and --bg) are 4.5:1 or more in both themes; --seam is 3:1 or more on --panel.
  * It also states the feel the templates already gave it (--outline, --edge-w, --text-size, --leading, --head-case, no ground texture), so every theme sets the same names.
  * Fonts: https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle); --seam; --gold-leaf.
  *
  * @id        theme.glaze
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.1.2
@@ -17,11 +19,17 @@
  * @summary   Porcelain by day, tenmoku by night, gold seams: moon-white panels on a blue-grey ground, a kiln-dark night and five glazes for meaning.
  * @tags      palette, tokens, colours, dark mode, glaze, porcelain, tenmoku, gold, serif, control
  * @requires  none
+ * @files     kit/themes/glaze.json
+ * @provides  none
  * @config    fonts | Newsreader, Nunito, JetBrains Mono and Kalam from Google Fonts (the URL is in the json and the css header)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 2 artifacts' index.html | the Glaze skin's :root token blocks (moon-white porcelain and tenmoku; the serif display and rounded body of the second)
+ * @preview   {"render": "theme.glaze", "samples": ["kit/themes/glaze.json"], "uses": ["kit.chrome", "kit.callout"]}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
  */
 /* Layout: none; a palette and type for any page. */
 :root {

@@ -12,6 +12,7 @@
  *        phases      [{name, when, state: "done" | "now" | "next", text, items: [string]}]
  *
  * @id        viz.timeline
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -19,12 +20,19 @@
  * @summary   Event timeline with glyph-and-word status dots that light linked cards, and numbered roadmap phases.
  * @tags      timeline, events, roadmap, phases, status, highlight, history, milestones
  * @requires  none
+ * @files     kit/viz/timeline.css, kit/samples/timeline.json
  * @provides  Kit.timeline.mount, Kit.timeline.phases
  * @config    Kit.timeline.mount(box, opts) | events [{id, when, title, text, status, links} | {marker}], statuses {key: {label, tone, glyph}}, targets, onHighlight(ids), label, caption
  * @config    Kit.timeline.phases(box, opts) | phases [{name, when, state: done | now | next, text, items}], label
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --accent-soft --ok --warn --danger --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --accent --accent-ink --accent-soft --ok --warn --danger --seam? --f-display?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a change report, index.html | the event timeline with applied, dry-run and superseded dots
+ * @source    Catalog harvest, 2026-10-25 | a decisions board, index.html | the timeline that lights its cards
+ * @source    Catalog harvest, 2026-10-25 | a roadmap, index.html | numbered phases
+ * @source    Catalog harvest, 2026-10-25 | a dated review table, index.html | the timeline table with a marked row
+ * @preview   {"render": "viz.timeline", "samples": ["kit/samples/timeline.json"]}
+ * @changed   Status is a glyph and a word as well as a colour; the light follows keyboard focus as well as the pointer.
  */
 (function () {
 'use strict';

@@ -26,6 +26,7 @@
  * Optional custom properties: --seam.
  *
  * @id        kit.mermaid
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -33,13 +34,17 @@
  * @summary   Mermaid diagrams in the page's own tokens, redrawn on a theme change, in a frame with caption, legend and a sideways scroll.
  * @tags      mermaid, diagram, flowchart, sequence, theme, dark mode, legend, caption, scroll
  * @requires  none
+ * @files     kit/mermaid.css, kit/samples/mermaid.json
  * @provides  Kit.mermaid.mount, Kit.mermaid.palette, Kit.mermaid.load
  * @config    Kit.mermaid.mount(root, opts) | selector (default .kit-mmd), watch (elements whose data-theme, class or style mean a redraw), src
  * @config    markup | figure.kit-mmd-frame > figcaption.kit-mmd-cap + .kit-mmd-scroll > pre.kit-mmd (+ p.kit-legend)
  * @config    network | cdn.jsdelivr.net/npm/mermaid@11.4.1 when the page has no window.mermaid
- * @tokens    --panel --sunk --bg --ink --ink-2 --rule --accent --accent-ink --accent-soft --f-ui --f-mono
+ * @tokens    --panel --sunk --bg --ink --ink-2 --rule --accent --accent-ink --accent-soft --f-ui --f-mono --seam? --c? --kit-mmd-min?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | Mermaid themed from page tokens (hex resolver, %token% placeholders), the platform's theme-aware Mermaid runtime, and three diagram frames (caption, legend swatches, a scroll frame with a minimum width)
+ * @preview   {"render": "kit.mermaid", "samples": ["kit/samples/mermaid.json"], "uses": ["layout.topbar"]}
+ * @changed   Judged from the draft: kept, but on its own class (.kit-mmd) with a per-diagram directive instead of re-theming the platform's pre.mermaid, which would race the platform's own redraw.
  */
 (function () {
 'use strict';

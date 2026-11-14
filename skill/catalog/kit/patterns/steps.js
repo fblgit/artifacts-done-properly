@@ -23,6 +23,7 @@
  * CSS classes: .kit-steps .kit-step .kit-steps-phase
  *
  * @id        pattern.steps
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -30,6 +31,7 @@
  * @summary   Big-number step list with done-when lines, id chips, gate steps and phases that count their own progress; the ticks stay in the browser.
  * @tags      steps, checklist, runbook, progress, done when, gate, numbered list, phases
  * @requires  none
+ * @files     kit/patterns/steps.css, kit/samples/steps.json
  * @provides  Kit.steps.render, Kit.steps.mount
  * @config    Kit.steps.render(box, opts) | phases [{id, title, note, steps}] or steps; step {id, title, body, done, ids, gate, details}; key, persist, reset, onChange
  * @config    markup | ol.kit-steps > li.kit-step[data-step] > div.kit-step-body, for Kit.steps.mount or no script at all
@@ -37,6 +39,9 @@
  * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 6 artifacts' index.html | big-number steps, numbered steps with a done-when line, steps with id chips, a persistent checklist with per-phase progress, and runbook step cards with gates and saved ticks
+ * @preview   {"render": "pattern.steps", "samples": ["kit/samples/steps.json"]}
+ * @changed   The gate is a ringed word and an underlined number, not a coloured card edge.
  */
 (function () {
 'use strict';

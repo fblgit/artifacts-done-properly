@@ -13,8 +13,10 @@
  *   The level word is the label; the dots repeat it (one filled for tier 3, three for tier 1).
  *
  * Option table: render the options with Kit.table.render({highlight: row => row.picked && "picked"}) and put .kit-pill in a cell for a verdict word (data-tone ok|warn|danger|muted).
+ * CSS classes: .kit-options .kit-option .kit-tiers .kit-tier .kit-pill
  *
  * @id        pattern.options
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -22,12 +24,17 @@
  * @summary   Option cards with pros and cons and a picked card, tier cards from strongest to partial, and the pill that marks a verdict in a comparison table row.
  * @tags      options, compare, pick, recommendation, pros and cons, tiers, decision, cards
  * @requires  kit.table
+ * @files     kit/samples/options.json
+ * @provides  none
  * @config    markup | div.kit-options > article.kit-option[data-pick] > p.kit-option-k + h4 + p + ul.kit-option-pc > li[data-pc=pro|con]
  * @config    markup | div.kit-tiers > article.kit-tier[data-tier=1|2|3] > p.kit-tier-l + h4 + p
  * @config    Kit.table.render | with highlight: row => row.picked && 'picked' and span.kit-pill[data-tone] in a cell
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --accent-soft --ok --danger --warn --shadow --seam?
+ * @tokens    --panel --ink --ink-2 --rule --accent --f-ui --f-mono --f-display --accent-soft --ok --danger --warn --shadow --seam? --accent-ink?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | an option comparison table with the picked row, pick-highlighted cards, tier cards from strongest to partial, and principle cards
+ * @preview   {"render": "pattern.options", "samples": ["kit/samples/options.json"]}
+ * @changed   The picked card is outlined all round and labelled, not marked by a coloured edge.
  */
 .kit-options, .kit-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; margin: 0; padding: 0; min-width: 0; }
 .kit-option, .kit-tier { position: relative; display: grid; gap: 6px; align-content: start; min-width: 0; padding: 14px 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); color: var(--ink); font: 15px/1.5 var(--f-ui); }

@@ -11,6 +11,7 @@
  *        items          [{title, before: {label, text}, after: {label, text}, note}]   label is a short heading inside the block (optional)
  *
  * @id        viz.compare
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -18,12 +19,18 @@
  * @summary   A before, after and wipe stage over live DOM, and before/after mechanism cards.
  * @tags      compare, before, after, wipe, diff, cards, mechanism, stage
  * @requires  none
+ * @files     kit/viz/compare.css, kit/samples/compare.json
  * @provides  Kit.compare.stage, Kit.compare.cards
  * @config    Kit.compare.stage(box, opts) | before and after (a Node or a function returning one), labels {before, after}, mode: before | after | wipe, wipe 0 to 100, title, caption, label
  * @config    Kit.compare.cards(box, opts) | items [{title, before {label, text}, after {label, text}, note}], beforeLabel, afterLabel, label
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --accent-soft --ok --danger --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --accent --accent-ink --seam? --f-display?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a design page, parts/views.js and parts/mount.js | stage(), bindStages(): the before/after/wipe stage
+ * @source    Catalog harvest, 2026-10-25 | a review page, index.html | the before and after mechanism cards
+ * @source    Catalog harvest, 2026-10-25 | a comparison drawing, index.html | the before/after drawing
+ * @preview   {"render": "viz.compare", "samples": ["kit/samples/compare.json"]}
+ * @changed   The stage holds live DOM instead of a screenshot and a rendering, and the divider is a range input.
  */
 (function () {
 'use strict';

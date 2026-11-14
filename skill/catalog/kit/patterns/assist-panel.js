@@ -19,8 +19,10 @@
  *     onReveal(partId)   scroll to a block (block buttons on cards)     artifactUrl  for the nudge     me, names  as Kit.requestCard
  *     shortcut    the picker's key, shown in the hint (default the "assist.shortcut" switch, else Mod+Shift+K); the engine binds it: start it with onPick: p => panel.setScope(p, true)
  *     words       {title, lanes: {lane: word}, help: {lane: text}, send: {lane: text}, ...}
+ * Methods of what Kit.assistPanel.mount returns: setScope(pick, focus), pick(), show(view), focus()
  *
  * @id        pattern.assist-panel
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -28,13 +30,19 @@
  * @summary   The page's lane to Claude in one panel: whether a session watches, a composer (kind, block, words) that sends to a session or asks Claude at once, and the feed of request cards or the current conversation.
  * @tags      assist, claude, composer, chat, ask, task, fix, design, panel, requests, conversation, presence
  * @requires  kit.tokens, kit.vocab, kit.keep-state, pattern.assist, pattern.block-picker, pattern.request-card, pattern.presence, kit.dom
+ * @files     kit/patterns/assist-panel.css, kit/samples/assist-panel.json
  * @provides  Kit.assistPanel.mount
+ * @related   pattern.assist, pattern.request-card, pattern.answer-queue, pattern.questions
  * @config    Kit.assistPanel.mount(box, opts) | engine (a Kit.assist engine, required), lanes, project, titles, onReveal(partId), artifactUrl, me, names, shortcut, words {title, kind, lanes, help, send}; returns {setScope, pick, show, focus, destroy}
  * @config    Kit.assist.start({..., onPick}) | onPick: p => panel.setScope(p, true), so the shortcut fills the composer and moves focus to the words
  * @config    ADP.config | optional: assist.lanes, assist.ask-now and assist.shortcut are read when the runtime is present
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --warn --f-ui --f-mono --seam? --f-display?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink? --accent-soft --warn --f-ui --f-mono --seam? --f-display?
  * @globals   none
- * @db        none
+ * @db        note none directly; the engine writes requests/, conversations/ and their changes/ entries
+ * @source    Catalog batch 16, 2026-10-26 | a drafting board's bottom composer | the mode switch, the kept draft, the byte count, Ctrl+Enter, the reason line
+ * @source    Catalog batch 16, 2026-10-26 | the same board's Claude pane | open or all requests, the session line and Ping above them
+ * @preview   {"render": "pattern.assist-panel", "samples": ["kit/samples/assist-panel.json"]}
+ * @changed   Ask now (an immediate answer) and the session lanes share one composer; the source had a separate bar per lane.
  */
 (function () {
 'use strict';

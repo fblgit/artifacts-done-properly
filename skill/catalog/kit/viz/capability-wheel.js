@@ -18,6 +18,7 @@
  * Kit.vocab is used when it is present (the core's glyph); the wheel works without it.
  *
  * @id        viz.capability-wheel
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -25,12 +26,17 @@
  * @summary   Eight beads round a core: lit beads are what something may do, joined by gold seams; a text alternative lists them; a button bar can light everything that has one.
  * @tags      wheel, capability, permissions, abilities, ring, beads, role, toggle
  * @requires  kit.tokens
+ * @files     kit/viz/capability-wheel.css, kit/samples/capability-wheel.json
  * @provides  Kit.capabilityWheel.make, Kit.capabilityWheel.bar, Kit.capabilityWheel.mount
  * @config    Kit.capabilityWheel.make(caps, allowed, {name, glyph, small}) | caps [{key, label, hint}] (3 to 12), allowed an array or Set of keys; returns an svg with role=img
  * @config    Kit.capabilityWheel.mount(box, {caps, wheels, bar}) | wheels [{id, name, sub, allowed, glyph}]; bar false leaves the button bar out
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --accent-ink --seam? --edge? --edge-gold? --rim? --pool?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --accent-ink --seam? --edge? --edge-gold? --rim? --pool? --glz-r-l? --glz-sh-1? --sunk-2?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page | the capability wheel function and its beads, seams and label placement
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page | the ability buttons that light everything that has one
+ * @preview   {"render": "viz.capability-wheel", "samples": ["kit/samples/capability-wheel.json"]}
+ * @changed   The count is any number from 3 to 12 (angles from n), the abilities and the lit set are config.
  */
 (function () {
 'use strict';

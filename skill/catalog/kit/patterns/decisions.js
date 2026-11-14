@@ -21,6 +21,7 @@
  * Doc written: {question, order, answer, label, answeredBy, answeredAt}. The Claude session writes {claude: {step, text}} on the same doc, or the board reads it from its request docs.
  *
  * @id        pattern.decisions
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -28,14 +29,19 @@
  * @summary   Decision cards where one tap records the owner's answer and a status line shows where Claude is with it.
  * @tags      decisions, owner, record, answer, buttons, claude, status, ask claude, db
  * @requires  none
+ * @files     kit/patterns/decisions.css, kit/samples/decisions.json
  * @provides  Kit.decisions.mount
- * @config    Kit.decisions.mount(root, {decisions, records, collection, db | save, who, canWrite}) | decisions [{id, order, question, why, options [{key, label}], allowOther}]; records is what is already recorded
+ * @config    Kit.decisions.mount(root, {decisions, records, collection, db \| save, who, canWrite}) | decisions [{id, order, question, why, options [{key, label}], allowOther}]; records is what is already recorded
  * @config    afterRecord(decision, doc, cardEl) | where the board sends the answer to Claude; with kit.claude-lane that is lane.sendRequest(text, cardEl, decision.id)
  * @config    claude(decision, record) | optional: returns {step, text} for the status line; the default reads record.claude. step is queue, ack, pending or done
  * @config    setRecords(map) | from the board's live subscription to the collection
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono --f-display
+ * @tokens    --bg --panel --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --warn --f-ui --f-mono --f-display? --seam?
  * @globals   none
- * @db        reads decisions (or the configured collection), through the board's own snapshot, handed to setRecords / writes decisions/<decision id>: {question, order, answer, label, answeredBy, answeredAt} / A real artifact declares the db capability, and the comments capability (ask Claude) when afterRecord forwards the answer. The Claude session writes {claude: {step, text}} on the same doc. kit.claude-lane is the optional way to forward and track the request; this file does not call it, so it is not required.
+ * @db        reads decisions (or the configured collection), through the board's own snapshot, handed to setRecords / writes decisions/<decision id>: {question, order, answer, label, answeredBy, answeredAt} / note A real artifact declares the db capability, and the comments capability (ask Claude) when afterRecord forwards the answer. The Claude session writes {claude: {step, text}} on the same doc. kit.claude-lane is the optional way to forward and track the request; this file does not call it, so it is not required.
+ * @source    Catalog harvest, 2026-10-25 | a proposal page's index.html | owner decision cards: record, change answer, something else, focus kept across redraws, live read of the collection
+ * @source    Catalog harvest, 2026-10-25 | a register page's index.html | the open, sent and done pills of a decision register
+ * @preview   {"render": "pattern.decisions", "samples": ["kit/samples/decisions.json"]}
+ * @changed   A status line for Claude's side (four steps, in words) is new; the source recorded the answer and stopped.
  */
 (function () {
 'use strict';

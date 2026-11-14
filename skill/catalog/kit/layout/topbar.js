@@ -20,8 +20,10 @@
  * The band above a sticky bar: add class kit-band to <body> and its ::before paints env(safe-area-inset-top) in the bar's colour.
  *
  * Theme state is data-theme on the target (absent, "light" or "dark"); the board token blocks follow the kit pattern (tokens.js).
+ * Also provides (not a global): the custom property --kit-topbar-h, the bar's height, set on heightOn.
  *
  * @id        layout.topbar
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -29,13 +31,17 @@
  * @summary   A sticky header with brand, section links that mark the one in view, and a three-state theme button; clears the phone's safe-area band.
  * @tags      layout, header, top bar, navigation, theme, toggle, dark mode, light mode, sticky, safe area
  * @requires  none
+ * @files     kit/layout/topbar.css, kit/samples/topbar.json
  * @provides  Kit.theme.create, Kit.topbar.mount
  * @config    Kit.topbar.mount(header, opts) | brand {name, sub, href}, links [{href, label}], theme (Kit.theme options or false), spy, scroller, heightOn
  * @config    Kit.theme.create(opts) | target (default the root element), storageKey (default none), modes, onChange(mode, resolved)
  * @config    state | data-theme on the target; the board's token blocks in the kit pattern
- * @tokens    --bg --panel --ink --ink-2 --rule --accent --f-ui --f-display --f-mono
+ * @tokens    --bg --panel --ink --ink-2 --rule --accent --f-ui --f-display --seam? --gold-leaf? --kit-topbar-max?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | sticky headers with a brand, a mono section nav and a theme button, and two theme-toggle scripts
+ * @preview   {"render": "layout.topbar", "samples": ["kit/samples/topbar.json"]}
+ * @changed   Three states instead of two, so a viewer can go back to following the OS.
  */
 (function () {
 'use strict';

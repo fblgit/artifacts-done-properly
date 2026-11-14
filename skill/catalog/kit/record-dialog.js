@@ -17,8 +17,10 @@
  *     selected the tab to open (default the first)      actions  Node[] shown at the right of the tag row
  *     host     element to open in (default document.body); a positioned element makes the dialog fill it instead of the viewport
  *   Escape closes; the handle's close() restores focus to opener (default: the element focused at open).
+ * Also provides (not globals): the classes .kit-rd and .kit-rd-cols.
  *
  * @id        kit.record-dialog
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -26,12 +28,17 @@
  * @summary   An upgrade of kit.chrome: a dialog for one record with a crown in its state colour, a tinted header (crumbs, id, close, title, tags), underline tabs and a two-column answer tab from 900px.
  * @tags      dialog, modal, tabs, record, crown, header, crumbs, detail, answer
  * @requires  kit.tokens, kit.tabs, kit.vocab
+ * @files     kit/record-dialog.css, kit/samples/record-dialog.json
  * @provides  Kit.recordDialog.open
+ * @extends   kit.chrome
  * @config    Kit.recordDialog.open(opts) | title, id, crumbs [{label, onClick}], tags [{label, tone}], tone, tabs [{id, label, count, render(panel) | node}], selected, actions, label, host, opener, onClose, onTab; returns {close, select, panel, setTone, isOpen, el}
  * @config    Kit.tabs and Kit.vocab | load kit/tabs.js, kit/tabs.css, kit/vocab.css first; without the vocabulary css the crown is the accent
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --shadow --scrim? --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-mono --f-display --shadow --scrim? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a component family's modal and tabs | an accent crown, a tinted header with crumbs, id and close, underline tabs, a body that scrolls
+ * @preview   {"render": "kit.record-dialog", "samples": ["kit/samples/record-dialog.json"], "uses": ["kit.vocab"]}
+ * @changed   Extends kit.chrome as new files; chrome.js and chrome.css are unchanged.
  */
 (function () {
 'use strict';

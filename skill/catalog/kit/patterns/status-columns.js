@@ -11,15 +11,17 @@
  *
  * API:
  *   Kit.statusColumns.mount(box, opts) -> {setGroup(key), filter(fn|null), update(cards), group(), destroy()}
- *     cards     [{id, title, state, owner, note, extras: [[label, value]], tags: [text]}]
+ *     cards     [{id, title, state, owner, note, extras: [[label, value]]}]
  *     groups    [{key, label, field, enum, none}]    the ways to group; default [{key: "state", label: "State", field: "state", enum: "state"}, {key: "owner", label: "Owner", field: "owner", none: "Unassigned"}]
  *               a group with an enum draws every worded value of it as a column, in the table's order; one without draws the distinct values, sorted, with the empty one last
  *     group     the key of the starting group (default the first)         limits  {value: n} the most cards a column should hold (state columns), or limit: n for all
  *     wide      the values whose column is wide (default: those whose tone in the table is "attention")
  *     reason    false skips the reason form (default true)                 onMove  (card, to, reason) => Promise|void; a rejected promise puts the card back
  *     remember  a localStorage key for the chosen group and the rails you opened (guarded)         label  the board's name for assistive tech
+ * Methods of what Kit.statusColumns.mount returns: setGroup(key), filter(fn), update(cards), group()
  *
  * @id        pattern.status-columns
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -27,11 +29,16 @@
  * @summary   Cards in one column per state or per a key you switch, the waiting column widest, empty columns folded to a rail, a limit per lane, a hover glimpse, and a move that asks for a reason.
  * @tags      kanban, columns, lanes, board, status, wip limit, rail, drag, glimpse, group by
  * @requires  kit.tokens, kit.vocab, kit.keep-state
+ * @files     kit/patterns/status-columns.css, kit/samples/status-columns.json
  * @provides  Kit.statusColumns.mount
- * @config    Kit.statusColumns.mount(box, opts) | cards [{id, title, state, owner, note, extras [[label, value]], tags}], groups [{key, label, field, enum, none}], group, limits {value: n} or limit, wide, reason, onMove(card, to, reason), remember, stateEnum, label; returns {setGroup, filter, update, group, destroy}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --accent-ink? --warn --danger
+ * @config    Kit.statusColumns.mount(box, opts) | cards [{id, title, state, owner, note, extras [[label, value]]}], groups [{key, label, field, enum, none}], group, limits {value: n} or limit, wide, reason, onMove(card, to, reason), remember, stateEnum, label; returns {setGroup, filter, update, group, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --accent-ink? --warn --danger --seam? --shadow?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's kanban skin | columns per state with the waiting one widest, empty columns as rails, the hover glimpse of a card
+ * @source    Catalog harvest, 2026-10-25 | a component family's task lanes | a switchable grouping key, a limit per lane that shows over-limit, a drop that asks to move
+ * @preview   {"render": "pattern.status-columns", "samples": ["kit/samples/status-columns.json"]}
+ * @changed   Columns, words and tones come from a vocabulary enum; the source named its own states.
  */
 (function () {
 'use strict';

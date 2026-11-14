@@ -27,6 +27,7 @@
  * CSS classes: .kit-si-form
  *
  * @id        pattern.secret-input
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -34,12 +35,16 @@
  * @summary   A form for putting a value in without ever showing what is stored: masked single or multi-line input with an eye toggle, a generate-instead switch, shape hints and a cleared field after sending.
  * @tags      secret, password, form, write-only, masked, input, generate, drawer
  * @requires  kit.drawer, kit.glaze-surfaces
- * @provides  Kit.secretInput.mount, Kit.secretInput.openDrawer, Kit.secretInput.check, Kit.secretInput.shapeFor
+ * @files     kit/patterns/secret-input.css, kit/samples/secret-input.json
+ * @provides  Kit.secretInput.mount, Kit.secretInput.openDrawer, Kit.secretInput.check, Kit.secretInput.shapeFor, Kit.secretInput.nameProblem
  * @config    Kit.secretInput.mount(root, {names, shapes, exists, generateOnly, multiline, onSubmit, nameRule, labels}) | onSubmit({name, value, note, generate, replace}) -> Promise; shapes [{startsWith | endsWith | equals, what, hex | length, multiline}]
  * @config    Kit.secretInput.openDrawer({title, lede, host, opener, focus, ...mountOptions}) | the same form in kit.drawer with Store and Cancel in the foot
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --danger --ok --f-mono --rim? --pool? --seam?
+ * @tokens    --sunk --ink --ink-2 --rule --f-ui --danger --ok --danger-soft? --ok-soft?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console’s deposit drawer | the name field with a list, the masked value with an eye, the generate switch, the shape hints and checks, the multi-line masked key, clearing the value before sending
+ * @preview   {"render": "pattern.secret-input", "samples": ["kit/samples/secret-input.json"], "uses": ["pattern.confirm-sheet"]}
+ * @changed   Shapes are data and the check has no patterns in it.
  */
 (function () {
 'use strict';
