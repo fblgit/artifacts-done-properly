@@ -1821,12 +1821,13 @@
   {
    "kind": "component",
    "group": "Board kit",
-   "version": "0.1.2",
+   "version": "0.1.3",
    "status": "new",
    "globals": [
     "htm-preact"
    ],
    "changed": [
+    "0.1.3: the header asks a session for working on long work and done; no ack names or times.",
     "0.1.2: ListenHint reads the presence doc adp.py requests writes: presence/<presenceKey>, else the freshest presence doc, with at in ms or ISO.",
     "0.1.1 (this catalog’s copy): the queue strip counts read --ink-2, a waiting count reads --ink on its --warn tint, and the listening line reads --ink beside its green dot, all 4.5:1 or more in both themes.",
     "0.1.1: the header names the .faint and .dot classes it takes from kit/chrome.css."
@@ -1834,7 +1835,7 @@
    "id": "kit.claude-lane",
    "name": "Claude lane",
    "summary": "Sends a request to the Claude Code session that has the page open, queues it on the board when nobody listens, and shows each request’s answer state: queued, acknowledged, working, answered.",
-   "about": "sendRequest(text, anchorEl, recordId) writes the request doc first, then delivers it through comments.sendToClaude when a session listens; otherwise the doc waits for the next session. The session writes back ack, working with progress lines, and done with a response, and the lane paints each step. ListenHint says whether a session is listening, QueueStrip counts requests per step, ReqList shows the requests about one record.",
+   "about": "sendRequest(text, anchorEl, recordId) writes the request doc first, then delivers it through comments.sendToClaude when a session listens; otherwise the doc waits for the next session. The session writes back working with progress lines and done with a response, and the lane paints each step. ListenHint says whether a session is listening, QueueStrip counts requests per step, ReqList shows the requests about one record.",
    "tags": [
     "claude",
     "claude code",
@@ -1850,8 +1851,8 @@
     {
      "path": "kit/claude-lane.js",
      "role": "script",
-     "sha256": "9f2b1ac4150dcc048c6341a76326b3d0d9c418a366639852a2799a52edc35ff3",
-     "bytes": 11576
+     "sha256": "f59d3e33c13ba515a73b544033be50be17b0e46e0745bdc53e694ebfc4430290",
+     "bytes": 11523
     },
     {
      "path": "kit/claude-lane.css",
@@ -1900,7 +1901,7 @@
      "writes": [
       "requests: {text, itemId, status, delivered, author, created}, then {delivered, why, sentAt}"
      ],
-     "note": "The Claude Code session writes state ack, state working with progress[{at, text}], and status done with response."
+     "note": "The Claude Code session writes state working with progress[{text}] on long work, and status done with response."
     },
     "tokens": [
      "--panel",
@@ -1933,8 +1934,8 @@
      "what": "the same lane with ping and refresh states, which stay board code"
     }
    ],
-   "hash": "3978fa87ac47",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "437a175b2b93",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {
@@ -13833,7 +13834,7 @@
   {
    "kind": "component",
    "group": "Patterns",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "status": "new",
    "id": "pattern.assist",
    "name": "Assist engine",
@@ -13855,8 +13856,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "9b5e9c4862fe3b94235bdc5141de2510782a4d25c310bbb973caadccfa566afe",
-     "bytes": 33635
+     "sha256": "44fa4547c7ea4bca8967bf3820ddad818a5e2b4577335e569fff06a11a51379a",
+     "bytes": 33532
     },
     {
      "path": "kit/samples/assist.json",
@@ -13907,7 +13908,8 @@
     }
    ],
    "changed": [
-    "presence() also reads watching from the platform's own answer (canSendToClaude available), so a session that watches and has not acted lately is not shown as gone."
+    "presence() also reads watching from the platform's own answer (canSendToClaude available), so a session that watches and has not acted lately is not shown as gone.",
+    "The comment asks a session for one write (status done and response) and no presence, ack names or times."
    ],
    "related": [
     "pattern.assist-panel",
@@ -13915,10 +13917,10 @@
     "pattern.answer-queue",
     "pattern.questions"
    ],
-   "hash": "e2d56cddd80c",
+   "hash": "f96b929a1b4c",
    "at": "2026-11-14T00:00:00Z",
    "by": "claude-fable",
-   "about": "Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session moves the request through ack, working (with progress lines) and done (response, changed parts, version), and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.",
+   "about": "Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session answers the request with done (response, changed parts, version), after working (progress lines) if long, and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.",
    "needs": {
     "config": [
      [
@@ -13966,7 +13968,7 @@
       "conversations/*/messages",
       "changes"
      ],
-     "note": "presence/<session> is written by the watching sessions, never by the page. The page creates a request and reopens it on a reply; only a session moves it forward. Each send and reply also appends changes/d-<ms> unless log.data-changes is off."
+     "note": "presence/<session> is never written by the page, nor asked of a session. The page creates a request and reopens it on a reply; only a session moves it forward. Each send and reply also appends changes/d-<ms> unless log.data-changes is off."
     },
     "tokens": [
      "--ink",
@@ -14093,7 +14095,7 @@
   {
    "kind": "component",
    "group": "Patterns",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "pattern.request-card",
    "name": "Request card",
@@ -14114,8 +14116,8 @@
     {
      "path": "kit/patterns/request-card.js",
      "role": "script",
-     "sha256": "606e9084f6d814893768b479fe9a86beaf174df0554f5faba3a5272712554dfa",
-     "bytes": 16115
+     "sha256": "e0122bc22775bea5365915a8a17960edded38bf8007d5fec63736db5f696f905",
+     "bytes": 16100
     },
     {
      "path": "kit/patterns/request-card.css",
@@ -14160,7 +14162,8 @@
    "changed": [
     "The track is one seam with a word under every station; the source coloured four segments.",
     "Replies are append-only turns read through the engine; the source rewrote the whole turns list.",
-    "A stuck request says that nothing failed and what it waits for."
+    "A stuck request says that nothing failed and what it waits for.",
+    "The header lists the kinds a session answers: task, fix, design note."
    ],
    "optional": [
     "pattern.assist",
@@ -14172,10 +14175,10 @@
     "pattern.answer-queue",
     "pattern.questions"
    ],
-   "hash": "ee8359526437",
-   "at": "2026-11-13T00:00:00Z",
+   "hash": "91d15d6f46bf",
+   "at": "2026-11-14T00:00:00Z",
    "by": "claude-fable",
-   "about": "Kit.requestCard.mount(box, {engine, rid}) follows one request through the assist engine (engine.thread and engine.reply); mount(box, {request, thread, onReply}) draws the same card from data. The header says what kind of request it is (question, task, fix, design note) with a glyph, which block it is about (a button that shows the block when onReveal is given) and when it was sent. The track is four stations on one seam: queued, seen, working, done; passed segments fill in the seam colour, the current station has its bead and its word in bold, and the word sits under every bead, so the state never rides on colour. A request queued for more than three minutes says it is still queued and that nothing failed. Below: the conversation in order (the person's words, Claude's answer in Markdown when kit.md and its libraries are loaded, plain paragraphs otherwise, then every reply), the block as it was sent, the session's progress lines with their times (open while it works), and the blocks it changed. Once Claude has answered, a reply box appears; Ctrl or Cmd + Enter sends, the reply reopens the request, and a draft survives a redraw. When sending is not available to the viewer it says so instead. Changes of state are announced. At 390 px the header wraps and the track keeps its four stations.",
+   "about": "Kit.requestCard.mount(box, {engine, rid}) follows one request through the assist engine (engine.thread and engine.reply); mount(box, {request, thread, onReply}) draws the same card from data. The header says what kind of request it is (task, fix, design note) with a glyph, which block it is about (a button that shows the block when onReveal is given) and when it was sent. The track is four stations on one seam: queued, seen, working, done; passed segments fill in the seam colour, the current station has its bead and its word in bold, and the word sits under every bead, so the state never rides on colour. A request queued for more than three minutes says it is still queued and that nothing failed. Below: the conversation in order (the person's words, Claude's answer in Markdown when kit.md and its libraries are loaded, plain paragraphs otherwise, then every reply), the block as it was sent, the session's progress lines with their times (open while it works), and the blocks it changed. Once Claude has answered, a reply box appears; Ctrl or Cmd + Enter sends, the reply reopens the request, and a draft survives a redraw. When sending is not available to the viewer it says so instead. Changes of state are announced. At 390 px the header wraps and the track keeps its four stations.",
    "needs": {
     "config": [
      [
