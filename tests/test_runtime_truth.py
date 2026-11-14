@@ -28,6 +28,13 @@ class RuntimeTruth(unittest.TestCase):
         self.assertNotIn("|| 10", line)
         self.assertIn("|| 5", line)
 
+    def test_presence_counts_the_platforms_own_answer(self):
+        """A session that watches but has not acted lately still reads watching: the engine also asks the platform, as pattern.inbox does."""
+        src = read(CAT / "kit/patterns/assist.js")
+        self.assertIn("native = !f.length && canSend === 'available'", src)
+        self.assertIn("watching: f.length > 0 || native", src)
+        self.assertIn("if (pres.native) return w.native;", read(CAT / "kit/patterns/presence.js"))
+
     def test_assist_picker_skips_assist_ui(self):
         src = read(CAT / "kit/patterns/assist.js")
         self.assertEqual(src.count("[data-uncommentable], [data-assist-ui]"), 2)

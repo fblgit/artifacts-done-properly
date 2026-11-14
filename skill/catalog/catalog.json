@@ -13735,7 +13735,7 @@
   {
    "kind": "component",
    "group": "Patterns",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "pattern.assist",
    "name": "Assist engine",
@@ -13757,8 +13757,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "32190ac393bbefc9f194c57f96b5e80ea78a894634b736d2814e6cf8f25ab732",
-     "bytes": 33146
+     "sha256": "9b5e9c4862fe3b94235bdc5141de2510782a4d25c310bbb973caadccfa566afe",
+     "bytes": 33635
     },
     {
      "path": "kit/samples/assist.json",
@@ -13808,15 +13808,17 @@
      "what": "the request doc and its trailer comment, the queue, ack, working and done states, stuck after three minutes, ping with its 90 s nudge"
     }
    ],
-   "changed": [],
+   "changed": [
+    "presence() also reads watching from the platform's own answer (canSendToClaude available), so a session that watches and has not acted lately is not shown as gone."
+   ],
    "related": [
     "pattern.assist-panel",
     "pattern.request-card",
     "pattern.answer-queue",
     "pattern.questions"
    ],
-   "hash": "7696dc06baf5",
-   "at": "2026-11-13T00:00:00Z",
+   "hash": "e2d56cddd80c",
+   "at": "2026-11-14T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session moves the request through ack, working (with progress lines) and done (response, changed parts, version), and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.",
    "needs": {
@@ -14111,7 +14113,7 @@
   {
    "kind": "component",
    "group": "Patterns",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "id": "pattern.presence",
    "name": "Session presence",
@@ -14130,8 +14132,8 @@
     {
      "path": "kit/patterns/presence.js",
      "role": "script",
-     "sha256": "a85f5c13ea7f7973b4f37ba7c93d1195139da0193de35681137b72e0c4c99666",
-     "bytes": 10848
+     "sha256": "3d3165665d4cd0e54056a22423a94fa9d60de66b17a095f49cf223b5a5997b32",
+     "bytes": 11026
     },
     {
      "path": "kit/patterns/presence.css",
@@ -14177,10 +14179,11 @@
    ],
    "changed": [
     "One view with a compact form for a panel header.",
-    "The nudge says requests queue only when they can; the source always said so."
+    "The nudge says requests queue only when they can; the source always said so.",
+    "The line says a session is woken when you send a request, when the platform reports a watching session and no presence doc is fresh."
    ],
-   "hash": "f354f5e1b2cd",
-   "at": "2026-11-13T00:00:00Z",
+   "hash": "21a0a0bd5db0",
+   "at": "2026-11-14T00:00:00Z",
    "by": "claude-fable",
    "about": "Kit.presence.mount(box, {engine, artifactUrl}) reads engine.presence() and draws one line: a bead, a word (a session is watching, a session is working, no session is watching) and a sentence (which session, when it was last seen, what it is doing). Ping calls engine.ping(); while it waits a count shows the seconds, and the result says the session answered in 1.1 s or that no answer came (the engine waits 90 seconds). When nobody watches or a ping times out, the nudge says to open Claude Code and tell it watch the artifact <link>, with a Copy button; when the clipboard refuses, the line is selected so it can be copied by hand. It says requests wait in the queue only while sending is available, and that Ask now needs no session when the page can ask. compact: true keeps the line for a panel header and puts the nudge behind How to start one. Without an engine, pass presence and onPing. The state is never colour alone; the ping's start and end are announced. At 390 px the buttons drop under the line.",
    "needs": {

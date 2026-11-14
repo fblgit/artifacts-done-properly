@@ -12,17 +12,17 @@
  * API:
  *   Kit.presence.mount(box, opts) -> {update(presence), ping(), destroy()}
  *     engine        a Kit.assist engine: follows engine.presence() and pings with engine.ping(); without it, pass presence and onPing
- *     presence      {watching, busy, sessions: [{session, at, doing}]}       onPing() -> Promise<"pong"|"timeout">  (static form)
+ *     presence      {watching, native, busy, sessions: [{session, at, doing}]}       onPing() -> Promise<"pong"|"timeout">  (static form)
  *     artifactUrl   the artifact's claude.ai link, written into the nudge (default: the words "this artifact's link")
  *     compact       true: the line only, the nudge behind a button        canPing  false hides Ping (default true)
  *     ask           true says that Ask now still works without a session    queued  false drops the line that requests wait in the queue (with an engine: shown only while sending is available)   now  ISO or Date (default the clock)
- *     words         {watching, busy, away, ping, pinging, pong, timeout, nudgeTitle, nudge, queued, askStill, copy, copied, how}
+ *     words         {watching, busy, away, ping, pinging, pong, timeout, native, nudgeTitle, nudge, queued, askStill, copy, copied, how}
  *
  * @id        pattern.presence
  * @group     Patterns
  * @status    new
- * @version   0.1.0
- * @updated   2026-11-13
+ * @version   0.1.1
+ * @updated   2026-11-14
  * @summary   Whether a Claude Code session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.
  * @tags      presence, session, claude code, ping, nudge, watching, online, assist
  * @requires  kit.tokens, kit.vocab, kit.dom
@@ -50,7 +50,7 @@ const ago = (t, now) => { const s = Math.round((now - ms(t)) / 1000); return !is
 function mount(box, opts) {
   ensure();
   const o = Object.assign({ canPing: true, compact: false }, opts);
-  const w = Object.assign({ ping: 'Ping', pinging: 'Asking the session', pong: 'The session answered', timeout: 'No answer came from a session.', nudgeTitle: 'Start a session to work on this page',
+  const w = Object.assign({ ping: 'Ping', pinging: 'Asking the session', pong: 'The session answered', timeout: 'No answer came from a session.', native: 'It is woken when you send a request.', nudgeTitle: 'Start a session to work on this page',
     nudge: 'Open Claude Code on your computer and tell it:', queued: 'Requests you send now wait in the queue and are picked up when a session starts watching.',
     askStill: 'Ask now still answers straight away; it needs no session.', copy: 'Copy', copied: 'Copied. Paste it into Claude Code.', how: 'How to start one', link: "this artifact's link" }, o.words);
   const now = () => o.now ? ms(o.now) : Date.now();
@@ -62,6 +62,7 @@ function mount(box, opts) {
   const stateOf = () => pres.busy ? 'busy' : pres.watching ? 'watching' : 'away';
   function sub() {
     const ss = (pres.sessions || []).slice().sort((a, b) => ms(b.at) - ms(a.at)), s = ss[0];
+    if (pres.native) return w.native;      // the platform says a session watches; no fresh presence doc names it
     if (!s) return 'None has been seen on this artifact yet.';
     const name = s.session || 'a session', when = ago(s.at, now());
     const more = ss.length > 1 ? ' (+' + (ss.length - 1) + ' more)' : '';
