@@ -10,23 +10,29 @@ A theme is a catalog entry `theme.<id>` (kind `theme`, group `Themes`) with two 
 |---|---|---|
 | stylesheet | `kit/themes/<id>.css`, role `style` | Tokens only, in three blocks: light on `:root`; dark under `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { … } }`; dark again under `:root[data-theme="dark"]`. The header follows `docs/catalog-header.md` and repeats the font url. |
 | data | `kit/themes/<id>.json`, role `data` | `id`, `name`, `about`, `source`, `fonts`, `light`, `dark`, `aliases`, `scale`. The `light` and `dark` maps carry the same tokens as the css. The catalog previews, `kit.skins` (a `json` skin) and `pattern.playground` read this file. |
-| fonts | `fonts` in the json and in the catalog entry (the same url) | One Google Fonts `css2` url with `display=swap` that loads the first family of each font token, at every weight from 400 to 800 the family ships (pages set headings at 700 to 800; a missing weight is drawn as synthesized bold). `adp.py new --theme` and `adp.py take` read it from the entry. Without it the page falls back to system fonts. |
+| fonts | `fonts` in the json and in the catalog entry (the same url) | One Google Fonts `css2` url with `display=swap` that loads the first family of each font token, at every weight from 400 to 800 the family ships (pages set headings at 700 to 800; a missing weight is drawn as synthesized bold). `--f-hand` alone may be a stack of system faces that ends in a generic, with no web font (`theme.default`). `adp.py new` and `adp.py take` read the url from the entry. Without it the page falls back to system fonts. |
 
 Tokens use the kit contract names, so kit files draw in the theme without aliases: `--bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink`, the meanings (`--ok --warn --danger …`) and the four font tokens `--f-display`, `--f-ui`, `--f-mono` and `--f-hand` (the canvas). `Kit.tokens.contract(part)` lists the names a kit file reads. A theme that keeps its own names maps them in a second `:root` block (`theme.adr-drafting-table` sets `--f-ui: var(--f-body)`).
 
 A layer theme adds to another one: `theme.glaze-depth` requires `theme.glaze`, sets no font token and has the same `fonts` as Glaze.
 
-`tests/test_fonts.py` checks every theme: the json `fonts` equals the entry `fonts`, the url loads the first family of every font token in the css and the json at 700 or more for the display and UI families, and the css and json agree on the font tokens. It also checks that the catalog page's own fonts (`--cat-f-*`) never reach into a preview stage.
+### One convention
+
+The viewer can switch themes at run time, so every theme sets the same names. The convention has one source, `theme.default`: it sets every token a kit entry's header declares as required (`@tokens` without a trailing `?`), and every other theme's json sets every name the default's json sets, in light, and in dark wherever the default's dark map has it (colours and shadows). A theme may set more; the default sets only what is shared. That is the surfaces and inks, the accent with `--seam`, `--gold-leaf` and `--focus`, five meanings (`--ok --warn --danger --info --wait`) each with a `-soft` tint, six `--k-*` kinds, the canvas (`--canvas --dot`, six `--c-*` pens, four `--st-*` stickies, `--sticky-ink`), `--shadow`, the four font tokens, and the feel the templates read (`--outline --edge-w --text-size --leading --head-case --bg-image --bg-size`). `--radius` and `--radius-lg` are not in it: the templates and the kit fall back to different corners in different places, so the default cannot state one value without changing its look; a theme that sets them gets its own corners everywhere.
+
+`tests/test_fonts.py` checks every theme: the convention above, the json `fonts` equals the entry `fonts`, the url loads the first family of every font token in the css and the json at 700 or more for the display and UI families, and the css and json agree on the font tokens. It also checks that the catalog page's own fonts (`--cat-f-*`) never reach into a preview stage.
 
 ## Wear a theme
 
 ### At `adp.py new`
 
-    ADP new TEMPLATE DIR --theme theme.<id> --catalog CATALOG
+    ADP new TEMPLATE DIR --theme <id> --catalog CATALOG
 
-The publish object carries the theme's files by reference, and `index.html` gets two tags: the theme's font link before `styles/page.css`, and `kit/themes/<id>.css` after it (a theme is tokens only, so it overrides the template's placeholder tokens and leaves the page's rules alone). A theme that requires another (Glaze depth) brings that one's stylesheet too. The template's own font link stays.
+`--theme` takes the short name (`default`, `glaze`) or the entry id (`theme.glaze`); a name the catalog index does not have exits with the names it has, before anything is written. Without `--theme` the page wears `theme.default`, when the index has it: both forms give the same page. The publish object carries the theme's files by reference, and `index.html` gets two tags: the theme's font link before `styles/page.css`, and `kit/themes/<id>.css` after it (a theme is tokens only, so it overrides the template's placeholder tokens and leaves the page's rules alone). A theme that requires another (Glaze depth) brings that one's stylesheet too. The template's own font link stays.
 
-The `default` template takes all 13 themes but loads none, so they are at hand. Pick the one it wears with `--theme`.
+The `assistant` and `default` templates also take every theme of the catalog (`theme.*` in their `take` list is every theme the index has, so a new theme needs no template edit) and `kit.skins`; `--theme` picks the one the page opens with.
+
+`theme.default` is the look every page starts with, stated in full: every token the templates' own stylesheets set (`styles/page.css`, and the assistant's `styles/canvas.css` for the Canvas view) has the same value in the theme, and the font link is the theme's (`tests/test_fonts.py` keeps them equal). The templates keep those inline tokens as the fallback for a page with no theme file linked (no catalog index at `new`), so both look the same. A linked theme wins over page.css: for a palette of your own, set the tokens in page.css and remove the theme's link.
 
 ### Later: switch the theme of an existing page
 
@@ -36,7 +42,9 @@ The `default` template takes all 13 themes but loads none, so they are at hand. 
 
 ### At runtime: let the viewer choose
 
-`kit.skins` holds several looks in one page: `Kit.skins.init({skins: [{name, json: 'kit/themes/<id>.json'}, …]})`. A `json` skin uses the json's tokens and links its `fonts` when it is chosen. A skin given as `href` (a stylesheet) or `tokens` takes its font url as `fonts`. `pattern.playground` links the json's `fonts` when its stage wears a theme.
+`kit.skins` holds several looks in one page: `Kit.skins.init({skins: [{name, json: 'kit/themes/<id>.json'}, …]})`. A `json` skin uses the json's tokens and links its `fonts` when it is chosen. A skin given as `href` (a stylesheet) or `tokens` takes its font url as `fonts`. `modes: []` leaves `data-theme` to a page that keeps light and dark itself. `pattern.playground` links the json's `fonts` when its stage wears a theme.
+
+The assistant and default templates do this out of the box (`parts/app.js`). The choices are the themes the page has installed (`installed.json`), Default first. The page's theme is the Settings value `look.theme`, whose default is the theme `index.html` links; the viewer's own pick, from the round button in the header, is kept in their browser and wins; changing `look.theme` drops that pick. The linked theme is switched off under any other, and the other is worn from its json alone (`kit.skins` is started again with that one theme's tokens, scoped to `data-skin`), so a theme replaces the one before and no token of the last one lingers, whichever sets more. The theme last worn is kept in the browser with its tokens, so the next visit wears it before any file arrives.
 
 ### Light and dark
 
@@ -52,7 +60,7 @@ These are separate from the theme. The `look.mode` setting (`auto`, `light`, `da
 
 1. Write `skill/catalog/kit/themes/<id>.css` (the three blocks, contract names, the header with `@id theme.<id>`, `@group Themes`, a `@config fonts` line and the font url) and `<id>.json` (the same tokens in `light` and `dark`, plus `fonts`).
 2. Add its entry to `skill/catalog/catalog.json`: the fields every entry has (`docs/architecture.md`, section 7), `kind: "theme"`, both files with `sha256` and `bytes`, `fonts` (the json's url), `requires` (`[]`, or the base theme for a layer), `preview.render: "theme.<id>"` and the entry `hash`.
-3. Add `theme.<id>` to the `take` list in `skill/templates/default/template.json`, and raise the theme count in the tests that pin it (`tests/test_default_template.py`, `tests/test_eval_fixes.py`, `tests/test_fonts.py`).
+3. Set every token `theme.default` sets (section "One convention"); the test names what is missing. No template lists themes and no test pins a count: the assistant and default templates take `theme.*`.
 4. For the catalog page's preview, register `P['theme.<id>']` in `skill/catalog/parts/`. The list at the end of `previews-b8.js` gives a theme the shared preview, which also loads its fonts.
 5. Run `python3 tools/check_catalog.py`, `python3 tools/check_headers.py` and `python3 -m unittest discover -s tests`.
 6. Publishing the catalog artifact is the owner's step (`tools/publish_catalog.py plan` writes the publish batches). Pages built against the live catalog get the new entry, and its `fonts`, only after that publish.

@@ -8,7 +8,7 @@ import re
 import sys
 import unittest
 
-from test_default_template import CDN, TPL, load, tags
+from test_default_template import CDN, TPL, load, tags, take_of
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ADP = os.path.join(ROOT, 'skill', 'scripts', 'adp.py')
@@ -39,7 +39,7 @@ class AssistantTake(unittest.TestCase):
         self.cat = {e['id']: e for e in load(CATALOG)['entries']}
 
     def test_canvas_and_what_it_requires_are_taken(self):
-        take = self.t['take']
+        take = take_of('assistant')
         self.assertEqual(len(take), len(set(take)))
         for i in ('kit.store', 'kit.chrome', 'kit.canvas'):
             self.assertIn(i, take)
@@ -47,9 +47,11 @@ class AssistantTake(unittest.TestCase):
         for i in take:
             self.assertEqual([r for r in self.cat[i].get('requires') or [] if r not in take], [], i)
 
-    def test_no_theme_is_taken(self):
-        # a theme would replace the page's tokens; the canvas gets its own in styles/canvas.css
-        self.assertEqual([i for i in self.t['take'] if i.startswith('theme.')], [])
+    def test_every_theme_and_the_switch_are_taken(self):
+        # the page carries every theme of the catalog it is built against and the kit that wears them; the list is the catalog's, not the template's
+        self.assertIn('theme.*', self.t['take'])
+        self.assertIn('kit.skins', self.t['take'])
+        self.assertEqual([i for i in self.cat if i.startswith('theme.')], [i for i in take_of('assistant') if i.startswith('theme.')])
 
     def test_default_starts_with_assistant_take(self):
         d = load(os.path.join(TPL, 'default', 'template.json'))['take']
@@ -67,7 +69,6 @@ class Loader(unittest.TestCase):
     """The generated index.html loads every style and script of every taken entry once, in dependency order (the default's test, for both)."""
     def check(self, name):
         d, out = generate(name)
-        t = load(os.path.join(TPL, name, 'template.json'))
         cat = {e['id']: e for e in load(CATALOG)['entries']}
         styles, scripts = tags(read(d, 'index.html'))
         order, seen = [], set()
@@ -79,15 +80,16 @@ class Loader(unittest.TestCase):
             for r in cat[i].get('requires') or []:
                 visit(r)
             order.append(i)
-        for i in t['take']:
+        for i in take_of(name):
             visit(i)
-        self.assertEqual(out['take'], t['take'])
+        self.assertEqual(out['take'], take_of(name))      # theme.* expanded; theme.default, worn when --theme names no other, is one of them
         for role, found in (('style', styles), ('script', scripts)):
             want = [f['path'] for i in order for f in cat[i]['files'] if f['role'] == role and not f['path'].startswith('kit/themes/')]
             for p in want:
                 self.assertEqual(found.count(p), 1, f'{name}: {p}')
-            # nothing under kit/ is loaded that no taken entry owns
-            self.assertEqual([p for p in found if p.startswith('kit/') and p not in want], [], name)
+            # nothing under kit/ is loaded that no taken entry owns; of the themes only the one the page wears, right after the page's own stylesheet
+            self.assertEqual([p for p in found if p.startswith('kit/') and p not in want], ['kit/themes/default.css'] if role == 'style' else [], name)
+        self.assertEqual(styles[1], 'kit/themes/default.css')
         self.assertEqual((styles[0], styles[-1]), ('styles/page.css', 'styles/assist.css'))
         self.assertEqual(scripts[:2], ['adp.js', 'content.js'])
         self.assertEqual(scripts[-1], 'parts/app.js')
@@ -166,11 +168,11 @@ class CanvasTab(unittest.TestCase):
         need = ['--canvas', '--dot', '--sticky-ink', '--f-hand'] + [f'--c-{c}' for c in ('ink', 'blue', 'red', 'green', 'amber', 'violet')]
         for tok in need:
             self.assertIn(tok + ':', css, tok)
-        self.assertIn('@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .canvas-view{', css)
-        self.assertIn(':root[data-theme="dark"] .canvas-view{', css)
+        self.assertIn('@media (prefers-color-scheme:dark){:where(:root:not([data-theme="light"])){', css)
+        self.assertIn(':where(:root[data-theme="dark"]){', css)
         for tint in ('yellow', 'blue', 'pink', 'green'):
             self.assertIn(f'.canvas-view .tint-{tint}{{', css)
-        # scoped: no token is declared on :root or the page
+        # fallbacks under :where(), which weighs nothing: the theme the page wears wins. No token is declared on a bare :root or the page
         self.assertEqual([l for l in css.splitlines() if l.startswith(':root{') or l.startswith('body')], [])
 
 
@@ -227,6 +229,10 @@ class HomeExamplesAndMindMap(unittest.TestCase):
         self.assertIn('id="themeBtn"', html)
         for needle in ("'adp-theme'", "light: 'dark'", "addEventListener('pointerdown', foldPopovers)", "e.key === 'Escape'", "look.mode", "adp-look-mode", "MutationObserver(applyTheme)"):
             self.assertIn(needle, app, needle)
+        # the theme picker beside it: a labelled native select, the same rule (Settings value, the viewer's own pick over it), worn by kit.skins without its light and dark
+        self.assertIn('<select id="skinSel" aria-label="Theme">', html)
+        for needle in ("'adp-skin'", "'adp-look-theme'", "ADP.config.on('look.theme'", "fetch('installed.json')", "Kit0.skins.init(", "modes: []", "persist: false"):
+            self.assertIn(needle, app, needle)
 
     def test_ideas_are_grouped_into_kinds_with_a_recommended_one_and_an_icon_each(self):
         app = self.app()
@@ -274,13 +280,13 @@ class Installed(unittest.TestCase):
             for r in cat[i].get('requires') or []:
                 visit(r)
             out.append(i)
-        for i in load(os.path.join(TPL, name, 'template.json'))['take']:
+        for i in take_of(name):
             visit(i)
         return out
 
     def take_closure_ids_only(self):
-        # with no catalog the requires are unknown, so the list is exactly the template's own take
-        return load(os.path.join(TPL, 'assistant', 'template.json'))['take']
+        # with no catalog the requires are unknown and `theme.*` names nothing, so the list is the template's own take without it
+        return [i for i in load(os.path.join(TPL, 'assistant', 'template.json'))['take'] if not i.endswith('.*')]
 
     def test_new_writes_what_is_installed_in_load_order_and_publishes_it(self):
         for name, tpl in (('assistant', 'assistant'), ('default', 'default')):

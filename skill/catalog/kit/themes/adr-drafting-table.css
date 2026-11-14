@@ -3,13 +3,13 @@
  * ADR Drafting Table
  * The ADR Drafting Table's token blocks (light, dark under the system setting, dark under the page toggle, and the type scale) with the values as the board has them, plus one block that names the same values under the kit contract, so every kit file draws in this palette.
  *
- * Values are the board's own, unchanged except the code font (IBM Plex Mono in place of the system mono). Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Kalam:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ * Values are the board's own, unchanged except the code font (IBM Plex Mono in place of the system mono). The names the board never used are added so the theme sets the whole shared convention: a -soft tint per meaning (new values, in the three blocks), and --seam, --gold-leaf, --info, --wait, the six --k-* kinds, --outline and the feel tokens under the kit contract names (the last block). Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Kalam:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  *
  * @id        theme.adr-drafting-table
  * @group     Themes
  * @status    new
- * @version   0.1.1
- * @updated   2026-11-13
+ * @version   0.2.0
+ * @updated   2026-11-14
  * @summary   Vellum by day, cutting mat by night; brass for the hand on the controls. The palette the owner approved, unchanged.
  * @tags      palette, tokens, colours, dark mode, brass, vellum, adr
  * @requires  none
@@ -67,6 +67,11 @@
   --f-code: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --r-s: 4px;
   --r-m: 8px;
+  --danger-soft: #f2e3e3;
+  --ok-soft: #e3ebe8;
+  --warn-soft: #f0e8de;
+  --info-soft: #e6eaf0;
+  --wait-soft: #eee6ec;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -79,6 +84,7 @@
     --t-canary: #e3d070; --t-sky: #a5c6e6; --t-rose: #e3aaa6; --t-mint: #a6d4b5; --sticky-ink: #1d2023;
     --mat: #17211d; --mat-grid: rgba(150, 200, 175, .07); --mat-grid-2: rgba(150, 200, 175, .15);
     --shadow: 0 1px 1px rgba(0, 0, 0, .35), 0 12px 32px -14px rgba(0, 0, 0, .75);
+    --danger-soft: #382f29; --ok-soft: #26382f; --warn-soft: #383526; --info-soft: #2b3539; --wait-soft: #353136;
     color-scheme: dark;
   }
 }
@@ -92,6 +98,7 @@
   --t-canary: #e3d070; --t-sky: #a5c6e6; --t-rose: #e3aaa6; --t-mint: #a6d4b5; --sticky-ink: #1d2023;
   --mat: #17211d; --mat-grid: rgba(150, 200, 175, .07); --mat-grid-2: rgba(150, 200, 175, .15);
   --shadow: 0 1px 1px rgba(0, 0, 0, .35), 0 12px 32px -14px rgba(0, 0, 0, .75);
+  --danger-soft: #382f29; --ok-soft: #26382f; --warn-soft: #383526; --info-soft: #2b3539; --wait-soft: #353136;
   color-scheme: dark;
 }
 /* type scale and control sizes: one scale per case, used everywhere */
@@ -126,5 +133,22 @@
   --st-blue: var(--t-sky);
   --st-pink: var(--t-rose);
   --st-green: var(--t-mint);
+  --seam: var(--focus);
+  --gold-leaf: var(--accent);
+  --info: var(--c-slate);
+  --wait: var(--c-plum);
+  --k-problem: var(--danger);
+  --k-solution: var(--st-accepted);
+  --k-idea: var(--warn);
+  --k-question: var(--c-slate);
+  --k-decision: var(--c-plum);
+  --k-task: var(--ink-2);
+  --outline: var(--rule);
+  --text-size: var(--fs-body);
+  --edge-w: 1px;
+  --leading: 1.55;
+  --head-case: none;
+  --bg-image: none;
+  --bg-size: auto;
 }
 /* /part:page.style.kit.theme.adr-drafting-table */

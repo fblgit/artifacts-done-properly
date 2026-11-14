@@ -7,8 +7,8 @@
  * @id        runtime.adp
  * @group     Runtime
  * @status    stable
- * @version   2.0.0
- * @updated   2026-11-12
+ * @version   2.0.1
+ * @updated   2026-11-14
  * @summary   The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.
  * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
  * @requires  none
@@ -464,7 +464,10 @@ define('parts', {locked: {type: 'list', label: 'Locked parts', help: 'Part-id pr
 define('comments', {enabled: {type: 'bool', default: true, label: 'Comment mode', help: 'Reserved: stored and shown, nothing reads it yet.'}});
 define('panel', {changes: {type: 'enum', options: ['everyone', 'editors', 'off'], default: 'everyone', label: 'What changed panel'}, checks: {type: 'enum', options: ['everyone', 'editors', 'off'], default: 'editors', label: 'Integrity badge'}});
 define('playground', {enabled: {type: 'bool', default: true, label: 'Playground'}});
-define('look', {theme: {type: 'text', label: 'Theme id', help: 'Sets data-adp-theme on the page for your own CSS; the kit does not read it.'}, mode: {type: 'enum', options: ['auto', 'light', 'dark'], default: 'auto', label: 'Colour mode'}, density: {type: 'enum', options: ['comfortable', 'compact'], default: 'comfortable', label: 'Density', help: 'Sets data-adp-density on the page for your own CSS; the kit does not read it.'}});
+/* look.theme: its default is the theme index.html links (kit/themes/<name>.css, written by adp.py new), else default. Here the only option is that one;
+   a page that carries more themes and a switch (the assistant template) defines look.theme again with the themes it has installed, and wears the chosen one. */
+const BUILT = (() => { const l = [...document.querySelectorAll('link[rel="stylesheet"][href^="kit/themes/"]')].pop(); return l ? l.getAttribute('href').slice(11, -4) : 'default'; })();
+define('look', {theme: {type: 'enum', options: [BUILT], default: BUILT, label: 'Theme', help: 'The theme everyone sees. A page with a theme switch offers the themes it has installed and wears the chosen one; any other page offers only the theme it was built with. Also set as data-adp-theme on the page.'}, mode: {type: 'enum', options: ['auto', 'light', 'dark'], default: 'auto', label: 'Colour mode'}, density: {type: 'enum', options: ['comfortable', 'compact'], default: 'comfortable', label: 'Density', help: 'Sets data-adp-density on the page for your own CSS; the kit does not read it.'}});
 define('links', {catalog: {type: 'url', label: 'Catalog', help: 'Reserved: stored and shown, nothing reads it yet.'}, board: {type: 'url', label: 'Board', help: 'Reserved: stored and shown, nothing reads it yet.'}, repo: {type: 'url', label: 'Repository', help: 'Reserved: stored and shown, nothing reads it yet.'}});
 define('log', {'data-changes': {type: 'bool', default: true, label: 'Log data changes'}});
 

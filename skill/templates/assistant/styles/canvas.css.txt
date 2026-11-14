@@ -1,16 +1,16 @@
 /* part:page.style.canvas */
-/* The Canvas view. kit/canvas.css (taken from the catalog) needs tokens the page does not define: --canvas --dot --sticky-ink --f-hand, a --c-<colour> per pen colour and a .tint-<name> per sticky tint.
-   They are defined here and only under .canvas-view, derived from the page's tokens (--panel --sunk --ink); the pen palette has a light and a dark set, in the three theme blocks of page.css
-   (light on the view, dark under prefers-color-scheme guarded by :root:not([data-theme="light"]) and again under :root[data-theme="dark"]). No catalog theme is taken: it would replace the page's tokens. */
-.canvas-view{
+/* The Canvas view. kit/canvas.css (taken from the catalog) reads tokens page.css does not set: --canvas --dot --sticky-ink --f-hand, a --c-<colour> per pen colour and a --st-<name> per sticky tint.
+   The theme the page wears sets them. The values here are the fallback for a page with no theme: theme.default's own (a test keeps the two equal), under :where() so they weigh nothing
+   and any theme wins, in the three theme blocks of page.css (light, dark under prefers-color-scheme guarded by :not([data-theme="light"]), and again under [data-theme="dark"]). */
+:where(:root){
   --c-ink:var(--ink);--c-blue:#2350c2;--c-red:#b8392a;--c-green:#1f7a52;--c-amber:#a86a00;--c-violet:#6a48c0;
   --st-yellow:#f7e58b;--st-blue:#bcd9f5;--st-pink:#f6c4c8;--st-green:#bfe5c9;--sticky-ink:#22252b;
   --canvas:color-mix(in srgb,var(--panel) 55%,var(--sunk));--dot:color-mix(in srgb,var(--ink) 18%,transparent);
   --f-hand:"Segoe Print","Bradley Hand","Comic Sans MS",cursive}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .canvas-view{
+@media (prefers-color-scheme:dark){:where(:root:not([data-theme="light"])){
   --c-blue:#86a6ff;--c-red:#ff8c79;--c-green:#6fd3a0;--c-amber:#f0b54a;--c-violet:#b8a1ff;
   --st-yellow:#e6d26a;--st-blue:#9fc5ec;--st-pink:#eaaab1;--st-green:#a1d8b2;--sticky-ink:#1d1f24}}
-:root[data-theme="dark"] .canvas-view{
+:where(:root[data-theme="dark"]){
   --c-blue:#86a6ff;--c-red:#ff8c79;--c-green:#6fd3a0;--c-amber:#f0b54a;--c-violet:#b8a1ff;
   --st-yellow:#e6d26a;--st-blue:#9fc5ec;--st-pink:#eaaab1;--st-green:#a1d8b2;--sticky-ink:#1d1f24}
 .canvas-view .tint-yellow{background:var(--st-yellow)}

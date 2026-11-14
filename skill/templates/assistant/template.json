@@ -2,7 +2,7 @@
  "name": "assistant",
  "installed": true,
  "base": "starter",
- "summary": "A page with Claude capabilities enabled out of the box: a Work with Claude pane (pick a block, say what you want, send it to a watching Claude Code session or ask now), a Requests view that follows every request, and a line saying whether a session is watching.",
+ "summary": "A page with Claude capabilities enabled out of the box: a Work with Claude pane (pick a block, say what you want, send it to a watching Claude Code session or ask now), a Requests view that follows every request, a line saying whether a session is watching, and every catalog theme with a switch in the header.",
  "use_when": "Any shared artifact where people should be able to point at a part of the page and have Claude change it, answer about it or fix it, without leaving the page.",
  "capabilities": {
   "db": {
@@ -35,6 +35,10 @@
   "kit.store",
   "kit.chrome",
   "kit.canvas",
-  "pattern.mindmap"
+  "pattern.mindmap",
+  "layout.topbar",
+  "kit.view-registry",
+  "kit.skins",
+  "theme.*"
  ]
 }

@@ -126,7 +126,7 @@ function mountSettings(){
     mounted.push(Kit.settings.mount(sw, {}));
     if (Kit.inbox && ADP.db) mounted.push(Kit.inbox.mount(ib, {})); else ib.hidden = true;     // an agent's proposal is applied or declined here
     mounted.push(Kit.namespaces.mount(ns, {parts: Object.keys(TITLES), titles: TITLES})); };
-  ADP.config.ready.then(done);
+  Promise.all([ADP.config.ready, themesReady]).then(done);      // the Theme switch lists the installed themes, so they are read first
 }
 function mountRequests(){
   const box = $('[data-part="requests.list"]'), Kit = window.Kit || {};
@@ -154,7 +154,7 @@ function mountRequests(){
    (INSTALLED_AT: entry id -> part ids) and offers two buttons on that part: Show it (the page goes to it and rings it) and Work on it (Work with Claude
    opens with that part picked, so the request is about that block). The page is the render; nothing is previewed twice. */
 const INSTALLED_AT = {'pattern.settings': ['settings.switches'], 'pattern.inbox': ['settings.inbox'], 'pattern.namespaces': ['settings.namespaces'],
-  'pattern.assist-panel': ['page.assist'], 'pattern.presence': ['page.header'], 'pattern.request-card': ['requests.list'],
+  'pattern.assist-panel': ['page.assist'], 'pattern.presence': ['page.header'], 'kit.skins': ['page.header'], 'pattern.request-card': ['requests.list'],
   'kit.canvas': ['canvas.board'], 'pattern.mindmap': ['canvas.board']};
 function mountMyCatalog(){
   const box = $('[data-part="mycatalog.list"]');
@@ -446,6 +446,47 @@ if (themeBtn) {
 /* The runtime rewrites data-theme from look.mode each time the settings arrive or change; put the rule back at once, with no flash between. */
 new MutationObserver(applyTheme).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
 if (window.ADP && ADP.config) ADP.config.on('look.mode', v => { const seen = ls(MODE_KEY); if (seen !== null && seen !== v) ls(THEME_KEY, null); ls(MODE_KEY, v); applyTheme(); paintTheme(); });
+/* The theme, by the colour's rule. The page's choice is the Settings value look.theme: its default is the theme index.html links (what adp.py new wrote; the runtime reads it as BUILT)
+   and its options are the themes this page has installed (installed.json), Default first. The viewer's own pick from the header is kept in this browser and wins; changing look.theme
+   in Settings drops that pick. Kit.skins (catalog) wears the choice. The built-in theme is the linked stylesheet, switched off under any other theme; every other theme is its json,
+   fetched when first chosen, and the kit is started again with that one theme's tokens. So a theme replaces the one before: no token of the last one is left, whichever sets more.
+   The theme last worn is kept in the browser with its tokens, so the next visit wears it before the settings or any file arrive. Light, dark or system stays with the button above
+   (modes: []: the kit leaves data-theme alone). */
+const SKIN_KEY = 'adp-skin', LOOK_KEY = 'adp-look-theme', WORN_KEY = 'adp-skin-worn', skinPick = $('#skinPick'), skinSel = $('#skinSel');
+const lookDef = window.ADP && ADP.config ? ADP.config.all().look.theme : null, BUILT = lookDef ? lookDef.default : 'default';
+const builtCss = [...document.querySelectorAll('link[rel="stylesheet"][href^="kit/themes/"]')];
+const kept = (() => { try { return JSON.parse(ls(WORN_KEY)) || {}; } catch (e) { return {}; } })();
+const tok = kept.name && kept.name !== BUILT ? {[kept.name]: kept} : {}, asked = {};      // theme name -> its json {light, dark, fonts}, and the fetch that brings it
+let themes = [{name: BUILT, label: BUILT}].concat(Object.keys(tok).map(n => ({name: n, label: kept.label || n}))), skins = null;
+const wanted = () => { const v = ls(SKIN_KEY) || ls(LOOK_KEY); return themes.some(t => t.name === v) ? v : BUILT; };
+function wear(){
+  if (!Kit0.skins) return;
+  const n = wanted(), t = tok[n], me = themes.find(x => x.name === n);
+  if (n !== BUILT && !t) {      // its tokens first; until they arrive the page keeps what it wears
+    (asked[n] = asked[n] || fetch('kit/themes/' + n + '.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }))
+      .then(j => { tok[n] = j; if (wanted() === n) wear(); }, () => { delete asked[n]; if (skinSel && skins) skinSel.value = skins.skin(); });
+    return;
+  }
+  if (skins) skins.destroy();
+  skins = Kit0.skins.init({skins: themes.map(x => (x === me && t ? Object.assign({tokens: t, fonts: t.fonts}, x) : x)), skin: n, modes: [], persist: false});      // only the worn theme's tokens are written
+  builtCss.forEach(l => { l.disabled = n !== BUILT; });
+  ls(WORN_KEY, t ? JSON.stringify({name: n, label: me.label, light: t.light, dark: t.dark, fonts: t.fonts}) : null);
+  if (skinSel) { skinSel.value = n; skinPick.title = 'Theme: ' + me.label; }
+}
+function paintSkins(){
+  if (!skinSel) return;
+  skinSel.replaceChildren(...themes.map(t => new Option(t.label, t.name)));
+  skinPick.hidden = !Kit0.skins || themes.length < 2;
+}
+const themesReady = fetch('installed.json').then(r => (r.ok ? r.json() : null)).then(j => {
+  const list = ((j && j.entries) || []).filter(e => /^theme\.[a-z0-9-]+$/.test(e.id)).map(e => ({name: e.id.slice(6), label: e.name || e.id.slice(6)}));
+  if (!list.some(t => t.name === BUILT)) list.unshift({name: BUILT, label: BUILT});
+  themes = list.sort((a, b) => (b.name === 'default') - (a.name === 'default'));
+  if (lookDef) ADP.config.define('look', {theme: {type: lookDef.type, default: BUILT, label: lookDef.label, help: lookDef.help, options: themes.map(t => t.name)}});
+}).catch(() => { themes = [{name: BUILT, label: BUILT}]; }).then(() => { paintSkins(); wear(); });
+if (skinSel) skinSel.addEventListener('change', () => { ls(SKIN_KEY, skinSel.value); wear(); });
+if (window.ADP && ADP.config) ADP.config.on('look.theme', v => { const seen = ls(LOOK_KEY); if (seen !== null && seen !== v) ls(SKIN_KEY, null); ls(LOOK_KEY, v); wear(); });
+paintSkins(); wear();
 /* The header's pop-overs fold back: a press outside What changed or the how-to-start note closes it, and so does Escape. */
 const foldPopovers = e => {
   const wc = $('#wc'), pr = $('#presence');

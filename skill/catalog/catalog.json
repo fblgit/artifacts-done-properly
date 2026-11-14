@@ -1,6 +1,6 @@
 {
  "schema": "kit-catalog/1",
- "url": "https://claude.ai/artifact/LzGUCv8xCa8XLnqwF7Vemx",
+ "url": "https://claude.ai/artifact/PGzWJWGUR7eJ7dN8G9pX4e",
  "ver": "",
  "built": "2026-11-13T00:00:00Z",
  "entries": [
@@ -891,13 +891,104 @@
    "by": "product-designer"
   },
   {
+   "id": "theme.default",
+   "kind": "theme",
+   "group": "Themes",
+   "name": "Default",
+   "summary": "The look every ADP page starts with, stated in full: cool greys, a carmine accent, Bricolage Grotesque over Atkinson Hyperlegible Next, the canvas pens, and the templates' own text size and edges.",
+   "version": "0.2.0",
+   "status": "new",
+   "tags": [
+    "palette",
+    "tokens",
+    "colours",
+    "dark mode",
+    "default",
+    "starting look",
+    "carmine",
+    "grey",
+    "bricolage",
+    "convention"
+   ],
+   "files": [
+    {
+     "path": "kit/themes/default.css",
+     "role": "style",
+     "sha256": "ca8a6231cefee2de51617920e2a91874d9aa58fcea5acd8c0557785377516b2c",
+     "bytes": 6977
+    },
+    {
+     "path": "kit/themes/default.json",
+     "role": "data",
+     "sha256": "72fc97d700a84c6984862b6f312dff9c478a3e4f61c1662c8cb620c010b35c2d",
+     "bytes": 3828
+    }
+   ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Atkinson+Hyperlegible+Next:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
+   "requires": [],
+   "globals": [],
+   "provides": [
+    ":root tokens (light, dark, toggle)"
+   ],
+   "needs": {
+    "config": [
+     [
+      "fonts",
+      "Bricolage Grotesque, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts"
+     ],
+     [
+      "json",
+      "{light, dark} maps for Kit.tokens.themeCss"
+     ]
+    ],
+    "db": {
+     "reads": [],
+     "writes": []
+    },
+    "tokens": []
+   },
+   "preview": {
+    "render": "theme",
+    "samples": [
+     "kit/themes/default.json",
+     "kit/samples/viz-chips.json",
+     "kit/samples/viz-stepper.json",
+     "kit/samples/viz-matrix.json"
+    ],
+    "uses": [
+     "viz.core",
+     "viz.stepper",
+     "viz.matrix"
+    ]
+   },
+   "source": [
+    {
+     "board": "ADP starter template",
+     "file": "styles/page.css",
+     "what": "the :root, prefers-color-scheme and [data-theme] blocks"
+    },
+    {
+     "board": "ADP assistant template",
+     "file": "styles/canvas.css",
+     "what": "the pens, stickies, --canvas, --dot and --f-hand of the Canvas view"
+    }
+   ],
+   "changed": [
+    "Stated in full, from the templates' own code: the canvas pens and stickies, --canvas, --dot and --f-hand, the meanings (--warn, --info, --wait) with a -soft tint each, --seam, --gold-leaf, --focus, the six --k-* kinds, and the feel page.css falls back to (--outline, --edge-w, --text-size, --leading, --head-case, no ground texture). It is the reference for the shared convention: every theme sets each name it sets."
+   ],
+   "hash": "01f68bfc6b63",
+   "at": "2026-11-14T00:00:00Z",
+   "by": "claude-fable",
+   "about": "The look every ADP page starts with, stated in full: cool proofing-paper greys, one carmine accent, Bricolage Grotesque headings over Atkinson Hyperlegible Next, IBM Plex Mono for ids, the canvas's pens and stickies, and the page's own text size, leading, edges and heading case. Every value is one the templates carry or fall back to, so a page that wears this theme looks as a template does with no theme; a test keeps the theme and the templates equal. It is also the reference for the shared convention: every other theme sets each name this one sets."
+  },
+  {
    "id": "theme.adr-drafting-table",
    "kind": "theme",
    "group": "Themes",
    "name": "ADR Drafting Table",
    "summary": "Vellum by day, cutting mat by night; brass for the hand on the controls. The palette the owner approved, unchanged.",
    "about": "The ADR Drafting Table's token blocks (light, dark under the system setting, dark under the page toggle, and the type scale) with the values as the board has them, plus one block that names the same values under the kit contract, so every kit file draws in this palette.",
-   "version": "0.1.1",
+   "version": "0.2.0",
    "status": "new",
    "tags": [
     "palette",
@@ -912,14 +1003,14 @@
     {
      "path": "kit/themes/adr-drafting-table.css",
      "role": "style",
-     "sha256": "47d0ddb27ed7a79e15ae2cb678d362cd4c31621265dc98493a441d6a605e3db1",
-     "bytes": 6126
+     "sha256": "b324aeb70de5fde35c8e6e2b07daac9f3205a638a75b95c70851b0b6dbbe8c0c",
+     "bytes": 7197
     },
     {
      "path": "kit/themes/adr-drafting-table.json",
      "role": "data",
-     "sha256": "74339fab1f43dba6155ae96c9b510049e6ad1e308f969251d93f78a14d65221f",
-     "bytes": 4869
+     "sha256": "53ced87c1d7c176f3a22c8d65ff37916fc5dac39f8ad41e10a5802fbcc0c594a",
+     "bytes": 6196
     }
    ],
    "fonts": "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Kalam:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
@@ -969,10 +1060,11 @@
    ],
    "changed": [
     "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
-    "Nothing in the palette. Added the alias block onto the kit names (--panel is --sheet, --ok is --st-accepted, the pens map oxblood, pine, slate, brass and plum)."
+    "Nothing in the palette. Added the alias block onto the kit names (--panel is --sheet, --ok is --st-accepted, the pens map oxblood, pine, slate, brass and plum).",
+    "Sets the whole shared convention: a -soft tint per meaning (new values), and --seam, --gold-leaf, --info, --wait, the six --k-* kinds, --outline and the feel tokens named after its own tokens in the contract block."
    ],
-   "hash": "5cdba472a4b9",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "24a29ff8d142",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {
@@ -982,7 +1074,7 @@
    "name": "Journey Whiteboard",
    "summary": "A cool workbench: chalk ground, white panels, a blue accent and six pens. Its names are the kit contract.",
    "about": "The Journey Whiteboard's token blocks as the board has them. The kit files read these names, so this theme needs no aliases.",
-   "version": "0.1.1",
+   "version": "0.2.0",
    "status": "new",
    "tags": [
     "palette",
@@ -996,14 +1088,14 @@
     {
      "path": "kit/themes/journey-whiteboard.css",
      "role": "style",
-     "sha256": "c1bfa8888c5d057cdc8e459fcd0bf92937bde0912e0cf382fd41b2124b0d1e28",
-     "bytes": 4000
+     "sha256": "b796573a94975de6c51d69e1129dd492bb0902bd263507863d47170529e0434c",
+     "bytes": 5013
     },
     {
      "path": "kit/themes/journey-whiteboard.json",
      "role": "data",
-     "sha256": "32f0060d696278d97f90ca55e0bf61b6991fd676c784934ce2aee57f47f041c5",
-     "bytes": 2688
+     "sha256": "fa17873f370068ca94be6d09d79ce480e37f049c2a66733a535dce36687013f2",
+     "bytes": 3403
     }
    ],
    "fonts": "https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap",
@@ -1052,10 +1144,11 @@
    ],
    "changed": [
     "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
-    "Nothing in the palette."
+    "Nothing in the palette.",
+    "Sets the whole shared convention: --focus, --seam, --gold-leaf, --info, --wait, a -soft tint per meaning, --outline and the feel tokens, derived from its own accent, pens and meanings."
    ],
-   "hash": "2f4aa860a4fb",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "55a76b11189a",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {
@@ -1065,7 +1158,7 @@
    "name": "ADP runtime",
    "summary": "The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.",
    "about": "Load it before the page's own scripts, then call ADP.page({view, expected, titles, legacy, all, reveal}) once the views exist. It paints content/<part id> docs live, lists changes/ and active decisions/, anchors comments to [data-part] elements, and writes checks/latest when the viewer can edit.",
-   "version": "2.0.0",
+   "version": "2.0.1",
    "status": "stable",
    "tags": [
     "adp",
@@ -1081,8 +1174,8 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "7bbe50a562530e6a9ec5e35a8579c441bada3a6c78d071a7f32b1126225000e9",
-     "bytes": 38639
+     "sha256": "c63fc4e944294fac9c463f4e6420de97cc48df67bf25ab293820aa1de9c108ba",
+     "bytes": 39302
     }
    ],
    "requires": [],
@@ -1149,10 +1242,11 @@
     }
    ],
    "changed": [
-    "The catalog runs the same runtime as every page the skill makes: adds ADP.config, ADP.user, ADP.ns, ADP.db, integrity and seeding on first open."
+    "The catalog runs the same runtime as every page the skill makes: adds ADP.config, ADP.user, ADP.ns, ADP.db, integrity and seeding on first open.",
+    "look.theme is a choice, not a text box: an enum whose default and only option here is the theme index.html links (kit/themes/<name>.css), else default; a page with a theme switch defines it again with the themes it has installed."
    ],
-   "hash": "c0add960d321",
-   "at": "2026-11-12T00:00:00Z",
+   "hash": "d3e549cedf6a",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {
@@ -1972,7 +2066,7 @@
    "kind": "theme",
    "group": "Themes",
    "name": "Glaze",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "status": "new",
    "summary": "Porcelain by day, tenmoku by night, gold seams: moon-white panels on a blue-grey ground, a kiln-dark night and five glazes for meaning.",
    "about": "The owner's current direction as kit-contract tokens, so every kit file reads it without aliases. Beyond the contract it adds --seam (the one gold line: current link, selected tab, total row, focus), --gold-leaf, --focus, --info and --wait, and a -soft tint per meaning. Every text pair is 4.5:1 or more in both themes; the preview computes them live.",
@@ -1992,14 +2086,14 @@
     {
      "path": "kit/themes/glaze.css",
      "role": "style",
-     "sha256": "0ccae9e1b1bb3e2ed6c33bfef92bea389c5058d25eef04ea5b7b0f4568fcc613",
-     "bytes": 5732
+     "sha256": "0d2342dd69094c42a1c12051bffc840d50ab3ab877d4a10268823063541b99bd",
+     "bytes": 6089
     },
     {
      "path": "kit/themes/glaze.json",
      "role": "data",
-     "sha256": "0107877050b0c98cf3341642e85835525d5a703f36551e1bcaa9d6f20ff8086d",
-     "bytes": 3511
+     "sha256": "e76581c07550230664d4d9bf1c4a87990f9e17bbe0b667169c0dba6871ddc6e0",
+     "bytes": 3704
     }
    ],
    "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap",
@@ -2047,10 +2141,11 @@
    "changed": [
     "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "Text tokens deepened where a glaze colour was a fill (ok, warn) so each reads at 4.5:1 as text; the fills stay as -soft tints.",
-    "The seam is darkened to 4:1 on porcelain so the current-item mark carries as a mark."
+    "The seam is darkened to 4:1 on porcelain so the current-item mark carries as a mark.",
+    "States the feel the templates already gave it (--outline, --edge-w, --text-size, --leading, --head-case, --bg-image, --bg-size), so it sets every name theme.default sets; nothing changes on a page."
    ],
-   "hash": "c1e557c4a0e7",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "86cb8b968ad8",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {
@@ -6373,7 +6468,7 @@
    "kind": "component",
    "group": "Patterns",
    "name": "States specimen sheet",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "status": "new",
    "summary": "Every state of a component side by side, with loading, empty and missing cells, and a switch that repaints the sheet in another skin.",
    "about": "Kit.specimens.mount(host, {skins, groups, replay}) lays specimens in label-and-body rows or captioned grids. Because a sheet cannot make a real :hover, each cell carries data-state and the component styles its states twice, once as :hover and once as [data-state=\"hover\"]. A skin is a map of custom properties applied to the sheet only, so the page theme is untouched; the switch repaints every specimen. Replay restarts anything marked data-fx. The css gives a skeleton bar and an empty-state box in the sheet's own colours, and stops all motion under prefers-reduced-motion.",
@@ -6392,8 +6487,8 @@
     {
      "path": "kit/patterns/specimens.js",
      "role": "script",
-     "sha256": "8c1f1ce996ba343b9402062ed83a392fdbaf897691d52106687507c92d306233",
-     "bytes": 7175
+     "sha256": "d9c3eae982e1eab0cb27b6524fd90a2914016b6a2a9999e8e44d3f92a985f807",
+     "bytes": 7181
     },
     {
      "path": "kit/patterns/specimens.css",
@@ -6456,10 +6551,11 @@
    ],
    "changed": [
     "Skins are data (custom properties on the sheet), not two stylesheets, so a board can add a third.",
-    "Does not name any rows, pads or tracks: the specimens are whatever the board renders."
+    "Does not name any rows, pads or tracks: the specimens are whatever the board renders.",
+    "The six --s-* skin properties are marked optional in @tokens: each falls back to a page token, as the stylesheet always did."
    ],
-   "hash": "73c14d00d892",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "c444754513ee",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {
@@ -6869,7 +6965,7 @@
   {
    "kind": "theme",
    "group": "Themes",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "status": "new",
    "id": "theme.glaze-depth",
    "name": "Glaze depth",
@@ -6889,14 +6985,14 @@
     {
      "path": "kit/themes/glaze-depth.css",
      "role": "style",
-     "sha256": "d5ded16d08b45d2b60ca39bc80e4b3be143def5a2318810937276b3ea721be52",
+     "sha256": "5f80ea077bfea79714fe78b0c2e7ec6ef8265d471b0170421e191c616395647e",
      "bytes": 5991
     },
     {
      "path": "kit/themes/glaze-depth.json",
      "role": "data",
-     "sha256": "1f45be47dd2ebeeb6459fc287efa54d7f81fbec2fecd68518e24440fb9ac4cde",
-     "bytes": 6192
+     "sha256": "ce728a90199a827c58466c16f381bbdb39e0c418913e13d6c1bf469ad79bb333",
+     "bytes": 6385
     }
    ],
    "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap",
@@ -6951,10 +7047,11 @@
     "The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.",
     "The skin's bright state colours became --<meaning>-bead; the catalog's text-safe values stay as --ok, --warn and the rest, and each bead has an -ink for the -soft tint.",
     "Dark follows the system, as Glaze does; the source pinned light as its default.",
-    "The source's names were mapped onto the kit's (--s1 is --panel, --ink2 is --ink-2, --bad is --danger, the hardware key's green is --identity)."
+    "The source's names were mapped onto the kit's (--s1 is --panel, --ink2 is --ink-2, --bad is --danger, the hardware key's green is --identity).",
+    "The json carries the feel tokens Glaze now states (--outline, --edge-w, --text-size, --leading, --head-case, --bg-image, --bg-size); the stylesheet is unchanged."
    ],
-   "hash": "a75e0d16f5df",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "8064a1e82742",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {
@@ -12385,7 +12482,7 @@
   {
    "kind": "component",
    "group": "Board kit",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "status": "new",
    "id": "kit.skins",
    "name": "Skin switch",
@@ -12407,8 +12504,8 @@
     {
      "path": "kit/skins.js",
      "role": "script",
-     "sha256": "b0871bae3ac54e80a6b1a5afce3457a643c4c6c148f4b79808fb1d88ecaf1e2c",
-     "bytes": 12055
+     "sha256": "c7c72cac87e334bffb9edbdaca0ee99dc426da625202b6babc4ab3a59b7b4961",
+     "bytes": 12547
     },
     {
      "path": "kit/skins.css",
@@ -12487,10 +12584,11 @@
     "Extends layout.topbar as new files; topbar.js and topbar.css are unchanged.",
     "System is a mode of its own instead of defaulting to light.",
     "A skin can be tokens as well as a link; the target can be one element.",
-    "pairViews ties a skin to kit.view-registry."
+    "pairViews ties a skin to kit.view-registry.",
+    "modes: [] leaves data-theme to the page (a page that keeps light and dark itself), and resolved() then reads it; destroy() also removes its colour-scheme listener."
    ],
-   "hash": "aafa1ea98ea8",
-   "at": "2026-10-24T00:00:00Z",
+   "hash": "4633590e254e",
+   "at": "2026-11-14T00:00:00Z",
    "by": "product-designer"
   },
   {

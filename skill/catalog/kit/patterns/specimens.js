@@ -26,15 +26,15 @@
  * @id        pattern.specimens
  * @group     Patterns
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-14
  * @summary   Every state of a component side by side, with loading, empty and missing cells, and a switch that repaints the sheet in another skin.
  * @tags      specimens, states, hover, focus, skins, loading, empty, review, component sheet
  * @requires  none
  * @provides  Kit.specimens.mount
  * @config    Kit.specimens.mount(host, opts) | title, skins [{id, label, vars}], skin, groups [{title, layout rows|grid, cols, items [{label, caption, state, render | html}]}], replay, label, onSkin
  * @config    states | the component styles [data-state="hover"] and "focus" as well as :hover and :focus-visible
- * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display --seam? --s-bg --s-panel --s-ink --s-ink-2 --s-line --s-radius
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display --seam? --s-bg? --s-panel? --s-ink? --s-ink-2? --s-line? --s-radius?
  * @globals   none
  * @db        none
  */

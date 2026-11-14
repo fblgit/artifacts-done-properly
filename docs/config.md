@@ -34,7 +34,7 @@ An unknown key makes `set` reject with `Unknown setting <key>`.
 
 ## 2. The registry
 
-Sixteen core switches are registered at load by `define(...)` calls at the end of the config section of adp.js. `CORE` in adp.py lists the same sixteen with the same type, default and options (a comment there says adp.js is the source of truth; no difference was found).
+Sixteen core switches are registered at load by `define(...)` calls at the end of the config section of adp.js. `CORE` in adp.py lists the same sixteen with the same type, default and options (a comment there says adp.js is the source of truth), except `look.theme`: its options and its default belong to the page, so `CORE` gives it options `None` and the default `default`.
 
 Core switches carry no `level`, so `define` gives each `level: 'page'`. No core switch uses `level: 'db'`.
 
@@ -51,7 +51,7 @@ Core switches carry no `level`, so `define` gives each `level: 'page'`. No core 
 | `panel.changes` | enum | everyone | everyone, editors, off | adp.js `hideChanges`, `panels` | Sets `hidden` on every `[data-part="page.changes"]` when the value is `off`, or is `editors` and the viewer cannot edit. |
 | `panel.checks` | enum | editors | everyone, editors, off | adp.js `badge` | `badge` fills the text of every `[data-adp-integrity]` element. It returns without touching them when the value is `off`, or is `editors` and the viewer cannot edit (the elements are not hidden, just not filled). |
 | `playground.enabled` | bool | true | | playground.js `isOff` | When it is exactly false the playground renders one line and nothing else; re-checked on change. |
-| `look.theme` | text | `''` | | adp.js `effects` | Sets (or removes, when empty) the attribute `data-adp-theme` on `<html>`. No stylesheet or script in `skill/` reads that attribute. |
+| `look.theme` | enum | the theme `index.html` links (`kit/themes/<name>.css`, read when adp.js loads), else `default` | that one theme; on a page with a theme switch, the themes it has installed | adp.js `effects`; `skill/templates/assistant/parts/app.js.txt` | adp.js sets the attribute `data-adp-theme` on `<html>` and nothing else, so on a page without a theme switch (the starter) the setting offers one choice and changes nothing. The assistant and default templates define the switch again with the themes in `installed.json` and wear the chosen one through `kit.skins` (`docs/themes.md`, "At runtime"); a viewer's own pick in the header wins over it in that browser. |
 | `look.mode` | enum | auto | auto, light, dark | adp.js `effects` | `light` or `dark` sets `data-theme` on `<html>`; `auto` removes the attribute. |
 | `look.density` | enum | comfortable | comfortable, compact | adp.js `effects` | Sets `data-adp-density` on `<html>` (removed when empty). No stylesheet or script in `skill/` reads that attribute. |
 | `links.catalog` | url | `''` | | adp.py `take` | The catalog URL `take` uses when a local `catalog.json` is given, no `--url` is passed and `--config` is passed. |
@@ -73,6 +73,7 @@ Defined in `skill/`:
 | `assist.presence-minutes` | enum | 5 | 2, 5, 15 (strings) | assist.js | assist.js; inbox.js |
 | `assist.shortcut` | text | Mod+Shift+K | | assist.js | assist.js, assist-panel.js |
 | `page.show-about` | bool | true | | `skill/templates/starter/parts/app.js.txt` and `skill/templates/assistant/parts/app.js.txt` | the same files: `ADP.config.on('page.show-about', ...)` hides `[data-part="home.about"]` |
+| `look.theme` (defined again) | enum | as in the runtime | the themes in `installed.json`, Default first | `skill/templates/assistant/parts/app.js.txt` | the same file: `ADP.config.on('look.theme', ...)` wears the theme |
 
 assist.js defines its five switches only when `H.config.define` exists, and reads each through a helper that falls back to its own default. inbox.js reads `assist.presence-minutes` as `Number(...) || 5`, so it uses 5 minutes when the switch is not defined or not a number; with the switch defined the value is also 5 unless changed. docs/assist.md covers what the assist switches do.
 
@@ -139,6 +140,7 @@ On the first ready, each registered listener is called once with the current val
 - A key not in `CORE` is accepted if it matches `KEY`, and its value is not type-checked (Python cannot know its type); the output then carries `"unknown": true`. This is intentional: pages define their own switches (for example `assist.lanes`) that `CORE` does not list. The page rejects unknown keys.
 - Without `--doc`, it starts from empty `values` and `changed`, so the written doc replaces `config/current` with only this key. Pass `--doc` (the doc as read) to keep the others.
 - When the value equals the `CORE` default, the key is removed from `values` and `changed[key]` is still written with this `by` and `at`, as the page does.
+- `look.theme` is the exception (`page_decides`): Python cannot know which themes a page has installed or which one it was built with, so any theme name (lower case, digits, dashes) is accepted and the value is always written, `default` included. A name the page does not have leaves it on its own default.
 - `by` defaults to `agent`. The doc is written with `exists=True`: without `--pins` carrying `config/current` the output has `needs_pin`, meaning read its version and pass `--pins P.json` (`{"config/current": <version>}`), so the write is version-pinned.
 - The change record is skipped when `log.data-changes` is false in `--doc`.
 
@@ -186,6 +188,6 @@ These are observed differences; the code is what this document follows.
 1. `edit.require-hold` help in adp.js says "A publish touching a part nobody holds is refused". The code refuses only in `record`, only changed parts that existed before, only the deepest changed ones, and needs `--holds`; the expiry in `hold_until` is not checked.
 2. `edit.locked` help says it "Freezes every control marked data-adp-edit". The code does this with CSS pointer events only; scripts can still call `ADP.config.set`.
 3. `adp.py config set` and `ADP.config.set` differ on unknown keys (rejected versus accepted with `unknown: true`, on purpose). Url, text length and datetime real-ness agree for ISO values; `Date.parse` also accepts non-ISO text and overflowing days such as `2026-02-30` (read as 2 March) that `real_date` refuses.
-4. `comments.enabled`, `links.board` and `links.repo` are registered with no reader in `skill/`; `look.theme` and `look.density` only set an attribute nothing reads.
+4. `comments.enabled`, `links.board` and `links.repo` are registered with no reader in `skill/`; `look.density` only sets an attribute nothing reads, and so does `look.theme` on a page without a theme switch.
 5. settings.js labels the layer from `level`; every core switch has `level: 'page'`, so `parts.locked` and `edit.require-hold` also show "Enforced by the page" although adp.py also enforces them.
 6. `adp.py hold --hours H` accepts larger values but writes at most 2 hours; the usage line says so and the output states `hold_until`.
