@@ -5,7 +5,7 @@ SRC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 
 class Base(unittest.TestCase):
     def setUp(self):
-        self.tmp = tempfile.mkdtemp()
+        self.tmp = os.path.realpath(tempfile.mkdtemp())  # macOS: /var is a symlink to /private/var, and adp.py reports the resolved path
         self.addCleanup(shutil.rmtree, self.tmp, True)
         self.home, self.cwd = os.path.join(self.tmp, 'home'), os.path.join(self.tmp, 'proj')
         os.makedirs(self.home); os.makedirs(self.cwd)
@@ -69,7 +69,7 @@ class SetupTests(Base):
         for _ in range(2): self.run_adp('setup', '--scope', 'project', '--yes')
         t = open(ptr).read()
         self.assertTrue(t.startswith('keep\n')); self.assertTrue(t.endswith('after\n'))
-        self.assertNotIn('old', t); self.assertEqual(t.count('adp:begin'), 1)
+        self.assertNotIn('\nold\n', t); self.assertEqual(t.count('adp:begin'), 1)  # the whole line: a temp path may hold 'old' (/var/folders)
         gi = open(os.path.join(self.cwd, '.gitignore')).read().split('\n')
         self.assertEqual(gi.count('.adp/log.jsonl'), 1)
         self.assertTrue(os.path.isfile(os.path.join(self.cwd, '.claude', 'skills', 'adp-edit', 'SKILL.md')))
