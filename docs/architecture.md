@@ -202,13 +202,13 @@ The catalog is a published artifact whose files are kit entries, indexed by `ski
 
 **Take by reference.** `adp.py take CATALOG ID ... [--url URL] [--config C.json]` resolves the ids and their `requires` (dependencies first, each once), and prints a `files` map `{path: {artifact: <catalog url>, path, ver?}}` plus the `entries` taken, a `sha256` map and, when a taken entry has one, `fonts` (`{id: url}`). Files with role `sample` are included only for ids named on the command line. That map is the `files` argument of the `Artifact` publish call, which copies the files server side. CATALOG is the catalog url (its fetched index at `~/.adp/catalogs/<id>/catalog.json`; exit 2 with the read to make when it is not fetched), `-` (the saved catalog in `~/.adp/config.json`), or a local `catalog.json` (its url comes from `--url`, else `links.catalog` in `--config`, else the index's own `url`; it prints a warning). Related: `adp.py catalog`, `suggest`, `kit list|show|describe`, `pins`.
 
-**Tiers of `adp.py new`** (`TIERS`): `--tier minimal` is the `starter` template, `--tier default` is `default`, `--tier full` exits with "not available yet". Alternatively `adp.py new TEMPLATE DIR` with `starter`, `assistant` or `default` (`adp.py templates` lists them). `new` also takes `--theme` and `--layout` ids; they join the template's `take` list. With a catalog index (`--catalog`, or the saved catalog when its index is fetched), `new` merges the taken entries into its publish object and links what `--theme` and `--layout` asked for in `index.html` (a theme's `fonts` before `styles/page.css`, its stylesheet after); otherwise it prints the `adp.py take` to run.
+**Tiers of `adp.py new`** (`TIERS`): `--tier minimal` is the `starter` template, `--tier default` is `default`, `--tier full` exits with "not available yet". Alternatively `adp.py new TEMPLATE DIR` with `starter`, `assistant` or `default` (`adp.py templates` lists them). `new` also takes `--theme` (a theme's short name or entry id; `theme.default` when left out and the index has it) and `--layout` ids; they join the template's `take` list, in which `kind.*` stands for every entry of that kind the index has. With a catalog index (`--catalog`, or the saved catalog when its index is fetched), `new` merges the taken entries into its publish object and links the theme and what `--layout` asked for in `index.html` (a theme's `fonts` before `styles/page.css`, its stylesheet after); otherwise it prints the `adp.py take` to run.
 
-| Template | Base | Adds | `take` entries |
-|---|---|---|---|
-| `starter` | none | shell, runtime, one welcome view, settings view, What changed panel | 6 |
-| `assistant` | `starter` | the Work with Claude pane, Requests view, presence; rules for `requests`, `conversations`, `presence` | 12 |
-| `default` | `assistant` | every theme, canvas, 3D and common kits taken, nothing mounted beyond the assistant's views | 82 |
+| Template | Base | Adds |
+|---|---|---|
+| `starter` | none | shell, runtime, one welcome view, settings view, What changed panel |
+| `assistant` | `starter` | the Work with Claude pane, Requests view, presence, the canvas, every theme (`theme.*`) with a switch in the header; rules for `requests`, `conversations`, `presence` |
+| `default` | `assistant` | 3D and common kits taken, nothing mounted beyond the assistant's views |
 
 ## 8. Where things live
 

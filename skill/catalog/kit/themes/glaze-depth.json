@@ -105,7 +105,14 @@
   "--glz-r-l": "30px",
   "--glz-r-xl": "44px",
   "--glz-sh-1": "0 1px 2px var(--shade), 0 12px 28px -14px var(--shade)",
-  "--glz-sh-2": "0 2px 4px var(--shade), 0 32px 60px -24px var(--shade)"
+  "--glz-sh-2": "0 2px 4px var(--shade), 0 32px 60px -24px var(--shade)",
+  "--outline": "#c3cfd3",
+  "--edge-w": "1px",
+  "--text-size": "15px",
+  "--leading": "1.55",
+  "--head-case": "none",
+  "--bg-image": "none",
+  "--bg-size": "auto"
  },
  "dark": {
   "--bg": "#130e0c",
@@ -186,7 +193,8 @@
   "--kind-1": "#f0e6da",
   "--kind-2": "#bba692",
   "--kind-3": "#8a7566",
-  "--kind-4": "#5a463b"
+  "--kind-4": "#5a463b",
+  "--outline": "#4a3830"
  },
  "aliases": {},
  "scale": {}

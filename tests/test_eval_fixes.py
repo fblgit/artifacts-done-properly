@@ -100,11 +100,27 @@ class EvalFixes(Cmd):
 class ThemeTags(Cmd):
     def test_new_with_a_theme_links_it_after_the_page_css(self):
         real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')
-        self.ok('new', 'starter', 'pg', '--theme', 'theme.glaze', '--catalog', real, '--url', KITURL)
+        self.ok('new', 'starter', 'pg', '--theme', 'glaze', '--catalog', real, '--url', KITURL)      # the short name; the entry id is used below
         html = open(self.p('pg', 'index.html'), encoding='utf-8').read()
         self.assertEqual(html.count('href="kit/themes/glaze.css"'), 1)
         self.assertLess(html.index('href="styles/page.css"'), html.index('href="kit/themes/glaze.css"'))
+        self.assertNotIn('kit/themes/default.css', html)
         self.assertEqual(self.run_adp('check', self.p('pg')).returncode, 0)
+
+    def test_new_without_a_theme_wears_the_default_and_an_unknown_one_is_refused_before_anything_is_written(self):
+        real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')
+        a = self.ok('new', 'starter', 'plain', '--catalog', real, '--url', KITURL)
+        b = self.ok('new', 'starter', 'named', '--theme', 'default', '--catalog', real, '--url', KITURL)
+        self.assertEqual(a['take'][-1], 'theme.default')
+        self.assertEqual(a['take'], b['take'])
+        html = open(self.p('plain', 'index.html'), encoding='utf-8').read()
+        self.assertLess(html.index('href="styles/page.css"'), html.index('href="kit/themes/default.css"'))
+        self.assertEqual(html, open(self.p('named', 'index.html'), encoding='utf-8').read())       # both forms give the same page
+        r = self.run_adp('new', 'starter', 'no', '--theme', 'nope', '--catalog', real, '--url', KITURL)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn('--theme nope: the catalog has no such theme. It has: ', r.stderr)
+        self.assertIn('glaze-depth', r.stderr)      # the names it does have, short
+        self.assertFalse(os.path.exists(self.p('no')))
 
     def test_new_with_any_theme_links_its_web_fonts_once_before_the_page_css(self):
         real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')

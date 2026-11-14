@@ -15,6 +15,12 @@ def load(p):
         return json.load(f)
 
 
+def take_of(name):
+    """A template's take list as `adp.py new` reads it: `kind.*` is every entry of that kind the catalog has, in its order."""
+    ids = [e['id'] for e in load(os.path.join(ROOT, 'skill', 'catalog', 'catalog.json'))['entries']]
+    return [x for i in load(os.path.join(TPL, name, 'template.json'))['take'] for x in ([c for c in ids if c.startswith(i[:-1])] if i.endswith('.*') else [i])]
+
+
 class DefaultTemplate(unittest.TestCase):
     def setUp(self):
         self.t = load(os.path.join(TPL, 'default', 'template.json'))
@@ -25,7 +31,7 @@ class DefaultTemplate(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(TPL, self.t['base'], 'template.json')))
 
     def test_take_exists_no_duplicates(self):
-        take = self.t['take']
+        take = take_of('default')
         self.assertEqual(len(take), len(set(take)))
         self.assertEqual([i for i in take if i not in self.cat], [])
 
@@ -37,12 +43,14 @@ class DefaultTemplate(unittest.TestCase):
         self.assertEqual(self.t['take'][:len(a)], a)
 
     def test_all_themes(self):
+        for t in ('assistant', 'default'):
+            self.assertIn('theme.*', load(os.path.join(TPL, t, 'template.json'))['take'], t)      # every theme the catalog has, however many: no list to keep up
         themes = {i for i in self.cat if i.startswith('theme.')}
         self.assertTrue(themes)
-        self.assertLessEqual(themes, set(self.t['take']))      # every theme the catalog has, however many
+        self.assertLessEqual(themes, set(take_of('default')))
 
     def test_requires_closure_in_catalog(self):
-        seen, todo = set(), list(self.t['take'])
+        seen, todo = set(), take_of('default')
         while todo:
             i = todo.pop()
             if i in seen:
@@ -81,7 +89,7 @@ class DefaultLoader(unittest.TestCase):
             for r in self.cat[i].get('requires') or []:
                 visit(r)
             order.append(i)
-        for i in self.t['take']:
+        for i in take_of('default'):
             visit(i)
         self.order = order
 

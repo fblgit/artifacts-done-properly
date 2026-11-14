@@ -96,7 +96,7 @@ class PlanTests(Base):
         code, text, _ = run("plan", "--catalog-dir", str(real), "--out", str(self.out), "--batch", "250")
         after = sorted(p.relative_to(REPO).as_posix() for p in REPO.rglob("*") if p.is_file() and "__pycache__" not in p.parts)
         self.assertEqual(code, 0)
-        self.assertIn("files: 395", text)
+        self.assertIn("files: %d\n" % sum(1 for p in real.rglob("*") if p.is_file()), text)      # what the catalog holds today: no count to keep up
         self.assertIn("batches: 2", text)
         self.assertEqual(before, after)
         self.assertEqual(sorted(os.listdir(self.out)), ["batch-1.json", "batch-2.json"])

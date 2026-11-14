@@ -31,6 +31,15 @@ class ConfigSetValues(Cmd):
         self.refused('edit.reason', 'x' * 2001)
         self.ok('config', 'set', 'edit.reason', 'x' * 2000, '--out', self.p('o'))
 
+    def test_the_theme_is_any_theme_name_and_is_always_written(self):
+        """look.theme's options and default are the page's own (the themes it has installed, the one it was built with), so the tool takes any
+        theme name and never drops the value as "the default"."""
+        self.refused('look.theme', 'Not a theme')
+        out = self.ok('config', 'set', 'look.theme', 'default', '--out', self.p('o'))
+        cur = next(w for b in out['batches'] for w in b if w['collection'] == 'config')
+        data = json.load(open(cur['file_path']))
+        self.assertEqual(data.get('data', data)['values'], {'look.theme': 'default'})
+
     def test_unknown_keys_stay_accepted(self):
         self.assertTrue(self.ok('config', 'set', 'assist.lanes', '["ask"]', '--out', self.p('o'))['unknown'])
 

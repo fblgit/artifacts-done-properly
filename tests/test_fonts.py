@@ -5,10 +5,13 @@ import glob
 import json
 import os
 import re
+import sys
 import unittest
 from urllib.parse import unquote_plus
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'skill')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tools'))
+import check_headers  # noqa: E402
 FILES = sorted(glob.glob(os.path.join(ROOT, 'templates', '*', 'styles', '*.txt'))
                + glob.glob(os.path.join(ROOT, 'catalog', 'kit', '*.css'))
                + glob.glob(os.path.join(ROOT, 'catalog', 'kit', 'patterns', '*.css')))
@@ -100,13 +103,19 @@ class ThemeFonts(unittest.TestCase):
                 self.assertEqual(self.cat['theme.' + t].get('fonts'), j['fonts'])
 
     def test_the_default_theme_is_the_templates_starting_look(self):
-        """theme.default names the look a page has before it wears a theme: the starter's page.css tokens and font link, value for value."""
+        """theme.default states the look the templates carry: every token their own stylesheets set (page.css on the page, the assistant's canvas.css
+        on the Canvas view) has the same value in the theme, light and dark, and the font link is the theme's. So a page that wears it and one with
+        no theme file linked look the same. --r is page.css's own shorthand for the theme's corner, not a theme token."""
         norm = lambda v: re.sub(r'\s+', '', v)
-        page = re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'templates', 'starter', 'styles', 'page.css.txt'), encoding='utf-8').read(), flags=re.S)
+        read = lambda t, f: re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'templates', t, 'styles', f), encoding='utf-8').read(), flags=re.S)
         j = json.load(open(os.path.join(THEMES, 'default.json'), encoding='utf-8'))
-        for sel, want in ((':root{', j['light']), (':root[data-theme="dark"]{', j['dark'])):
-            have = dict(re.findall(r'(--[\w-]+):([^;}]+)', page.split(sel, 1)[1].split('}', 1)[0]))
-            self.assertEqual({k: norm(have.get(k, '')) for k in want}, {k: norm(v) for k, v in want.items()})
+        for css, light, dark in ((read('starter', 'page.css.txt'), ':root{', ':root[data-theme="dark"]{'),
+                                 (read('assistant', 'canvas.css.txt'), ':where(:root){', ':where(:root[data-theme="dark"]){')):
+            for sel, theme in ((light, j['light']), (dark, j['dark'])):
+                have = dict(re.findall(r'(--[\w-]+):([^;}]+)', css.split(sel, 1)[1].split('}', 1)[0]))
+                have.pop('--r', None)
+                self.assertTrue(have, sel)
+                self.assertEqual({k: norm(v) for k, v in have.items()}, {k: norm(theme.get(k, '')) for k in have}, sel)
         for t in ('starter', 'assistant', 'default'):
             self.assertIn('href="%s"' % j['fonts'], open(os.path.join(ROOT, 'templates', t, 'index.html.txt'), encoding='utf-8').read(), t)
 
@@ -117,6 +126,11 @@ class ThemeFonts(unittest.TestCase):
             have = families(j['fonts'])
             for where, toks in (('json light', j['light']), ('json dark', j.get('dark', {})), ('css', css)):
                 for k in FONT_TOKENS:
+                    stack = [f.strip().strip('"\'') for f in toks.get(k, '').split(',')]
+                    if k == '--f-hand' and k in toks and not set(stack) & have:      # a handwriting stack left to the machine on purpose (theme.default: the assistant's canvas): no web font, a generic last
+                        with self.subTest(theme=t, where=where, token=k):
+                            self.assertTrue(GENERIC.match(stack[-1]), stack)
+                        continue
                     if k in toks and not GENERIC.match(first_family(toks[k])):
                         with self.subTest(theme=t, where=where, token=k):
                             self.assertIn(first_family(toks[k]), have)
@@ -153,6 +167,29 @@ class ThemeFonts(unittest.TestCase):
                     self.assertEqual(self.cat[base[0]]['fonts'], self.cat['theme.' + t]['fonts'])
                     continue
                 self.assertEqual({k: css[k] for k in FONT_TOKENS if k in css}, {k: j[k] for k in FONT_TOKENS if k in j})
+
+    def test_every_theme_sets_the_one_convention(self):
+        """The viewer switches themes at run time, so every theme sets the same names, and the convention has one source: theme.default.
+        It sets every custom property a kit entry's header says it reads (@tokens: a trailing ? marks an optional one, and a <placeholder>
+        is a family, not a name), and every other theme sets every name it sets: in light, and in dark wherever the default's dark map has it
+        (the colours and shadows). A theme may set more; the default sets nothing that is not shared."""
+        root = os.path.join(ROOT, 'catalog')
+        need = {}
+        for path, e in check_headers.load(root)[1].items():
+            tags = dict(check_headers.parse(check_headers.comment_of(open(os.path.join(root, path), encoding='utf-8').read(), path) or '')[2])
+            for tok in check_headers.split(tags.get('tokens', ''), spaces=True):
+                if tok.startswith('--') and not tok.endswith('?') and '<' not in tok:
+                    need.setdefault(tok, e['id'])
+        self.assertGreater(len(need), 20)
+        ref = json.load(open(os.path.join(THEMES, 'default.json'), encoding='utf-8'))
+        self.assertEqual({k: who for k, who in need.items() if k not in ref['light']}, {}, 'theme.default lacks a token a kit entry requires')
+        gaps = {}
+        for t in self.themes:
+            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
+            miss = [k for k in ref['light'] if k not in j['light']] + [k + ' (dark)' for k in ref['dark'] if k not in j['dark']]
+            if miss:
+                gaps[t] = miss
+        self.assertEqual(gaps, {}, 'a theme lacks tokens theme.default sets')
 
     def test_every_theme_file_the_skill_names_exists(self):
         named = set()

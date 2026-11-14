@@ -15,10 +15,12 @@
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
-  adp.py new (TEMPLATE | --tier minimal|default|full) DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]
+  adp.py new (TEMPLATE | --tier minimal|default|full) DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme NAME] [--layout ID] [--catalog URL|-|catalog.json]
                                                     --tier instead of TEMPLATE: minimal = starter, default = default, full = not available yet (the published catalog, later)
                                                     a ready adp/2 artifact in DIR (seed.json and seed/ included; --data as in seed), plus ONE publish object: with a fetched catalog index
-                                                    (saved, or --catalog) its `files` already carry the taken kit entries, --theme and --layout.
+                                                    (saved, or --catalog) its `files` already carry the taken kit entries, the theme and --layout.
+                                                    --theme: the theme the page wears, by short name (`default`, `glaze`) or entry id (`theme.glaze`); without it the page wears
+                                                    theme.default when the catalog index has it. An unknown name exits with the themes the index has.
                                                     --content: views from a content file (`## Lead` text; `## View: <label> (id: <id>)`;
                                                     under it `### Section <id> - <title>` + one ```html block each, used verbatim); the
                                                     starter's welcome view goes; prints built {views, sections, parts, bytes}
@@ -467,12 +469,35 @@ TIERS = {'minimal': 'starter', 'default': 'default', 'full': None}
 INSTALLED = ('id', 'name', 'kind', 'group', 'summary', 'version', 'requires')
 
 
-def installed_index(src, take):
+def catalog_on_disk(src):
+    """The catalog.json a CATALOG argument has on disk: a local file, or the copy `catalog` fetched into ~/.adp for a url. {} when there is none."""
+    p = src if src and os.path.isfile(src) else os.path.join(cat_dir(src), 'catalog.json') if src and CAT_URL.match(src) else None
+    return read_json(p, 'catalog') if p and os.path.isfile(p) else {}
+
+
+def expand(take, ids):
+    """`kind.*` in a template's take list is every entry of that kind the catalog index has, in its order (none without an index):
+    the assistant says `theme.*`, so a theme added to the catalog needs no template edit."""
+    out = []
+    for i in take: out += [x for x in ids if x.startswith(i[:-1])] if i.endswith('.*') else [i]
+    return out
+
+
+DEFAULT_THEME = 'theme.default'      # what a page wears when --theme names no other
+
+
+def theme_id(name, ids):
+    """--theme takes a short name (`default`) or the entry id (`theme.default`). With a catalog index an unknown one exits with the names it has."""
+    i = name if name.startswith('theme.') else 'theme.' + name
+    have = [x[6:] for x in ids if x.startswith('theme.')]
+    if have and i[6:] not in have: sys.exit(f'--theme {name}: the catalog has no such theme. It has: ' + ', '.join(have))
+    return i
+
+
+def installed_index(c, src, take):
     """What a page has installed: the entries it takes and everything they require (the files it loads), in load order, cut to
-    INSTALLED from the owner's catalog.json (a local file, or the copy `catalog` fetched into ~/.adp). With no catalog on disk an entry is
-    just its id: the list is still true, only its words are missing."""
-    p = src if src and src != '-' and os.path.isfile(src) else os.path.join(cat_dir(src), 'catalog.json') if src and CAT_URL.match(src) else None
-    c = read_json(p, 'catalog') if p and os.path.isfile(p) else {}
+    INSTALLED from the owner's catalog.json (c: `catalog_on_disk`). With no catalog on disk an entry is just its id: the list is
+    still true, only its words are missing."""
     by = {e['id']: e for e in c.get('entries', [])}
     order, seen = [], set()
 
@@ -517,7 +542,7 @@ def new(a):
         if tier == 'full': sys.exit('tier full is not available yet')
         if not os.path.isfile(os.path.join(TPL, TIERS[tier], 'template.json')): sys.exit(f"tier {tier}: template '{TIERS[tier]}' not found")
         pos = [TIERS[tier]] + pos
-    if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE|--tier T DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]')
+    if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE|--tier T DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme NAME] [--layout ID] [--catalog URL|-|catalog.json]')
     name, d = pos
     if os.path.exists(d) and os.listdir(d): sys.exit(f'{d} exists and is not empty')
     meta = tmeta(name); title = opt(a, '--title', 'Untitled artifact'); slug = opt(a, '--slug') or slugify(title)
@@ -527,6 +552,10 @@ def new(a):
         if not os.path.isfile(content): sys.exit(f'--content: no file {content}')
         if name != 'starter': sys.exit('--content builds the starter\'s views: use it with the starter (--tier minimal). The assistant and default templates carry their own Home view wired into parts/app.js: change it there')
         read_content(content)       # a malformed file fails before anything is written
+    csrc = opt(a, '--catalog'); csrc = saved_catalog() if csrc in (None, '-') else csrc
+    index = catalog_on_disk(csrc); ids = [e['id'] for e in index.get('entries', [])]
+    themes = [theme_id(t, ids) for t in optall(a, '--theme')]       # an unknown theme fails here, before anything is written
+    if not themes and DEFAULT_THEME in ids: themes = [DEFAULT_THEME]
     layers = base_chain(name)
     files = {}
     for layer in layers:
@@ -544,9 +573,9 @@ def new(a):
         if p == 'adp.js': shutil.copyfile(src, dst); continue
         with open(src, encoding='utf-8') as f, open(dst, 'w', encoding='utf-8') as g: g.write(sub(f.read()))
     built = build_content(d, content) if content else None
-    tk = list(dict.fromkeys(meta.get('take', []) + optall(a, '--theme') + optall(a, '--layout')))
+    tk = list(dict.fromkeys(expand(meta.get('take', []), ids) + themes + optall(a, '--layout')))
     if any(tmeta(l).get('installed') for l in layers):     # the My catalog tab lists this file
-        ix = installed_index(opt(a, '--catalog') or saved_catalog(), tk)
+        ix = installed_index(index, csrc, tk)
         given = opt(a, '--url') or (cat if CAT_URL.match(cat) else '')
         ix['take'] = tk       # what this page asked for: `files` takes the same entries again
         if given: ix['url'] = given       # the link the owner gave (or the catalog url this run used) wins over the one inside the file
@@ -565,9 +594,9 @@ def new(a):
         t, code = taken(src, tk, a)
         if code: emit(t); sys.exit(2)
         out['publish']['files'].update(t['files']); out['catalog'] = t['catalog']; out['entries'] = t['entries']
-        asked = optall(a, '--theme') + optall(a, '--layout')
+        asked = themes + optall(a, '--layout')
         ta = taken(src, asked, a)[0] if asked else {}
-        if asked and add_kit_tags(d, ta['files'], ta.get('fonts', {}).values()):       # a theme or layout asked for is served and also loaded: its tags go into index.html
+        if asked and add_kit_tags(d, ta['files'], ta.get('fonts', {}).values()):       # the theme the page wears and a layout asked for are served and also loaded: their tags go into index.html
             seed_file(d, opt(a, '--by') or 'adp', data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
     out['next'] = ['adp.py check ' + d,
                    'Design it: read `design` above, take a theme and the layouts the content needs from the catalog, then write page.css and the views for this content (a script that emits them beats typing)' if design and not built else '',
@@ -843,15 +872,21 @@ def seed(a):
 
 
 # The core switches: key -> (type, default, enum options). assets/adp.js is the source of truth; the two must agree.
+# look.theme has options None: only the page knows them (the themes it has installed), and its default there is the theme the page was built with.
 CORE = {
     'edit.locked': ('bool', False, None), 'edit.until': ('datetime', '', None), 'edit.reason': ('text', '', None),
     'edit.require-hold': ('bool', False, None), 'parts.locked': ('list', [], None), 'comments.enabled': ('bool', True, None),
     'panel.changes': ('enum', 'everyone', ['everyone', 'editors', 'off']), 'panel.checks': ('enum', 'editors', ['everyone', 'editors', 'off']),
-    'playground.enabled': ('bool', True, None), 'look.theme': ('text', '', None), 'look.mode': ('enum', 'auto', ['auto', 'light', 'dark']),
+    'playground.enabled': ('bool', True, None), 'look.theme': ('enum', 'default', None), 'look.mode': ('enum', 'auto', ['auto', 'light', 'dark']),
     'look.density': ('enum', 'comfortable', ['comfortable', 'compact']), 'links.catalog': ('url', '', None),
     'links.board': ('url', '', None), 'links.repo': ('url', '', None), 'log.data-changes': ('bool', True, None),
 }
 KEY = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z0-9]+(?:-[a-z0-9]+)*')
+
+
+def page_decides(key):
+    """An enum whose options and default are the page's own (look.theme): any name is accepted here, and its value is always written, never dropped as "the default"."""
+    return CORE[key][0] == 'enum' and CORE[key][2] is None
 
 
 def read_doc(path):
@@ -874,7 +909,7 @@ def real_date(v):
 def check_value(key, v):
     if key not in CORE: return
     t, _, opts = CORE[key]
-    ok = {'bool': isinstance(v, bool), 'text': isinstance(v, str) and len(v) <= 2000, 'enum': v in (opts or []) if isinstance(v, str) else False,
+    ok = {'bool': isinstance(v, bool), 'text': isinstance(v, str) and len(v) <= 2000, 'enum': isinstance(v, str) and (re.fullmatch(r'[a-z0-9-]+', v) is not None if page_decides(key) else v in (opts or [])),
           'list': isinstance(v, list) and all(isinstance(x, str) for x in v),
           'url': isinstance(v, str) and (v == '' or re.match(r'https://\S+$', v) is not None),
           'datetime': isinstance(v, str) and (v == '' or real_date(v))}[t]
@@ -915,7 +950,7 @@ def config_cmd(a):
         check_value(key, val)
         doc = read_doc(opt(a, '--doc')); by, at = opt(a, '--by', 'agent'), now()
         vals, chg = dict(doc.get('values') or {}), dict(doc.get('changed') or {})
-        if key in CORE and val == CORE[key][1]: vals.pop(key, None)       # at its default: no value kept, but changed[key] stays, as in adp.js
+        if key in CORE and val == CORE[key][1] and not page_decides(key): vals.pop(key, None)       # at its default: no value kept, but changed[key] stays, as in adp.js
         else: vals[key] = val
         chg[key] = {'by': by, 'at': at}
         pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
