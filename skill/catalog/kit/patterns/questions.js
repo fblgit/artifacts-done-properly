@@ -43,6 +43,7 @@
  * @source    Catalog harvest, 2026-10-25 | a decisions board's index.html | question cards with options, a recommendation, a note, and the sticky answer bar with take-all, submit-all and copy
  * @source    Catalog harvest, 2026-10-25 | a task list's index.html | option cards with a reply box, Claude's note on the answer and a history
  * @preview   {"render": "pattern.questions", "samples": ["kit/samples/patterns.json#questions"]}
+ * @samples   questions
  * @changed   Written as one mount call over plain data, not as page markup; the question list is data the board supplies.
  */
 (function () {

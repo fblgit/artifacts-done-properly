@@ -52,6 +52,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s confirm sheet | the plan with before and after chips, needs and holds, the undo line, the typed-word seal, the waiting-for-hands step, the fly into the tray, the failed and finished sheets
  * @preview   {"render": "pattern.confirm-sheet", "samples": ["kit/samples/patterns.json#confirm-sheet"]}
+ * @samples   confirm-sheet
  * @changed   Presets are a table you extend instead of a project’s own presets, and the project’s words and icon sprite are gone.
  */
 (function () {

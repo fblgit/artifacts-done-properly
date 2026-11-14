@@ -30,6 +30,7 @@
  * @source    Journey Whiteboard | app.js | mdToHtml
  * @source    ADR Drafting Table | core.js | forbid lists and external links (mermaid fences not taken)
  * @preview   {"render": "kit.md", "samples": ["kit/samples/kit.json#md"]}
+ * @samples   md
  */
 (function () {
 'use strict';

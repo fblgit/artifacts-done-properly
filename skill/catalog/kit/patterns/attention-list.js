@@ -38,6 +38,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s opening page | the needs-you list ranked waiting, failed, soon; the sentence builder; the heading that takes the worst tone; focus restored by button
  * @preview   {"render": "pattern.attention-list", "samples": ["kit/samples/patterns.json#attention-list"]}
+ * @samples   attention-list
  * @changed   Items are config; the console built them from its own data.
  */
 (function () {

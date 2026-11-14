@@ -30,6 +30,7 @@
  * @source    Catalog harvest, 2026-10-25 | a secret-scan report, index.html | the entropy sparkline under a character sweep
  * @source    Catalog harvest, 2026-10-25 | a music-library page, parts/base.js | the waveform with window marks and a played part
  * @preview   {"render": "viz.sparkline", "samples": ["kit/samples/viz.json#sparkline"]}
+ * @samples   sparkline
  * @changed   The sweep animation is dropped; the line states its range in words; the waveform is a real slider with a keyboard.
  */
 (function () {

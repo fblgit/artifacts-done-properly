@@ -47,6 +47,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, parts and styles | the scaled 1:1 stage, the keyboard-driven triage prototype, the numbered shortcut markers with their legend and the keys inventory table
  * @preview   {"render": "pattern.prototype", "samples": ["kit/samples/patterns.json#prototype"]}
+ * @samples   prototype
  * @changed   Markers are --ink on --panel with a --seam ring, not a fixed amber, so they read on any mock-up in both themes.
  */
 (function () {

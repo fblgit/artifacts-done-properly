@@ -39,6 +39,7 @@
  * @source    Catalog harvest, 2026-10-25 | a component family's delivery feed and delivery stamp | repeats folded into one row with a count
  * @source    Catalog harvest, 2026-10-25 | a component family's task history | a move with what it carried, in order
  * @preview   {"render": "pattern.event-log", "samples": ["kit/samples/patterns.json#event-log"]}
+ * @samples   event-log
  * @changed   Rebuilt over events {id, at, by, what, subject, status} instead of the source's task log; the status is a vocabulary row.
  */
 (function () {

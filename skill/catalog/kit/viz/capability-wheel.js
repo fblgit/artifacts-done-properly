@@ -36,6 +36,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page | the capability wheel function and its beads, seams and label placement
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page | the ability buttons that light everything that has one
  * @preview   {"render": "viz.capability-wheel", "samples": ["kit/samples/viz.json#capability-wheel"]}
+ * @samples   capability-wheel
  * @changed   The count is any number from 3 to 12 (angles from n), the abilities and the lit set are config.
  */
 (function () {

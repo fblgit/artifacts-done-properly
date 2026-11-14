@@ -32,6 +32,7 @@
  * @source    Catalog harvest, 2026-10-25 | a roadmap, index.html | numbered phases
  * @source    Catalog harvest, 2026-10-25 | a dated review table, index.html | the timeline table with a marked row
  * @preview   {"render": "viz.timeline", "samples": ["kit/samples/viz.json#timeline"]}
+ * @samples   timeline
  * @changed   Status is a glyph and a word as well as a colour; the light follows keyboard focus as well as the pointer.
  */
 (function () {

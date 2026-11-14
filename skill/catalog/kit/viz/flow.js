@@ -24,6 +24,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | four reports' index.html | a source-to-sinks grid flow, a row of layer boxes joined by arrows, an inline-SVG pipeline with arrowheads, a strip with human steps
  * @preview   {"render": "viz.flow", "samples": ["kit/samples/viz.json#flow"]}
+ * @samples   flow
  * @changed   One component for the four forms, in HTML so the text wraps and can be selected; arrows are drawn in css.
  */
 (function () {

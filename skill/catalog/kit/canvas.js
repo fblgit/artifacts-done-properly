@@ -40,6 +40,7 @@
  * @db        reads canvases; els / writes canvases {name, order, created, author}; els {canvasId, type, x, y, w, h, x2, y2, fromId, toId, pts, sw, hl, color, tint, fill, font, fs, text, refKind, refId, z, author, created}
  * @source    Journey Whiteboard | app.js | canvas geometry, history, CanvasView, Board, Editor
  * @preview   {"render": "kit.canvas", "samples": ["kit/samples/kit.json#canvas"]}
+ * @samples   canvas
  * @changed   0.1.1 (this catalog’s copy): the hint reads --ink-2 instead of --ink-3, 4.5:1 or more in both themes.
  */
 (function () {

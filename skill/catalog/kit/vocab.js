@@ -45,6 +45,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's blueprint and console skins | a hand-drawn checkbox frame with a mark, and terminal characters with short words
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's design system | state orbs with a glyph, the cascade of colour variables, a person-wait state with its own motion
  * @preview   {"render": "kit.vocab", "samples": ["kit/samples/kit.json#vocab"]}
+ * @samples   vocab
  * @changed   Rebuilt as plain DOM over a table the page supplies; no enum, name or colour is built in, and the table is data so a theme can swap glyphs.
  */
 (function () {

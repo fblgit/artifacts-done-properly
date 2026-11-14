@@ -42,6 +42,7 @@
  * @source    Catalog batch 16, 2026-10-26 | a drafting board's bottom composer | the mode switch, the kept draft, the byte count, Ctrl+Enter, the reason line
  * @source    Catalog batch 16, 2026-10-26 | the same board's Claude pane | open or all requests, the session line and Ping above them
  * @preview   {"render": "pattern.assist-panel", "samples": ["kit/samples/patterns.json#assist-panel"]}
+ * @samples   assist-panel
  * @changed   Ask now (an immediate answer) and the session lanes share one composer; the source had a separate bar per lane.
  */
 (function () {

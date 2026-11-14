@@ -38,6 +38,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's services page | the primary and standby pebbles and the ring of peers
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheets | the link, halo, ring and badge, the flowing beads, the cut seam and the connecting ring
  * @preview   {"render": "viz.pebble-map", "samples": ["kit/samples/viz.json#pebble-map"]}
+ * @samples   pebble-map
  * @changed   Positions are computed from the node count; the node and link states are vocab tables; the words of every seam are also a caption line.
  */
 (function () {

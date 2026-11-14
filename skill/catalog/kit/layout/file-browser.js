@@ -42,6 +42,7 @@
  * @source    Catalog batch 15, 2026-10-26 | kit/layout/file-browser.js 0.1.0 | folders, an extension badge and the parts of each file
  * @source    Catalog batch 15, 2026-10-26 | skills/artifact-dataplane/scripts/adp.py manifest() and diff() | the adp/2 manifest the tree is drawn from, and added, changed, removed
  * @preview   {"render": "layout.file-browser", "samples": ["kit/samples/layout.json#file-browser"], "uses": ["pattern.file-map", "pattern.record-shelf"]}
+ * @samples   file-browser
  * @changed   A tree with folders that open and close, walked with the arrow keys, instead of flat groups of buttons.
  */
 (function () {

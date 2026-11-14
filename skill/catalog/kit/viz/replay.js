@@ -35,6 +35,7 @@
  * @db        note The board passes creation stamps it already has.
  * @source    Journey Whiteboard | app.js | timeline, the Replay button, range and label inside TreeView
  * @preview   {"render": "viz.replay", "samples": ["kit/samples/viz.json#viz-replay"]}
+ * @samples   viz-replay
  * @changed   A component of its own instead of part of the tree.
  */
 (function () {

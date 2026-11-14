@@ -31,6 +31,7 @@
  * @db        none
  * @source    Journey Whiteboard | app.js | REQ_STEPS, REQ_HINT, the rail in ReqLine, GuideSteps
  * @preview   {"render": "viz.stepper", "samples": ["kit/samples/viz.json#viz-stepper"]}
+ * @samples   viz-stepper
  * @changed   The rail announces itself as one image: step n of m, its name and hint.
  */
 (function () {

@@ -38,6 +38,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's modal and tabs | an accent crown, a tinted header with crumbs, id and close, underline tabs, a body that scrolls
  * @preview   {"render": "kit.record-dialog", "samples": ["kit/samples/kit.json#record-dialog"], "uses": ["kit.vocab"]}
+ * @samples   record-dialog
  * @changed   Extends kit.chrome as new files; chrome.js and chrome.css are unchanged.
  */
 (function () {

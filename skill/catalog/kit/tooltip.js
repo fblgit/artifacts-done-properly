@@ -35,6 +35,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a disk-usage report's showTip() and #tip that follow the pointer and focus
  * @preview   {"render": "kit.tooltip", "samples": ["kit/samples/kit.json#tooltip"]}
+ * @samples   tooltip
  * @changed   Keyboard-safe: tipped marks become focusable and named, the tooltip is described-by, and Escape closes it.
  */
 (function () {

@@ -40,6 +40,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's card dialog | the state crown, tabs, advancing to the next card that waits on you, the all-caught-up toast and the two-step delete
  * @preview   {"render": "pattern.answer-queue", "samples": ["kit/samples/patterns.json#answer-queue"], "uses": ["kit.vocab", "kit.tabs"]}
+ * @samples   answer-queue
  * @changed   The board's own card fields became a small item shape with choices, fields and history; the answer tab and the tab list can be replaced.
  */
 (function () {

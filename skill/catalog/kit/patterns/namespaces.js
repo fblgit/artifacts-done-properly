@@ -42,6 +42,7 @@
  * @db        reads config/current (through ADP.config)
  * @source    Catalog batch 14, 2026-10-26 | the settings page's list of namespaces and its lock badges | the rules by path, who reads and writes, the locked prefixes
  * @preview   {"render": "pattern.namespaces", "samples": ["kit/samples/patterns.json#namespaces"]}
+ * @samples   namespaces
  */
 (function () {
 'use strict';

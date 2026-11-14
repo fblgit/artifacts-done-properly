@@ -47,6 +47,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | sealParts, sealSVG, miniSeal, arcAngles and the ring arithmetic (r 44, circumference 276.46)
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the .seal medallion, the crackle path and the quick-action arc
  * @preview   {"render": "viz.seal", "samples": ["kit/samples/viz.json#seal"]}
+ * @samples   seal
  * @changed   The unit is a callback (days, hours, years); the states are the vocab's table; the item's text, label and actions are config.
  */
 (function () {

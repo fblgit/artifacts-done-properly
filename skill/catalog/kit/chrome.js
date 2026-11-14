@@ -32,6 +32,7 @@
  * @source    Journey Whiteboard | app.js | Modal, Toast, Busy, ArmedButton, AutoText, useOutside, KindChip, StatusChip, I
  * @source    ADR Drafting Table | uishared.js, modals.js | the same shapes (focus restore and stacked toasts not taken)
  * @preview   {"render": "kit.chrome", "samples": ["kit/samples/kit.json#chrome"]}
+ * @samples   chrome
  * @changed   0.1.2: .btn, .input, .select and .textarea take the page font (font-family: inherit); native buttons and fields otherwise draw in the system font.
  */
 (function () {

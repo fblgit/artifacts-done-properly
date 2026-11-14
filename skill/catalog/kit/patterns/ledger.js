@@ -36,6 +36,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 3 artifacts' index.html | a decisions board's grouped settled ledger with filters and row detail, a dated progress table, and a work board's push ledger that links to its cards
  * @preview   {"render": "pattern.ledger", "samples": ["kit/samples/patterns.json#ledger"]}
+ * @samples   ledger
  * @changed   Rows are native details, so they open from the keyboard and print open.
  */
 (function () {

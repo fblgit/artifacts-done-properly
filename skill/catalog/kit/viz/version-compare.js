@@ -31,6 +31,7 @@
  * @db        reads changes; manifest/current; content / note The board reads the docs and passes them in; the component never opens the db.
  * @source    Catalog batch 14, 2026-10-26 | adp.py diff and the changes/ docs of SKILL.md section 3 | added, removed and changed parts from two manifests; folding the change docs between two versions
  * @preview   {"render": "viz.version-compare", "samples": ["kit/samples/viz.json#version-compare"]}
+ * @samples   version-compare
  */
 (function () {
 'use strict';

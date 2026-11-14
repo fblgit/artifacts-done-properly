@@ -37,6 +37,7 @@
  * @source    Catalog batch 16, 2026-10-26 | a drafting board's session line, Ping button and panel | watching within five minutes, busy with what, the ping states and its 90 s timeout
  * @source    Catalog batch 16, 2026-10-26 | the same board's nudge | the copyable watch the artifact line
  * @preview   {"render": "pattern.presence", "samples": ["kit/samples/patterns.json#presence"]}
+ * @samples   presence
  * @changed   One view with a compact form for a panel header.
  */
 (function () {

@@ -41,6 +41,7 @@
  * @source    Catalog harvest, 2026-10-25 | a proposal page's index.html | the collapsible next-steps strip with a pending count
  * @source    Catalog harvest, 2026-10-25 | a share manifest's index.html | folder picks that build a copy command with an exclude per unpicked folder
  * @preview   {"render": "pattern.next-steps", "samples": ["kit/samples/patterns.json#next-steps"]}
+ * @samples   next-steps
  * @changed   The text is built by a function the board can replace, which covers the prompt and the command variants with one component.
  */
 (function () {

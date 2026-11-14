@@ -32,6 +32,7 @@
  * @source    Catalog harvest, 2026-10-25 | a component family's carousel | ResizeObserver, drag and keys
  * @source    Catalog harvest, 2026-10-25 | a kanban strip | the horizontal scroll
  * @preview   {"render": "layout.carousel", "samples": ["kit/samples/layout.json#carousel"], "uses": ["kit.vocab"]}
+ * @samples   carousel
  * @changed   One strip for phases, pages and columns; fades and arrows follow measured scroll state, so neither appears when it would do nothing.
  */
 (function () {

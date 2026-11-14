@@ -33,6 +33,7 @@
  * @source    Journey Whiteboard | app.js | store, data layer, utils
  * @source    ADR Drafting Table | core.js, data.js | the same shapes with another path
  * @preview   {"render": "kit.store", "samples": ["kit/samples/kit.json#store"]}
+ * @samples   store
  */
 (function () {
 'use strict';

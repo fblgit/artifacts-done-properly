@@ -32,6 +32,7 @@
  * @db        note None. A real code function calls the board's own service; that call and any capability it needs belong to the board.
  * @source    Catalog harvest, 2026-10-25 | a security proposal's index.html | the activation-code card: six digits, a 30 second ring, seconds left
  * @preview   {"render": "kit.code-gate", "samples": ["kit/samples/kit.json#code-gate"]}
+ * @samples   code-gate
  * @changed   Kept after review: it is a general countdown card for any time-boxed code. The source's code was a hash of a fixed phrase, so the generator is now a named stand-in and the real code is a function the board supplies.
  */
 (function () {

@@ -40,6 +40,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's console, war-room and journal dressings | arm and abort, the two-key panel, the ticket with a tear-off stub, the preview as a diff
  * @source    Catalog harvest, 2026-10-25 | a component family's permission card and refusal callout | who asked and for which tool; code, field, what is allowed now and the message
  * @preview   {"render": "pattern.gate", "samples": ["kit/samples/patterns.json#gate"]}
+ * @samples   gate
  * @changed   One gate with four css dressings; the source had one rewrite of the markup per board.
  */
 (function () {

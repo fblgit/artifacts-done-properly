@@ -39,6 +39,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | the bubble mark, the cluster, lane and orbit pictures and the lens line
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the pool, seam ring, halo and gloss
  * @preview   {"render": "viz.bubbles", "samples": ["kit/samples/viz.json#bubbles"]}
+ * @samples   bubbles
  * @changed   Groups, state words, the scale and its ticks are config; the axis names its scale and places its ticks with the same function as the bubbles.
  */
 (function () {

@@ -34,6 +34,7 @@
  * @db        none
  * @source    Journey Whiteboard | app.js | KindChip, StatusChip, EstChip, QueueStrip counts, the stats strip, pv-stats
  * @preview   {"render": "viz.core", "samples": ["kit/samples/viz.json#viz-chips"]}
+ * @samples   viz-chips
  * @changed   Tones replace the board's fixed kind and status classes, so any enum maps to a colour by config.
  */
 (function () {

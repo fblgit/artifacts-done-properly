@@ -39,6 +39,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a work-status board's expandable workstream cards (renderCards, openCards) and its C/P/A/V status matrix cells
  * @preview   {"render": "pattern.expand-card", "samples": ["kit/samples/patterns.json#expand-card"]}
+ * @samples   expand-card
  * @changed   Every status cell has a symbol and a word; the source separated the states by colour and border style.
  */
 (function () {

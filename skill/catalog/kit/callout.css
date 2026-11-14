@@ -31,6 +31,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | three-tone callouts with a mono kicker, a Glaze note with an orb, the verified and inference marker, and a pending-input box
  * @preview   {"render": "kit.callout", "samples": ["kit/samples/kit.json#callout"]}
+ * @samples   callout
  * @changed   New file kit/callout.css beside kit/chrome.css; chrome.css is unchanged.
  */
 .kit-callout { --tone: var(--accent); --edge: var(--seam, var(--accent));

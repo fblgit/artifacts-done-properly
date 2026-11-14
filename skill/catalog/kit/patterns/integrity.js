@@ -38,6 +38,7 @@
  * @db        reads manifest/current; changes; parts; checks/latest; config/current / note The board reads these docs and passes them in as plain objects; the pattern never touches the db.
  * @source    Catalog batch 14, 2026-10-26 | the manifest and self-check documents of the reference build | recorded file hashes, last change against manifest version, holds with expiry, the checks/latest fields
  * @preview   {"render": "pattern.integrity", "samples": ["kit/samples/patterns.json#integrity"]}
+ * @samples   integrity
  */
 (function () {
 'use strict';

@@ -72,6 +72,8 @@ The sample data of the previews lives in four bundles, one JSON object each: `ki
 
 An entry that previews on another folder's sample lists that bundle too (a theme lists `kit/samples/viz.json`). The check fails for a `#key` the bundle does not have, a bundle that is not in the entry's own `@files`, an entry that lists a bundle but names no key of it, and a key no entry's `@preview` names. A sample a template needs at run time (`kit/samples/expiry-board.json`, `tester.json`) stays its own file, named by plain path.
 
+`@samples` (optional, a comma list of keys) names the samples an entry owns: `@samples confirm-sheet`. A theme that previews on `viz-chips` owns none and has no `@samples`; a sample used by several entries is owned by each of them. It is what `adp.py take` hands out: `take ID` cuts each owned key out of the local bundle and writes it as its own small file, `kit/samples/<key>.json` (a `{from}` source in the files map, two-space JSON), and never puts a bundle in the map. Each key must be in a bundle of the entry's own `@files`, and every key of a bundle must be owned by some entry.
+
 ## Checking
 
 `python3 skill/scripts/adp_catalog.py headers [FILES...]` validates headers (`adp_catalog.py` alone runs them with the other catalog checks). A main file without a valid header fails, so a catalog file can only be committed once its header is complete. The pre-commit hook `catalog-headers` runs it on the staged files of `skill/catalog/`. With no file arguments it checks every main file; `--report` counts conformance per kind and per rule and always exits 0.

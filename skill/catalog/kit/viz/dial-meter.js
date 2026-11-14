@@ -42,6 +42,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | arcPath, the dial with a gold bead, the meter tile and its swapping caption
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's vault page | the ring that drains while the vault is open
  * @preview   {"render": "viz.dial-meter", "samples": ["kit/samples/viz.json#dial-meter"]}
+ * @samples   dial-meter
  * @changed   The number, unit, caption and actions are config; the draining ring is a component with its own clock and a spoken form of the time left.
  */
 (function () {

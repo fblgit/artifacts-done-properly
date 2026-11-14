@@ -30,6 +30,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's claim graph and claim row | a held claim, the members subscribed to its release and the denials of the same key nested under it
  * @preview   {"render": "viz.lease-graph", "samples": ["kit/samples/viz.json#lease-graph"]}
+ * @samples   lease-graph
  * @changed   Resources are {kind, name} pairs the page supplies, not the source's typed keys.
  */
 (function () {

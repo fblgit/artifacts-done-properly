@@ -38,6 +38,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a runbook's cluster browser: the filter-button list, the search box, the detail pane and the select that replaces the list on a phone
  * @preview   {"render": "pattern.master-detail", "samples": ["kit/samples/patterns.json#master-detail"]}
+ * @samples   master-detail
  * @changed   The list is a listbox with roving focus and arrow keys; the source was a column of buttons.
  */
 (function () {

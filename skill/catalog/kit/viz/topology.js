@@ -30,6 +30,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network report, index.html | topoSVG with zones and links, the .tn nodes as buttons, showNode filling a detail panel
  * @preview   {"render": "viz.topology", "samples": ["kit/samples/viz.json#topology"]}
+ * @samples   topology
  * @changed   Positions, names and text are config and the detail panel is a callback; the source hard-coded one network.
  */
 (function () {

@@ -38,6 +38,7 @@
  * @source    Catalog harvest, 2026-10-25 | a component family's outcome stamp and answered stamp | how it ended and onto what; the answer and the delivery that read it
  * @source    Catalog harvest, 2026-10-25 | a component family's provenance badge | who wrote what is shown and whether the record moved since
  * @preview   {"render": "pattern.work-card", "samples": ["kit/samples/patterns.json#work-card"]}
+ * @samples   work-card
  * @changed   The hub's enums became vocabulary rows; the card reads them by name and never by a hub value.
  */
 (function () {

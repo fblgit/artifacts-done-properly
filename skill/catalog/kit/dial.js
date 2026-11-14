@@ -33,6 +33,7 @@
  * @db        note None. What the dial chooses is the board's to keep or forget.
  * @source    Catalog harvest, 2026-10-25 | a share-readiness sheet's index.html | the audience dial with its thumb, digit keys, per-reader verdict text, and the inline identifier redaction
  * @preview   {"render": "kit.dial", "samples": ["kit/samples/kit.json#dial"]}
+ * @samples   dial
  * @changed   Arrow-key radio behaviour added; the source was buttons with aria-pressed.
  */
 (function () {

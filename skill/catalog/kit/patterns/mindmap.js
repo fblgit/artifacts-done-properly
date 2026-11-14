@@ -46,6 +46,7 @@
  * @db        none
  * @source    Catalog, 2026-11-13 | viz.buckets (kit/viz/buckets.js) | the pointer drag with a drop line, and a Move to menu that does the same without a drag
  * @preview   {"render": "pattern.mindmap", "samples": ["kit/samples/patterns.json#mindmap"]}
+ * @samples   mindmap
  * @changed   0.1.1: layout 'free': nodes can carry x and y and a drag drops a node, with its subtree, anywhere on the map; the default stays the tidy tree.
  */
 (function () {

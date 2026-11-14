@@ -53,6 +53,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate trust page | hardware-key holders, who may sign what, subject lanes, limits pebbles, the chain breadcrumb with hops, the detail content
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page stylesheet | tree, medallions, seams, stack, lanes, passes
  * @preview   {"render": "viz.trust-tree", "samples": ["kit/samples/viz.json#trust-tree"], "uses": ["viz.capability-wheel", "kit.drawer"]}
+ * @samples   trust-tree
  * @changed   Authorities, kinds, groups, holders and every sentence are config; the source had its own hierarchy, names and name-matching rules built in.
  */
 (function () {

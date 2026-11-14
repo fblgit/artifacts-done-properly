@@ -41,6 +41,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, app.js and app.css | the states specimen sheet (row, pad and toast states, loading, empty and missing cells) and the two-skin direction switch
  * @preview   {"render": "pattern.specimens", "samples": ["kit/samples/patterns.json#specimens"]}
+ * @samples   specimens
  * @changed   Skins are data (custom properties on the sheet), not two stylesheets, so a board can add a third.
  */
 (function () {

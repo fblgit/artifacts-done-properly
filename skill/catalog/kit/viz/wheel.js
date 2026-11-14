@@ -33,6 +33,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, parts/base.js | the Camelot wheel (active and count modes), the Camelot chip with hue and lightness, and the valence/arousal plot
  * @preview   {"render": "viz.wheel", "samples": ["kit/samples/viz.json#wheel"]}
+ * @samples   wheel
  * @changed   Fills are mixes of the key's hue into --panel, not fixed fills with a fixed ink, so labels pass 4.5:1 on porcelain and on tenmoku.
  */
 (function () {

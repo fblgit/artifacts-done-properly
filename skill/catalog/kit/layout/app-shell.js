@@ -40,6 +40,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's app shell | the floating nav pill, the page registry with show and hide hooks, hash routing, links into a page, the look popover
  * @preview   {"render": "layout.app-shell", "samples": ["kit/samples/layout.json#app-shell"]}
+ * @samples   app-shell
  * @changed   The console's sprite icons became inline svg strings, and its skin switcher became a generic popover you fill yourself.
  */
 (function () {

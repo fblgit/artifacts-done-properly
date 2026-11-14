@@ -34,6 +34,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's refusal callout | the code by its vocabulary, the field, the allowed values, the message
  * @preview   {"render": "kit.callout-refusal", "samples": ["kit/samples/kit.json#callout-refusal"]}
+ * @samples   callout-refusal
  * @changed   Extends kit.callout as new files; callout.css is unchanged.
  */
 (function () {

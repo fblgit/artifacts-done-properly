@@ -40,6 +40,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s sealed-vault page | the ring that drains while the vault is open, the sealed and open card, a password shown in place of its button for a short time, hiding everything on close
  * @preview   {"render": "pattern.timed-reveal", "samples": ["kit/samples/patterns.json#timed-reveal"]}
+ * @samples   timed-reveal
  * @changed   The fetch is a callback and the values are held in one text node only.
  */
 (function () {

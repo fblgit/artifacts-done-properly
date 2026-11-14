@@ -33,6 +33,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a code block's copy button, a copy-on-hover dark block, a copy with a selection fallback, a click-to-copy command grid, and an answers copy fallback
  * @preview   {"render": "kit.copy", "samples": ["kit/samples/kit.json#copy"]}
+ * @samples   copy
  * @changed   The copy button is always shown, not only on hover, so touch and keyboard reach it.
  */
 (function () {

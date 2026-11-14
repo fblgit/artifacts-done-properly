@@ -41,6 +41,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's nine report cards | the done card's tests, divergence table and unverified list, and the blocked, decision, handoff, ask, question, feedback, fault and status shapes
  * @preview   {"render": "pattern.report-cards", "samples": ["kit/samples/patterns.json#report-cards"]}
+ * @samples   report-cards
  * @changed   One renderer with a field spec per kind replaces nine components that each repeated the head and frame.
  */
 (function () {

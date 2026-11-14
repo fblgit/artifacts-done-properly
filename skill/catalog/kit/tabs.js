@@ -42,6 +42,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 3 artifacts' index.html | an accessible tab set for records, a tabbed app shell with hash routing and digit keys, and page tabs over a parts registry
  * @preview   {"render": "kit.tabs", "samples": ["kit/samples/kit.json#tabs"], "uses": ["kit.table"]}
+ * @samples   tabs
  */
 (function () {
 'use strict';

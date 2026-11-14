@@ -44,6 +44,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | Mermaid themed from page tokens (hex resolver, %token% placeholders), the platform's theme-aware Mermaid runtime, and three diagram frames (caption, legend swatches, a scroll frame with a minimum width)
  * @preview   {"render": "kit.mermaid", "samples": ["kit/samples/kit.json#mermaid"], "uses": ["layout.topbar"]}
+ * @samples   mermaid
  * @changed   Judged from the draft: kept, but on its own class (.kit-mmd) with a per-diagram directive instead of re-theming the platform's pre.mermaid, which would race the platform's own redraw.
  */
 (function () {

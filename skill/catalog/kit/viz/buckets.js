@@ -35,6 +35,7 @@
  * @db        note The board writes the bucket and order fields (Journey Whiteboard: items/<id>.moscow and .order).
  * @source    Journey Whiteboard | app.js | BUCKETS, MoscowView, moveBucket
  * @preview   {"render": "viz.buckets", "samples": ["kit/samples/viz.json#viz-buckets"]}
+ * @samples   viz-buckets
  * @changed   Buckets, kinds and the summed field come from config; the background estimate stays board code (call it from onMove).
  */
 (function () {

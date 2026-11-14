@@ -39,6 +39,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a verdict filter with search and a sortable size column, a flow list with direction segments and a text filter, and three review tables with recommendation chips
  * @preview   {"render": "pattern.filter-table", "samples": ["kit/samples/patterns.json#filter-table"]}
+ * @samples   filter-table
  * @changed   The chip counts follow the search, so a chip says how many rows it would show.
  */
 (function () {

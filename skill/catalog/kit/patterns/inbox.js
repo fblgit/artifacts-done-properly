@@ -41,6 +41,7 @@
  * @source    ADP 0.3.0, 2026-10-27 | docs/assist.md contracts 3 and 5 | the incoming document, the card's reads, writes, Apply and conflict path
  * @source    ADP 0.3.0, 2026-10-27 | the explainer's proposed-version card | one proposal applied by a person, generalised to the inbox
  * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/patterns.json#inbox"]}
+ * @samples   inbox
  */
 (function () {
 'use strict';

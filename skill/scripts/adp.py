@@ -664,21 +664,26 @@ def take(a):
         for r in by[i].get('requires', []): visit(r)
         order.append(i)
     for i in pos[1:]: visit(i)
+    named = [by[i] for i in pos[1:] if any(f.get('role') == 'sample' for f in by[i]['files'])]
+    heads, want, calls = read_headers(src, named) if named else ({}, [], [])
+    idle = {}       # a bundle an entry only borrows for its preview (it owns no key in it, as a theme with viz samples) is not taken with it
+    for e in named:
+        h = heads.get(e['id'], {}); refs = [adp_lib.split_ref(s) for s in sample_refs(h)]
+        idle[e['id']] = {b for b, _ in refs} - {b for b, k in refs if k in (h.get('samples') or [])}
     m = {}
     for i in order:
         for f in by[i]['files']:
-            if f.get('role') == 'sample' and i not in pos[1:]: continue
+            if f.get('role') == 'sample' and (i not in pos[1:] or f['path'] in idle.get(i, ())): continue
             m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))
     info = {'url': url, 'index': os.path.abspath(idx), 'live': live, 'ver': cat.get('ver') or None, 'built': cat.get('built')}
     if not live: info['warning'] = 'a local index is a build, not the live catalog: a file it lists may be missing there. adp.py take <catalog url> ... reads the fetched live index'
     out = {'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}}
+    own = {e['id']: [s for s in sample_refs(heads[e['id']]) if adp_lib.split_ref(s)[1] in (heads[e['id']].get('samples') or [])] for e in named if e['id'] in heads}
+    own = {i: v for i, v in own.items() if v}
+    if own: out['samples'] = own        # the keys an entry asked for owns in its bundle (@samples), as path#key: the bundle file is in the map, the output names only these
+    if want and live: out['fetch_headers'] = calls
     fonts = {i: by[i]['fonts'] for i in order if by[i].get('fonts')}
     if fonts: out['fonts'] = fonts      # a theme's web fonts: the page links each url in its head, or the theme's families fall back to system fonts
-    named = [by[i] for i in pos[1:] if any(f.get('role') == 'sample' for f in by[i]['files'])]
-    if named:       # a sample is a key inside a bundle file: which key is in the entry's @preview, read from its header when that is on disk
-        heads = read_headers(src, named)[0]
-        keys = {e['id']: [s for s in sample_refs(heads.get(e['id'], {})) if adp_lib.split_ref(s)[0] in {f['path'] for f in e['files']}] for e in named}
-        if any(keys.values()): out['samples'] = {i: v for i, v in keys.items() if v}
     return emit(out)
 
 

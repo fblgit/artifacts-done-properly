@@ -44,6 +44,7 @@
  * @db        note The board maps its records to nodes; the parent derivation is the board's.
  * @source    Journey Whiteboard | app.js | RANK, parentsOf, buildTree, lineage, TreeNode, TreeView
  * @preview   {"render": "viz.tree", "samples": ["kit/samples/viz.json#viz-tree", "kit/samples/viz.json#viz-replay"], "uses": ["viz.replay", "viz.focus"]}
+ * @samples   viz-tree
  * @changed   Parents come with each node, so any board's relations can feed it; question paths became a general pill node.
  */
 (function () {

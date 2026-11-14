@@ -45,6 +45,7 @@
  * @source    Journey Whiteboard | app.js | sendToCode, answerArrived, reqState, REQ_STEPS, pollListen, ListenHint, ReqLine, QueueStrip, ReqList
  * @source    ADR Drafting Table | data.js | the same lane with ping and refresh states, which stay board code
  * @preview   {"render": "kit.claude-lane", "samples": ["kit/samples/kit.json#claude-lane"]}
+ * @samples   claude-lane
  * @changed   0.1.3: the header asks a session for working on long work and done; no ack names or times.
  */
 (function () {

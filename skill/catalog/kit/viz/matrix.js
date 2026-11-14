@@ -38,6 +38,7 @@
  * @db        note The board reads and writes its link field (Journey Whiteboard: items/<id>.problems).
  * @source    Journey Whiteboard | app.js | Coverage
  * @preview   {"render": "viz.matrix", "samples": ["kit/samples/viz.json#viz-matrix"]}
+ * @samples   viz-matrix
  * @changed   Rows, columns and the link field come from config instead of the problem and solution kinds.
  */
 (function () {

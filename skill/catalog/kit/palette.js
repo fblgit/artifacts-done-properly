@@ -32,6 +32,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a runbook's command palette: the overlay, openPal, runPal, the INDEX of sections and records
  * @preview   {"render": "kit.palette", "samples": ["kit/samples/kit.json#palette"]}
+ * @samples   palette
  * @changed   A combobox with announced results and a count, instead of buttons only.
  */
 (function () {

@@ -44,6 +44,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s deposit drawer | the name field with a list, the masked value with an eye, the generate switch, the shape hints and checks, the multi-line masked key, clearing the value before sending
  * @preview   {"render": "pattern.secret-input", "samples": ["kit/samples/patterns.json#secret-input"], "uses": ["pattern.confirm-sheet"]}
+ * @samples   secret-input
  * @changed   Shapes are data and the check has no patterns in it.
  */
 (function () {

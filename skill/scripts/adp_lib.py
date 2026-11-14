@@ -9,7 +9,7 @@ catalog index (load, main file of an entry) and the file hash. adp_catalog.py is
   check(root, files=None)     [(path, state, [(rule, message)])] for the main files (state: header, legacy, skipped), and the entry ids
   sha256(path)                the hex digest of a file
   split_ref(ref)              ('kit/samples/viz.json', 'viz-tree') for 'kit/samples/viz.json#viz-tree': a sample inside a bundle; (ref, None) for a plain path
-  sample_issues(root, index)  [line] for the sample bundles: a #key that is not in its bundle, a bundle key no @preview names, a bundle not in the @files of the entry that previews on it
+  sample_issues(root, index)  [line] for the sample bundles: a #key that is not in its bundle, a bundle key no @preview names or no @samples owns, a @samples key not in a bundle of the entry's @files, a bundle not in the @files of the entry that previews on it
 """
 import datetime
 import hashlib
@@ -23,7 +23,7 @@ STATUS = {'new', 'stable'}
 GLOBALS = {'htm-preact', 'marked', 'dompurify'}      # the CDN scripts the catalog page can add (catalog/parts/catalog.js, CDN)
 MANY = ('config', 'source', 'changed')               # these repeat; every other tag once
 SINGLE = ('id', 'kind', 'group', 'status', 'version', 'updated', 'summary', 'tags', 'requires', 'files', 'provides', 'tokens', 'globals',
-          'db', 'preview', 'fonts', 'extends', 'related', 'optional')
+          'db', 'preview', 'fonts', 'extends', 'related', 'optional', 'samples')
 KNOWN = set(SINGLE) | set(MANY)
 ALWAYS = ('id', 'kind', 'group', 'status', 'version', 'updated', 'summary', 'tags', 'requires', 'files', 'globals', 'db')
 ID = re.compile(r'[a-z0-9][a-z0-9-]*\.[a-z0-9][a-z0-9.-]*')
@@ -160,6 +160,10 @@ def validate(path, comment, entry, ids):
                 path, key = split_ref(s) if isinstance(s, str) else ('', None)
                 if not path or (key is not None and not KEY.fullmatch(key)):
                     out.append(('preview', f'@preview samples: a path, or path#key with a key of letters, digits, . _ -; not: {str(s)[:40]}'))
+    if val.get('samples'):
+        ss = split(val['samples'])
+        if len(ss) != len(set(ss)) or any(not KEY.fullmatch(s) for s in ss):
+            out.append(('samples', '@samples: a comma list of bundle keys (letters, digits, . _ -), no repeats'))
     if names.count('changed') > 1:
         out.append(('changed', '@changed appears once: the newest change'))
     if val.get('tags'):
@@ -227,7 +231,7 @@ def check(root, files=None):
 # ---------------------------------------------------------------- catalog.json (kit-catalog/2), built from the headers
 
 SCHEMA = 'kit-catalog/2'
-LISTS = ('tags', 'requires', 'provides', 'globals', 'related', 'optional', 'files')      # comma lists; `\,` is a comma inside an item
+LISTS = ('tags', 'requires', 'provides', 'globals', 'related', 'optional', 'files', 'samples')      # comma lists; `\,` is a comma inside an item
 ROLES = (('.html.txt', 'template'), ('.js', 'script'), ('.css', 'style'), ('.md', 'doc'), ('.json', 'data'), ('.txt', 'template'))
 CODE = ('.js', '.css', '.js.txt', '.css.txt')
 PROSE = ('.md', '.txt')
@@ -453,13 +457,16 @@ def sample_issues(root, index):
     """[line] for the sample bundles of index. A bundle is a sample file (under kit/samples/) that some @preview names as path#key: its top-level
     keys are the samples. Wrong: a #key that is not in its file, a bundle that is not among the sample files in the entry's own @files (an entry
     that previews on another folder's samples lists that bundle too) or that is not a JSON object, a key of a bundle that no @preview names, an
-    entry that lists a bundle in @files but names no key of it in its @preview."""
-    root, out, refs = os.path.abspath(root), [], []
+    entry that lists a bundle in @files but names no key of it in its @preview. @samples names the keys an entry owns: each must be a key of
+    a bundle in the entry's own @files, and every key of a bundle must be owned by at least one entry."""
+    root, out, refs, owned = os.path.abspath(root), [], [], {}
     listed = {f['path'] for e in index['entries'] for f in e['files'] if f['role'] == 'sample'}
     own = {e['id']: {f['path'] for f in e['files'] if f['role'] == 'sample'} for e in index['entries']}
     for e in index['entries']:
         with open(os.path.join(root, e['main']), encoding='utf-8', errors='replace') as f:
-            pv = parse_header(f.read(), e['main']).get('preview')
+            h = parse_header(f.read(), e['main'])
+        pv = h.get('preview')
+        owned[e['id']] = h.get('samples') or []
         for s in (pv.get('samples') if isinstance(pv, dict) else None) or []:
             path, key = split_ref(s) if isinstance(s, str) else ('', None)
             if key is not None and path:
@@ -491,6 +498,17 @@ def sample_issues(root, index):
     for path in sorted(named):
         if bundle(path) is not None and path in listed:
             out += [f'{path}: the key {k} is named by no entry\'s @preview' for k in sorted(set(bundle(path)) - named[path])]
+    owners = {}
+    for i, keys in owned.items():
+        for k in keys:
+            mine = [p for p in sorted(own[i]) if p in named and bundle(p) is not None and k in bundle(p)]
+            if mine:
+                owners.setdefault(mine[0], set()).add(k)
+            else:
+                out.append(f'{i}: @samples names {k}, which is a key of no sample bundle in its @files')
+    for path in sorted(named):
+        if bundle(path) is not None and path in listed:
+            out += [f"{path}: the key {k} is owned by no entry's @samples" for k in sorted(set(bundle(path)) - owners.get(path, set()))]
     return out
 
 

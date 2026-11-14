@@ -29,6 +29,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a secret-scan report, index.html | the one-mark-per-file grid with a pointer lens, and the detector table whose rows light their marks
  * @preview   {"render": "viz.dotgrid", "samples": ["kit/samples/viz.json#dotgrid"]}
+ * @samples   dotgrid
  * @changed   Categories have shapes as well as colours, and the category list works from the keyboard.
  */
 (function () {

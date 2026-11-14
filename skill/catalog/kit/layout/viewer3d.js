@@ -42,6 +42,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | index.html of a parametric 3D rack viewer | the viewport and sidebar grid, parameters rebuilt on input, readouts with pass/fail colour, the explode slider and layer toggles, and materials rebuilt when the colour scheme changes
  * @preview   {"render": "layout.viewer3d", "samples": ["kit/samples/layout.json#viewer3d"]}
+ * @samples   viewer3d
  * @changed   Readouts carry a mark and a hidden word as well as a colour.
  */
 (function () {

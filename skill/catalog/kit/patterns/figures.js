@@ -37,6 +37,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 7 artifacts' index.html | a hairline key-figure grid, a hero with count-up stats, a hero with summary chips, a status tile row, one-screen summary tiles, a three-up state strip and a facts strip
  * @preview   {"render": "pattern.figures", "samples": ["kit/samples/patterns.json#figures"]}
+ * @samples   figures
  * @changed   New file beside kit/viz/core.js; core.js and viz.css are unchanged.
  */
 (function () {

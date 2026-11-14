@@ -34,6 +34,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's pane header, section label, info panel and empty state | the anatomy of each
  * @preview   {"render": "pattern.region-frame", "samples": ["kit/samples/patterns.json#region-frame"], "uses": ["kit.icons"]}
+ * @samples   region-frame
  * @changed   The four pieces share one stylesheet, and the empty state is the piece the catalog lacked.
  */
 (function () {

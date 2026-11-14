@@ -34,6 +34,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | clickable count tiles and the sticky filter strip (node and repo chips, search) of a work-status board
  * @preview   {"render": "pattern.count-filters", "samples": ["kit/samples/patterns.json#count-filters"]}
+ * @samples   count-filters
  * @changed   The pressed tile carries a check mark as well as its outline, so state does not depend on colour.
  */
 (function () {

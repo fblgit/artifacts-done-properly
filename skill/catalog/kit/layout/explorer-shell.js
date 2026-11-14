@@ -33,6 +33,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's kanban skin | the explorer sidebar of sections, the pipeline of phases and the status bar with counts
  * @preview   {"render": "layout.explorer-shell", "samples": ["kit/samples/layout.json#explorer-shell"], "uses": ["kit.vocab"]}
+ * @samples   explorer-shell
  * @changed   The tree, the pipeline and the status bar are one component over plain data; the source drew them from a board's state.
  */
 (function () {

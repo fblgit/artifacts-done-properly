@@ -34,6 +34,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's Glaze design system | orb, chip, button, forms, switch, segmented control, card, facts, row, avatar, empty state, the kiln flecks, the gold and pebble gradients
  * @source    Catalog harvest, 2026-10-25 | the same console's controls add-on | button and form edges, the loading button
  * @preview   {"render": "kit.glaze-surfaces", "samples": ["kit/samples/kit.json#glaze-surfaces"]}
+ * @samples   glaze-surfaces
  * @changed   Re-prefixed to kit-, scoped by the kit's token contract instead of a skin attribute; every depth token has a fallback built from the contract tokens.
  */
 (function () {

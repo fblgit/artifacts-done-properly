@@ -49,6 +49,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s inventory page | chips with live counts that skip their own group, group-by with ordered bands, sort, selectable rows with a batch bar, the show-only bar, the search box that keeps its caret
  * @source    Catalog harvest, 2026-10-25 | an earlier board’s console skin | the digit keys with keycap chips
  * @preview   {"render": "pattern.facet-batch", "samples": ["kit/samples/patterns.json#facet-batch"]}
+ * @samples   facet-batch
  * @changed   Facets, groups and sorts are data, and the filter and the grouping are pure, exported functions.
  */
 (function () {

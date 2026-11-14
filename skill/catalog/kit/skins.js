@@ -46,6 +46,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's skin engine | attributes set at once, one skin link left enabled, light and dark apart from the skin, the storage event, the change event, the selector
  * @preview   {"render": "kit.skins", "samples": ["kit/samples/kit.json#skins"], "uses": ["kit.view-registry"]}
+ * @samples   skins
  * @changed   A skin links its web fonts when chosen: fonts on the skin, or the fonts url of its theme json.
  */
 (function () {

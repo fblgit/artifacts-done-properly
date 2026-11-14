@@ -37,6 +37,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s onboarding form | the capability catalog with prerequisites, the closure, the presets, the order sentence, the warning when two kinds mix, the per-node step chips
  * @preview   {"render": "pattern.capability-picker", "samples": ["kit/samples/patterns.json#capability-picker"]}
+ * @samples   capability-picker
  * @changed   The closure is pure, exported, has a cycle guard and puts prerequisites first.
  */
 (function () {

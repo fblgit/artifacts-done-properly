@@ -34,6 +34,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | a failure matrix by cluster size, a scenario by configuration verdict table, a happy and error path ledger and a reality table
  * @preview   {"render": "pattern.scenarios", "samples": ["kit/samples/patterns.json#scenarios"]}
+ * @samples   scenarios
  * @changed   Draft in the plan; judged from the sources and kept: the four tables are one pattern with different columns.
  */
 (function () {

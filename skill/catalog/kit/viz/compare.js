@@ -30,6 +30,7 @@
  * @source    Catalog harvest, 2026-10-25 | a review page, index.html | the before and after mechanism cards
  * @source    Catalog harvest, 2026-10-25 | a comparison drawing, index.html | the before/after drawing
  * @preview   {"render": "viz.compare", "samples": ["kit/samples/viz.json#compare"]}
+ * @samples   compare
  * @changed   The stage holds live DOM instead of a screenshot and a rendering, and the divider is a range input.
  */
 (function () {

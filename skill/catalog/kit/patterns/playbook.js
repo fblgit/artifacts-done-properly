@@ -35,6 +35,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | playbook tabs with a numbered, copyable command per step, and a pipeline stepper with a tab panel
  * @preview   {"render": "pattern.playbook", "samples": ["kit/samples/patterns.json#playbook"]}
+ * @samples   playbook
  * @changed   Built on Kit.tabs and Kit.copy instead of its own handlers, so the keyboard, the roving tabindex and the clipboard fallback are the kit's.
  */
 (function () {

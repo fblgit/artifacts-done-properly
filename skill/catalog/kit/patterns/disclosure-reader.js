@@ -41,6 +41,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's reference page | a filter with an n of m sections count and an empty state, an On this page index that follows the section in view, glance tiles
  * @preview   {"render": "pattern.disclosure-reader", "samples": ["kit/samples/patterns.json#disclosure-reader"], "uses": ["pattern.disclosure"]}
+ * @samples   disclosure-reader
  * @changed   Extends pattern.disclosure as new files; disclosure.js and disclosure.css are unchanged.
  */
 (function () {

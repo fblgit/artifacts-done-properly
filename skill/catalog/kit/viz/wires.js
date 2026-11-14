@@ -34,6 +34,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's blueprint skin | the lanes by phases schematic and the wires between its components
  * @preview   {"render": "viz.wires", "samples": ["kit/samples/viz.json#viz-wires"], "uses": ["kit.vocab"]}
+ * @samples   viz-wires
  * @changed   Generalised from one skin's task list to any items with lanes, phases and dependencies; the state word and tone come from the vocabulary instead of a task status.
  */
 (function () {

@@ -27,6 +27,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a cluster-sizing page, index.html | the quorum slider with its bar chart, the endurance calculator with two scenarios, and the readout tiles
  * @preview   {"render": "viz.slider-chart", "samples": ["kit/samples/viz.json#slider-chart"]}
+ * @samples   slider-chart
  * @changed   The model is a callback so the shell serves any what-if.
  */
 (function () {

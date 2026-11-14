@@ -36,6 +36,7 @@
  * @source    Catalog batch 15, 2026-10-26 | the size view of a disk usage tool | nested rectangles whose area is the bytes
  * @source    Catalog batch 15, 2026-10-26 | skills/artifact-dataplane/scripts/adp.py manifest() and diff() | the adp/2 manifest the tree is drawn from, and added, changed, removed
  * @preview   {"render": "pattern.file-map", "samples": ["kit/samples/layout.json#file-browser"]}
+ * @samples   file-browser
  * @changed   Areas use the squarified layout so tiles stay near square.
  */
 (function () {

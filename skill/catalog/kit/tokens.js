@@ -28,6 +28,7 @@
  * @source    Journey Whiteboard | app.css | the :root, prefers-color-scheme and [data-theme] blocks
  * @source    ADR Drafting Table | styles/tokens.css, canvas.js pal() | the second user
  * @preview   {"render": "kit.tokens", "samples": ["kit/samples/kit.json#tokens"]}
+ * @samples   tokens
  * @changed   0.1.1: the contract lists what the kit css now reads: claude-lane takes --ink and no longer --ink-3; canvas no longer reads --ink-3.
  */
 (function () {

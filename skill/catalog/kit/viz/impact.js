@@ -34,6 +34,7 @@
  * @db        note The board builds the after snapshot (the Journey Whiteboard projects Claude's proposed actions onto a copy).
  * @source    Journey Whiteboard | app.js | coverage, impactOf, ImpactList, PreviewBanner
  * @preview   {"render": "viz.impact", "samples": ["kit/samples/viz.json#viz-impact", "kit/samples/viz.json#viz-tree"], "uses": ["viz.tree"]}
+ * @samples   viz-impact
  * @changed   Kinds, the link field, live statuses and compared fields come from the board.
  */
 (function () {

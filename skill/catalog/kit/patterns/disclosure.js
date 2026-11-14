@@ -40,6 +40,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | two runbooks' task cards with a cadence, a policy reader's expand-all bar and clause reasoning, and a letter archive's expand and collapse cards
  * @preview   {"render": "pattern.disclosure", "samples": ["kit/samples/patterns.json#disclosure"]}
+ * @samples   disclosure
  * @changed   One component for the five looks; the looks differ in css, not in behaviour.
  */
 (function () {

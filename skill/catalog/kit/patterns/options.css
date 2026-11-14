@@ -34,6 +34,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | an option comparison table with the picked row, pick-highlighted cards, tier cards from strongest to partial, and principle cards
  * @preview   {"render": "pattern.options", "samples": ["kit/samples/patterns.json#options"]}
+ * @samples   options
  * @changed   The picked card is outlined all round and labelled, not marked by a coloured edge.
  */
 .kit-options, .kit-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; margin: 0; padding: 0; min-width: 0; }

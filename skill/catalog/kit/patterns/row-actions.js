@@ -41,6 +41,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s device row | the main action chosen from the row’s state, the menu without the main action, the keyboard handling
  * @source    Catalog harvest, 2026-10-25 | the same console’s quick actions | round pills labelled on hover or focus, always shown on touch
  * @preview   {"render": "pattern.row-actions", "samples": ["kit/samples/patterns.json#row-actions"]}
+ * @samples   row-actions
  * @changed   The main action and the menu are functions the board passes.
  */
 (function () {

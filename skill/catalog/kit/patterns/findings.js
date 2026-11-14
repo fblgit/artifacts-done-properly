@@ -35,6 +35,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | severity cards with a kind tag, evidence and citations, a card with an icon and title, a triage card with a fix, and the severity chip with an icon
  * @preview   {"render": "pattern.findings", "samples": ["kit/samples/patterns.json#findings"]}
+ * @samples   findings
  * @changed   No coloured left rail on the card: the tone is carried by the chip's glyph and word.
  */
 (function () {

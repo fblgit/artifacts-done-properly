@@ -37,6 +37,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's render | restoring its open history, reply and reject boxes
  * @source    Catalog harvest, 2026-10-25 | a task page's list | putting back half-typed drafts after every refresh
  * @preview   {"render": "kit.keep-state", "samples": ["kit/samples/kit.json#keep-state"]}
+ * @samples   keep-state
  * @changed   Rebuilt as a generic helper keyed by data-keep rather than the source's per-board sets; it needs no store.
  */
 (function () {

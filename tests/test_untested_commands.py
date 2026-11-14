@@ -2,7 +2,7 @@
 `pins`, `suggest`, `kit list|show|describe`, `classify` (CLI), `diff`, `diff-pages`, `files --batch` and `new --content`.
 Same style as test_commands.py: the real script in a subprocess, a throwaway project, no network. The catalog is a small local
 catalog.json written here, so nothing drifts with the shipped one."""
-import json, os, re, shutil, sys, unittest
+import hashlib, json, os, re, shutil, sys, unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from test_commands import Cmd
@@ -159,7 +159,10 @@ class Headers(Untested):
         self.write_json('bun/catalog.json', cat)
         os.makedirs(self.p('bun', 'kit', 'viz'))
         with open(self.p('bun', 'kit', 'viz', 'chips.js'), 'w') as f:
-            f.write(HEADER.replace('@version 1.0.0\n', '@version 1.0.0\n@preview {"render": "viz.chips", "samples": ["kit/samples/viz.json#viz-chips"]}\n'))
+            f.write(HEADER.replace('@version 1.0.0\n', '@version 1.0.0\n@preview {"render": "viz.chips", "samples": ["kit/samples/viz.json#viz-chips"]}\n@samples viz-chips\n'))
+        os.makedirs(self.p('bun', 'kit', 'samples'))
+        with open(self.p('bun', 'kit', 'samples', 'viz.json'), 'w') as f:
+            json.dump({'viz-chips': {'note': 'Invented.', 'chips': [{'id': 'é', 'n': 1}]}, 'viz-other': {'x': 1}}, f)
         return self.p('bun', 'catalog.json')
 
     def test_describe_names_the_bundle_and_the_key_of_the_sample(self):
@@ -167,10 +170,16 @@ class Headers(Untested):
         self.assertEqual((out['sample'], out['sample_key']), ('kit/samples/viz.json', 'viz-chips'))
         self.assertNotIn('sample_key', self.ok('kit', 'describe', 'viz.chips', self.local()))      # no @preview key, no sample_key
 
-    def test_take_names_the_key_of_the_sample_of_an_entry_asked_for(self):
+    def test_take_of_an_entry_asked_for_takes_its_bundle_by_reference_and_names_only_its_own_key(self):
         out = self.ok('take', self.bundled(), 'viz.chips', '--url', self.URL)
-        self.assertIn('kit/samples/viz.json', out['files'])
-        self.assertEqual(out['samples'], {'viz.chips': ['kit/samples/viz.json#viz-chips']})
+        self.assertEqual(out['files']['kit/samples/viz.json'], {'artifact': self.URL, 'path': 'kit/samples/viz.json'})      # the whole bundle, copied by the server
+        self.assertEqual(out['samples'], {'viz.chips': ['kit/samples/viz.json#viz-chips']})      # the output names its own key, never the other samples
+        self.assertNotIn('viz-other', json.dumps(out))
+
+    def test_take_of_an_entry_that_owns_no_sample_names_none(self):
+        out = self.ok('take', self.bundled(), 'viz.timeline', '--url', self.URL)
+        self.assertEqual([p for p in out['files'] if p.startswith('kit/samples/')], [])
+        self.assertNotIn('samples', out)
 
     def test_take_of_a_dependency_leaves_the_bundle_out(self):
         out = self.ok('take', self.bundled(), 'viz.timeline', '--url', self.URL)
@@ -400,7 +409,6 @@ class MyOwnKit(Untested):
 
     def kit(self, folders, **put):
         """An index of folders {name: count}: one entry per file name, written to ~/.adp/catalog when put['write'] is not False."""
-        import hashlib
         entries, root = [], os.path.join(self.home, '.adp', 'catalog')
         for folder, n in folders.items():
             for i in range(n):

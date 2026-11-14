@@ -46,6 +46,7 @@
  * @source    Catalog batch 14, 2026-10-26 | the kit workbench template (parts/bench.js) | theme, mode and width on a stage, the sample fetch
  * @source    Catalog batch 14, 2026-10-26 | the catalog page's entry loader | requires first, styles then scripts, cached by path
  * @preview   {"render": "pattern.playground", "samples": ["kit/samples/patterns.json#playground"]}
+ * @samples   playground
  * @changed   An entry's sample may be path#key, one sample out of a bundle file; the sample path above the editor shows it as written.
  */
 (function () {

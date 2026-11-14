@@ -31,6 +31,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | an assessment verdict box, a status banner with a badge, a masthead with a stamp and a masthead claim with a swapping verdict sentence
  * @preview   {"render": "pattern.verdict", "samples": ["kit/samples/patterns.json#verdict"]}
+ * @samples   verdict
  * @changed   The status banner has no coloured left edge; the badge carries a dot and a word.
  */
 .kit-verdict { --tone: var(--ink-2); display: grid; gap: 8px; padding: 16px 20px; border-radius: 14px; background: color-mix(in srgb, var(--tone) 7%, var(--panel)); border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--panel)); color: var(--ink); font: 15px/1.55 var(--f-ui); min-width: 0; }

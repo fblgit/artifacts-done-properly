@@ -49,6 +49,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's type specimen and roles stylesheet | the roles table and the size, weight, italic and tracking of each role
  * @preview   {"render": "kit.type-roles", "samples": ["kit/samples/kit.json#type-roles"]}
+ * @samples   type-roles
  * @changed   Rebuilt on the catalog's three families; the nine named families of the source are gone, and the role names no longer name faces.
  */
 :root, .kit-tr {

@@ -35,6 +35,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's card history | the journey track, the conversation of turns and the moves by day
  * @preview   {"render": "pattern.card-history", "samples": ["kit/samples/patterns.json#card-history"]}
+ * @samples   card-history
  * @changed   Generalised from one board's card log: moves and turns are plain lists the page supplies.
  */
 (function () {

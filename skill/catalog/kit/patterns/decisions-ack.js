@@ -39,6 +39,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's acknowledgement block in three skins | a rubber stamp, a terminal ACK line, a sticky note that asks back
  * @source    Catalog harvest, 2026-10-25 | a component family's answered stamp and request card | what the answer was, who read it and when; the prompt line
  * @preview   {"render": "pattern.decisions-ack", "samples": ["kit/samples/patterns.json#decisions-ack"], "uses": ["pattern.decisions"]}
+ * @samples   decisions-ack
  * @changed   Extends pattern.decisions as new files; decisions.js and decisions.css are unchanged.
  */
 (function () {

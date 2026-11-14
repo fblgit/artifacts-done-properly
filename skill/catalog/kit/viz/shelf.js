@@ -28,6 +28,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a disk-usage report, index.html | drawDrives: tracks to scale, hatched allocations with a solid used fill, dashed unallocated space, a ringed segment, status chips
  * @preview   {"render": "viz.shelf", "samples": ["kit/samples/viz.json#shelf"]}
+ * @samples   shelf
  * @changed   Names, devices and sizes are config; the chips carry a mark (check, bang, cross) as well as a tone.
  */
 (function () {

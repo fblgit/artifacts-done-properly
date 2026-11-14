@@ -41,6 +41,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | sticky headers with a brand, a mono section nav and a theme button, and two theme-toggle scripts
  * @preview   {"render": "layout.topbar", "samples": ["kit/samples/layout.json#topbar"]}
+ * @samples   topbar
  * @changed   Three states instead of two, so a viewer can go back to following the OS.
  */
 (function () {

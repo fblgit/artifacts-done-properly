@@ -39,6 +39,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's manuscript skin | contents lines with leaders
  * @source    Catalog harvest, 2026-10-25 | an earlier board's notebook skin | divider tabs with counts and a waiting dot
  * @preview   {"render": "viz.phase-strip", "samples": ["kit/samples/viz.json#viz-phase-strip"], "uses": ["kit.vocab"]}
+ * @samples   viz-phase-strip
  * @changed   Five skins' phase strips became one component with five forms; the data is one list, so a page can offer a choice of form.
  */
 (function () {

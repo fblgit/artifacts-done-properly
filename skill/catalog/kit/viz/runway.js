@@ -39,6 +39,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | runway(): twelve months, lanes, bubbles binned by days left, the Later slot
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the month labels, the gold axis and the now bead
  * @preview   {"render": "viz.runway", "samples": ["kit/samples/viz.json#runway"]}
+ * @samples   runway
  * @changed   Months, lane height, lanes and the Later cut are options; the states and their words are the vocab's.
  */
 (function () {

@@ -38,6 +38,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's kanban skin | columns per state with the waiting one widest, empty columns as rails, the hover glimpse of a card
  * @source    Catalog harvest, 2026-10-25 | a component family's task lanes | a switchable grouping key, a limit per lane that shows over-limit, a drop that asks to move
  * @preview   {"render": "pattern.status-columns", "samples": ["kit/samples/patterns.json#status-columns"]}
+ * @samples   status-columns
  * @changed   Columns, words and tones come from a vocabulary enum; the source named its own states.
  */
 (function () {

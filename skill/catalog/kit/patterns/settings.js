@@ -47,6 +47,7 @@
  * @source    Catalog batch 14, 2026-10-26 | docs/config.md and the ADP.config registry in adp.js | the all() shape, the two enforcement layers, the freeze and the unlock exception
  * @source    Catalog batch 14, 2026-10-26 | the board template's switch rows | label, help, who changed it and when
  * @preview   {"render": "pattern.settings", "samples": ["kit/samples/patterns.json#settings"]}
+ * @samples   settings
  */
 (function () {
 'use strict';

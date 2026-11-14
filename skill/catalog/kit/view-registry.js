@@ -57,6 +57,7 @@
  * @source    Catalog harvest, 2026-10-25 | a component family's view registry and layout validator | the registry by kind and name, and the typed refusals
  * @source    Catalog harvest, 2026-10-25 | a component family's typed filter check | filters over enums, numbers and flags, never text
  * @preview   {"render": "kit.view-registry", "samples": ["kit/samples/kit.json#view-registry"], "uses": ["kit.vocab"]}
+ * @samples   view-registry
  * @changed   Rebuilt without the hub: no protobuf kinds, gateway or skin loader. Kinds and their row shapes are declared by the page, and the refusal codes are plain names.
  */
 (function () {

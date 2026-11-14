@@ -48,6 +48,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a network-ops console’s jobs tray | the job runtime with cursor polling and lost jobs, the capsule, the waiting-for-you block, the wave, the lease pills, the log that follows, the one-sentence summary and the tab title
  * @preview   {"render": "pattern.job-tray", "samples": ["kit/samples/patterns.json#job-tray"], "uses": ["pattern.confirm-sheet"]}
+ * @samples   job-tray
  * @changed   The transport is an adapter; the source talked to one server’s job API and kept a list in session storage.
  */
 (function () {

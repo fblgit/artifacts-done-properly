@@ -36,6 +36,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a scroll-framed table, scroll-box tables, a table box, a numeric table with a total and +/− column, and a milestone table with group rows
  * @preview   {"render": "kit.table", "samples": ["kit/samples/kit.json#table"]}
+ * @samples   table
  * @changed   The sticky head needs the frame to scroll vertically (.tall or tall: true); inside a frame that only scrolls sideways a sticky head cannot stick to the page.
  */
 (function () {

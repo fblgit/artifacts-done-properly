@@ -44,6 +44,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | the scroll-spy sidebar, a sticky rail beside a reading column, a left contents list, a runbook's section rail with a scroll-position spy, and a section grid with a mono marginalia rail
  * @preview   {"render": "layout.doc-shell", "samples": ["kit/samples/layout.json#doc-shell"]}
+ * @samples   doc-shell
  * @changed   The spy reads scroll position, not an observer, so a short last section still lights up.
  */
 (function () {

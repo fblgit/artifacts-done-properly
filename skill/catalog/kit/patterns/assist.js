@@ -58,6 +58,7 @@
  * @source    Catalog batch 16, 2026-10-26 | kit/patterns/assist.js 0.1.0 | requests with a scope and a quote, turns, Ask now, presence, ping, the block picker and the shortcut
  * @source    Catalog batch 16, 2026-10-26 | a drafting-table board's request engine | the request doc and its trailer comment, the queue, ack, working and done states, stuck after three minutes, ping with its 90 s nudge
  * @preview   {"render": "pattern.assist", "samples": ["kit/samples/patterns.json#assist"]}
+ * @samples   assist
  * @changed   presence() also reads watching from the platform's own answer (canSendToClaude available), so a session that watches and has not acted lately is not shown as gone.
  */
 (function () {

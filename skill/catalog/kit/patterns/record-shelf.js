@@ -35,6 +35,7 @@
  * @source    Catalog batch 15, 2026-10-26 | skills/artifact-dataplane/references/record.md and references/adp2.md | the canonical collections and their fields
  * @source    Catalog batch 15, 2026-10-26 | the What changed panel of the reference page | the latest changes and the active decisions beside the page
  * @preview   {"render": "pattern.record-shelf", "samples": ["kit/samples/layout.json#file-browser"]}
+ * @samples   file-browser
  * @changed   One card per collection with a state in words, not only the latest changes.
  */
 (function () {

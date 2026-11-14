@@ -32,6 +32,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's manuscript skin | numbered clauses, the margin aside for state, owner, answer and acknowledgement, history as footnotes, change bars for what waits on someone
  * @preview   {"render": "layout.margin-notes", "samples": ["kit/samples/layout.json#margin-notes"], "uses": ["kit.vocab"]}
+ * @samples   margin-notes
  * @changed   Taken out of one skin: the clause is plain data, and the state words can be replaced (Settled, Awaiting you) without touching the vocabulary.
  */
 (function () {

@@ -44,6 +44,7 @@
  * @source    Catalog harvest, 2026-10-25 | an earlier board's team and status pass | the live and stale beat
  * @source    Catalog harvest, 2026-10-25 | a task page's team table and claims table | the claims table with expiry
  * @preview   {"render": "pattern.roster", "samples": ["kit/samples/patterns.json#roster-wall"]}
+ * @samples   roster-wall
  * @changed   Rebuilt as plain DOM over kit.vocab: no state is a hub value, and a state the table does not know is flagged, not hidden.
  */
 (function () {

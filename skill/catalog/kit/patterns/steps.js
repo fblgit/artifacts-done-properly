@@ -41,6 +41,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | 6 artifacts' index.html | big-number steps, numbered steps with a done-when line, steps with id chips, a persistent checklist with per-phase progress, and runbook step cards with gates and saved ticks
  * @preview   {"render": "pattern.steps", "samples": ["kit/samples/patterns.json#steps"]}
+ * @samples   steps
  * @changed   The gate is a ringed word and an underlined number, not a coloured card edge.
  */
 (function () {

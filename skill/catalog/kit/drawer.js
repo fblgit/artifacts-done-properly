@@ -36,6 +36,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's detail drawer | open, close and replace on another record
  * @source    Catalog harvest, 2026-10-25 | the same console's deposit drawer | the scrim, Escape and the modal mode
  * @preview   {"render": "kit.drawer", "samples": ["kit/samples/kit.json#drawer"]}
+ * @samples   drawer
  * @changed   One API for both modes the sources had (beside the page, and modal with a scrim); a bottom sheet at phone width instead of dropping below the page.
  */
 (function () {

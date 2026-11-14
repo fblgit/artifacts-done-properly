@@ -42,6 +42,7 @@
  * @db        reads the doc at path, through onSnapshot / writes the doc at path (set), debounced, one write in flight / note A real artifact declares the db capability and keeps its small state in one doc (for example board/state). Without the capability the line says saved in this browser only and the page still works. It extends kit.store (same habit: localStorage first, then the db) but does not call it, so requires is empty.
  * @source    Catalog harvest, 2026-10-25 | a session board's index.html | setSave, persist, flush and initState: localStorage first, db after a pause, refusal falls back to the browser
  * @preview   {"render": "kit.save-status", "samples": ["kit/samples/kit.json#save-status"]}
+ * @samples   save-status
  * @changed   New file kit/save-status.js beside kit/store.js; store.js is unchanged.
  */
 (function () {

@@ -35,6 +35,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's journey page | sticky stacked sections, the tall-section fix, the progress bar, step count and previous and next section footers
  * @preview   {"render": "layout.stack", "samples": ["kit/samples/layout.json#stack"]}
+ * @samples   stack
  * @changed   The wheel hijack that held a section at its detent is dropped: it fights the viewer's own scrolling. The fall back to normal flow on phones and with reduced motion is added.
  */
 (function () {

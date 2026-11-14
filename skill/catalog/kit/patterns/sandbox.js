@@ -43,6 +43,7 @@
  * @source    Catalog harvest, 2026-10-25 | a share-readiness sheet's index.html | the live detector box: paste a line, see which rules fire, with entropy for the generic key rule
  * @source    Catalog harvest, 2026-10-25 | a network probe page's index.html | the probe table: parallel tests, a timeout, results with detail
  * @preview   {"render": "pattern.sandbox", "samples": ["kit/samples/patterns.json#sandbox"]}
+ * @samples   sandbox
  * @changed   Kept after review: two sources of the same shape (named checks, a state, a detail), so one component serves both.
  */
 (function () {

@@ -39,6 +39,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | a component family's section rail | owners per step with stable tones and a legend, the failure line, the emitted fact, the seam, the current-step ring
  * @preview   {"render": "pattern.steps-owners", "samples": ["kit/samples/patterns.json#steps-owners"]}
+ * @samples   steps-owners
  * @changed   Extends pattern.steps as new files; steps.js and steps.css are unchanged.
  */
 (function () {

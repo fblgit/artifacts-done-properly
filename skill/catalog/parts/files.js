@@ -41,7 +41,7 @@ const main = entry => (entry && entry.main) || '';       // the index record say
 // ---------------------------------------------------------------- header: the description a kit file carries
 // The same reading as adp_index.py parse_header: what one accepts, cuts and names, the other does too.
 const HEAD = 20000;                                      // the header comment, opening mark to closing mark, is in the first HEAD characters of its file
-const LISTS = ['tags', 'requires', 'files', 'provides', 'globals', 'related', 'optional'];    // one line, items after commas
+const LISTS = ['tags', 'requires', 'files', 'provides', 'globals', 'related', 'optional', 'samples'];    // one line, items after commas
 const MANY = ['config', 'source', 'changed'];            // repeatable: one line per value
 const none = v => /^(none)?$/i.test(v.trim());
 // the pieces of v between separators, trimmed. A separator after a backslash is that character, not a cut

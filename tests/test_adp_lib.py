@@ -109,6 +109,17 @@ class Validate(Base):
         for bad in ('"kit/samples/b.json#"', '"kit/samples/b.json#a b"', '"#key"', '7'):
             self.assertEqual(preview('{"render": "kit.demo", "samples": [' + bad + ']}'), ['preview'], bad)
 
+    def test_samples_is_a_comma_list_of_keys(self):
+        def samples(v):
+            return self.rules(GOOD.replace(' * @db        none', ' * @db        none\n * @samples   ' + v))[1]
+        self.assertEqual(samples('tabs, viz-tree, a.b_c'), [])
+        for bad in ('a b', 'a, a', 'a/b', 'a,, #'):
+            self.assertEqual(samples(bad), ['samples'], bad)
+
+    def test_samples_is_a_list_in_the_header_dict(self):
+        h = ch.parse_header(GOOD.replace(' * @db        none', ' * @db        none\n * @samples   tabs, viz-tree'), 'kit/demo.js')
+        self.assertEqual(h['samples'], ['tabs', 'viz-tree'])
+
     def test_split_ref(self):
         self.assertEqual(ch.split_ref('kit/samples/viz.json#viz-tree'), ('kit/samples/viz.json', 'viz-tree'))
         self.assertEqual(ch.split_ref('kit/samples/viz.json'), ('kit/samples/viz.json', None))

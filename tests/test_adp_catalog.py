@@ -238,11 +238,15 @@ class SampleBundles(unittest.TestCase):
     """A bundle is one JSON file of samples (kit/samples/kit.json): its keys are the samples, an entry names one as path#key in its @preview."""
     BUNDLE = 'kit/samples/kit.json'
 
-    def head(self, name, files, samples):
+    def head(self, name, files, samples, owns=None):
+        """owns: the keys @samples lists; by default the keys the @preview names in a bundle of the entry's own @files."""
         pv = json.dumps({'render': 'kit.' + name, 'samples': samples})
+        if owns is None:
+            owns = [s.split('#')[1] for s in samples if '#' in s and s.split('#')[0] in files]
+        own = (' * @samples   ' + ', '.join(owns) + '\n') if owns else ''
         return ('/**\n * Entry ' + name + '\n * An entry.\n *\n * @id        kit.' + name + '\n * @kind      component\n * @group     Board kit\n'
                 ' * @status    new\n * @version   0.1.0\n * @updated   2026-11-15\n * @summary   An entry.\n * @tags      demo\n * @requires  none\n'
-                ' * @files     ' + files + '\n * @provides  Kit.' + name + '\n * @globals   none\n * @db        none\n * @preview   ' + pv + '\n */\n(function () {})();\n')
+                ' * @files     ' + files + '\n * @provides  Kit.' + name + '\n * @globals   none\n * @db        none\n * @preview   ' + pv + '\n' + own + ' */\n(function () {})();\n')
 
     def put(self, root, rel, text):
         with open(os.path.join(root, rel), 'w', encoding='utf-8') as f:
@@ -251,8 +255,8 @@ class SampleBundles(unittest.TestCase):
     def make(self, bundle, *entries, extra=()):
         root = tempfile.mkdtemp()
         os.makedirs(os.path.join(root, 'kit', 'samples'))
-        for name, files, samples in entries:
-            self.put(root, f'kit/{name}.js', self.head(name, files, samples))
+        for name, files, samples, *owns in entries:
+            self.put(root, f'kit/{name}.js', self.head(name, files, samples, *owns))
         self.put(root, self.BUNDLE, json.dumps(bundle))
         for rel, data in extra:
             self.put(root, rel, json.dumps(data))
@@ -267,7 +271,8 @@ class SampleBundles(unittest.TestCase):
     def two(self, bundle=None, **over):
         b = self.BUNDLE
         return self.make(bundle if bundle is not None else {'a': {'x': 1}, 'b': {'y': 2}},
-                         ('a', over.get('af', b), over.get('as', [b + '#a'])), ('b', over.get('bf', b), over.get('bs', [b + '#b'])), extra=over.get('extra', ()))
+                         ('a', over.get('af', b), over.get('as', [b + '#a']), over.get('ao')), ('b', over.get('bf', b), over.get('bs', [b + '#b']), over.get('bo')),
+                         extra=over.get('extra', ()))
 
     def test_two_entries_share_a_bundle(self):
         root = self.two()
@@ -307,6 +312,24 @@ class SampleBundles(unittest.TestCase):
         code, out = self.cmd('build', self.two(**{'as': ['kit/samples/other.json#a']}))
         self.assertEqual(code, 1)
         self.assertIn('kit/samples/other.json is not a sample file in its @files', out)
+
+    def test_a_samples_key_must_be_in_a_bundle_of_the_entrys_files(self):
+        code, out = self.cmd('build', self.two(ao=['a', 'zzz']))
+        self.assertEqual(code, 1)
+        self.assertIn('kit.a: @samples names zzz, which is a key of no sample bundle in its @files', out)
+        code, out = self.cmd('build', self.two(af='none', ao=['a'], **{'as': []}))      # a lists no bundle: its @samples key a is in none of its files
+        self.assertEqual(code, 1)
+        self.assertIn('kit.a: @samples names a, which is a key of no sample bundle in its @files', out)
+
+    def test_a_key_no_entry_owns_fails(self):
+        code, out = self.cmd('build', self.two(ao=[]))
+        self.assertEqual(code, 1)
+        self.assertIn("kit/samples/kit.json: the key a is owned by no entry's @samples", out)
+        self.assertNotIn('the key b is owned', out)
+
+    def test_a_key_may_have_several_owners(self):
+        root = self.make({'a': {}}, ('a', self.BUNDLE, [self.BUNDLE + '#a']), ('c', self.BUNDLE, [self.BUNDLE + '#a']))
+        self.assertEqual(self.cmd('build', root)[0], 0)
 
     def test_a_plain_sample_file_is_not_a_bundle(self):
         root = self.make({'a': {}}, ('a', self.BUNDLE, [self.BUNDLE + '#a']), ('d', 'kit/samples/d.json', ['kit/samples/d.json']), extra=[('kit/samples/d.json', {'z': 1})])

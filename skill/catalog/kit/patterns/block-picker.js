@@ -38,6 +38,7 @@
  * @source    Catalog batch 16, 2026-10-26 | the runtime's comment mode | the crosshair over [data-part], titles from the page, the part:key anchor
  * @source    Catalog batch 16, 2026-10-26 | a drafting board's request lane | what it lacked: a block quote and a shortcut to point at a block
  * @preview   {"render": "pattern.block-picker", "samples": ["kit/samples/patterns.json#block-picker"]}
+ * @samples   block-picker
  * @changed   One block at a time with a ring and a dimmed page, instead of a crosshair over every block.
  */
 (function () {

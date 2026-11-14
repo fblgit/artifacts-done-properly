@@ -39,6 +39,7 @@
  * @source    Catalog harvest, 2026-10-25 | a review page, index.html | the equal-weight score bar and legend, and the carried-against-total family bars with their scale
  * @source    Catalog harvest, 2026-10-25 | an options page, index.html | the ladder with a strength bar
  * @preview   {"render": "viz.bars", "samples": ["kit/samples/viz.json#bars"]}
+ * @samples   bars
  * @changed   Every length is linear from zero: the source scaled a mini-bar by a square root, which made small items look larger than they were.
  */
 (function () {

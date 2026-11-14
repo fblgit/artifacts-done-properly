@@ -41,6 +41,7 @@
  * @source    Catalog harvest, 2026-10-25 | a proposal page's index.html | owner decision cards: record, change answer, something else, focus kept across redraws, live read of the collection
  * @source    Catalog harvest, 2026-10-25 | a register page's index.html | the open, sent and done pills of a decision register
  * @preview   {"render": "pattern.decisions", "samples": ["kit/samples/patterns.json#decisions"]}
+ * @samples   decisions
  * @changed   A status line for Claude's side (four steps, in words) is new; the source recorded the answer and stopped.
  */
 (function () {

@@ -35,6 +35,7 @@
  * @db        none
  * @source    Catalog harvest, 2026-10-25 | an earlier board's war-room skin | a vertical rail of tasks by phase with a zulu clock and day column, a siren on what awaits you, a time-first reference table drawn as an event log
  * @preview   {"render": "viz.timeline-phased", "samples": ["kit/samples/viz.json#timeline-phased"], "uses": ["kit.vocab"]}
+ * @samples   timeline-phased
  * @changed   Extends viz.timeline as new files; timeline.js and timeline.css are unchanged.
  */
 (function () {
