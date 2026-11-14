@@ -16,6 +16,10 @@ First public release of Artifacts Done Properly (ADP): a Claude skill for claude
 
 ## Install
 
+Claude Code: install the plugin, and its marketplace brings the updates. Run `/plugin marketplace add fblgit/fblgit-claude-marketplace`, then `/plugin install artifacts-done-properly@fblgit-claude-marketplace`, then follow "First run" in the README. In the plugin, `setup` copies no road skill, because the plugin serves them. UNVERIFIED end to end until the marketplace listing is published.
+
+The Claude desktop app's skill library, or a manual install:
+
 1. Download `adp.skill` and `adp.skill.sha256` from this release.
 2. Verify: `sha256sum -c adp.skill.sha256` (macOS: `shasum -a 256 -c adp.skill.sha256`).
 3. Install `adp.skill` as a skill (unzip it so the `adp/` folder sits in your skills folder).

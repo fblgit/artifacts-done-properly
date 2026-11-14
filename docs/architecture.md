@@ -10,7 +10,7 @@ Contents: 1 What ADP is, 2 The adp/2 artifact layout, 3 Parts and hashes, 4 The 
 
 ADP (Artifacts Done Properly) is a standard for claude.ai Artifacts that several agents or sessions work on (`skill/SKILL.md`). Every piece of the page is a *part* with a stable id and a content hash; comments anchor to part ids; one ArtifactData layout records every change under a read, hold, publish, record protocol (`skill/catalog/kit/guides/artifact-dataplane.md`, sections 1 to 4). New artifacts use the adp/2 layout: a thin shell plus files per part, with the page's copy stored as data. `skill/scripts/adp.py` computes hashes and diffs and prints the exact `Artifact` and `ArtifactData` calls to make; it does not call them itself. `skill/assets/adp.js` is the runtime that runs in the page.
 
-The repository ships one skill, `adp` (`skill/SKILL.md`), and four road skills under `skill/refs/`: `adp-new`, `adp-catalog`, `adp-edit`, `adp-adopt`. `adp.py setup` copies the four into a skills folder (`setup_cmd` in `adp.py`).
+The repository ships one skill, `adp` (`skill/SKILL.md`), and four road skills under `skill/refs/`: `adp-new`, `adp-catalog`, `adp-edit`, `adp-adopt`. `adp.py setup` copies the four into a skills folder (`setup_cmd` in `adp.py`), except in a plugin install: the repository is also the Claude Code plugin `artifacts-done-properly` (`.claude-plugin/plugin.json`), which serves all five skills itself, so setup copies none.
 
 ## 2. The adp/2 artifact layout
 
@@ -161,7 +161,7 @@ The numbering is this document's. The code cites it as follows: `adp_loop.py` ("
 | `adp.py ack DIR [--result FILE \| stdin] [--proposal PID]` | Folds a publish result (`shas`, `version`) or a batch result (`results` or `writes` with integer `version`) into `state.json`. Also accepts a PostToolUse hook input (`tool_input.url`, `tool_response`; DIR found through the registry). `--proposal PID` requires that the last export saw its status as `applied` or `declined`; when `applied` it moves `base` (branch and manifest) to the proposal's work; it then records the pid in `incoming.acked`. |
 | `adp.py gate [--input FILE \| stdin]` | The PreToolUse hook decision (section 6.4). |
 
-The repository does not install the hooks: `setup_cmd` writes skills, `config.json`, a CLAUDE.md pointer and a `.gitignore` line, and no hook configuration.
+The repository does not install the hooks: `setup_cmd` writes skills (none in a plugin install), `config.json`, a CLAUDE.md pointer and a `.gitignore` line, and no hook configuration.
 
 ### 6.3 Contract 4: the classification
 

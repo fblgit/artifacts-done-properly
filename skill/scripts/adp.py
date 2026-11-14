@@ -1159,7 +1159,13 @@ def tree_files(d):
             for r, ds, fs in os.walk(d) if not ds.__setitem__(slice(None), [x for x in ds if x != '__pycache__']) for f in fs}
 
 
-SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills, write the config, print (--yes: write) the CLAUDE.md pointer
+def plugin_name():
+    """The name of the Claude Code plugin this skill folder ships in (a .claude-plugin/plugin.json beside it), or None for a plain skill install."""
+    try: return json.load(open(os.path.join(os.path.dirname(HERE), '.claude-plugin', 'plugin.json'), encoding='utf-8')).get('name') or None
+    except (OSError, ValueError, AttributeError): return None
+
+
+SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills (not in a plugin: it serves them itself), write the config, print (--yes: write) the CLAUDE.md pointer
        adp.py setup [--scope user|project|local] --dry-run   show what it would do (scope user when not given); writes nothing'''
 
 
@@ -1177,20 +1183,23 @@ def setup_cmd(a):
     cfg = os.path.join(ADP_HOME if scope == 'user' else os.path.join(cwd, '.adp'), 'config.json')
     ptr = {'user': os.path.join(home, '.claude', 'CLAUDE.md'), 'project': os.path.join(cwd, 'CLAUDE.md'), 'local': os.path.join(cwd, 'CLAUDE.local.md')}[scope]
     gi = os.path.join(cwd, '.gitignore') if scope != 'user' else None
-    block = '\n'.join([BEGIN, 'For artifacts, ADP or the catalog, load the `adp` skill and run `python3 -I ' + os.path.abspath(__file__) + ' ...` for its commands.', END])
-    print(f'setup {scope}{" (dry run)" if dry else ""}: {len(names)} skills ({", ".join(names)}) -> {skills}; skill_root {HERE}')
+    plug = plugin_name(); copy = [] if plug else names     # a plugin serves the road skills itself (<plugin>:<road>) and its updates reach them: a copy in the skills folder would only go stale
+    # in a plugin the script's path holds the installed version, so the pointer names the skill and not the path
+    line = f'For artifacts, ADP or the catalog, load the `{plug}:adp` skill: it says how to run adp.py.' if plug else 'For artifacts, ADP or the catalog, load the `adp` skill and run `python3 -I ' + os.path.abspath(__file__) + ' ...` for its commands.'
+    block = '\n'.join([BEGIN, line, END])
+    print(f'setup {scope}{" (dry run)" if dry else ""}: ' + (f'the {len(names)} road skills ({", ".join(names)}) come with the plugin {plug} and are not copied' if plug else f'{len(names)} skills ({", ".join(names)}) -> {skills}') + f'; skill_root {HERE}')
     print(f'config: {cfg}' + ('' if scope == 'user' else f'; registry {os.path.join(ADP_HOME, "projects")}/<name>/config.json (path {cwd})')); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
-    modified = [os.path.join(skills, n) for n in names if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
+    modified = [os.path.join(skills, n) for n in copy if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
     for m in modified: print(f'{"would replace" if dry else "replaced"} {m}: it differs from the packaged skill (an older copy or local edits); setup installs the packaged one')
     if dry: return 0
-    for n in names:       # an update is an update: every road skill folder becomes the packaged one, whatever was there
+    for n in copy:        # an update is an update: every road skill folder becomes the packaged one, whatever was there
         t = os.path.join(skills, n)
         shutil.rmtree(t, ignore_errors=True)
         shutil.copytree(os.path.join(refs, n), t, ignore=shutil.ignore_patterns('__pycache__'))
     os.makedirs(os.path.dirname(cfg), exist_ok=True)
     c = json.load(open(cfg)) if os.path.isfile(cfg) else {}
-    mine = {'schema': 'adp-setup/1', 'scope': scope, 'skill_root': HERE, 'skills': names,
+    mine = {'schema': 'adp-setup/1', 'scope': scope, **({'plugin': plug} if plug else {'skill_root': HERE}), 'skills': names,     # a plugin's folder changes with every version: record its name, not its path
             'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md')))}, 'at': now()}
     add = {k: v for k, v in mine.items() if k not in c}     # a config that is already there is used as it is: setup only adds the keys it lacks
     if add: c.update(add); json.dump(c, open(cfg, 'w'), indent=1)
