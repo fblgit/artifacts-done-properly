@@ -39,7 +39,7 @@ class Legend(Cmd):
         with open(os.path.join(TPL, 'starter', 'index.html.txt'), encoding='utf-8') as f:
             text = html.unescape(legend_of(f.read()))      # the text sits escaped inside a <pre>
         for needle in ('Artifacts Done Properly', 'lower cost', 'reusable', 'modified', 'TAKE', 'MODIFY', 'DO NOT FORGET', 'second life',
-                       'SUBSCRIBE', 'ArtifactComments', 'presence/<your-name>', 'doing field', 'polling', 'we encourage you to watch', 'tell your user in one line', 'catalog.json', 'ADP take', 'ADP check', 'scripts/adp.py', '{{catalog}}', 'ADP SOURCE', 'https://github.com/fblgit/artifacts-done-properly', 'adp.skill'):
+                       'SUBSCRIBE', 'ArtifactComments', 'The waking comment says how to answer: one write to the request', 'we encourage you to watch', 'tell your user in one line', 'catalog.json', 'ADP take', 'ADP check', 'scripts/adp.py', '{{catalog}}', 'ADP SOURCE', 'https://github.com/fblgit/artifacts-done-properly', 'adp.skill'):
             self.assertIn(needle, text)
         self.assertNotIn('python3 adp.py', text)       # adp.py is not in the page's folder: it is called through the skill's scripts/
         self.assertNotIn('<!--', text)           # a real element: a comment can be stripped

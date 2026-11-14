@@ -77,7 +77,7 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
 Local emulator (try a page offline: its db and Claude requests stood in by files under DIR/.adp-dev; `adp.py dev help`):
   adp.py dev serve DIR [--port 8787] [--user ID]
   adp.py dev watch DIR  |  dev send DIR OUT.json   (the session side: messages in, as JSON lines; batches out, pushed to the page)
-Batches are written to files (--out, default DIR.adp/) and printed as `writes` lists whose entries carry file_path.
+Batches are written to files (--out, default DIR.adp/; config and requests name no DIR: config/ and requests/ in the .adp/ the log uses) and printed as `writes` lists whose entries carry file_path.
 P.json maps "collection/doc" to the version you read, e.g. {"manifest/current": 4, "parts/home": 2}.
 C.json is config/current as read ({schema, at, by, values, changed}, or wrapped in data). With --config, hold and record exit 2
 when edit.locked is true ({error: "locked", by, at, reason}) and when a changed part falls under a parts.locked prefix
@@ -954,7 +954,7 @@ def config_cmd(a):
         else: vals[key] = val
         chg[key] = {'by': by, 'at': at}
         pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
-        b = Batch(opt(a, '--out', 'config.adp'), pins)
+        b = Batch(opt(a, '--out') or os.path.join(adp_dir(), 'config'), pins)
         b.put('set', 'config', 'current', {'schema': 'adp-config/1', 'at': at, 'by': by, 'values': vals, 'changed': chg}, exists=True)
         if cvalues(doc)['log.data-changes'] is not False:
             b.put('set', 'changes', 'd-' + str(int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)),
@@ -1052,7 +1052,7 @@ def requests_cmd(a):
     d, ver = docs[rid]
     pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
     if ver is not None: pins.setdefault(f'requests/{rid}', ver)
-    b = Batch(opt(a, '--out', 'requests.adp'), pins)
+    b = Batch(opt(a, '--out') or os.path.join(adp_dir(), 'requests'), pins)
     doing = f"{rid} ({d.get('lane', '')})"
     if act == '--ack':
         patch = {'state': 'ack', 'ackBy': by, 'ackAt': at}
@@ -1104,14 +1104,18 @@ def resolve_project(x):
     sys.exit(f'project not found: {x} (adp.py projects lists them)')
 
 
-def log_path():
-    """log.jsonl in the .adp/ of --project when it has one, else the nearest .adp/ from cwd upward, else ADP_HOME."""
-    if PROJECT and os.path.isdir(os.path.join(PROJECT, '.adp')): return os.path.join(PROJECT, '.adp', 'log.jsonl')
+def adp_dir():
+    """The .adp/ of --project when it has one, else the nearest .adp/ from cwd upward, else ADP_HOME."""
+    if PROJECT and os.path.isdir(os.path.join(PROJECT, '.adp')): return os.path.join(PROJECT, '.adp')
     d = os.path.abspath(os.getcwd())
     while True:
-        if os.path.isdir(os.path.join(d, '.adp')): return os.path.join(d, '.adp', 'log.jsonl')
-        if os.path.dirname(d) == d: return os.path.join(ADP_HOME, 'log.jsonl')
+        if os.path.isdir(os.path.join(d, '.adp')): return os.path.join(d, '.adp')
+        if os.path.dirname(d) == d: return ADP_HOME
         d = os.path.dirname(d)
+
+
+def log_path():
+    return os.path.join(adp_dir(), 'log.jsonl')
 
 
 def log_line(a, code, ms):
