@@ -40,6 +40,22 @@ class SetupTests(Base):
         self.assertEqual(self.snapshot(), before)
         self.assertFalse(os.path.exists(os.path.join(self.cwd, '.adp')))
 
+    def test_help_prints_usage_and_writes_nothing(self):
+        before = self.snapshot()
+        for args in (('--help',), ('-h',), ('--scope', 'user', '--yes', '--help')):
+            r = self.run_adp('setup', *args)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn('usage: adp.py setup', r.stdout); self.assertNotIn('skill_root', r.stdout)
+        self.assertEqual(self.snapshot(), before)
+
+    def test_refuses_to_guess(self):
+        """No --scope, or an argument setup does not know: usage, exit 1, no skills and no config."""
+        for args in ((), ('--yes',), ('--scope', 'user', '--force'), ('user',), ('--scope',)):
+            r = self.run_adp('setup', *args)
+            self.assertEqual(r.returncode, 1, args); self.assertIn('usage: adp.py setup', r.stderr); self.assertEqual(r.stdout, '')
+        self.assertEqual([p for p in self.snapshot() if not p.endswith('log.jsonl')], [])
+        self.assertEqual(self.run_adp('setup', '--dry-run').returncode, 0)      # a dry run may still guess: it writes nothing
+
     def test_yes_user_scope_idempotent(self):
         def state():
             out = {}
@@ -50,7 +66,7 @@ class SetupTests(Base):
             c = os.path.join(self.home, '.adp', 'config.json'); cfg = json.load(open(c)); cfg.pop('at')
             out[c] = cfg
             return out
-        self.assertEqual(self.run_adp('setup', '--yes').returncode, 0)
+        self.assertEqual(self.run_adp('setup', '--scope', 'user', '--yes').returncode, 0)
         s1 = state()
         sk = os.path.join(self.home, '.claude', 'skills')
         self.assertTrue(os.path.isfile(os.path.join(sk, 'adp-new', 'sub', 'x.txt')))
@@ -60,7 +76,7 @@ class SetupTests(Base):
         ptr = open(os.path.join(self.home, '.claude', 'CLAUDE.md')).read()
         self.assertEqual(ptr.count('<!-- adp:begin -->'), 1)
         self.assertIn('python3 -I', ptr); self.assertIn(self.adp, ptr)
-        self.run_adp('setup', '--yes')
+        self.run_adp('setup', '--scope', 'user', '--yes')
         self.assertEqual(state(), s1)
 
     def test_project_scope_gitignore_and_replace_block(self):
@@ -176,27 +192,44 @@ class SetupSafetyTests(Base):
     def skill_dir(self):
         return os.path.join(self.cwd, '.claude', 'skills')
 
-    def test_modified_folder_is_left_untouched_and_reported(self):
+    def test_differing_folder_is_replaced_and_reported(self):
+        """An update is an update: an older copy (or a local edit) of a road skill becomes the packaged one."""
         self.assertEqual(self.run_adp('setup', '--scope', 'project').returncode, 0)
         mine = os.path.join(self.skill_dir(), 'adp-new', 'SKILL.md')
-        open(mine, 'w').write('my edit')
+        packaged = open(mine).read()
+        open(mine, 'w').write('an older copy')
+        d = self.run_adp('setup', '--scope', 'project', '--dry-run')
+        self.assertIn('would replace ' + os.path.dirname(mine), d.stdout)
+        self.assertEqual(open(mine).read(), 'an older copy')       # the dry run only says so
         r = self.run_adp('setup', '--scope', 'project')
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertEqual(open(mine).read(), 'my edit')
-        self.assertIn('modified ' + os.path.dirname(mine), r.stdout)
-        self.assertNotIn('adp-edit', ''.join(l for l in r.stdout.split('\n') if l.startswith('modified')))
+        self.assertEqual(open(mine).read(), packaged)
+        self.assertIn('replaced ' + os.path.dirname(mine), r.stdout)
+        self.assertNotIn('adp-edit', ''.join(l for l in r.stdout.split('\n') if l.startswith('replaced')))
 
-    def test_extra_file_counts_as_modified(self):
+    def test_extra_file_is_removed(self):
         self.run_adp('setup', '--scope', 'project')
         extra = os.path.join(self.skill_dir(), 'adp-edit', 'note.txt'); open(extra, 'w').write('n')
         r = self.run_adp('setup', '--scope', 'project')
-        self.assertIn('modified ' + os.path.dirname(extra), r.stdout)
-        self.assertTrue(os.path.isfile(extra))
+        self.assertIn('replaced ' + os.path.dirname(extra), r.stdout)
+        self.assertFalse(os.path.exists(extra))
+
+    def test_update_keeps_the_config(self):
+        """Road skills are replaced on an update; the config is not: what the owner put there stays."""
+        c = os.path.join(self.home, '.adp', 'config.json'); os.makedirs(os.path.dirname(c))
+        json.dump({'catalog': 'https://claude.ai/artifact/mine', 'my_key': [1, 2], 'skill_root': '/elsewhere/adp'}, open(c, 'w'))
+        for _ in range(2):
+            self.assertEqual(self.run_adp('setup', '--scope', 'user').returncode, 0)
+            cfg = json.load(open(c))
+            self.assertEqual((cfg['catalog'], cfg['my_key']), ('https://claude.ai/artifact/mine', [1, 2]))
+            self.assertEqual(cfg['skill_root'], '/elsewhere/adp')       # a value already there is never overwritten
+            self.assertEqual((cfg['schema'], cfg['scope']), ('adp-setup/1', 'user'))      # the keys it lacked are added
+        at = cfg['at']; self.run_adp('setup', '--scope', 'user'); self.assertEqual(json.load(open(c))['at'], at)
 
     def test_identical_folder_is_not_reported(self):
         self.run_adp('setup', '--scope', 'project')
         r = self.run_adp('setup', '--scope', 'project')
-        self.assertNotIn('modified', r.stdout)
+        self.assertNotIn('replace', r.stdout)
 
     def test_dry_run_appends_no_log_line(self):
         os.makedirs(os.path.join(self.cwd, '.adp'))
