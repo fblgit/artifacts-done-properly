@@ -13,7 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CATALOG = ROOT / "skill" / "catalog"
 PAGE = "index.html"
-COMMENT_RE = re.compile(r"(This artifact's own URL is the catalog URL: )(\S+)[ \t]*$", re.M)
+sys.path.insert(0, str(ROOT / "skill" / "scripts"))      # python3 -I leaves every directory off the path
+from adp_shell import OWN_URL as COMMENT_RE  # noqa: E402
 URL_RE = re.compile(r'("url"\s*:\s*)"(?:[^"\\]|\\.)*"')
 
 

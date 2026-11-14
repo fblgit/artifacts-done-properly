@@ -3,7 +3,7 @@
 `adp.py new catalog OUT_DIR [--by NAME]` calls build_catalog(CATALOG_DIR, OUT_DIR).
 
 OUT_DIR receives
-  index.html adp.js content.js parts/ styles/   the shell, copied from CATALOG_DIR
+  index.html adp.js content.js parts/ styles/   the shell, copied from CATALOG_DIR; index.html's note to agents loses its url (OWN_URL)
   catalog.json                                  the index (kit-catalog/2), built by adp_index.build_index, its `url` and `ver` empty
   search.json                                   [{id, about, source}], one per index entry, from the header of its main file: what
                                                 the page's search matches and the index lacks; source is its @source lines as text
@@ -20,13 +20,15 @@ and never a kit/ folder, and no kit file in the database. Stdout gets one line o
 (file_path, root, files, capabilities, icon, description): a new artifact every time, so it carries no url. Stderr gets one line
 of JSON with the counts (files, bytes, entries, kit files, docs, packs) and what to do next. Stdlib only.
 """
-import hashlib, json, os, shutil, sys, unicodedata
+import hashlib, json, os, re, shutil, sys, unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 
 SHELL_FILES = ('index.html', 'adp.js', 'content.js')    # catalog.json is written from the index, not copied
 SHELL_DIRS = ('parts', 'styles')
+# the line of index.html's note to agents that names the catalog's url: (the words)(the url). The repo's copy records the last publish there
+OWN_URL = re.compile(r"(This artifact's own URL is the catalog URL: )(\S+)[ \t]*$", re.M)
 SEARCH = 'search.json'    # at OUT_DIR's root: see the module text
 KIT = 'kit.json'          # at OUT_DIR's root: the index of the kit packs
 KIT_DIR = 'kitpack'       # OUT_DIR/kitpack/pack-NNN.json: the kit files themselves
@@ -113,6 +115,9 @@ def build_catalog(catalog_dir, out_dir, by=None, at=None):
     for n in SHELL_DIRS:
         src = os.path.join(catalog_dir, n)
         if os.path.isdir(src): shutil.copytree(src, os.path.join(out_dir, n), ignore=shutil.ignore_patterns('__pycache__', '.*'))
+    page = os.path.join(out_dir, 'index.html')        # shipped without its url, as catalog.json is: that url is the catalog before this one
+    with open(page, encoding='utf-8', newline='') as f: html = f.read()
+    with open(page, 'w', encoding='utf-8', newline='') as f: f.write(OWN_URL.sub("This artifact's own URL is the catalog URL.", html))
 
     index = adp_index.build_index(catalog_dir)
     # the shipped copy carries no link: this publish is a new artifact, and the index's url is the one before it

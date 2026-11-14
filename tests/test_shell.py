@@ -52,6 +52,15 @@ class Shell(unittest.TestCase):
         self.assertEqual(got, [(e["id"], "What it is, in two lines.", "") for e in self.index["entries"]])
         self.assertNotIn("What it is", (self.out / "catalog.json").read_text(encoding="utf-8"))
 
+    def test_the_shipped_page_does_not_name_the_catalog_before_it(self):
+        with tempfile.TemporaryDirectory() as t:
+            make_catalog(Path(t) / "catalog")
+            line = "<!--\nThis artifact's own URL is the catalog URL%s\nmore\n-->\n"
+            (Path(t) / "catalog" / "index.html").write_text(line % ": https://claude.ai/artifact/OLD")
+            build(Path(t) / "catalog", Path(t) / "out")
+            self.assertEqual((Path(t) / "out" / "index.html").read_text(), line % ".")
+            self.assertIn("claude.ai/artifact/OLD", (Path(t) / "catalog" / "index.html").read_text())
+
     def test_every_kit_file_is_in_the_kit_packs_once(self):
         self.assertEqual((self.kit["schema"], self.kit["files"]), ("adp-kit/1", len(self.disk)))        # the count is the files on disk
         self.assertEqual(self.kit["packs"], sorted("kitpack/" + n for n in os.listdir(self.out / "kitpack")))
