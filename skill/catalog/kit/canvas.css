@@ -24,7 +24,7 @@ svg.layer { width: 100%; height: 100%; }
 .el-ref { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 9px 11px; display: grid; gap: 6px; box-shadow: 0 1px 0 var(--rule-2), 0 6px 14px -10px rgba(0,0,0,.4); }
 .el-ref .t { font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
 .el-ref .meta { display: flex; flex-wrap: wrap; gap: 4px; }
-.el-ref.k { box-shadow: inset 0 3px 0 var(--kc), 0 6px 14px -10px rgba(0,0,0,.4); }
+.el-ref.k { box-shadow: inset 0 3px 0 var(--kc, transparent), 0 6px 14px -10px rgba(0,0,0,.4); }
 .el.erasing { opacity: .25; }
 .ed { position: absolute; pointer-events: auto; border: 2px solid var(--accent); border-radius: 4px; background: var(--panel); color: var(--ink); padding: 6px 8px; resize: none; outline: none; line-height: 1.3; z-index: 3; }
 .ed.on-sticky { color: var(--sticky-ink); font-family: var(--f-hand); }

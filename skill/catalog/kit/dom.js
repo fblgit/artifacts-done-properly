@@ -8,6 +8,7 @@
  *   Kit.dom.sv(tag, attrs, cls, txt) -> SVGElement   createElementNS(svg, tag); cls sets the class attribute; attrs {name: value} are set as attributes; txt sets textContent when not null
  *
  * @id        kit.dom
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -15,9 +16,12 @@
  * @summary   el and sv, the two element builders the kit scripts share: one for HTML, one for SVG.
  * @tags      dom, helper, el, svg, element, builder
  * @requires  none
+ * @files     none
  * @provides  Kit.dom.el, Kit.dom.sv
+ * @tokens    none
  * @globals   none
  * @db        none
+ * @source    Catalog batch 17, 2026-10-27 | kit/dom.js 0.1.0 | the el and sv helpers that 80 kit scripts each carried
  */
 (function () {
 'use strict';

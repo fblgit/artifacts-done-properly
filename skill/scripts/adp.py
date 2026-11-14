@@ -16,7 +16,7 @@
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
   adp.py new (TEMPLATE | --tier minimal|default|full) DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme NAME] [--layout ID] [--catalog URL|-|catalog.json]
-                                                    --tier instead of TEMPLATE: minimal = starter, default = default, full = not available yet (the published catalog, later)
+                                                    --tier instead of TEMPLATE: minimal = starter, default = default, full = catalog
                                                     a ready adp/2 artifact in DIR (seed.json and seed/ included; --data as in seed), plus ONE publish object: with a fetched catalog index
                                                     (saved, or --catalog) its `files` already carry the taken kit entries, the theme and --layout.
                                                     --theme: the theme the page wears, by short name (`default`, `glaze`) or entry id (`theme.glaze`); without it the page wears
@@ -24,19 +24,24 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
                                                     --content: views from a content file (`## Lead` text; `## View: <label> (id: <id>)`;
                                                     under it `### Section <id> - <title>` + one ```html block each, used verbatim); the
                                                     starter's welcome view goes; prints built {views, sections, parts, bytes}
+  adp.py new catalog DIR [--by NAME]                the catalog itself, built into DIR from the skill's catalog folder: a thin shell, seed packs and kit packs, no kit/ files
+                                                    (the page publishes them from the packs when an editor first opens it); prints its ONE publish object, for a new
+                                                    artifact. A DIR holding an earlier build is rebuilt, any other content is refused. No other `new` option applies
   adp.py files DIR [--since MANIFEST.json] [--batch N] [--out DIR]
                                                     the publish arguments for DIR; --since: only changed files (null = removed).
                                                     Files artifacts do not serve (archives, .py: use .txt) are left out and listed under
                                                     `skipped`. Over N files (default 250; a publish takes 255) `files` becomes `batches`, each
                                                     also written to DIR.adp/publish-N.json: publish the page with the first, the rest to the url
   adp.py pins publish-1.json=VERSION_ID ... [--out vermap.json]
-                                                    {path: version id} for CAT_VERMAP from the batches and the id each publish returned
+                                                    writes {path: version id} from the batches and the id each publish returned: a record of which version holds each file
+  adp.py index [DIR] [--check]                      writes DIR/catalog.json (kit-catalog/2), the generated index of a catalog folder: each entry's words come from the header
+                                                    comment of its kit file. DIR defaults to the skill's own catalog folder. --check: writes nothing, exit 1 when the index is stale
   adp.py catalog [URL]                              the user's catalog: URL saves it (~/.adp/config.json); prints the Artifact read that
                                                     fetches its catalog.json into ~/.adp/catalogs/<id>/, or the fetched index's ver and built
   adp.py take CATALOG ID ... [--url URL] [--config C.json]
                                                     a files map taking catalog entries by reference, requires first. CATALOG is the catalog
                                                     url (its fetched index is the live one), `-` for the saved catalog, or a local catalog.json
-                                                    (the repo's build: not the live catalog, so the output carries a warning)
+                                                    (the repo's build: not the live catalog, so the output carries a warning). Reads kit-catalog/1 and kit-catalog/2
   adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--batches] [--dry-run]
                                                     writes DIR/seed.json (adp-seed/2) and DIR/seed/pack-N.json: the first docs (parts,
                                                     content, changes/000001, agents, manifest/current last) plus every --data doc (a JSON
@@ -46,10 +51,14 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
                                                     skipped (skipped_empty). --batches: the same docs as ArtifactData batches instead, for
                                                     an agent that writes them itself; --dry-run: counts only
   adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]
-                                                    catalog entries ranked by overlap with tags, name, summary, id, provides and about, grouped by kind prefix (no model call)
+                                                    catalog entries ranked by overlap with tags, name, summary, id, provides and about, grouped by kind prefix (no model call).
+                                                    about: a kit-catalog/1 index holds it; for kit-catalog/2 it is the kit file's header comment, read beside the index (a local
+                                                    catalog.json) or else from the skill's own copy of that file when its sha256 is the one the index records; an entry whose
+                                                    file cannot be read that way is ranked without about (one warning line on stderr says how many)
   adp.py kit list [CATALOG] [--kind K] [--tag T]    one JSON line per entry; CATALOG defaults to - (the saved catalog)
-  adp.py kit show ID [CATALOG]                      name, summary, about, tags, files, requires, provides
-  adp.py kit describe ID [CATALOG]                  the mount signature: needs, provides, requires, file paths, the sample path
+  adp.py kit show ID [CATALOG]                      name, summary, about, tags, files, requires, provides. about is read as in suggest; when it cannot be,
+                                                    about is "" and about_from says why: "not local" or "local copy differs"
+  adp.py kit describe ID [CATALOG]                  the mount signature: needs, optional, provides, requires, file paths, the sample path (optional: read as about is)
 The loop (docs/architecture.md "The loop"; each reads what the model fetched, from files):
   adp.py export DIR --url URL [--files-listing F.json] [--docs D.json] [--version V]
                                                     remote-to-local incoming: without the listing or the docs it prints the reads (exit 2);
@@ -201,6 +210,17 @@ def diff(o, n):
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TPL = os.path.join(HERE, 'templates')
+CATALOG = os.path.join(HERE, 'catalog')      # the skill's own catalog folder: `index` writes its catalog.json, `new catalog` builds from it
+CAT_SCHEMAS = ('kit-catalog/1', 'kit-catalog/2')
+CAT_TEMPLATE = ('catalog', 'The catalog itself: a thin shell, seed packs and kit packs built from the skill\'s catalog folder, no kit/ files sent.',
+                'Publishing the catalog as a new artifact (adp.py new catalog DIR, or --tier full). It takes no other option but --by.')
+
+
+def side_module(name):
+    """adp_index / adp_shell, imported when a command needs one: they sit beside adp.py, whose folder is on sys.path (python3 -I leaves it out)."""
+    import importlib
+    try: return importlib.import_module(name)
+    except ImportError as e: sys.exit(f'{name}.py is missing beside adp.py ({e})')
 now = lambda: datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 slugify = lambda s: re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')[:40] or 'artifact'
 
@@ -245,9 +265,41 @@ def read_json(path, what='file'):
     except ValueError as e: sys.exit(f'{what}: {path} is not JSON: {e}')
 
 
+def read_index(p):
+    """A catalog index from disk, kit-catalog/1 or /2. `_dir` is the folder it sits in: an entry's `main` file is read from there when it is local."""
+    c = read_json(p, 'catalog')
+    if not isinstance(c, dict) or not isinstance(c.get('entries'), list): sys.exit(f'{p}: not a catalog index (no entries)')
+    if c.get('schema') and c['schema'] not in CAT_SCHEMAS: sys.exit(f"{p}: schema {c['schema']}; this adp.py reads " + ' and '.join(CAT_SCHEMAS))
+    c['_dir'] = os.path.dirname(os.path.abspath(p)); return c
+
+
+def header_src(e, cat):
+    """(header, why): the parsed header comment of an entry's main file (adp_index.parse_header). kit-catalog/2 keeps about, optional,
+    config, tokens, db, source, changed and preview there and not in the index. The file is read beside the index (a local build);
+    a fetched live index has no kit files beside it, so then from the skill's own catalog folder, only when that file has the sha256
+    the index records. why is '' when a file was read, and for a kit-catalog/1 index, which holds these words itself (no file is read);
+    else 'not local' (no such file here, or no sha256 in the index to compare it with) or 'local copy differs'."""
+    if cat.get('schema') != 'kit-catalog/2': return {}, ''
+    main = e.get('main') or next((f['path'] for f in e.get('files', []) if f.get('role') != 'sample'), '')
+    if not main or os.path.isabs(main) or '..' in main.replace('\\', '/').split('/'): return {}, 'not local'
+    sha = next((f.get('sha256') for f in e.get('files', []) if f.get('path') == main), None)
+    why = 'not local'
+    for d, exact in ((cat.get('_dir'), False), (CATALOG, True)):
+        p = os.path.join(d or '', main)
+        if not (d and os.path.isfile(p)): continue
+        try:
+            with open(p, 'rb') as f: b = f.read()
+            if exact and not sha: continue
+            if exact and hashlib.sha256(b).hexdigest() != sha: why = 'local copy differs'; continue
+            import adp_index
+            return adp_index.parse_header(b.decode('utf-8', 'replace'), main) or {}, ''
+        except (ImportError, OSError, ValueError): continue       # display only: no header, no about
+    return {}, why
+
+
 def tmeta(name):
     p = os.path.join(TPL, name, 'template.json')
-    if not os.path.isfile(p): sys.exit(f'no template {name}: ' + ', '.join(sorted(os.listdir(TPL))))
+    if not os.path.isfile(p): sys.exit(f'no template {name}: ' + ', '.join(sorted([CAT_TEMPLATE[0]] + [t for t in os.listdir(TPL) if os.path.isfile(os.path.join(TPL, t, 'template.json'))])))
     return json.load(open(p))
 
 
@@ -281,7 +333,7 @@ def catalog_cmd(a):
     idx = os.path.join(cat_dir(url), 'catalog.json')
     out = {'catalog': url, 'index': idx, 'fetched': os.path.isfile(idx)}
     if out['fetched']:
-        c = json.load(open(idx)); out.update(ver=c.get('ver') or None, built=c.get('built'), entries=len(c.get('entries', [])))
+        c = read_index(idx); out.update(ver=c.get('ver') or None, built=c.get('built'), entries=len(c.get('entries', [])))
         out['refresh'] = fetch_call(url)      # the same read, when the catalog has published since
     else: out['fetch'] = fetch_call(url)
     return emit(out)
@@ -352,7 +404,7 @@ def batched(out, d, n, where):
         p = os.path.join(where, f'publish-{i}.json'); json.dump(b, open(p, 'w'), indent=0); paths.append(os.path.abspath(p))
     out.pop('files'); out['batches'] = bs; out['batch_files'] = paths
     out['note'] = (f'{len(m)} files: publish the page with batches[0] (new artifact: add capabilities, icon), then each other batch to the '
-                   'same url; every publish passes file_path and root, the tool refuses files without them; note every version id, then adp.py pins')
+                   'same url; every publish passes file_path and root, the tool refuses files without them')
     return out
 
 
@@ -365,7 +417,7 @@ def pins(a):
         for p in json.load(open(f)): vm[p] = ver
     out = opt(a, '--out') or os.path.join(os.path.dirname(os.path.abspath(pairs[0].rsplit('=', 1)[0])), 'vermap.json')
     json.dump(vm, open(out, 'w'), indent=0, sort_keys=True)
-    return emit({'pinned': len(vm), 'vermap': os.path.abspath(out), 'next': f'CAT_URL=<url> CAT_VERMAP={out} make catalog, then publish catalog.json to the same url'})
+    return emit({'pinned': len(vm), 'vermap': os.path.abspath(out)})
 
 
 SECTION = re.compile(r'^###\s+Section\s+(\S+)\s*(?:[\u2014\u2013-]+\s*(.*?))?\s*$')
@@ -463,7 +515,7 @@ def real_name(p):
     return stem if stem != p and os.path.splitext(stem)[1] else p
 
 
-TIERS = {'minimal': 'starter', 'default': 'default', 'full': None}
+TIERS = {'minimal': 'starter', 'default': 'default', 'full': 'catalog'}
 
 
 INSTALLED = ('id', 'name', 'kind', 'group', 'summary', 'version', 'requires')
@@ -472,7 +524,7 @@ INSTALLED = ('id', 'name', 'kind', 'group', 'summary', 'version', 'requires')
 def catalog_on_disk(src):
     """The catalog.json a CATALOG argument has on disk: a local file, or the copy `catalog` fetched into ~/.adp for a url. {} when there is none."""
     p = src if src and os.path.isfile(src) else os.path.join(cat_dir(src), 'catalog.json') if src and CAT_URL.match(src) else None
-    return read_json(p, 'catalog') if p and os.path.isfile(p) else {}
+    return read_index(p) if p and os.path.isfile(p) else {}
 
 
 def expand(take, ids):
@@ -539,11 +591,14 @@ def new(a):
     pos = bare(a[1:]); tier = opt(a, '--tier')
     if '--tier' in a:
         if tier not in TIERS or len(pos) != 1: sys.exit('usage: adp.py new --tier minimal|default|full DIR (not together with TEMPLATE)')
-        if tier == 'full': sys.exit('tier full is not available yet')
-        if not os.path.isfile(os.path.join(TPL, TIERS[tier], 'template.json')): sys.exit(f"tier {tier}: template '{TIERS[tier]}' not found")
+        if TIERS[tier] != CAT_TEMPLATE[0] and not os.path.isfile(os.path.join(TPL, TIERS[tier], 'template.json')): sys.exit(f"tier {tier}: template '{TIERS[tier]}' not found")
         pos = [TIERS[tier]] + pos
     if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE|--tier T DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme NAME] [--layout ID] [--catalog URL|-|catalog.json]')
     name, d = pos
+    if name == CAT_TEMPLATE[0]:       # the catalog is built, not copied from a template: adp_shell prints its one publish object, and rebuilds a DIR that holds an earlier build (anything else there it refuses)
+        extra = [x for x in a[1:] if x.startswith('--') and x not in ('--by', '--tier')]
+        if extra: sys.exit('usage: adp.py new catalog DIR [--by NAME]   (' + ' '.join(extra) + ' does not apply to the catalog)')
+        side_module('adp_shell').build_catalog(CATALOG, d, opt(a, '--by')); return 0
     if os.path.exists(d) and os.listdir(d): sys.exit(f'{d} exists and is not empty')
     meta = tmeta(name); title = opt(a, '--title', 'Untitled artifact'); slug = opt(a, '--slug') or slugify(title)
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]*', slug): sys.exit('--slug: lowercase kebab, e.g. status-pill')
@@ -622,7 +677,7 @@ def take(a):
         cfg = cvalues(read_doc(opt(a, '--config'))) if opt(a, '--config') else {}
         url = opt(a, '--url') or cfg.get('links.catalog') or json.load(open(idx)).get('url')
         if not url: sys.exit('take: no catalog url. Pass the catalog url as CATALOG (then the index is the live one), or --url with a local index')
-    cat = json.load(open(idx)); by = {e['id']: e for e in cat['entries']}
+    cat = read_index(idx); by = {e['id']: e for e in cat['entries']}
     order, seen = [], set()
     def visit(i):
         if i in seen: return
@@ -635,7 +690,7 @@ def take(a):
     for i in order:
         for f in by[i]['files']:
             if f.get('role') == 'sample' and i not in pos[1:]: continue
-            m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))
+            m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))       # ver: only a kit-catalog/1 index may pin a file; /2 writes none
     info = {'url': url, 'index': os.path.abspath(idx), 'live': live, 'ver': cat.get('ver') or None, 'built': cat.get('built')}
     if not live: info['warning'] = 'a local index is a build, not the live catalog: a file it lists may be missing there. adp.py take <catalog url> ... reads the fetched live index'
     out = {'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}}
@@ -650,9 +705,9 @@ def index_of(src, a):
     if CAT_URL.match(src):
         idx = os.path.join(cat_dir(src), 'catalog.json')
         if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': src.rstrip('/'), 'fetch': fetch_call(src.rstrip('/'))}); sys.exit(2)
-        return json.load(open(idx)), None
+        return read_index(idx), None
     if not os.path.isfile(src): sys.exit(f'{src} is neither a catalog url nor a catalog.json')
-    return json.load(open(src)), 'a local index is a build, not the live catalog: a file it lists may be missing there'
+    return read_index(src), 'a local index is a build, not the live catalog: a file it lists may be missing there'
 
 
 WORD = re.compile(r'[a-z0-9]+')
@@ -663,18 +718,20 @@ def suggest(a):
     pos, words, n = bare(a[1:]), opt(a, '--for'), int(opt(a, '--n', 3))
     if len(pos) != 1 or not words: sys.exit('usage: adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]')
     cat, warn = index_of(pos[0], a); want = set(WORD.findall(words.lower())); want |= {w[:-1] for w in want if len(w) > 3 and w.endswith('s')}; want -= STOP
-    groups = {}
+    groups, blind = {}, 0
     for e in cat['entries']:
         kind = e['id'].split('.')[0]
         if opt(a, '--kind') and kind != opt(a, '--kind'): continue
         hit = [t for t in e.get('tags', []) if want & set(WORD.findall(t.lower()))]
-        fields = {'name/summary': e.get('name', '') + ' ' + e.get('summary', ''), 'id': e['id'], 'provides': ' '.join(e.get('provides', [])), 'about': e.get('about') or e.get('details') or ''}
+        h, why = header_src(e, cat); about = e.get('about') or e.get('details') or h.get('about') or ''; blind += bool(why and not about)
+        fields = {'name/summary': e.get('name', '') + ' ' + e.get('summary', ''), 'id': e['id'], 'provides': ' '.join(e.get('provides', [])), 'about': about}
         seen = {f: want & set(WORD.findall(v.lower())) for f, v in fields.items()}
         score = 3 * len(hit) + len(seen['name/summary']) + len(seen['id']) + 2 * len(seen['provides']) + len(seen['about'])
         if score: groups.setdefault(kind, []).append((score, e['id'], {'id': e['id'], 'kind': kind, 'why': '; '.join(([f"tags: {', '.join(hit)}"] if hit else []) + [f"{f}: {', '.join(sorted(w))}" for f, w in seen.items() if w]),
                   'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') != 'sample'])}))
     out = [x[2] for k in sorted(groups) for x in sorted(groups[k], key=lambda t: (-t[0], t[1]))[:n]]
     if warn: sys.stderr.write('warning: ' + warn + '\n')
+    if blind: sys.stderr.write(f'warning: about not counted for {blind} entries: their kit file is not here as the index has it (adp.py kit show ID says which)\n')
     return emit(out)
 
 
@@ -691,10 +748,12 @@ def kit(a):
         return 0
     e = next((x for x in cat['entries'] if x['id'] == pos[1]), None) or sys.exit(f'no entry {pos[1]} in the catalog')
     paths = [f['path'] for f in e['files'] if f.get('role') != 'sample']; sample = [f['path'] for f in e['files'] if f.get('role') == 'sample']
+    h, why = header_src(e, cat)
     if sub == 'show':
-        return emit({'id': e['id'], 'name': e.get('name'), 'summary': e.get('summary'), 'about': e.get('details') or e.get('about') or '', 'tags': e.get('tags', []),
+        about = e.get('details') or e.get('about') or h.get('about') or ''
+        return emit({'id': e['id'], 'name': e.get('name'), 'summary': e.get('summary'), 'about': about, **({} if about or not why else {'about_from': why}), 'tags': e.get('tags', []),
                      'files': [f['path'] for f in e['files']], 'requires': e.get('requires', []), 'provides': e.get('provides', [])})
-    return emit({'id': e['id'], 'needs': e.get('globals', []), 'optional': e.get('optional', []), 'provides': e.get('provides', []),
+    return emit({'id': e['id'], 'needs': e.get('globals', []), 'optional': e.get('optional') or h.get('optional') or [], 'provides': e.get('provides', []),
                  'requires': e.get('requires', []), 'files': paths, 'sample': sample[0] if sample else None})
 
 
@@ -1258,14 +1317,20 @@ def setup_cmd(a):
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import adp_loop, adp_dev
 adp_loop.A = adp_dev.A = sys.modules[__name__]
+sys.modules.setdefault('adp', sys.modules[__name__])      # adp_shell says `import adp`: it gets this running module, not a second copy
 
 
 def main(a):
     cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
     if a and a[0] in cmds: return cmds[a[0]](a)
+    if a[:1] == ['index']:
+        pos = [x for x in a[1:] if x != '--check']
+        if len(pos) > 1 or any(x.startswith('--') for x in pos): sys.exit('usage: adp.py index [DIR] [--check]')
+        return side_module('adp_index').main(['index', pos[0] if pos else CATALOG] + (['--check'] if '--check' in a else []))
     if a[:1] == ['templates']:
-        for t in sorted(os.listdir(TPL)):
-            if os.path.isfile(os.path.join(TPL, t, 'template.json')): m = tmeta(t); print(f"{t:10} {m['summary']}\n{'':10} use when: {m['use_when']}")
+        rows = {t: (tmeta(t)['summary'], tmeta(t)['use_when']) for t in os.listdir(TPL) if os.path.isfile(os.path.join(TPL, t, 'template.json'))}
+        rows[CAT_TEMPLATE[0]] = CAT_TEMPLATE[1:]
+        for t in sorted(rows): print(f"{t:10} {rows[t][0]}\n{'':10} use when: {rows[t][1]}")
         return 0
     if len(a) >= 2 and a[0] == 'files':
         since = opt(a, '--since'); n = int(opt(a, '--batch', LIMIT)); where = opt(a, '--out', a[1].rstrip('/') + '.adp')

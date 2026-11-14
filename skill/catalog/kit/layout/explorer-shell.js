@@ -16,6 +16,7 @@
  * IntersectionObserver marks the file in view; without it the first file stays marked until a click.
  *
  * @id        layout.explorer-shell
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -23,12 +24,17 @@
  * @summary   Sections as a file tree with kind badges, a pipeline of phases, and a status bar with live counts.
  * @tags      explorer, sidebar, file tree, pipeline, status bar, ide, shell, sections, counts
  * @requires  kit.tokens, kit.vocab
+ * @files     kit/layout/explorer-shell.css, kit/samples/explorer-shell.json
  * @provides  Kit.explorer.mount
  * @config    Kit.explorer.mount(root, {groups, pipeline, sections, status, height, label, treeLabel}) | groups [{label, files: [{id, name, ext}]}], pipeline {label, stages: [{id, name, state}], words}, sections [{id, title, render(body)}], status {items: [{label, count, tone}], note}; returns {select(id), current(), setStatus(s), setPipeline(p), destroy()}
  * @config    theme | made for theme.kanban; reads --radius, --seam and --accent / --accent-ink for the status bar
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --f-ui --f-mono --seam? --radius?
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --f-ui --f-mono --seam? --radius? --radius-lg?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's kanban skin | the explorer sidebar of sections, the pipeline of phases and the status bar with counts
+ * @preview   {"render": "layout.explorer-shell", "samples": ["kit/samples/explorer-shell.json"], "uses": ["kit.vocab"]}
+ * @changed   The tree, the pipeline and the status bar are one component over plain data; the source drew them from a board's state.
+ * @changed   The tree is a nav with aria-current on the file in view, and the status bar's counts name their meaning in words.
  */
 (function () {
 'use strict';

@@ -13,8 +13,10 @@
  * PreviewBanner({impact, label, after, onKeep, onStop, canKeep})
  *
  * The board builds the "after" snapshot (the Journey Whiteboard projects Claude's proposed actions onto a copy).
+ * Tokens: no file of this entry reads a custom property. Its rules are the "impact" section of kit/viz/viz.css (entry viz.core, which it requires); they read --accent --accent-soft --danger --f-mono --f-ui --ink --ink-2 --ok --rule-2 --sunk --warn; and with a fallback --c-amber.
  *
  * @id        viz.impact
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -22,12 +24,19 @@
  * @summary   What a change does before anyone applies it: new, changed, lost, and which targets gain or lose their last cover.
  * @tags      impact, diff, preview, dry run, proposal, changes, coverage
  * @requires  viz.core
+ * @files     kit/samples/viz-impact.json
  * @provides  Kit.viz.impactOf, Kit.viz.ImpactList, Kit.viz.PreviewBanner
  * @config    impactOf(before, after, options) | snapshots {id: {kind, status, label, code, ...}}; options {fields, linkField, target, live, negative}
  * @config    ImpactList | {impact, after, kinds, words}
  * @config    PreviewBanner | {impact, label, after, onKeep, onStop, canKeep}
+ * @tokens    none
  * @globals   htm-preact
- * @db        none
+ * @db        note The board builds the after snapshot (the Journey Whiteboard projects Claude's proposed actions onto a copy).
+ * @source    Journey Whiteboard | app.js | coverage, impactOf, ImpactList, PreviewBanner
+ * @preview   {"render": "viz.impact", "samples": ["kit/samples/viz-impact.json", "kit/samples/viz-tree.json"], "uses": ["viz.tree"]}
+ * @changed   Kinds, the link field, live statuses and compared fields come from the board.
+ * @changed   Removed records and removed links are reported, not only additions.
+ * @changed   Gains and losses carry a side stripe as well as the sign, and a hidden word for screen readers.
  */
 (function () {
 'use strict';

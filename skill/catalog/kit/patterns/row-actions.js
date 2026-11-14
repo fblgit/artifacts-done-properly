@@ -23,6 +23,7 @@
  * CSS classes: .kit-ra-row .kit-ra-menu .kit-ra-pills
  *
  * @id        pattern.row-actions
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -30,12 +31,19 @@
  * @summary   A row whose one main button follows its state, a menu with the rest, and round action pills that open on hover or focus.
  * @tags      menu, row, actions, kebab, popover, quick actions, pills, keyboard
  * @requires  kit.vocab, kit.glaze-surfaces
+ * @files     kit/patterns/row-actions.css, kit/samples/row-actions.json
  * @provides  Kit.rowActions.mount, Kit.rowActions.menu, Kit.rowActions.pills, Kit.rowActions.icons
  * @config    Kit.rowActions.mount(root, {rows, main, menu, onAction, enum, label}) | main(row) -> {key, label, primary}; menu(row) -> [{key, label, icon, danger}]; rows [{id, title, sub, state, chips}]
  * @config    Kit.rowActions.menu(trigger, items, opts) and Kit.rowActions.pills(host, actions, opts) | the menu and the pills work without the rows
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --rule-2 --accent-ink --danger --f-mono --shadow? --rim? --pool? --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --rule-2 --accent-ink --danger --f-mono --shadow? --rim? --seam? --danger-ink? --danger-soft? --glz-r-m?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console’s device row | the main action chosen from the row’s state, the menu without the main action, the keyboard handling
+ * @source    Catalog harvest, 2026-10-25 | the same console’s quick actions | round pills labelled on hover or focus, always shown on touch
+ * @preview   {"render": "pattern.row-actions", "samples": ["kit/samples/row-actions.json"]}
+ * @changed   The main action and the menu are functions the board passes.
+ * @changed   One menu is open at a time across the page, and the menu flips upward at the page edge.
+ * @changed   Pills are always shown on touch and under 480px.
  */
 (function () {
 'use strict';

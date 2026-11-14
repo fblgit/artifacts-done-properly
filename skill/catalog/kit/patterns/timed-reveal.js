@@ -23,6 +23,7 @@
  * CSS classes: .kit-tr .kit-tr-card .kit-tr-shown
  *
  * @id        pattern.timed-reveal
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -30,12 +31,18 @@
  * @summary   A sealed card with a draining ring; open it and each value shows in place of its button for a short time, then hides itself; closing hides all of them at once.
  * @tags      reveal, secret, timer, sealed, password, countdown, vault
  * @requires  viz.dial-meter, kit.vocab, kit.copy, kit.glaze-surfaces
+ * @files     kit/patterns/timed-reveal.css, kit/samples/timed-reveal.json
  * @provides  Kit.timedReveal.mount
  * @config    Kit.timedReveal.mount(root, {title, items, fetch, authorize, duration, valueSeconds, copy, label, onOpen, onClose}) | items [{id, label, sub, slots: [{key, label, none}]}]; fetch(id, slotKey) -> string | Promise<string>; authorize() -> Promise<boolean>
  * @config    Kit.dialMeter, Kit.vocab | the ring needs kit/viz/dial-meter.js and .css; Kit.copy only when copy is true
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --rule-2 --ok --f-mono --f-display --rim? --pool? --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --rule-2 --ok --f-mono --f-display? --rim? --pool? --seam? --glz-r-l? --glz-r-m?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console’s sealed-vault page | the ring that drains while the vault is open, the sealed and open card, a password shown in place of its button for a short time, hiding everything on close
+ * @preview   {"render": "pattern.timed-reveal", "samples": ["kit/samples/timed-reveal.json"]}
+ * @changed   The fetch is a callback and the values are held in one text node only.
+ * @changed   Hidden pages and theme changes hide the values as well as the timer.
+ * @changed   The time left can be read out on request.
  */
 (function () {
 'use strict';

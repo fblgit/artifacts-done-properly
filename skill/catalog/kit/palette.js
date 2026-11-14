@@ -16,6 +16,7 @@
  * Optional custom properties: --seam.
  *
  * @id        kit.palette
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -23,11 +24,17 @@
  * @summary   A keyboard-opened search over a page's sections and records: Ctrl+K, arrow keys, Enter, Escape.
  * @tags      search, command palette, keyboard, navigation, combobox, ctrl k, modal, jump
  * @requires  none
+ * @files     kit/palette.css, kit/samples/palette.json
  * @provides  Kit.palette.create
  * @config    Kit.palette.create(opts) | items [{id, group, label, hint, keys, target}], host, label, placeholder, hotkey, limit, emptyText, onPick(item), onOpen, onClose
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --shadow --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --shadow? --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a runbook's command palette: the overlay, openPal, runPal, the INDEX of sections and records
+ * @preview   {"render": "kit.palette", "samples": ["kit/samples/palette.json"]}
+ * @changed   A combobox with announced results and a count, instead of buttons only.
+ * @changed   Tab is held in the input, focus returns to the opener, and Escape closes without leaving the page.
+ * @changed   Results rank by tier and then by the given order; the source filtered by substring only.
  */
 (function () {
 'use strict';

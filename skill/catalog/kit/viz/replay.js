@@ -12,8 +12,10 @@
  *
  * The board passes creation stamps it already has (items.created, pages.created in the Journey Whiteboard).
  * Tone colours: --c-<pen> for each pen tone used.
+ * Tokens: no file of this entry reads a custom property. Its rules are the "replay" section of kit/viz/viz.css (entry viz.core, which it requires); they read --accent --f-mono --f-ui --ink --ink-2 --ink-3; and with a fallback --kv-c.
  *
  * @id        viz.replay
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -21,14 +23,21 @@
  * @summary   Step through a board's history in creation order, with ticks placed to scale on the real time axis.
  * @tags      timeline, replay, history, scrubber, time, slider
  * @requires  viz.core
+ * @files     kit/samples/viz-replay.json
  * @provides  Kit.viz.Replay, Kit.viz.timeline, Kit.viz.cutAt
  * @config    events | [{id, t, label, kind}]: t in ms
  * @config    step, onStep | null for now, or n; onStep(step | null)
  * @config    playing, onPlaying | controlled play state
  * @config    interval | ms per step (650)
  * @config    kinds, words | {kind: {label, tone}}, {now, play, pause, steps}
+ * @tokens    none
  * @globals   htm-preact
- * @db        none
+ * @db        note The board passes creation stamps it already has.
+ * @source    Journey Whiteboard | app.js | timeline, the Replay button, range and label inside TreeView
+ * @preview   {"render": "viz.replay", "samples": ["kit/samples/viz-replay.json"]}
+ * @changed   A component of its own instead of part of the tree.
+ * @changed   A to-scale tick strip with the first and last dates under the slider.
+ * @changed   The step label is a polite live region; the slider reports the step as text.
  */
 (function () {
 'use strict';

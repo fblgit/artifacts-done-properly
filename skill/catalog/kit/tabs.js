@@ -24,6 +24,7 @@
  * Optional custom properties: --seam.
  *
  * @id        kit.tabs
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -31,13 +32,16 @@
  * @summary   An ARIA tab set over the page's markup: arrow keys, Home and End, optional digit keys, and each tab a plain #anchor deep link.
  * @tags      tabs, tablist, aria, keyboard, hash, deep link, anchor, record, playbook
  * @requires  none
+ * @files     kit/tabs.css, kit/samples/tabs.json
  * @provides  Kit.tabs.mount
  * @config    Kit.tabs.mount(el, opts) | tabs [{id, label, count}], label, hash (default true), keys (digits 1 to 9), initial, onChange(id, panel)
  * @config    markup | .kit-tabs > [role=tablist] > button[data-tab] + section[data-tab-panel]
  * @config    ids | bare tokens: letters, digits, . _ ~ -
- * @tokens    --panel --sunk --ink --ink-2 --rule --shadow --accent --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --shadow --accent --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 3 artifacts' index.html | an accessible tab set for records, a tabbed app shell with hash routing and digit keys, and page tabs over a parts registry
+ * @preview   {"render": "kit.tabs", "samples": ["kit/samples/tabs.json"], "uses": ["kit.table"]}
  */
 (function () {
 'use strict';

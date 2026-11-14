@@ -16,6 +16,7 @@
  * Optional custom properties: --seam.
  *
  * @id        kit.copy
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -23,12 +24,17 @@
  * @summary   Labelled code blocks with a copy button, a click-to-copy command grid, and the fallback that selects the text where the clipboard is refused.
  * @tags      copy, clipboard, code, snippet, command, shell, button, fallback
  * @requires  none
+ * @files     kit/copy.css, kit/samples/copy.json
  * @provides  Kit.copy.text, Kit.copy.wire, Kit.copy.mount, Kit.copy.block
  * @config    Kit.copy.mount(root) | enhances .kit-code > pre, [data-copy] and [data-copy-from] buttons
  * @config    Kit.copy.text(text, {select}) | -> copied | selected | failed
- * @tokens    --panel --sunk --ink --ink-2 --rule --ok --accent --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --ok --accent --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | a code block's copy button, a copy-on-hover dark block, a copy with a selection fallback, a click-to-copy command grid, and an answers copy fallback
+ * @preview   {"render": "kit.copy", "samples": ["kit/samples/copy.json"]}
+ * @changed   The copy button is always shown, not only on hover, so touch and keyboard reach it.
+ * @changed   Needs nothing from kit.chrome: the plan's requirement was dropped because copy.css styles its own button.
  */
 (function () {
 'use strict';

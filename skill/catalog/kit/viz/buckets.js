@@ -12,8 +12,10 @@
  *   filterKinds kinds offered as toggles (default: every kind on the cards); sumLabel e.g. "d estimated"
  *
  * The board writes the bucket and order fields (the Journey Whiteboard: items/<id>.moscow and .order).
+ * Tokens: no file of this entry reads a custom property. Its rules are the "buckets" section of kit/viz/viz.css (entry viz.core, which it requires); they read --accent --accent-soft --f-display --f-mono --f-ui --ink --ink-2 --ink-3 --panel --rule --shadow --sunk; and with a fallback --kv-c --kv-col-h --n.
  *
  * @id        viz.buckets
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -21,14 +23,21 @@
  * @summary   Cards sorted into ordered buckets (MoSCoW, now/next/later): drag with a drop line, or use each card's Move to menu.
  * @tags      kanban, moscow, buckets, columns, drag and drop, priority, board
  * @requires  viz.core
+ * @files     kit/samples/viz-buckets.json
  * @provides  Kit.viz.Buckets
  * @config    buckets | [{id, label, hint, tone}]
  * @config    cards | [{id, bucket, order, label, code, kind, status, chips, value}]
  * @config    onMove | (id, bucket, order): the board writes both fields
  * @config    onOpen | (id) optional
  * @config    options | canEdit, filterKinds, sumLabel, title, words
+ * @tokens    none
  * @globals   htm-preact
- * @db        none
+ * @db        note The board writes the bucket and order fields (Journey Whiteboard: items/<id>.moscow and .order).
+ * @source    Journey Whiteboard | app.js | BUCKETS, MoscowView, moveBucket
+ * @preview   {"render": "viz.buckets", "samples": ["kit/samples/viz-buckets.json"]}
+ * @changed   Buckets, kinds and the summed field come from config; the background estimate stays board code (call it from onMove).
+ * @changed   Each Move to menu has its own label; the drop line ignores the dragged card's own slot.
+ * @changed   The drag stays inside its own board when two boards share a page.
  */
 (function () {
 'use strict';

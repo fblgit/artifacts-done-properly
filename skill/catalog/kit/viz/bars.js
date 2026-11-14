@@ -15,6 +15,7 @@
  * host is the element the tooltip is appended to: pass the themed element when the board sets its tokens on an element instead of :root.
  *
  * @id        viz.bars
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -22,6 +23,7 @@
  * @summary   Proportional split bar, equal-weight score bar, carried-against-total bars, an option ladder and grouped columns, every length linear from zero.
  * @tags      bars, chart, split, proportion, score, columns, ladder, scale, legend, table view, pattern
  * @requires  kit.tooltip
+ * @files     kit/viz/bars.css, kit/samples/bars.json
  * @provides  Kit.bars.split, Kit.bars.score, Kit.bars.hbars, Kit.bars.ladder, Kit.bars.columns, Kit.bars.swatch, Kit.bars.niceTicks
  * @config    Kit.bars.split(box, opts) | items [{id, label, value, tone, note}], unit, total, restLabel, caption, label, host
  * @config    Kit.bars.score(box, opts) | items [{id, label, level}], levels [{id, label, tone}], label, host
@@ -30,9 +32,16 @@
  * @config    Kit.bars.columns(box, opts) | categories [{id, label}], series [{id, label, values, tone}], max, ticks, unit, decimals, yLabel, height, valueLabels, highlight, table, label, caption, host
  * @config    host | the element the tooltip is appended to: the themed element when the board sets tokens on an element
  * @config    requires | kit.tooltip: Kit.tooltip.attach and its css
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --c-ink --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --c-ink? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a disk-usage report, index.html | the proportional verdict split bar
+ * @source    Catalog harvest, 2026-10-25 | a review page, index.html | the equal-weight score bar and legend, and the carried-against-total family bars with their scale
+ * @source    Catalog harvest, 2026-10-25 | an options page, index.html | the ladder with a strength bar
+ * @preview   {"render": "viz.bars", "samples": ["kit/samples/bars.json"]}
+ * @changed   Every length is linear from zero: the source scaled a mini-bar by a square root, which made small items look larger than they were.
+ * @changed   Series carry a fill pattern and a word as well as a colour; segments and cells have tooltips and keyboard stops.
+ * @changed   Columns are new: grouped series, gridlines at round ticks, a highlighted category and a table view.
  */
 (function () {
 'use strict';

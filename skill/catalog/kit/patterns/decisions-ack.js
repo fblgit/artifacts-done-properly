@@ -20,6 +20,7 @@
  * CSS classes: .kit-da
  *
  * @id        pattern.decisions-ack
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -27,12 +28,20 @@
  * @summary   An upgrade of pattern.decisions: what an answered card shows, the answer and who gave it, the prompt line, and an acknowledgement as a rubber stamp, a terminal line or a sticky note that can ask back.
  * @tags      decision, acknowledgement, ack, stamp, sticky note, terminal, answered, read receipt, prompt
  * @requires  kit.tokens
+ * @files     kit/patterns/decisions-ack.css, kit/samples/decisions-ack.json
  * @provides  Kit.decisionsAck.render, Kit.decisionsAck.block, Kit.decisionsAck.attach
+ * @extends   pattern.decisions
  * @config    Kit.decisionsAck.render(box, opts) | cards [{id, question, why, answer, answeredBy, answeredAt, prompt, ack: {by, at, text, asks}}], look stamp | line | note, headingLevel, words, timeZone; returns {setLook, update, destroy}
  * @config    Kit.decisionsAck.attach(root, acks, opts) | adds a block to each .kit-d[data-d] card of Kit.decisions; returns {detach()}
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --warn --ok? --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-mono --f-display --warn --ok?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's acknowledgement block in three skins | a rubber stamp, a terminal ACK line, a sticky note that asks back
+ * @source    Catalog harvest, 2026-10-25 | a component family's answered stamp and request card | what the answer was, who read it and when; the prompt line
+ * @preview   {"render": "pattern.decisions-ack", "samples": ["kit/samples/decisions-ack.json"], "uses": ["pattern.decisions"]}
+ * @changed   Extends pattern.decisions as new files; decisions.js and decisions.css are unchanged.
+ * @changed   Reader, time and words are text in every look; nothing animates.
+ * @changed   The look is an option you can change at run time.
  */
 (function () {
 'use strict';

@@ -1,9 +1,12 @@
 /* part:page.script.catalog */
-/* The catalog: entries from the db (entries/*, live) or catalog.json (the snapshot published with the page), search and filters,
-   one specimen sheet at a time, the proofing stage, the take reference, file hashes checked in the browser. */
+/* The catalog: entries from the db (entries/*, live) or catalog.json (the index published with the page), search and filters,
+   one specimen sheet at a time, the proofing stage, the take reference, file hashes checked in the browser.
+   The index is short: what an entry is about, what it needs, where it came from and how it previews are read from the
+   header comment of its main file when the entry is opened. Every file read goes through CatalogFiles (parts/files.js). */
 (function () {
 'use strict';
 const { html, render, useState, useEffect, useRef, Component } = window.htmPreact;
+const F = window.CatalogFiles;
 const $ = s => document.querySelector(s);
 const CDN = {
   'htm-preact': { label: 'htm and preact (standalone)', tag: '<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>' },
@@ -27,7 +30,25 @@ function useS() { const [, f] = useState(0); const seen = ver;
 
 const ID = /^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*$/;
 function clean(list) {
-  return (list || []).filter(e => e && ID.test(e.id || '') && KIND[e.kind]).map(e => Object.assign({ files: [], requires: [], globals: [], provides: [], tags: [], needs: {}, source: [], changed: [] }, e));
+  return (list || []).filter(e => e && ID.test(e.id || '') && KIND[e.kind]).map(e => Object.assign({ files: [], requires: [], globals: [], provides: [], tags: [] }, e));
+}
+// The index record plus what only the header of the entry's main file says: about, needs (config, tokens, db), source,
+// changed, preview, updated. These are never read from the record.
+function withHeader(e, h) {
+  h = h || {};
+  return Object.assign({}, e, { about: h.about || '', needs: { config: h.config || [], tokens: h.tokens || [], db: h.db || {} }, source: h.source || [], changed: h.changed || [], preview: h.preview || null, updated: h.updated || '' });
+}
+// { e: null } while the header is read, then { e: the full entry }, with err when the header could not be read
+function useFull(e) {
+  const [st, setSt] = useState({ e: null });
+  useEffect(() => {
+    let off = false; const m = F.main(e);
+    setSt({ e: null });
+    (m ? F.header(m) : Promise.reject(new Error('the entry names no main file')))
+      .then(h => { if (!off) setSt({ e: withHeader(e, h) }); }, err => { if (!off) setSt({ e: withHeader(e), err: (err && err.message) || String(err) }); });
+    return () => { off = true; };
+  }, [e.id, e.hash]);
+  return st;
 }
 const byId = id => S.entries.find(e => e.id === id);
 function closure(e) {
@@ -38,9 +59,13 @@ function closure(e) {
 const kb = n => n >= 1024 ? (n / 1024).toFixed(1) + ' kB' : n + ' B';
 const short = h => (h || '').slice(0, 12);
 
-// ---------------------------------------------------------------- data: catalog.json first, then the db when it answers
+// ---------------------------------------------------------------- data: catalog.json, and the db when it answers
+// The entries: the database's when it has any, else catalog.json's. The catalog's own url and ver: each from the doc
+// catalog/self when it has one, else from catalog.json, whichever of the two answers first.
+const selfFrom = { file: {}, db: {} };
+const selfNow = () => ({ url: selfFrom.db.url || selfFrom.file.url || '', ver: selfFrom.db.ver || selfFrom.file.ver || '' });
 fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
-  .then(d => { if (S.src === 'db') return; set({ entries: clean(d.entries), src: 'file', self: { url: d.url || '', ver: d.ver || '' } }); })
+  .then(d => { selfFrom.file = { url: d.url, ver: d.ver }; set(S.src === 'db' ? { self: selfNow() } : { entries: clean(d.entries), src: 'file', self: selfNow() }); })
   .catch(e => { if (S.src !== 'db') set({ src: 'none', err: 'catalog.json could not be read (' + e.message + ').' }); });
 (async () => {
   if (!window.claude || typeof window.claude.use !== 'function') return;
@@ -50,7 +75,7 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
     const docs = snap.docs.filter(d => d.exists).map(d => Object.assign({}, d.data(), { id: d.id }));
     if (docs.length) set({ entries: clean(docs), src: 'db' });
   }, () => {});
-  db.doc('catalog/self').onSnapshot(d => { if (d.exists) { const v = d.data() || {}; set({ self: { url: v.url || S.self.url, ver: v.ver || S.self.ver } }); } }, () => {});
+  db.doc('catalog/self').onSnapshot(d => { const v = (d.exists && d.data()) || {}; selfFrom.db = { url: v.url, ver: v.ver }; set({ self: selfNow() }); }, () => {});
 })();
 
 // ---------------------------------------------------------------- routing: #<entry id>
@@ -63,11 +88,19 @@ function open(id) {
 }
 
 // ---------------------------------------------------------------- search
+// search.json: [{id, about, source}], what the index lacks. The shell build writes it (the repo tree has none); it is
+// asked for once, when the search box is first focused, and until it answers the index fields are matched alone.
+const more = {}; let asked = false;
+function askMore() {
+  if (asked) return; asked = true;
+  F.json('search.json').then(list => { for (const x of list) more[x.id] = x; set({}); }).catch(() => {});
+}
 function terms(q) { return q.toLowerCase().split(/\s+/).filter(Boolean); }
 function score(e, ts) {
   if (!ts.length) return 1;
-  const f = [[e.name, 6], [e.id, 4], [(e.tags || []).join(' '), 3], [e.group + ' ' + KIND[e.kind], 2], [e.summary, 2], [e.about, 1],
-    [(e.provides || []).join(' '), 1], [(e.source || []).map(s => s.board + ' ' + s.file + ' ' + s.what).join(' '), 1]].map(([t, w]) => [String(t || '').toLowerCase(), w]);
+  const m = more[e.id] || {};
+  const f = [[e.name, 6], [e.id, 4], [(e.tags || []).join(' '), 3], [e.group + ' ' + KIND[e.kind], 2], [e.summary, 2], [m.about, 1],
+    [(e.provides || []).join(' '), 1], [m.source, 1]].map(([t, w]) => [String(t || '').toLowerCase(), w]);
   let s = 0;
   for (const t of ts) { const hit = f.filter(([x]) => x.includes(t)); if (!hit.length) return 0; s += Math.max(...hit.map(([, w]) => w)); }
   return s;
@@ -140,7 +173,7 @@ function Index() {
     <form class="search" role="search" onSubmit=${e => { e.preventDefault(); if (first) { open(first.id); setTimeout(() => { const h = document.getElementById('sheetName'); if (h) h.focus({ preventScroll: false }); }, 60); } }}>
       <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5l3.3 3.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <label class="sr" for="q">Search the catalog</label>
-      <input id="q" ref=${inp} type="search" autocomplete="off" placeholder="Search: canvas, tree, tokens…" value=${s.q}
+      <input id="q" ref=${inp} type="search" autocomplete="off" placeholder="Search: canvas, tree, tokens…" value=${s.q} onFocus=${askMore}
         onInput=${e => set({ q: e.target.value })} onKeyDown=${e => { if (e.key === 'Escape') set({ q: '' }); }}/>
       ${s.q ? '' : html`<kbd aria-hidden="true">/</kbd>`}
     </form>
@@ -169,13 +202,13 @@ function Howto() {
 function Landing() {
   const s = useS();
   const k = Object.keys(KIND).map(x => [x, s.entries.filter(e => e.kind === x)]).filter(([, l]) => l.length);
-  const recent = [...s.entries].sort((a, b) => String(b.at || '').localeCompare(String(a.at || ''))).slice(0, 20);
+  const fresh = s.entries.filter(e => e.status === 'new').slice(0, 20);      // the index carries no date: new is a status
   return html`<section class="sheet" data-part="catalog.landing" data-comment-target aria-label="Catalog">
     <div class="land">
       <h2>Take a part instead of rebuilding it</h2>
       <div class="land-kinds">${k.map(([x, l]) => html`<button type="button" class="kcard" onClick=${() => open(l[0].id)}><b>${l.length}</b><span><${Glyph} kind=${x}/>${KIND[x]}${l.length > 1 ? 's' : ''}</span></button>`)}</div>
       <${Howto}/>
-      ${recent.length ? html`<div class="recent"><h3>Latest entries</h3>${recent.map(e => html`<button type="button" class="irow" onClick=${() => open(e.id)}><${Glyph} kind=${e.kind}/><span class="row-n">${e.name}</span><span class="row-v">${(e.at || '').slice(0, 10)}</span><span class="row-s">${e.summary}</span></button>`)}</div>` : ''}
+      ${fresh.length ? html`<div class="recent"><h3>New entries</h3>${fresh.map(e => html`<button type="button" class="irow" onClick=${() => open(e.id)}><${Glyph} kind=${e.kind}/><span class="row-n">${e.name}</span><span class="row-v">${e.version}</span><span class="row-s">${e.summary}</span></button>`)}</div>` : ''}
     </div>
   </section>`;
 }
@@ -186,7 +219,7 @@ const themeCache = {};
 function themeOf(id) {
   const e = byId(id); if (!e) return Promise.resolve(null);
   const f = (e.files || []).find(x => x.path.endsWith('.json')); if (!f) return Promise.resolve(null);
-  return themeCache[id] = themeCache[id] || fetch(f.path).then(r => r.ok ? r.json() : null).catch(() => null);
+  return themeCache[id] = themeCache[id] || F.json(f.path).catch(() => { delete themeCache[id]; return null; });
 }
 function pageDark() { const t = document.documentElement.dataset.theme; return t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches); }
 function useDark(mode) {
@@ -206,16 +239,7 @@ class Boundary extends Component {
   render() { return this.state.err ? html`<div class="stage-err">The preview stopped: ${String(this.state.err && this.state.err.message || this.state.err)}</div>` : this.props.children; }
 }
 
-const loaded = {};
-function loadFile(path) {
-  if (loaded[path]) return loaded[path];
-  let p;
-  if (path.endsWith('.css')) p = new Promise((res, rej) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = path; l.onload = res; l.onerror = () => rej(new Error('could not load ' + path)); document.head.append(l); });
-  else if (path.endsWith('.js')) p = new Promise((res, rej) => { const s = document.createElement('script'); s.src = path; s.async = false; s.onload = res; s.onerror = () => rej(new Error('could not load ' + path)); document.head.append(s); });
-  else p = fetch(path).then(r => { if (!r.ok) throw new Error(path + ': HTTP ' + r.status); return path.endsWith('.json') ? r.json() : r.text(); });
-  loaded[path] = p; p.catch(() => { delete loaded[path]; });
-  return p;
-}
+const loadFile = path => /\.(css|js)$/.test(path) ? F.load(path) : path.endsWith('.json') ? F.json(path) : F.text(path);
 async function prepare(e) {
   const chain = closure(e).concat((e.preview && e.preview.uses || []).flatMap(u => closure(byId(u) || {})).filter(Boolean));
   for (const x of chain) for (const f of x.files || []) if (f.role === 'style' && f.path.endsWith('.css') && x.kind !== 'theme') await loadFile(f.path);
@@ -228,7 +252,7 @@ async function prepare(e) {
 function Stage({ e }) {
   const s = useS();
   const [st, setSt] = useState({ loading: true });
-  const [theme, setTheme] = useState(null);
+  const [theme, setTheme] = useState(undefined);       // undefined while it is read, null when it could not be
   const own = e.kind === 'theme' ? e.id : null;
   const tid = own || s.theme;
   const dark = useDark(s.mode);
@@ -253,7 +277,7 @@ function Stage({ e }) {
       <span class="lbl" id="lblMode">Light or dark</span>
       <span class="c-seg" role="group" aria-labelledby="lblMode">${[['page', 'Like the page'], ['light', 'Light'], ['dark', 'Dark']].map(([m, l]) => html`<button type="button" key=${m} aria-pressed=${s.mode === m} onClick=${() => { set({ mode: m }); ls.set('mode', m); }}>${l}</button>`)}</span>
     </div>
-    <div class="stage-wrap"><div class=${'stage' + (dark ? ' dark' : '')} style=${styleOf(theme, dark)} data-uncommentable><i class="crop" aria-hidden="true"></i>${theme || e.kind === 'theme' ? body : html`<div class="stage-load">Loading the theme…</div>`}</div></div>
+    <div class="stage-wrap"><div class=${'stage' + (dark ? ' dark' : '')} style=${styleOf(theme, dark)} data-uncommentable><i class="crop" aria-hidden="true"></i>${theme || e.kind === 'theme' ? body : theme === null ? html`<div class="stage-err">The theme could not be read, so the preview cannot be drawn.</div>` : html`<div class="stage-load">Loading the theme…</div>`}</div></div>
     <p class="caption">${captionOf(e)}</p>
   </div>`;
 }
@@ -267,6 +291,12 @@ function captionOf(e) {
 
 // ---------------------------------------------------------------- panels
 /* part:entry.needs */
+// does a theme define the token? `--c-<pen>` names a family: any property that fits the name with the placeholder filled
+function defines(have, token) {
+  if (!token.includes('<')) return token in have;
+  const fit = new RegExp('^' + token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/<[^>]*>/g, '[A-Za-z0-9_-]+') + '$');
+  return Object.keys(have).some(k => fit.test(k));
+}
 function Needs({ e }) {
   const n = e.needs || {}, dbn = n.db || {};
   const [fit, setFit] = useState(null);
@@ -288,7 +318,7 @@ function Needs({ e }) {
     ${(n.tokens || []).length ? html`<h3>Theme tokens it reads</h3>
       <div class="chips">${n.tokens.map(t => html`<code class="tok">${t}</code>`)}</div>
       <div class="fit">${!fit ? html`<span class="c-faint">Checking the themes…</span>` : fit.map(([t, j]) => { const have = j ? Object.assign({}, j.light) : {};
-        const miss = n.tokens.filter(x => x.startsWith('--') && !(x in have));
+        const miss = n.tokens.filter(x => !x.endsWith('?') && !defines(have, x));      // `--x?` is optional
         return html`<span>${t.name}: ${miss.length ? html`<span class="no">missing ${miss.join(', ')}</span>` : html`<span class="ok">defines all of them</span>`}</span>`; })}</div>` : ''}
   </div>`;
 }
@@ -307,7 +337,7 @@ function takeFiles(e, withReq) {
 }
 function takeRef(e, withReq, s) {
   const url = s.self.url || '<catalog url>'; const ref = {};
-  for (const { entry, f } of takeFiles(e, withReq)) { const r = { artifact: url, path: f.path }; const v = f.ver || s.self.ver; if (v) r.ver = v; ref[f.path] = r; }
+  for (const { f } of takeFiles(e, withReq)) { const r = { artifact: url, path: f.path }; if (s.self.ver) r.ver = s.self.ver; ref[f.path] = r; }
   return JSON.stringify(ref, null, 2);
 }
 function Take({ e }) {
@@ -320,10 +350,10 @@ function Take({ e }) {
   const load = glob.concat(list.filter(x => x.f.role === 'style').map(x => `<link rel="stylesheet" href="${x.f.path}">`), list.filter(x => x.f.role === 'script').map(x => `<script src="${x.f.path}"></script>`)).join('\n');
   const reqd = closure(e).filter(x => x.id !== e.id);
   const [text, setText] = useState(null);
-  const shell = (e.files || []).find(f => f.role === 'template') || (e.files || [])[0];
+  const shell = (e.files || []).find(f => f.role === 'template');
   useEffect(() => { if (!tmpl || !shell) return; let off = false; loadFile(shell.path).then(t => { if (!off) setText(t); }, () => {}); return () => { off = true; }; }, [e.id]);
   return html`<div class="panel" data-part="entry.take" data-part-key=${e.id} data-comment-target role="tabpanel" aria-label="Take it">
-    ${!s.self.url ? html`<p class="note">The catalog’s own link and version come from its database. Open the catalog signed in to see them filled in; until then the reference shows <code>${'<catalog url>'}</code>.</p>` : ''}
+    ${!s.self.url ? html`<p class="note">The catalog’s link shows here once its owner has recorded it in the database doc <code>catalog/self</code>; until then the reference shows <code>${'<catalog url>'}</code>.</p>` : ''}
     ${tmpl ? html`<ol class="steps">
       <li><h4>Copy the template’s text</h4><p>A page cannot be copied between artifacts server-side, so this template is taken as text. Save it as your artifact’s <code>index.html</code>: it already holds the tags that load what it needs. Then make its title and content your own.</p>${text != null ? html`<${Code} text=${text} label=${shell.path}/>` : html`<p class="c-faint">Loading the text…</p>`}</li>
       ${list.length ? html`<li><h4>Add the files it loads to your artifact’s publish</h4>
@@ -358,14 +388,13 @@ function Files({ e }) {
   useEffect(() => { let off = false;
     (e.files || []).forEach(f => {
       const k = f.path + '@' + f.sha256;
-      (checked[k] = checked[k] || fetch(f.path, { cache: 'no-store' }).then(r => r.ok ? r.arrayBuffer() : Promise.reject(new Error('HTTP ' + r.status)))
-        .then(b => crypto.subtle.digest('SHA-256', b)).then(d => [...new Uint8Array(d)].map(x => x.toString(16).padStart(2, '0')).join('')))
-        .then(h => { if (!off) setRes(r => Object.assign({}, r, { [f.path]: h })); }, err => { if (!off) setRes(r => Object.assign({}, r, { [f.path]: 'error: ' + err.message })); });
+      (checked[k] = checked[k] || F.text(f.path).then(sha256))
+        .then(h => { if (!off) setRes(r => Object.assign({}, r, { [f.path]: h })); }, err => { delete checked[k]; if (!off) setRes(r => Object.assign({}, r, { [f.path]: 'error: ' + err.message })); });
     });
     return () => { off = true; }; }, [e.id, e.hash]);
-  const view = p => { setShow(show === p ? null : p); if (!txt[p]) fetch(p).then(r => r.text()).then(t => setTxt(x => Object.assign({}, x, { [p]: t }))); };
+  const view = p => { setShow(show === p ? null : p); if (txt[p] == null) F.text(p).then(t => setTxt(x => Object.assign({}, x, { [p]: t })), err => setTxt(x => Object.assign({}, x, { [p]: 'This file could not be read: ' + err.message }))); };
   return html`<div class="panel" data-part="entry.files" data-part-key=${e.id} data-comment-target role="tabpanel" aria-label="Files">
-    <p class="about">Each file at its published path in this catalog. The sha256 recorded in the entry is checked here against the file the catalog serves now.</p>
+    <p class="about">Each file at its published path in this catalog. The sha256 recorded in the entry is checked here against the text this page read from that path.</p>
     <div class="files-wrap"><table class="files">
       <thead><tr><th>Path</th><th class="hide-sm">Role</th><th class="hide-sm">Size</th><th>sha256</th><th>In this browser</th><th><span class="sr">Actions</span></th></tr></thead>
       <tbody>${(e.files || []).map(f => { const h = res[f.path]; const ok = h && h === f.sha256;
@@ -388,7 +417,7 @@ function Origin({ e }) {
     <dl class="dl">
       <div><dt>version</dt><dd>${e.version}</dd></div>
       <div><dt>content hash</dt><dd><code>${e.hash || '–'}</code>: sha256 over the sorted <code>path=sha256</code> lines of its files</dd></div>
-      ${e.at ? html`<div><dt>recorded</dt><dd>${e.at}${e.by ? ' by ' + e.by : ''}</dd></div>` : ''}
+      ${e.updated ? html`<div><dt>updated</dt><dd>${e.updated}</dd></div>` : ''}
     </dl>
   </div>`;
 }
@@ -403,6 +432,7 @@ function PreviewPanel({ e }) {
 /* part:entry.sheet */
 function Sheet({ e }) {
   const s = useS();
+  const full = useFull(e), fe = full.e;
   const bytes = (e.files || []).reduce((a, f) => a + (f.bytes || 0), 0);
   const tab = TABS.some(([t]) => t === s.tab) ? s.tab : 'preview';
   const tabKey = ev => { const i = TABS.findIndex(([t]) => t === tab); const d = { ArrowRight: 1, ArrowLeft: -1 }[ev.key]; if (!d) return; ev.preventDefault();
@@ -410,7 +440,7 @@ function Sheet({ e }) {
   return html`<section class="sheet" data-part="entry.sheet" data-part-key=${e.id} data-comment-target aria-labelledby="sheetName">
     <div class="sheet-h">
       <button type="button" class="back" onClick=${() => open(null)}>← All entries</button>
-      <div class="kindline"><${Glyph} kind=${e.kind}/><span>${KIND[e.kind]} · ${e.group}</span><span class=${'pill ' + (e.status || '')}>${e.status === 'new' ? 'new' : e.status || ''}</span></div>
+      <div class="kindline"><${Glyph} kind=${e.kind}/><span>${KIND[e.kind]} · ${e.group}</span><span class=${'pill ' + (e.status || '')}>${e.status || ''}</span></div>
       <h2 id="sheetName" tabindex="-1">${e.name}</h2>
       <p class="sum">${e.summary}</p>
       <div class="quick">${e.kind === 'template' ? '' : html`<${Copy} text=${takeRef(e, true, s)} label="Copy the files map" cls="pri" onFail=${() => set({ tab: 'take' })}/>`}
@@ -419,13 +449,15 @@ function Sheet({ e }) {
         <div><dt>Version</dt><dd>${e.version}</dd></div>
         <div><dt>Content hash</dt><dd title=${e.hash || ''}>${short(e.hash) || '–'}</dd></div>
         <div><dt>Files</dt><dd>${(e.files || []).length} · ${kb(bytes)}</dd></div>
-        <div><dt>From</dt><dd>${(e.source || []).map(x => x.board).filter((x, i, a) => a.indexOf(x) === i).join(', ') || '–'}</dd></div>
+        <div><dt>From</dt><dd>${!fe ? '…' : (fe.source || []).map(x => x.board).filter((x, i, a) => a.indexOf(x) === i).join(', ') || '–'}</dd></div>
       </dl>
     </div>
     <div class="stabs" role="tablist" aria-label="About this entry" onKeyDown=${tabKey}>${TABS.map(([t, l]) => html`<button type="button" class="stab" role="tab" id=${'st-' + t} aria-selected=${tab === t} tabindex=${tab === t ? 0 : -1} onClick=${() => set({ tab: t })}>${l}</button>`)}</div>
-    ${tab === 'preview' ? html`<${PreviewPanel} e=${e} key=${e.id}/>`
-      : tab === 'needs' ? html`<${Needs} e=${e} key=${e.id}/>` : tab === 'take' ? html`<${Take} e=${e} key=${e.id}/>`
-      : tab === 'files' ? html`<${Files} e=${e} key=${e.id}/>` : html`<${Origin} e=${e}/>`}
+    ${full.err ? html`<p class="note">The header of <code>${F.main(e) || 'the main file'}</code> could not be read (${full.err}), so the description, the needs, the origin and the preview of this entry are missing here.</p>` : ''}
+    ${tab === 'take' ? html`<${Take} e=${e} key=${e.id}/>` : tab === 'files' ? html`<${Files} e=${e} key=${e.id}/>`
+      : !fe ? html`<div class="panel" data-part=${'entry.' + tab} data-part-key=${e.id} role="tabpanel" aria-busy="true"><div class="stage-load">Reading the header of ${F.main(e)}…</div></div>`
+      : tab === 'preview' ? html`<${PreviewPanel} e=${fe} key=${e.id}/>`
+      : tab === 'needs' ? html`<${Needs} e=${fe} key=${e.id}/>` : html`<${Origin} e=${fe}/>`}
   </section>`;
 }
 

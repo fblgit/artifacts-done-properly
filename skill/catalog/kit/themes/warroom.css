@@ -9,8 +9,10 @@
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
  * Fonts: https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle); --seam; --radius, --radius-lg, --edge-w, --outline; --text-size, --leading, --measure, --pad; --label-case, --label-caps, --head-case; --bg-image, --bg-size.
  *
  * @id        theme.warroom
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.1.1
@@ -18,11 +20,19 @@
  * @summary   Incident room: warm grey paper or near-black, square corners, uppercase condensed headings, one signal red spent on one thing at a time.
  * @tags      palette, tokens, colours, dark mode, warroom, incident, square, uppercase, red, condensed, high contrast
  * @requires  none
+ * @files     kit/themes/warroom.json
+ * @provides  none
  * @config    fonts | Barlow Condensed, Inter and JetBrains Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap
  * @db        none
+ * @source    Catalog harvest 2, 2026-10-25 | a skin of the hub design family | the hub's War room skin and an earlier board's incident-room skin
+ * @preview   {"render": "theme.warroom", "samples": ["kit/themes/warroom.json"], "uses": []}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
+ * @changed   The incident-room skin merged in.
+ * @changed   Seam deepened from the hazard yellow; review tone changed to plum (was green like success).
  */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {

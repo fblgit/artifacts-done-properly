@@ -61,7 +61,7 @@ function useThemeVars(file, dark) {
   const [st, setSt] = useState('');
   useEffect(() => {
     let off = false;
-    fetch(file).then(r => r.ok ? r.json() : null).then(j => { if (off || !j) return; setSt(Object.entries(Object.assign({}, j.light, dark ? j.dark : {})).map(([k, v]) => k + ':' + v).join(';')); }).catch(() => {});
+    window.CatalogFiles.json(file).then(j => { if (off || !j) return; setSt(Object.entries(Object.assign({}, j.light, dark ? j.dark : {})).map(([k, v]) => k + ':' + v).join(';')); }).catch(() => {});
     return () => { off = true; };
   }, [file, dark]);
   return st;

@@ -9,8 +9,10 @@
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
  * Fonts: https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle); --seam; --radius, --radius-lg, --edge-w, --outline; --text-size, --leading, --measure, --pad; --label-case, --label-caps, --head-case; --bg-image, --bg-size.
  *
  * @id        theme.classic
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.1.1
@@ -18,11 +20,18 @@
  * @summary   Violet on deep navy with a coral companion, Sora headings and soft hero glows; the hub's reference look.
  * @tags      palette, tokens, colours, dark mode, classic, violet, navy, coral, glow, sora, reference
  * @requires  none
+ * @files     kit/themes/classic.json
+ * @provides  none
  * @config    fonts | Sora, DM Sans and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  * @db        none
+ * @source    Catalog harvest 2, 2026-10-25 | a skin of the hub design family | the hub's Classic skin
+ * @preview   {"render": "theme.classic", "samples": ["kit/themes/classic.json"], "uses": []}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
+ * @changed   Status colours deepened to 4.5:1 as text in light; the soft tints are derived.
  */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {

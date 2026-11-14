@@ -13,6 +13,7 @@
  *   onSelect        (id | null) after a pick; picking the picked node again clears it
  *
  * @id        viz.topology
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -20,12 +21,17 @@
  * @summary   SVG node diagram in zones with links; picking a node fills a detail panel.
  * @tags      topology, network, nodes, diagram, svg, detail, zones, links
  * @requires  kit.tooltip
+ * @files     kit/viz/topology.css, kit/samples/topology.json
  * @provides  Kit.topology.mount
  * @config    Kit.topology.mount(box, opts) | width, height, minWidth, zones, nodes, links, notes, detail(node), selected, onSelect, empty, label, caption, host
  * @config    requires | kit.tooltip
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --ok --warn --danger --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --accent --accent-ink --ok --warn --danger --seam? --f-display?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network report, index.html | topoSVG with zones and links, the .tn nodes as buttons, showNode filling a detail panel
+ * @preview   {"render": "viz.topology", "samples": ["kit/samples/topology.json"]}
+ * @changed   Positions, names and text are config and the detail panel is a callback; the source hard-coded one network.
+ * @changed   Nodes get a state mark, a pick adds a dot as well as a fill, and the figure scrolls inside its frame instead of shrinking its text.
  */
 (function () {
 'use strict';

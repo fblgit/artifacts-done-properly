@@ -20,8 +20,10 @@
  *     comments  the comments capability handle, or a promise of it (default claude.use('comments')); without sendToClaude on it, no wake-up is sent
  *     classify  (base, live, incoming) => classes (default ADP.classify)      debounce  ms Apply waits for a second press to fold into one call (default 600)
  * The proposal's live_files {path: sha256} is the live listing the agent exported; Apply records it, so a record-only proposal (no files) still trues manifest.files.
+ * Methods of what Kit.inbox.mount returns: update(), destroy()
  *
  * @id        pattern.inbox
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -29,12 +31,16 @@
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
  * @requires  kit.tokens, kit.dom
+ * @files     kit/patterns/inbox.css, kit/samples/inbox.json
  * @provides  Kit.inbox.mount
  * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or promise (default claude.use('artifact')), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms; returns {update, destroy}
  * @config    ADP.classify(base, live, incoming) | contract 4 of docs/architecture.md, in adp.js
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono --radius?
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui? --f-mono? --radius?
  * @globals   none
- * @db        reads incoming; manifest/current; content; presence; requests / writes incoming; manifest/current; parts; content; changes / Writes only for editors and only on Apply, Decline, a pick or the classification of a new proposal; incoming sits under the root rule.
+ * @db        reads incoming; manifest/current; content; presence; requests / writes incoming; manifest/current; parts; content; changes / note Writes only for editors and only on Apply, Decline, a pick or the classification of a new proposal; incoming sits under the root rule.
+ * @source    ADP 0.3.0, 2026-10-27 | docs/assist.md contracts 3 and 5 | the incoming document, the card's reads, writes, Apply and conflict path
+ * @source    ADP 0.3.0, 2026-10-27 | the explainer's proposed-version card | one proposal applied by a person, generalised to the inbox
+ * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/inbox.json"]}
  */
 (function () {
 'use strict';

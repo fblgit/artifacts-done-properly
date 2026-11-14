@@ -23,6 +23,7 @@
  *   Kit.disclosure.bind(root, {printOpen}) wires the same bar behaviour to hand-written details.kit-dis markup and returns the same handle (no bar is added; use .kit-dis-bar yourself)
  *
  * @id        pattern.disclosure
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -30,12 +31,18 @@
  * @summary   Native details cards with a summary line (cadence or date) and an expand-all and collapse-all bar; task, letter and numbered-clause looks.
  * @tags      accordion, details, disclosure, expand all, collapse all, runbook, tasks, cadence, letter, clause, reader
  * @requires  none
+ * @files     kit/patterns/disclosure.css, kit/samples/disclosure.json
  * @provides  Kit.disclosure.render, Kit.disclosure.bind
  * @config    Kit.disclosure.render(box, opts) | items [{id, title, when, num, norm, body, steps, fields, open}], variant card | letter | clause, bar, label, printOpen, onToggle(id, open); returns {expandAll, collapseAll, openCount, update, destroy}
  * @config    --kit-topbar-h | optional: the reader bar sticks below it
- * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display
+ * @tokens    --bg? --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --kit-topbar-h? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | two runbooks' task cards with a cadence, a policy reader's expand-all bar and clause reasoning, and a letter archive's expand and collapse cards
+ * @preview   {"render": "pattern.disclosure", "samples": ["kit/samples/disclosure.json"]}
+ * @changed   One component for the five looks; the looks differ in css, not in behaviour.
+ * @changed   The bar reports how many cards are open, in a status line.
+ * @changed   The expand-before-print hook is kept; the print dialog itself is not available inside an artifact.
  */
 (function () {
 'use strict';

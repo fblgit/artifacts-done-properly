@@ -17,6 +17,7 @@
  *     onChange  ({tile, groups: {id: value | ""}, q}) after a change; q is the trimmed search text
  *
  * @id        pattern.count-filters
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -24,12 +25,17 @@
  * @summary   Tiles that show a count per status and filter the view when pressed, with chip groups and a search box in a strip that can stay under a sticky bar.
  * @tags      filter, tiles, counts, status, chips, search, sticky, dashboard, work board
  * @requires  none
+ * @files     kit/patterns/count-filters.css, kit/samples/count-filters.json
  * @provides  Kit.countFilters.mount
  * @config    Kit.countFilters.mount(root, opts) | tiles [{id, label, count, note, tone}], value, groups [{id, label, options [{value, label}]}], search {placeholder, label}, sticky, label, onChange
  * @config    --kit-topbar-h | optional, written by Kit.topbar: the strip sticks below it
- * @tokens    --bg --panel --sunk --ink --ink-2 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono
+ * @tokens    --bg? --panel --sunk --ink --ink-2 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono --kit-topbar-h? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | clickable count tiles and the sticky filter strip (node and repo chips, search) of a work-status board
+ * @preview   {"render": "pattern.count-filters", "samples": ["kit/samples/count-filters.json"]}
+ * @changed   The pressed tile carries a check mark as well as its outline, so state does not depend on colour.
+ * @changed   The tiles fill the width and wrap (three across at phone width) instead of a fixed six-column grid.
  */
 (function () {
 'use strict';

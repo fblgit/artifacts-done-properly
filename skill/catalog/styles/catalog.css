@@ -306,4 +306,12 @@ mark { background: var(--cat-accent-soft); color: inherit; border-radius: 2px; }
 .tk-shadow { background: var(--panel); }
 .tk-font { font-style: normal; width: 22px; flex: none; font-size: 14px; color: var(--ink); }
 .stage .tint-yellow { background: var(--st-yellow); } .stage .tint-blue { background: var(--st-blue); } .stage .tint-pink { background: var(--st-pink); } .stage .tint-green { background: var(--st-green); }
+/* the kit being unpacked on a first open (parts/files.js); at the top, the seed sheet of adp.js sits at the bottom */
+.kit-unpack { position: fixed; inset: 16px 16px auto 16px; z-index: 9999; max-width: 560px; box-sizing: border-box; margin: 0 auto; padding: 14px 18px; border-radius: 12px; background: var(--cat-sheet); color: var(--cat-ink); border: 1px solid var(--cat-rule); box-shadow: 0 12px 40px rgba(0, 0, 0, .18); font: 14px/1.45 var(--cat-f-body); }
+.kit-unpack h2 { margin: 0 0 4px; font: 700 16px var(--cat-f-display); }
+.kit-unpack p { margin: 0; color: var(--cat-ink-2); overflow-wrap: anywhere; }
+.kit-unpack-bar { height: 6px; border-radius: 3px; background: var(--cat-sunk); overflow: hidden; margin: 10px 0 2px; }
+.kit-unpack-bar i { display: block; height: 100%; width: 0; background: var(--cat-accent); transition: width .2s; }
+.kit-unpack button { margin-top: 10px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--cat-rule); background: var(--cat-sheet); color: inherit; font: inherit; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .kit-unpack-bar i { transition: none; } }
 /* /part:page.style.catalog */

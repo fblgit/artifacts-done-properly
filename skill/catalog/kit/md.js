@@ -12,6 +12,7 @@
  * Use: const mdToHtml = Kit.md.create(config); html`<div class="md" dangerouslySetInnerHTML=${{ __html: mdToHtml(text) }}></div>`
  *
  * @id        kit.md
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -19,12 +20,16 @@
  * @summary   Markdown to sanitized HTML with marked and DOMPurify, a plain-text fallback, and styles for a .md container.
  * @tags      markdown, md, sanitize, dompurify, marked, rich text
  * @requires  none
+ * @files     kit/md.css, kit/samples/md.json
  * @provides  Kit.md.create
  * @config    Kit.md.create({forbidTags, forbidAttrs, gfm, externalLinks}) | all optional
  * @config    container | render into an element with class md
  * @tokens    --sunk --rule --ink-2
  * @globals   marked, dompurify
  * @db        none
+ * @source    Journey Whiteboard | app.js | mdToHtml
+ * @source    ADR Drafting Table | core.js | forbid lists and external links (mermaid fences not taken)
+ * @preview   {"render": "kit.md", "samples": ["kit/samples/md.json"]}
  */
 (function () {
 'use strict';

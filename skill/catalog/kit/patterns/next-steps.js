@@ -21,6 +21,7 @@
  * caps none. To keep the state across visits give onChange a writer (kit.save-status keeps it in the db doc or the browser).
  *
  * @id        pattern.next-steps
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -28,13 +29,21 @@
  * @summary   Checklist of next steps that builds a copyable prompt (or a command) from the picked ones; reorder, notes, own steps, collapsible strip.
  * @tags      next steps, checklist, prompt, builder, copy, reorder, notes, command, strip
  * @requires  kit.copy
+ * @files     kit/patterns/next-steps.css, kit/samples/next-steps.json
  * @provides  Kit.nextSteps.mount
  * @config    Kit.nextSteps.mount(root, {items, state, onChange, build, lead, allowAdd, collapsible, title, words}) | items [{id, title, sub, ref}]; state {done, picked, notes, order, extras}; onChange(state) after every change
  * @config    build(picked, ctx) | returns the text; the default builds the prompt, a command builder returns a command from ctx.items and the picks
  * @config    Kit.copy | the Copy button uses Kit.copy.text; without it the text is selected
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --accent-soft --ok --f-ui --f-mono
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui --f-mono --f-display? --seam?
  * @globals   none
- * @db        none
+ * @db        note None of its own. The board stores the state object that onChange hands it, for example in one doc (board/state) through kit.save-status, which keeps it in the db when the capability is there and in the browser when it is not.
+ * @source    Catalog harvest, 2026-10-25 | a session board's index.html | next-steps list with done and pick ticks, arrows, notes, own steps and the prompt box
+ * @source    Catalog harvest, 2026-10-25 | a proposal page's index.html | the collapsible next-steps strip with a pending count
+ * @source    Catalog harvest, 2026-10-25 | a share manifest's index.html | folder picks that build a copy command with an exclude per unpicked folder
+ * @preview   {"render": "pattern.next-steps", "samples": ["kit/samples/next-steps.json"]}
+ * @changed   The text is built by a function the board can replace, which covers the prompt and the command variants with one component.
+ * @changed   Done and Pick are labelled checkboxes and a finished step is struck through, so the state is not colour alone.
+ * @changed   Persistence moved out: the component reports its state and kit.save-status keeps it.
  */
 (function () {
 'use strict';

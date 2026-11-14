@@ -39,7 +39,7 @@ class Pins(Untested):
         self.assertEqual(out['pinned'], 3)
         self.assertEqual(out['vermap'], self.p('vm.json'))
         self.assertEqual(json.load(open(self.p('vm.json'))), {'index.html': 'v1', 'a.js': 'v1', 'kit/x.css': 'v2'})
-        self.assertIn('CAT_VERMAP=', out['next'])
+        self.assertEqual(set(out), {'pinned', 'vermap'})
 
     def test_default_output_is_vermap_json_next_to_the_first_batch(self):
         a = self.write_json('b/publish-1.json', {'p.js': 'h'})
@@ -116,6 +116,37 @@ class Kit(Untested):
 
     def test_saved_catalog_default_needs_one(self):
         self.assertIn('no saved catalog', self.fails('kit', 'list').stderr)
+
+
+class KitV2(Untested):
+    """A kit-catalog/2 index keeps about and optional in the header of the entry's main file, read beside the index."""
+    def setUp(self):
+        super().setUp()
+        from pathlib import Path
+        from test_index import make_catalog
+        make_catalog(Path(self.p('cat')))
+        self.assertEqual(self.run_adp('index', self.p('cat')).returncode, 0)
+        self.idx = self.p('cat', 'catalog.json')
+
+    def test_show_takes_about_from_the_header_or_says_why_not(self):
+        out = self.ok('kit', 'show', 'kit.box', self.idx)
+        self.assertEqual((out['about'], 'about_from' in out), ('What it is, in two lines.', False))
+        os.remove(self.p('cat', 'kit', 'box.js'))
+        out = self.ok('kit', 'show', 'kit.box', self.idx)
+        self.assertEqual((out['about'], out['about_from']), ('', 'not local'))
+
+    def test_describe_takes_optional_from_the_header(self):
+        self.assertEqual(self.ok('kit', 'describe', 'kit.box', self.idx)['optional'], ['Kit.y'])
+
+    def test_suggest_counts_about_and_warns_when_it_cannot(self):
+        r = self.run_adp('suggest', self.idx, '--for', 'lines')          # a word of the about only
+        self.assertEqual(([x['id'] for x in json.loads(r.stdout)], 'about not counted' in r.stderr), (['guide.note', 'kit.box', 'template.page'], False))
+        self.assertIn('about: lines', json.loads(r.stdout)[0]['why'])
+        os.remove(self.p('cat', 'kit', 'box.js'))
+        r = self.run_adp('suggest', self.idx, '--for', 'lines')
+        self.assertEqual([x['id'] for x in json.loads(r.stdout)], ['guide.note', 'template.page'])
+        self.assertIn('warning: about not counted for 1 entries', r.stderr)
+
 
 
 class Classify(Untested):

@@ -9,7 +9,7 @@ Thanks for helping. Participation is covered by the
     pip install pre-commit && pre-commit install
 
 This installs the commit and push hooks from `.pre-commit-config.yaml`: ruff,
-SKILL.md frontmatter validation, the catalog sha256 check and the catalog
+SKILL.md frontmatter validation, the catalog check and the catalog
 entry header check on commit, and gitleaks on push.
 
 ## Run the checks as CI does
@@ -20,6 +20,7 @@ CI (`.github/workflows/ci.yml`) runs these on Python 3.12:
     python3 -m unittest discover -s tests -v
     python3 tools/package.py --check
     python3 tools/check_catalog.py
+    python3 -I skill/scripts/adp.py index --check
     python3 tools/package.py
 
 Ruff uses `ruff.toml` (pyflakes errors only). CI also runs gitleaks over the
@@ -30,12 +31,14 @@ To try a page in a browser without claude.ai, run `python3 skill/scripts/adp.py 
 
 ## Editing the catalog
 
-If you edit a file under `skill/catalog/`, update its entry in
-`skill/catalog/catalog.json` in the same change: `version`, `changed`, and each
-touched file's `sha256` and `bytes`, then the entry `hash` (first 12 hex of the
-SHA-256 of the sorted `path=sha256` lines joined with newlines).
-`python3 tools/check_catalog.py` fails until they match. The header comment in
-the entry's main file follows `docs/catalog-header.md`.
+The header comment of an entry's main file is the only description of the
+entry (`docs/catalog-header.md`). `skill/catalog/catalog.json` is an index
+built from the headers: never edit it by hand. After a change under
+`skill/catalog/kit/`, follow "Add or change an entry" there: update the header
+(`@version`, `@changed`), run `python3 -I skill/scripts/adp.py index` and commit
+the files with the new `catalog.json`. `python3 tools/check_catalog.py` and
+`python3 tools/check_headers.py` fail on a stale index and on a header that
+breaks a rule.
 
 ## Pull requests
 

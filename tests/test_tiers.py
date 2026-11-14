@@ -31,9 +31,24 @@ class TierTests(Base):
         r = self.build('--tier', 'default')
         self.assertEqual((r.returncode, r.stderr.strip()), (1, "tier default: template 'default' not found"))
 
-    def test_full_refused(self):
+    def test_full_is_the_catalog(self):
+        from pathlib import Path
+        from test_index import make_catalog
+        make_catalog(Path(self.root) / 'catalog')          # the skill's own catalog folder: `new catalog DIR` and --tier full build from it
         r = self.build('--tier', 'full')
-        self.assertEqual((r.returncode, r.stderr.strip()), (1, 'tier full is not available yet'))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        pub, out = json.loads(r.stdout), os.path.join(self.tmp, 'out')
+        self.assertNotIn('url', pub)
+        self.assertEqual((pub['files']['seed.json'], [p for p in pub['files'] if p.startswith('kit/')]), ('seed.json', []))
+        self.assertEqual((os.path.isfile(os.path.join(out, 'catalog.json')), os.path.exists(os.path.join(out, 'kit'))), (True, False))
+
+    def test_templates_lists_the_catalog_and_index_checks_it(self):
+        from pathlib import Path
+        from test_index import make_catalog
+        self.fake('starter'); make_catalog(Path(self.root) / 'catalog')
+        self.assertIn('\ncatalog    The catalog itself', '\n' + self.run_adp('templates').stdout)
+        codes = [self.run_adp('index', *a).returncode for a in (('--check',), (), ('--check',))]       # no DIR: the skill's own catalog folder
+        self.assertEqual(codes, [1, 0, 0])                                                              # no catalog.json yet; written; equal
 
     def test_both_and_unknown_refused(self):
         for args in (('starter', '--tier', 'minimal'), ('--tier', 'huge')):

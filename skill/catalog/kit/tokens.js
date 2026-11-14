@@ -10,6 +10,7 @@
  * Which names a shared palette should use is an open question (the names here are the Journey Whiteboard's); nothing in the kit renames a board's tokens.
  *
  * @id        kit.tokens
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.1
@@ -17,11 +18,17 @@
  * @summary   The contract between kit css and a board’s palette: which custom properties each kit file reads, a check for missing ones, and the three theme blocks written from two maps.
  * @tags      tokens, theme, palette, custom properties, dark mode, contract, css
  * @requires  none
+ * @files     kit/samples/tokens.json
  * @provides  Kit.tokens.contract, Kit.tokens.check, Kit.tokens.themeCss, Kit.tokens.read, Kit.tokens.onTheme
  * @config    themeCss({light, dark}) | {"--name": "value"} maps
  * @config    check([part, …]) | the kit parts in use: chrome, claude-lane, canvas, md
+ * @tokens    none
  * @globals   none
  * @db        none
+ * @source    Journey Whiteboard | app.css | the :root, prefers-color-scheme and [data-theme] blocks
+ * @source    ADR Drafting Table | styles/tokens.css, canvas.js pal() | the second user
+ * @preview   {"render": "kit.tokens", "samples": ["kit/samples/tokens.json"]}
+ * @changed   0.1.1: the contract lists what the kit css now reads: claude-lane takes --ink and no longer --ink-3; canvas no longer reads --ink-3.
  */
 (function () {
 'use strict';

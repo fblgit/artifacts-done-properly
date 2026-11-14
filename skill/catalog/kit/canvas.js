@@ -18,23 +18,31 @@
  *           openRef(e)             hook: what opening a ref does
  * state   S.canvases, S.els, S.canvasId, S.tool, S.color, S.tint, S.sw, S.fill (defaults: Kit.canvas.slots(config)), S.modal, S.canWrite
  * Returns {CanvasView, Board, ensureCanvas, openCanvas, closeCanvas, sendToCanvas, undo, redo}.
+ * --kc is the colour of the top edge of a record card with class k (.el-ref.k in canvas.css); the board sets it on the card its renderRef returns.
  *
  * @id        kit.canvas
+ * @kind      component
  * @group     Board kit
  * @status    new
- * @version   0.1.1
- * @updated   2026-10-24
+ * @version   0.1.2
+ * @updated   2026-11-15
  * @summary   A free drawing surface: select, move, resize, marquee, pan and pinch zoom, pen, highlighter, eraser, shapes, arrows that attach, text, sticky notes, record cards, undo and redo.
  * @tags      canvas, whiteboard, drawing, pen, shapes, arrows, sticky notes, zoom, pan, undo, svg
  * @requires  kit.store, kit.chrome
+ * @files     kit/canvas.css, kit/samples/canvas.json
  * @provides  Kit.canvas.slots, Kit.canvas.create
  * @config    Kit.canvas.create({store, db, chrome, colors, tints, part, scopeSlot, words, applySnap, renderRef, openRef}) | colors need --c-<name>; tints need a .tint-<name> class in the board css
  * @config    applySnap(name, snap) | hook: apply a collection snapshot to state
  * @config    renderRef(e, ctx), openRef(e) | hooks for record cards; without them refs render nothing
  * @config    state slots | Kit.canvas.slots(config) gives canvases, els, canvasId, tool, color, tint, sw, fill
- * @tokens    --canvas --dot --panel --rule --rule-2 --sunk --accent --accent-soft --accent-ink --ink --ink-2 --shadow --sticky-ink --f-ui --f-hand --f-mono --f-display --c-<colour>
+ * @tokens    --canvas --dot --panel --rule --rule-2 --sunk --accent --accent-soft --accent-ink --ink --ink-2 --shadow --sticky-ink --f-ui --f-hand --f-mono --f-display --kc? --c-<colour>
  * @globals   htm-preact
  * @db        reads canvases; els / writes canvases {name, order, created, author}; els {canvasId, type, x, y, w, h, x2, y2, fromId, toId, pts, sw, hl, color, tint, fill, font, fs, text, refKind, refId, z, author, created}
+ * @source    Journey Whiteboard | app.js | canvas geometry, history, CanvasView, Board, Editor
+ * @preview   {"render": "kit.canvas", "samples": ["kit/samples/canvas.json"]}
+ * @changed   0.1.2: a record card whose board sets no --kc keeps its shadow and shows no coloured edge.
+ * @changed   0.1.1 (this catalog’s copy): the hint reads --ink-2 instead of --ink-3, 4.5:1 or more in both themes.
+ * @changed   0.1.1: the empty-board .onboard screen is styled in kit/canvas.css instead of the board’s css.
  */
 (function () {
 'use strict';

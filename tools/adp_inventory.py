@@ -23,7 +23,6 @@ The JSON (schema adp-inventory/1); paths are relative to the directory that hold
   entries{id}   every other catalog entry: kind (the first part of the id), files (the ones scanned),
                 declares    the @tokens tag of its main file: required, optional (a trailing ?), patterns (a <placeholder>); null without
                             the tag
-                needs_differ  only when catalog.json needs.tokens disagrees with the tag: header_only, needs_only
                 uses        {token: {n: reads (a var(), or getPropertyValue('--x')), bare: reads with no fallback, in_fallback: reads
                             inside another var()'s fallback, fallbacks: the distinct fallback texts, files: {path: n}}}
                 sets        {token: n} custom properties the entry assigns: a declaration, or setProperty('--x', …); removeProperty
@@ -75,8 +74,8 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)                                # python3 -I leaves the script's directory off the path
-import check_headers as ch  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), 'skill', 'scripts'))     # python3 -I leaves every directory off the path
+import adp_index  # noqa: E402
 
 DEFAULT_ROOT = os.path.join(os.path.dirname(HERE), 'skill')
 W = '\x00'                                              # the part of a string computed at run time; printed as *
@@ -637,23 +636,15 @@ def theme(base, css, data, ref):
 
 
 def declared(cat, e):
-    """(what the @tokens tag of the entry's main file declares, where catalog.json needs.tokens says otherwise); (None, None) without the tag."""
-    main = ch.main_files(e)
-    tags = ch.parse(ch.comment_of(open(os.path.join(cat, main), encoding='utf-8').read(), main) or '')[2] if main else []
-    v = next((v for n, v in tags if n == 'tokens'), None)
+    """What the @tokens tag of the entry's main file declares; None without the tag."""
+    main = e.get('main')
+    v = adp_index.parse_header(open(os.path.join(cat, main), encoding='utf-8').read(), main).get('tokens') if main else None
     if v is None:
-        return None, None
-    toks = [] if v == 'none' else ch.split(v, spaces=True)
+        return None
     d = {'required': [], 'optional': [], 'patterns': []}
-    for tok in toks:
+    for tok in v:
         d['patterns' if '<' in tok else 'optional' if tok.endswith('?') else 'required'].append(tok.rstrip('?'))
-    needs = set()                                       # needs.tokens is prose: "--a, --b-0..4 (optional)", "plus kit/vocab.css"
-    for s in e.get('needs', {}).get('tokens', []):
-        for m in re.finditer(r'(--[A-Za-z0-9_<>-]+?)(\d+)\.\.(\d+)|--[A-Za-z0-9_<>-]+', s):
-            names = [m.group(1) + str(n) for n in range(int(m.group(2)), int(m.group(3)) + 1)] if m.group(1) else [m.group(0)]
-            needs.update(n + ('?' if '(optional' in s else '') for n in names)
-    differ = {'header_only': sorted(set(toks) - needs), 'needs_only': sorted(needs - set(toks))}
-    return {k: sorted(x) for k, x in d.items()}, differ if differ['header_only'] or differ['needs_only'] else None
+    return {k: sorted(x) for k, x in d.items()}
 
 
 def inventory(root):
@@ -664,8 +655,8 @@ def inventory(root):
         return os.path.relpath(os.path.join(*p), base).replace(os.sep, '/')
 
     def paths(e, role=None):
-        return [rel(cat, f['path']) for f in e['files'] if role in (None, f.get('role'))]
-    entries = sorted(ch.load(cat)[0], key=lambda e: e['id'])
+        return [rel(cat, f['path']) for f in e['files'] if role in (None, f['role'])]
+    entries = sorted(json.load(open(os.path.join(cat, 'catalog.json'), encoding='utf-8'))['entries'], key=lambda e: e['id'])
     found = sorted(rel(d, f) for top in (cat, tpl) for d, _, fs in os.walk(top) for f in fs)
     themes = [e for e in entries if e['id'].startswith('theme.')]
     themed, listed = {p for e in themes for p in paths(e)}, {p for e in entries for p in paths(e)}
@@ -684,10 +675,8 @@ def inventory(root):
     for e in entries:
         if e in themes:
             continue
-        d, differ = declared(cat, e)
+        d = declared(cat, e)
         x = unit(paths(e), {'kind': e['id'].split('.')[0], 'declares': d})
-        if differ:
-            x['needs_differ'] = differ
         known = d['required'] + d['optional'] if d else []
         pats, built = [glob(p) for p in (d['patterns'] if d else [])], [glob(y['pattern']) for y in x['dynamic']]
         x['undeclared'] = sorted(k for k in x['uses'] if k not in known and k not in x['sets'] and not any(p.fullmatch(k) for p in pats))
@@ -700,7 +689,7 @@ def inventory(root):
     role, same = collections.defaultdict(set), {}
     for e in entries:
         for f in e['files']:
-            role[rel(cat, f['path'])].add(f.get('role') or 'file')
+            role[rel(cat, f['path'])].add(f['role'])
     for p in sorted(scanned):
         same.setdefault(open(os.path.join(base, p), 'rb').read(), p)
 

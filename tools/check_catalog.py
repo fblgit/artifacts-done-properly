@@ -1,77 +1,57 @@
 #!/usr/bin/env python3
-"""Verify skill/catalog/ against its own catalog.json (stdlib only).
+"""Verify skill/catalog/ and its generated index catalog.json (stdlib only).
 
-For every entry file: exists, size == bytes, sha256 == sha256.
-For every entry: hash == first 12 hex of sha256 over the sorted "path=sha256"
-lines joined with newlines.
-Every published path in the tree must be referenced by an entry or be one of
-the page's own files (index.html, catalog.json, content.js, adp.js,
-styles/catalog.css, parts/*).
+The header comment of an entry's main file is the only description of the entry; catalog.json
+(schema kit-catalog/2) is the index `adp.py index` builds from the headers. This check fails when:
+
+  - the committed index differs from what adp_index.build_index builds from the tree (adp_index.differences: the schema,
+    a key the build does not write, a value, a file's sha256 or bytes, an entry's hash or main; `built` is not compared);
+  - a header or the tree is wrong (adp_index.problems: a required tag, a @files path, a kit file no entry names);
+  - a file in the tree belongs to no entry and is not one of the page's own: catalog.json, and what adp_shell copies
+    (its SHELL_FILES and everything under its SHELL_DIRS);
+  - skill/assets/adp.js and the catalog's adp.js differ.
 
 Usage: check_catalog.py [catalog_dir]   (default: <repo>/skill/catalog)
-Exit 0 and one OK line, or exit 1 with a list of failures.
+Exit 0 and one OK line, or exit 1 with a list of failures. Every number printed is computed.
 """
-import hashlib
 import json
 import sys
 from pathlib import Path
 
-PAGE_FILES = {"index.html", "catalog.json", "content.js", "adp.js", "styles/catalog.css"}
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "skill" / "scripts"))      # python3 -I leaves every directory off the path
+import adp_index as ai  # noqa: E402
+from adp_shell import SHELL_DIRS, SHELL_FILES  # noqa: E402
 
-
-def sha256(p):
-    h = hashlib.sha256()
-    with open(p, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
+MAX_DIFFS = 40
 
 
 def main():
-    root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "skill" / "catalog"
+    root = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO / "skill" / "catalog"
     cat = json.loads((root / "catalog.json").read_text(encoding="utf-8"))
-    errors = []
-    referenced = set()
-    nfiles = 0
-    for e in cat["entries"]:
-        eid = e.get("id", "?")
-        lines = []
-        for f in e.get("files", []):
-            nfiles += 1
-            path = f["path"]
-            referenced.add(path)
-            p = root / path
-            if not p.is_file():
-                errors.append(f"{eid}: missing file {path}")
-                continue
-            size = p.stat().st_size
-            if size != f["bytes"]:
-                errors.append(f"{eid}: size {path}: file {size} != bytes {f['bytes']}")
-            digest = sha256(p)
-            if digest != f["sha256"]:
-                errors.append(f"{eid}: sha256 {path}: file {digest} != entry {f['sha256']}")
-            lines.append(f"{path}={f['sha256']}")
-        if "hash" in e:
-            want = hashlib.sha256("\n".join(sorted(lines)).encode("utf-8")).hexdigest()[:12]
-            if want != e["hash"]:
-                errors.append(f"{eid}: hash {e['hash']} != computed {want}")
-        else:
-            errors.append(f"{eid}: entry has no hash")
-    tree = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()}
-    for path in sorted(tree):
-        if path in referenced or path in PAGE_FILES or path.startswith("parts/"):
-            continue
-        errors.append(f"orphan: {path} is not referenced by any entry or page file")
+    built, errors = ai.build_index(str(root)), []
+    diffs = ai.differences(cat, built)
+    if diffs:
+        errors.append(f"index: catalog.json differs from what the headers build in {len(diffs)} place(s); run `adp.py index` and commit the result")
+        errors.extend("  " + d for d in diffs[:MAX_DIFFS])
+        if len(diffs) > MAX_DIFFS:
+            errors.append(f"  ... and {len(diffs) - MAX_DIFFS} more")
+    errors.extend(ai.problems(str(root)))
+    listed = {f["path"] for e in built["entries"] for f in e["files"]}
+    tree = sorted(p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file())
+    own = {"catalog.json", *SHELL_FILES}
+    errors.extend(f"orphan: {p} belongs to no entry and is not a page file" for p in tree
+                  if not (p in listed or p in own or p.split("/")[0] in SHELL_DIRS))
     skill_runtime = root.parent / "assets" / "adp.js"
     if root.name == "catalog" and skill_runtime.is_file() and (root / "adp.js").is_file() \
             and skill_runtime.read_bytes() != (root / "adp.js").read_bytes():
         errors.append("runtime: skill/assets/adp.js and skill/catalog/adp.js differ; the skill has one runtime")
     if errors:
-        print(f"FAIL: {len(errors)} problem(s)")
+        print(f"FAIL: {sum(1 for m in errors if not m.startswith('  '))} problem(s)")
         for m in errors:
             print("  " + m)
         return 1
-    print(f"OK: {len(cat['entries'])} entries, {nfiles} entry files, {len(tree)} files in tree, 0 orphans, all sizes, sha256 and hashes match")
+    print(f"OK: {len(built['entries'])} entries, {len(listed)} entry files, {len(tree)} files in tree, no orphan, the index equals the build")
     return 0
 
 

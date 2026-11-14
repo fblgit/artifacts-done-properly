@@ -25,8 +25,10 @@
  *     config    an object with all/get/set/reset/on (default window.ADP.config)      user      {canEdit, id} (default window.ADP.user)
  *     groups    ["edit", "board", ...] order and filter of group names (default: every group, in registry order)      labels  {group: "Heading"} (defaults for the core groups)
  *     onChange  (key, value, previous) after a save      download  (filename, text) => void, else an object-URL link is clicked      timeZone  for "Changed by" dates (default: the viewer's)
+ * Methods of what Kit.settings.mount returns: update(), destroy()
  *
  * @id        pattern.settings
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -34,13 +36,17 @@
  * @summary   The generic settings page of the config switches: one panel per group, one row per switch with the right control, the help, the layer that enforces it, who changed it and the default when it differs, saved at once with an Undo.
  * @tags      settings, config, switches, freeze, preferences, admin, registry, undo, export
  * @requires  kit.tokens, kit.dom
+ * @files     kit/patterns/settings.css, kit/samples/settings.json
  * @provides  Kit.settings.mount
  * @config    Kit.settings.mount(root, opts) | config {all, get, set, reset, on} (default window.ADP.config), user {canEdit} (default ADP.user), groups [names] to order or filter, labels {group: heading}, onChange(key, value, previous), download(filename, text), timeZone; returns {update, destroy}
  * @config    ADP.config.all() / get / set / reset / on('*') | read the registry and the values, save one switch, reset all, redraw on a change
  * @config    data-adp-edit / data-adp-unlock | every control carries data-adp-edit except edit.locked, edit.until and edit.reason, which carry data-adp-unlock
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --ok --danger --f-ui --f-mono --accent-soft? --warn? --seam? --f-display? --radius?
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --ok --danger --f-ui --f-mono --warn? --seam? --f-display? --radius? --shadow?
  * @globals   none
- * @db        reads config/current / writes config/current / Only through ADP.config; the component never touches the db. A write also appends changes/d-<ms> in the runtime, unless log.data-changes is off.
+ * @db        reads config/current / writes config/current / note Only through ADP.config; the component never touches the db. A write also appends changes/d-<ms> in the runtime, unless log.data-changes is off.
+ * @source    Catalog batch 14, 2026-10-26 | docs/config.md and the ADP.config registry in adp.js | the all() shape, the two enforcement layers, the freeze and the unlock exception
+ * @source    Catalog batch 14, 2026-10-26 | the board template's switch rows | label, help, who changed it and when
+ * @preview   {"render": "pattern.settings", "samples": ["kit/samples/settings.json"]}
  */
 (function () {
 'use strict';

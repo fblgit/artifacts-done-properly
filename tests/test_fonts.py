@@ -176,8 +176,8 @@ class ThemeFonts(unittest.TestCase):
         root = os.path.join(ROOT, 'catalog')
         need = {}
         for path, e in check_headers.load(root)[1].items():
-            tags = dict(check_headers.parse(check_headers.comment_of(open(os.path.join(root, path), encoding='utf-8').read(), path) or '')[2])
-            for tok in check_headers.split(tags.get('tokens', ''), spaces=True):
+            head = check_headers.adp_index.parse_header(open(os.path.join(root, path), encoding='utf-8').read(), path)
+            for tok in head.get('tokens', []):
                 if tok.startswith('--') and not tok.endswith('?') and '<' not in tok:
                     need.setdefault(tok, e['id'])
         self.assertGreater(len(need), 20)

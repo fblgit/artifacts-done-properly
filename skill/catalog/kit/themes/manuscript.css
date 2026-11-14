@@ -9,8 +9,10 @@
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
  * Fonts: https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle); --seam; --radius, --radius-lg, --edge-w, --outline; --text-size, --leading, --measure, --pad; --label-case, --label-caps, --head-case; --bg-image, --bg-size.
  *
  * @id        theme.manuscript
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.1.1
@@ -18,11 +20,19 @@
  * @summary   A controlled document: a sheet of paper on a desk, blue ink for the reader and red pen for what is open, one serif voice with small-caps labels.
  * @tags      palette, tokens, colours, dark mode, manuscript, document, serif, small caps, paper, ink, specification
  * @requires  none
+ * @files     kit/themes/manuscript.json
+ * @provides  none
  * @config    fonts | Source Serif 4 and Courier Prime from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400;1,8..60,600&family=Courier+Prime:wght@400;700&display=swap
  * @db        none
+ * @source    Catalog harvest 2, 2026-10-25 | a skin of the hub design family | the hub's Manuscript skin and an earlier board's spec-document skin
+ * @preview   {"render": "theme.manuscript", "samples": ["kit/themes/manuscript.json"], "uses": []}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
+ * @changed   The spec-document skin merged in.
+ * @changed   Review tone changed to plum (was blue like info); faint tone nudged to 4.5:1.
  */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {

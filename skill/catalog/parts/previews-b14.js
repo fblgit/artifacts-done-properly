@@ -88,14 +88,25 @@ P['viz.version-compare'] = ({ samples }) => {
 };
 
 // ---------------------------------------------------------------- pattern.playground
-P['pattern.playground'] = ({ samples }) => {
+P['pattern.playground'] = ({ samples, entries }) => {
   const d = first(samples, 'playground');
-  const [cat, setCat] = useState(window.CatalogData && window.CatalogData.entries || null);
-  const [err, setErr] = useState('');
-  useEffect(() => { if (cat) return; fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))).then(j => setCat(j.entries), e => setErr(e.message)); }, []);
-  const ref = useMount(el => cat ? K().playground.mount(el, { catalog: cat, base: d.base, themes: d.themes, entry: d.entry }) : null, [!!cat]);
+  const [cat, setCat] = useState(null);
+  // the index no longer carries an entry's preview block (its samples and what it uses): each comes from the header of the entry's main file
+  useEffect(() => {
+    let off = false; const F = window.CatalogFiles;
+    Promise.all(entries.map(e => F.main(e) ? F.header(F.main(e)).then(h => Object.assign({}, e, { preview: h.preview || null }), () => e) : e))
+      .then(list => { if (!off) setCat(list); });        // an entry whose header cannot be read stays as the index has it
+    return () => { off = true; };
+  }, []);
+  // the part's files come through the catalog's loader (CatalogFiles); a full url, such as a theme's fonts, is linked as it is
+  const links = useRef({});
+  const load = (u, kind) => {
+    if (/^(https?:)?\/\//.test(u)) return links.current[u] = links.current[u] || new Promise((res, rej) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = u; l.onload = () => res(); l.onerror = () => rej(new Error('could not load ' + u)); document.head.append(l); });
+    return kind === 'json' ? window.CatalogFiles.json(u) : window.CatalogFiles.load(u);
+  };
+  const ref = useMount(el => cat ? K().playground.mount(el, { catalog: cat, base: d.base, themes: d.themes, entry: d.entry, load }) : null, [!!cat]);
   return html`<div class="pv14-frame">
-    ${err ? html`<p class="pv14-log">The catalog could not be read (${err}).</p>` : null}
+    ${!cat ? html`<p class="pv14-log">Reading what each entry loads first.</p>` : null}
     <div class="pv14-mount" ref=${ref}></div>
     <${Note}>The whole catalog is the picker. Theme, mode and width change the inner stage only; the sample is yours to edit, and Apply re-renders it.<//>
   </div>`;

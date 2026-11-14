@@ -24,6 +24,7 @@
  * caps none. A probe that reports to Claude writes onDone(results) to the board's db (a "runs" collection, one doc per run); that write is the board's.
  *
  * @id        pattern.sandbox
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -31,13 +32,21 @@
  * @summary   A text box that runs detectors live and lists hits; a probe table that runs async checks with timeouts and timings.
  * @tags      sandbox, detector, test, probe, table, timeout, entropy, live, check
  * @requires  none
+ * @files     kit/patterns/sandbox.css, kit/samples/sandbox.json
  * @provides  Kit.sandbox.detect, Kit.sandbox.probe, Kit.sandbox.regexDetector, Kit.sandbox.entropy
  * @config    Kit.sandbox.detect(root, {detectors, examples, text, label, note, maxMatch, onRun}) | detectors [{id, label, test(text) -> null | {match, note}}]
  * @config    Kit.sandbox.probe(root, {probes, timeout, autorun, onDone}) | probes [{id, what, target, run(target) -> Promise<string>}]; onDone(results) with {id: {status, detail, ms}}
  * @config    Kit.sandbox.regexDetector({id, label, pattern, flags, group, minEntropy, needDigit}) | makes a detector from a pattern string
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --danger --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --danger --f-ui --f-mono --seam?
  * @globals   none
- * @db        none
+ * @db        note None of its own. A probe page that reports to Claude writes onDone(results) to its own db collection (for example runs), which needs the db capability.
+ * @source    Catalog harvest, 2026-10-25 | a share-readiness sheet's index.html | the live detector box: paste a line, see which rules fire, with entropy for the generic key rule
+ * @source    Catalog harvest, 2026-10-25 | a network probe page's index.html | the probe table: parallel tests, a timeout, results with detail
+ * @preview   {"render": "pattern.sandbox", "samples": ["kit/samples/sandbox.json"]}
+ * @changed   Kept after review: two sources of the same shape (named checks, a state, a detail), so one component serves both.
+ * @changed   Detectors are passed in as data or functions; none of the source's rules or sample values are carried.
+ * @changed   The probe table adds the time each check took, and a hit is shown with a filled square and the word Found, not colour alone.
+ * @changed   The plan listed viz.core as required; nothing here calls it, so requires is empty.
  */
 (function () {
 'use strict';

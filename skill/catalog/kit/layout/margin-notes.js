@@ -15,6 +15,7 @@
  * Made for the Manuscript theme (small caps labels, --measure, red pen for what is open) and fine under any other: it reads --label-caps, --label-case, --measure, --radius and --seam when the theme has them.
  *
  * @id        layout.margin-notes
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -22,12 +23,17 @@
  * @summary   Numbered clauses with an aside in the margin for state, owner, answer and acknowledgement; history as footnotes.
  * @tags      clause, margin, aside, footnote, numbered, document, spec, history, change bar, manuscript
  * @requires  kit.tokens, kit.vocab
+ * @files     kit/layout/margin-notes.css, kit/samples/margin-notes.json
  * @provides  Kit.marginNotes.mount
  * @config    Kit.marginNotes.mount(box, {sections, label, stateEnum, words, bar}) | sections [{id, title, intro, clauses: [{id, title, text, state, owner, answer: {label, text, at}, ack: {by, at}, history: [{at, text}]}]}]; returns {update(opts), destroy()}
  * @config    theme | optional tokens from theme.manuscript: --label-caps, --label-case, --measure, --seam; each has a fallback
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --f-ui --f-display --f-mono --seam? --measure? --label-caps?
+ * @tokens    --ink --ink-2 --rule --rule-2 --accent --f-ui --f-display? --f-mono --seam? --measure? --label-caps? --label-case?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's manuscript skin | numbered clauses, the margin aside for state, owner, answer and acknowledgement, history as footnotes, change bars for what waits on someone
+ * @preview   {"render": "layout.margin-notes", "samples": ["kit/samples/margin-notes.json"], "uses": ["kit.vocab"]}
+ * @changed   Taken out of one skin: the clause is plain data, and the state words can be replaced (Settled, Awaiting you) without touching the vocabulary.
+ * @changed   The margin and column answer their own width with a container query, so it works in a narrow pane as well as a page.
  */
 (function () {
 'use strict';

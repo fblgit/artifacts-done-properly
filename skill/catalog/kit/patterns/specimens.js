@@ -24,6 +24,7 @@
  * The sheet reads --s-bg --s-panel --s-ink --s-ink-2 --s-line --s-radius from the active skin and falls back to the page's --panel --sunk --ink --ink-2 --rule.
  *
  * @id        pattern.specimens
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.1
@@ -31,12 +32,18 @@
  * @summary   Every state of a component side by side, with loading, empty and missing cells, and a switch that repaints the sheet in another skin.
  * @tags      specimens, states, hover, focus, skins, loading, empty, review, component sheet
  * @requires  none
+ * @files     kit/patterns/specimens.css, kit/samples/specimens.json
  * @provides  Kit.specimens.mount
  * @config    Kit.specimens.mount(host, opts) | title, skins [{id, label, vars}], skin, groups [{title, layout rows|grid, cols, items [{label, caption, state, render | html}]}], replay, label, onSkin
  * @config    states | the component styles [data-state="hover"] and "focus" as well as :hover and :focus-visible
- * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display --seam? --s-bg? --s-panel? --s-ink? --s-ink-2? --s-line? --s-radius?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --f-display --accent --seam? --s-bg? --s-panel? --s-ink? --s-ink-2? --s-line? --s-radius?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, app.js and app.css | the states specimen sheet (row, pad and toast states, loading, empty and missing cells) and the two-skin direction switch
+ * @preview   {"render": "pattern.specimens", "samples": ["kit/samples/specimens.json"]}
+ * @changed   Skins are data (custom properties on the sheet), not two stylesheets, so a board can add a third.
+ * @changed   Does not name any rows, pads or tracks: the specimens are whatever the board renders.
+ * @changed   The six --s-* skin properties are marked optional in @tokens: each falls back to a page token, as the stylesheet always did.
  */
 (function () {
 'use strict';

@@ -14,6 +14,7 @@
  * state   S.canWrite, S.conn, S.me, S.connMsg are written by Kit.db.connect; for each collection the board keeps a slot S[name] with the same name (localSet/localPatch use it)
  *
  * @id        kit.store
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -21,12 +22,17 @@
  * @summary   Board state in one object with a subscribe hook, and a queued write layer over the db capability: put, update, delete, optimistic local patches, retries, the connect sequence.
  * @tags      state, store, db, data layer, writes, optimistic, connect, capabilities, localstorage, util
  * @requires  none
+ * @files     kit/samples/store.json
  * @provides  Kit.util, Kit.store.create, Kit.db.create
  * @config    Kit.store.create({lsPrefix, state}) | lsPrefix names the localStorage keys; state is the board’s initial state object
  * @config    Kit.db.create({store, toast, pathTemplate, scopeSlot, words, caps}) | pathTemplate "s/{scope}/{name}" says where a collection lives; caps are the capabilities besides db and user
  * @config    state slots | S.canWrite, S.conn, S.me, S.connMsg (written by connect); one slot S[name] per collection the board keeps
+ * @tokens    none
  * @globals   htm-preact
- * @db        none
+ * @db        note Reads and writes whatever collections the board names, at pathTemplate; it has none of its own.
+ * @source    Journey Whiteboard | app.js | store, data layer, utils
+ * @source    ADR Drafting Table | core.js, data.js | the same shapes with another path
+ * @preview   {"render": "kit.store", "samples": ["kit/samples/store.json"]}
  */
 (function () {
 'use strict';

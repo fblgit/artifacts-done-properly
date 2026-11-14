@@ -10,6 +10,7 @@
  *   tone    a pen (blue amber violet green red) or a meaning (ok warn danger accent); default blue
  *
  * @id        viz.sparkline
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -17,14 +18,20 @@
  * @summary   Line and bar sparklines that state their range, and a waveform slider with marked windows.
  * @tags      sparkline, waveform, trend, line, bars, seek, audio, marks, inline
  * @requires  kit.tooltip
+ * @files     kit/viz/sparkline.css, kit/samples/sparkline.json
  * @provides  Kit.sparkline.line, Kit.sparkline.bars, Kit.sparkline.wave
  * @config    Kit.sparkline.line(box, opts) | values, labels, unit, decimals, height, area, tone, caption, label, host
  * @config    Kit.sparkline.bars(box, opts) | values, labels, unit, decimals, height, tone, highlight, caption, label, host
  * @config    Kit.sparkline.wave(box, opts) | values 0 to 1, marks [{from, to, label, tone, note}], progress 0 to 1, height, onSeek(p), caption, label, host
  * @config    requires | kit.tooltip
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --seam?
+ * @tokens    --panel --ink --ink-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a secret-scan report, index.html | the entropy sparkline under a character sweep
+ * @source    Catalog harvest, 2026-10-25 | a music-library page, parts/base.js | the waveform with window marks and a played part
+ * @preview   {"render": "viz.sparkline", "samples": ["kit/samples/sparkline.json"]}
+ * @changed   The sweep animation is dropped; the line states its range in words; the waveform is a real slider with a keyboard.
+ * @changed   Marked windows are hatched and labelled, not only coloured.
  */
 (function () {
 'use strict';

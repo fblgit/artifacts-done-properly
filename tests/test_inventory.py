@@ -35,7 +35,7 @@ BOX_JS = r'''/**
  * Reads var(--js-header) only as prose.
  *
  * @id kit.box
- * @tokens --bg, --ink, --seam?, --c-<name>
+ * @tokens --bg --ink --seam? --c-<name>
  */
 // a line comment with var(--line-comment) and a quote ' that never closes
 const SAFE = /^[\d "#%(),.;A-Za-z]+$/, Q = /["\\]/g;
@@ -56,7 +56,7 @@ Page
 A page shell; var(--in-comment) is prose.
 
 @id template.page
-@tokens --bg, --never, --gone?
+@tokens --bg --never --gone?
 -->
 <title>{{title}}</title>
 <style>body{margin:0;background:var(--bg);font-family:Georgia, serif;text-transform:uppercase}</style>
@@ -78,13 +78,11 @@ ALT = {"light": {"--paper": "#fafafa", "--pen": "#222", "--bg": "#FAFAFA",
        "dark": {"--paper": "#111", "--pen": "#ddd", "--bg": "#111", "--ink": "#ddd"}, "scale": {"--fs-1": "12px"}}
 SHARED = {"path": "kit/samples/shared.json", "role": "sample"}          # one sample, listed by three entries
 ENTRIES = [
-    {"id": "theme.default", "files": [{"path": "kit/themes/default.css", "role": "style"}, {"path": "kit/themes/default.json", "role": "data"}]},
-    {"id": "theme.alt", "files": [{"path": "kit/themes/alt.css", "role": "style"}, {"path": "kit/themes/alt.json", "role": "data"}]},
-    {"id": "kit.box", "files": [{"path": "kit/box.js", "role": "script"}, {"path": "kit/box.css", "role": "style"}, SHARED],
-     "needs": {"tokens": ["--bg, --ink, --c-<name> plus kit/vocab.css", "--seam (optional)"]}},
-    {"id": "kit.plain", "files": [{"path": "kit/plain.css", "role": "style"}, SHARED]},
-    {"id": "template.page", "files": [{"path": "kit/templates/page.html.txt", "role": "template"}, SHARED],
-     "needs": {"tokens": ["--bg, --never", "--extra-0..2 (optional)"]}},
+    {"id": "theme.default", "main": "kit/themes/default.css", "files": [{"path": "kit/themes/default.css", "role": "style"}, {"path": "kit/themes/default.json", "role": "data"}]},
+    {"id": "theme.alt", "main": "kit/themes/alt.css", "files": [{"path": "kit/themes/alt.css", "role": "style"}, {"path": "kit/themes/alt.json", "role": "data"}]},
+    {"id": "kit.box", "main": "kit/box.js", "files": [{"path": "kit/box.js", "role": "script"}, {"path": "kit/box.css", "role": "style"}, SHARED]},
+    {"id": "kit.plain", "main": "kit/plain.css", "files": [{"path": "kit/plain.css", "role": "style"}, SHARED]},
+    {"id": "template.page", "main": "kit/templates/page.html.txt", "files": [{"path": "kit/templates/page.html.txt", "role": "template"}, SHARED]},
 ]
 FILES = {
     "catalog/catalog.json": json.dumps({"entries": ENTRIES}),
@@ -160,11 +158,9 @@ class SyntheticTests(unittest.TestCase):
 
     def test_declared_against_read(self):
         self.assertEqual(self.box["declares"], {"required": ["--bg", "--ink"], "optional": ["--seam"], "patterns": ["--c-<name>"]})
-        self.assertNotIn("needs_differ", self.box)
         self.assertEqual(self.box["undeclared"], ["--accent", "--bg-image", "--bg-size", "--edge-w", "--f-display", "--f-ui", "--focus", "--gap",
                                                   "--label-case", "--leading", "--speck-invert", "--text-size"])       # --local: the entry sets it
         self.assertEqual(self.page["declares"], {"required": ["--bg", "--never"], "optional": ["--gone"], "patterns": []})
-        self.assertEqual(self.page["needs_differ"], {"header_only": ["--gone?"], "needs_only": ["--extra-0?", "--extra-1?", "--extra-2?"]})
         self.assertEqual(self.page["undeclared"], ["--attr", "--in-js", "--ink", "--line", "--radius"])
         self.assertEqual(self.page["unused"], ["--gone", "--never"])
         self.assertIsNone(self.out["entries"]["kit.plain"]["declares"])
@@ -214,10 +210,9 @@ class SyntheticTests(unittest.TestCase):
             "template.page": ["skill/catalog/kit/templates/page.html.txt"],
             "catalog.page": ["skill/catalog/index.html", "skill/catalog/parts/app.js", "skill/catalog/styles/page.css"],
             "base.starter": ["skill/templates/starter/index.html.txt", "skill/templates/starter/styles/page.css.txt"]})
-        names = ["--bg", "--extra-0", "--ink", "--never", "--seam"]              # what catalog.json's needs hold; --c-<name> is no name
         self.assertEqual(self.out["coverage"], {
             "files": sum(not p.startswith("assets/") for p in FILES), "scanned": sum(len(v) for v in files.values()), "theme": 4,
-            "unread": [{"file": "skill/catalog/catalog.json", "why": "index", "names": names},
+            "unread": [{"file": "skill/catalog/catalog.json", "why": "index", "names": []},
                        {"file": "skill/catalog/kit/guides/note.md", "why": "unlisted", "names": ["--in-markdown"]},
                        {"file": "skill/catalog/kit/samples/shared.json", "why": "sample", "names": ["--sample-token"]}],
             "outside": [{"file": "skill/assets/app.js", "copy_of": "skill/catalog/parts/app.js", "names": ["--bg", "--stripe"]}]})

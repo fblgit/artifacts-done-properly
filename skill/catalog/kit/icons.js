@@ -18,6 +18,7 @@
  * window.htmPreact is needed for html() only; kit/chrome.js for the get() fallback only.
  *
  * @id        kit.icons
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -25,11 +26,17 @@
  * @summary   An inline SVG icon set for everyday glyphs, as a string, an element or a vnode, in line, fill and two-tone variants.
  * @tags      icons, svg, glyphs, two-tone, currentcolor, upgrade
  * @requires  kit.chrome
+ * @files     none
  * @provides  Kit.iconset.svg, Kit.iconset.el, Kit.iconset.get, Kit.iconset.html, Kit.iconset.names, Kit.iconset.register
  * @config    Kit.iconset.svg(name, {variant, size, label, stroke, cls}) | variant line | fill | duo; size px; label makes it an image for assistive tech
  * @config    extends | kit.chrome: the new map sits in Kit.iconset; Kit.icons is not touched
+ * @tokens    none
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, parts/base.js | the inline icon map and its line, fill and two-tone helpers
+ * @preview   {"render": "kit.icons", "samples": [], "uses": ["kit.chrome"]}
+ * @changed   Upgrade of kit.chrome by a new file: chrome.js is unchanged.
+ * @changed   Names are spelled out (download, keyboard, close, chevron, volume, external); the source's video-site mark is not carried.
  */
 (function () {
 'use strict';

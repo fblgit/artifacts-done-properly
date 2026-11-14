@@ -23,6 +23,7 @@
  *   legend(box) writes the state vocabulary into box as a row of sample cells.
  *
  * @id        pattern.expand-card
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -30,11 +31,17 @@
  * @summary   A workstream card with a status matrix of symbol-and-word cells and an expanding body; remembers what is open.
  * @tags      card, status, matrix, workstream, expand, details, legend, highlight, remember
  * @requires  none
+ * @files     kit/patterns/expand-card.css, kit/samples/expand-card.json
  * @provides  Kit.expandCard.mount, Kit.expandCard.states
  * @config    Kit.expandCard.mount(box, opts) | cards [{id, no, title, outcome, cells {dimKey: {state, note}}, pills, sections}], dims [{key, label}], states, remember (localStorage key), open {id: true}, onToggle(id, open, openMap), empty; returns {highlight, filter, update, openIds, legend, destroy}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --ok --warn --danger --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a work-status board's expandable workstream cards (renderCards, openCards) and its C/P/A/V status matrix cells
+ * @preview   {"render": "pattern.expand-card", "samples": ["kit/samples/expand-card.json"]}
+ * @changed   Every status cell has a symbol and a word; the source separated the states by colour and border style.
+ * @changed   The dimensions are data (dims), not the fixed four of the source.
+ * @changed   The open set is optional and survives a blocked localStorage.
  */
 (function () {
 'use strict';

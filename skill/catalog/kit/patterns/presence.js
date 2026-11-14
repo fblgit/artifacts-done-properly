@@ -17,8 +17,10 @@
  *     compact       true: the line only, the nudge behind a button        canPing  false hides Ping (default true)
  *     ask           true says that Ask now still works without a session    queued  false drops the line that requests wait in the queue (with an engine: shown only while sending is available)   now  ISO or Date (default the clock)
  *     words         {watching, busy, away, ping, pinging, pong, timeout, native, nudgeTitle, nudge, queued, askStill, copy, copied, how}
+ * Methods of what Kit.presence.mount returns: update(presence), ping()
  *
  * @id        pattern.presence
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.1
@@ -26,11 +28,18 @@
  * @summary   Whether a Claude Code session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.
  * @tags      presence, session, claude code, ping, nudge, watching, online, assist
  * @requires  kit.tokens, kit.vocab, kit.dom
+ * @files     kit/patterns/presence.css, kit/samples/presence.json
  * @provides  Kit.presence.mount
  * @config    Kit.presence.mount(box, opts) | engine (live) or presence {watching, busy, sessions [{session, at, doing}]} and onPing() -> 'pong' | 'timeout'; artifactUrl, compact, canPing, ask, queued, now, words; returns {update, ping, destroy}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --warn --f-ui --f-mono --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink? --warn --f-ui --f-mono --seam?
  * @globals   none
- * @db        none
+ * @db        note none directly; with an engine, the engine reads presence/<session> and sends the ping request
+ * @source    Catalog batch 16, 2026-10-26 | a drafting board's session line, Ping button and panel | watching within five minutes, busy with what, the ping states and its 90 s timeout
+ * @source    Catalog batch 16, 2026-10-26 | the same board's nudge | the copyable watch the artifact line
+ * @preview   {"render": "pattern.presence", "samples": ["kit/samples/presence.json"]}
+ * @changed   One view with a compact form for a panel header.
+ * @changed   The nudge says requests queue only when they can; the source always said so.
+ * @changed   The line says a session is woken when you send a request, when the platform reports a watching session and no presence doc is fresh.
  */
 (function () {
 'use strict';

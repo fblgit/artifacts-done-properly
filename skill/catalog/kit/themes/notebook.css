@@ -9,8 +9,10 @@
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
  * Fonts: https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle); --seam; --radius, --radius-lg, --edge-w, --outline; --text-size, --leading, --measure, --pad; --label-case, --label-caps, --head-case; --bg-image, --bg-size.
  *
  * @id        theme.notebook
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.1.1
@@ -18,11 +20,19 @@
  * @summary   A cream paper notebook on a dotted desk: pastel stickers for states, rounded Fredoka, a hand-lettered Caveat, warm charcoal at night.
  * @tags      palette, tokens, colours, dark mode, notebook, stickers, pastel, hand-lettered, cream, friendly, dots
  * @requires  none
+ * @files     kit/themes/notebook.json
+ * @provides  none
  * @config    fonts | Fredoka, Nunito, Caveat and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  * @db        none
+ * @source    Catalog harvest 2, 2026-10-25 | a skin of the hub design family | the hub's Notebook skin and an earlier board's notebook skin
+ * @preview   {"render": "theme.notebook", "samples": ["kit/themes/notebook.json"], "uses": []}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
+ * @changed   The notebook skin merged in.
+ * @changed   Status text tones deepened to 4.5:1 on the pastel stickers; --rule softened from the ink outline, which moved to --outline.
  */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {

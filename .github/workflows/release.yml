@@ -20,6 +20,7 @@ jobs:
           python3 -m unittest discover -s tests -v
           python3 tools/package.py --check
           python3 tools/check_catalog.py
+          python3 -I skill/scripts/adp.py index --check
       - name: Build bundle
         run: python3 tools/package.py
       - name: Verify tag matches skill version

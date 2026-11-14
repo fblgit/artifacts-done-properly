@@ -12,8 +12,10 @@
  *   words {covers, none, uncovered, several} column and footer texts
  *
  * The board reads and writes the link field (the Journey Whiteboard keeps it as items/<id>.problems).
+ * Tokens: no file of this entry reads a custom property. Its rules are the "matrix" section of kit/viz/viz.css (entry viz.core, which it requires); they read --accent --danger --f-display --f-mono --f-ui --ink --ink-2 --ink-3 --ok --panel --rule --rule-2 --sunk; and with a fallback --kv-c.
  *
  * @id        viz.matrix
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -21,6 +23,7 @@
  * @summary   Rows against columns with a toggle per cell: which moves solve which problems, which options meet which drivers.
  * @tags      matrix, coverage, grid, table, links, cross, heatmap
  * @requires  viz.core
+ * @files     kit/samples/viz-matrix.json
  * @provides  Kit.viz.Matrix
  * @config    rows | [{id, code, label, tone}]
  * @config    cols | [{id, code, label}]
@@ -30,8 +33,15 @@
  * @config    canEdit | true lets cells toggle
  * @config    sort | coverage | given
  * @config    words | {covers, none, uncovered, several}
+ * @tokens    none
  * @globals   htm-preact
- * @db        none
+ * @db        note The board reads and writes its link field (Journey Whiteboard: items/<id>.problems).
+ * @source    Journey Whiteboard | app.js | Coverage
+ * @preview   {"render": "viz.matrix", "samples": ["kit/samples/viz-matrix.json"]}
+ * @changed   Rows, columns and the link field come from config instead of the problem and solution kinds.
+ * @changed   Row and column light up together on hover and focus; arrow keys move between cells (one tab stop for the grid).
+ * @changed   Columns without a link are red in the header and the footer, and the header line counts them.
+ * @changed   Each cell has a spoken label: S1 covers P3, and the problem's title.
  */
 (function () {
 'use strict';

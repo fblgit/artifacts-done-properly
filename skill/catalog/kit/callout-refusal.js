@@ -12,8 +12,11 @@
  *     message  the system's own sentence          label  the kicker word (default "Refused")        none  the word for an empty allowed list (default "Nothing is allowed right now")
  *
  * Plain DOM; every text is set with textContent.
+ * Also provides (not a global): the class .kit-refusal, on the aside beside .kit-callout.
+ * The tone colour is --tone, which kit/callout.css (kit.callout, loaded first) sets on .kit-callout[data-tone]; callout-refusal.css reads --tone and none of --accent, --warn or --danger itself.
  *
  * @id        kit.callout-refusal
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -21,12 +24,18 @@
  * @summary   An upgrade of kit.callout: an error that names the code, the field refused, what is allowed now and the system's own message.
  * @tags      refusal, error, callout, allowed, validation, denied, alert
  * @requires  kit.callout
+ * @files     kit/callout-refusal.css, kit/samples/callout-refusal.json
  * @provides  Kit.refusal.make
+ * @extends   kit.callout
  * @config    Kit.refusal.make(opts) | code, tone warn | danger | pending, field, allowed [string], message, label, none; returns the aside element
  * @config    markup | aside.kit-callout.kit-refusal[data-tone] > p.kit-callout-k (b.kit-refusal-code, code.kit-refusal-field) + dl.kit-refusal-dl + p.kit-refusal-msg
- * @tokens    --panel --ink --ink-2 --rule --accent --warn --danger --f-ui --f-mono
+ * @tokens    --panel --ink --ink-2 --rule --f-ui --f-mono
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a component family's refusal callout | the code by its vocabulary, the field, the allowed values, the message
+ * @preview   {"render": "kit.callout-refusal", "samples": ["kit/samples/callout-refusal.json"]}
+ * @changed   Extends kit.callout as new files; callout.css is unchanged.
+ * @changed   The code is words the caller passes, not a hub enum.
  */
 (function () {
 'use strict';

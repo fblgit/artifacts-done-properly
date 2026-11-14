@@ -11,8 +11,10 @@
  *   done defaults to count > 0; count is shown when it is a number
  *
  * The Claude lane in kit/claude-lane.js reads the request docs and can pass their state here.
+ * Tokens: no file of this entry reads a custom property. Its rules are the "step track" and "stages" sections of kit/viz/viz.css (entry viz.core, which it requires); they read --accent --accent-soft --f-mono --f-ui --ink --ink-2 --ok --panel --rule --sunk.
  *
  * @id        viz.stepper
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -20,11 +22,18 @@
  * @summary   Where something is in an ordered process: a compact rail for one request, and the numbered stage list of a guided flow.
  * @tags      stepper, progress, steps, request, queue, stages, wizard, claude lane
  * @requires  viz.core
+ * @files     kit/samples/viz-stepper.json
  * @provides  Kit.viz.StepTrack, Kit.viz.Stages
  * @config    StepTrack | {steps: [id], at: id, labels, hints, busy, meta, label}
  * @config    Stages | {steps: [{id, label, count, done}], current, onPick(id), compact}
+ * @tokens    none
  * @globals   htm-preact
  * @db        none
+ * @source    Journey Whiteboard | app.js | REQ_STEPS, REQ_HINT, the rail in ReqLine, GuideSteps
+ * @preview   {"render": "viz.stepper", "samples": ["kit/samples/viz-stepper.json"]}
+ * @changed   The rail announces itself as one image: step n of m, its name and hint.
+ * @changed   The current node is a dot on the rail, and it pulses only while busy and only without reduced motion.
+ * @changed   Stages work without click handlers (plain list) or with them (buttons).
  */
 (function () {
 'use strict';

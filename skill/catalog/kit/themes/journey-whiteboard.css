@@ -4,8 +4,10 @@
  * The Journey Whiteboard's token blocks as the board has them. The kit files read these names, so this theme needs no aliases.
  *
  * Values are the board's own, unchanged; the names the board never used (--focus, --seam, --gold-leaf, --info, --wait, a -soft tint per meaning, --outline and the feel tokens) are derived from them, so the theme sets the whole shared convention. Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle).
  *
  * @id        theme.journey-whiteboard
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.2.0
@@ -13,11 +15,19 @@
  * @summary   A cool workbench: chalk ground, white panels, a blue accent and six pens. Its names are the kit contract.
  * @tags      palette, tokens, colours, dark mode, journey, whiteboard
  * @requires  none
+ * @files     kit/themes/journey-whiteboard.json
+ * @provides  none
  * @config    fonts | Familjen Grotesk, IBM Plex Sans, IBM Plex Mono and Kalam from Google Fonts
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap
  * @db        none
+ * @source    Journey Whiteboard | app.css | the :root, prefers-color-scheme and [data-theme] blocks
+ * @preview   {"render": "theme", "samples": ["kit/themes/journey-whiteboard.json", "kit/samples/viz-chips.json", "kit/samples/viz-stepper.json", "kit/samples/viz-matrix.json"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
+ * @changed   Nothing in the palette.
+ * @changed   Sets the whole shared convention: --focus, --seam, --gold-leaf, --info, --wait, a -soft tint per meaning, --outline and the feel tokens, derived from its own accent, pens and meanings.
  */
 /* Layout: a full-height workbench: top bar, one view at a time (journey, canvas, MoSCoW, pages), a side drawer for the selected item or the Claude chat. */
 :root {

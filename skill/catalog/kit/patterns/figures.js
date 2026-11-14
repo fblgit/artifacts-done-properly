@@ -19,6 +19,7 @@
  * CSS classes: .kit-figs .kit-hero
  *
  * @id        pattern.figures
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -26,12 +27,19 @@
  * @summary   A report hero with stamp, summary chips and count-up figures, and four figure layouts: hairline grid, status tiles, three-up strip and facts.
  * @tags      figures, hero, stats, kpi, tiles, summary, count up, facts, report
  * @requires  none
+ * @files     kit/patterns/figures.css, kit/samples/figures.json
  * @provides  Kit.figures.render, Kit.figures.hero
+ * @extends   viz.core
  * @config    Kit.figures.render(box, opts) | variant grid|tiles|strip|facts; items per variant (grid {value, label, unit, hot, count}; tiles {label, value, note, tone}; strip and facts {label, value, note}); countUp, label
  * @config    Kit.figures.hero(box, opts) | stamp, title, lede, chips [{label, value}], items, variant, countUp
  * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --accent-soft --ok --warn --danger --shadow --info? --seam? --gold-leaf?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 7 artifacts' index.html | a hairline key-figure grid, a hero with count-up stats, a hero with summary chips, a status tile row, one-screen summary tiles, a three-up state strip and a facts strip
+ * @preview   {"render": "pattern.figures", "samples": ["kit/samples/figures.json"]}
+ * @changed   New file beside kit/viz/core.js; core.js and viz.css are unchanged.
+ * @changed   A state tile reads as a word first (Ready, Slow, Short) with a dot that repeats it.
+ * @changed   The key figure is marked with a seam above it and a tint, not by a second accent colour.
  */
 (function () {
 'use strict';

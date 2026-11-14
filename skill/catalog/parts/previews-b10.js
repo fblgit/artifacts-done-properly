@@ -35,7 +35,7 @@ function useDepth(on) {
   const [st, setSt] = useState('');
   useEffect(() => {
     if (!on) { setSt(''); return; } let off = false;
-    Promise.all([fetch('kit/themes/glaze.json').then(r => r.json()), fetch('kit/themes/glaze-depth.json').then(r => r.json())]).then(([g, d]) => {
+    Promise.all([window.CatalogFiles.json('kit/themes/glaze.json'), window.CatalogFiles.json('kit/themes/glaze-depth.json')]).then(([g, d]) => {
       if (off) return; const m = {}; Object.keys(d.light).forEach(k => { if (!(k in g.light)) m[k] = d.light[k]; });
       setSt({ light: m, dark: Object.fromEntries(Object.keys(d.dark).filter(k => !(k in g.dark) || !(k in g.light)).map(k => [k, d.dark[k]])) });
     }).catch(() => {});

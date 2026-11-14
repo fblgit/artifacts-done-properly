@@ -10,8 +10,10 @@ Load in the head: your theme (kit/themes/glaze.css or your own tokens), then the
 Load before the script at the end: kit/tabs.js
 
 Delete this comment when you copy the template into your page.
+Provides (no global): .kit-trec record layout; .kit-trec-st[data-st] status mark; .kit-trec-two facts columns; .kit-trec-log history list.
 
 @id        template.record
+@kind      template
 @group     Templates
 @status    new
 @version   0.1.0
@@ -19,12 +21,18 @@ Delete this comment when you copy the template into your page.
 @summary   One record on one page: a head with name, code and status, a seam edge, and Overview, Health and History tabs. Taken as text.
 @tags      template, record, detail page, tabs, health, status, facts
 @requires  kit.tabs, kit.table, kit.callout
+@files     kit/templates/record.css
+@provides  none
 @config    copy | kit/templates/record.html.txt into your page; take kit/templates/record.css, kit/tabs.css and .js, kit/table.css and kit/callout.css by reference
 @config    html | .kit-trec > .kit-trec-body > .kit-trec-head + .kit-tabs.line with [data-tab] buttons and [data-tab-panel] sections
 @config    script | Kit.tabs.mount(document.getElementById("rec-tabs"))
-@tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --ok --warn --danger --shadow --f-ui --f-display --f-mono --seam?
+@tokens    --panel --ink --ink-2 --rule --ok --warn --danger --f-ui --f-display --f-mono --seam?
 @globals   none
 @db        none
+@source    Catalog harvest, 2026-10-25 | index.html of a drive-inspection report | the record layout (accent edge, head, two columns) and its health table with a status column
+@preview   {"render": "template.record", "samples": ["kit/templates/record.html.txt"]}
+@changed   Drafted in the plan; kept after reading the source. Not carried: the report text, any drive or host names, the scan figures.
+@changed   requires kit.callout as well as kit.tabs and kit.table; the plan's viz.core was not needed.
 -->
 <!-- part:kit.template.record -->
 <link rel="stylesheet" href="kit/tabs.css">
