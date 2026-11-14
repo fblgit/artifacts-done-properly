@@ -83,7 +83,11 @@ kbd{font:600 12px var(--f-mono);padding:1px 6px;border:1px solid var(--rule);bor
 .ex-cat{min-height:34px;padding:0 14px;font:500 13.5px var(--f-ui);color:var(--ink-2);background:none;border:1px solid var(--rule);border-radius:999px;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
 .ex-cat:hover{color:var(--ink);border-color:var(--ink-3)}
 .ex-cat[aria-pressed="true"]{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
-.ex-cat:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ex-cat:focus-visible,.ex-new:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* + New, at the end of the row: a blank composer for a request of your own. Dashed until it is the one in the box. */
+.ex-new{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 14px 0 10px;font:600 13.5px var(--f-ui);color:var(--ink);background:var(--panel);border:1px dashed var(--ink-3);border-radius:999px;cursor:pointer;transition:background .15s,border-color .15s}
+.ex-new:hover{border-style:solid;background:var(--sunk)}
+.ex-new[aria-pressed="true"]{border-style:solid;border-color:var(--accent);background:var(--accent-soft)}
 .ex-split{display:grid;grid-template-columns:minmax(0,17rem) minmax(0,1fr);gap:clamp(20px,3vw,40px);margin-top:22px;align-items:start}
 .ex-ideas{list-style:none;margin:0;padding:0;display:grid;gap:2px}
 .ex-idea{display:flex;align-items:center;gap:12px;width:100%;padding:9px 10px;font:inherit;text-align:left;color:var(--ink);background:none;border:0;border-radius:var(--radius-lg,14px);cursor:pointer;transition:background .15s}
@@ -115,7 +119,8 @@ kbd{font:600 12px var(--f-mono);padding:1px 6px;border:1px solid var(--rule);bor
 .ex-note:empty{display:none}
 @media (max-width:719px){
   .ex-cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-  .ex-cat{flex:none}
+  .ex-cat,.ex-new{flex:none}
+  .ex-new{position:sticky;right:0;box-shadow:0 0 0 6px var(--panel)}      /* stays in reach while the kinds scroll under it */
   .ex-split{grid-template-columns:minmax(0,1fr);gap:16px}
   .ex-ideas{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
   .ex-composer{position:static}

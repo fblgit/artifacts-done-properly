@@ -263,6 +263,7 @@ function mountExamples(){
   if (!box) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
   const TR = {id: 'translate', cat: 'page', title: 'Translate this page', blurb: 'Into your language', icon: 'translate', rec: true};
+  const NEW = {id: 'new', title: 'New request', icon: 'adopt', text: ''};      // + New: a blank composer for a request of your own
   const foreign = BROWSER.code !== 'en';
   const IDEAS = foreign ? [TR].concat(EXAMPLES) : EXAMPLES.concat([TR]);
   const LANGS = LANGUAGES.some(l => l[2].toLowerCase() === BROWSER.code) || !BROWSER.name || !foreign ? LANGUAGES : [['\u{1F310}', BROWSER.name, BROWSER.code.toUpperCase()]].concat(LANGUAGES);
@@ -270,7 +271,7 @@ function mountExamples(){
   let cat = 'rec';
   const inCat = x => cat === 'rec' ? !!x.rec : x.cat === cat;
   box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
-    + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '</div>'
+    + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '<button type="button" class="ex-new" data-new aria-pressed="false"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New</span></button></div>'
     + '<div class="ex-split"><ul class="ex-ideas">'
     + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
     + '</div><div class="ex-langs" role="group" aria-label="Language" hidden>' + LANGS.map(l => `<button type="button" class="ex-lang" data-lang="${esc(l[1])}" title="${esc(l[1])}" aria-pressed="${l[1] === lang}"><span class="ex-flag" aria-hidden="true">${l[0]}</span><b>${esc(l[2])}</b></button>`).join('') + '</div>'
@@ -287,8 +288,10 @@ function mountExamples(){
   const count = () => { cnt.textContent = ta.value.length + ' / 1500'; submit.disabled = !ok || !ta.value.trim(); };
   const textFor = () => cur.id === 'translate' ? translateText(lang) : cur.text;
   const choose = id => {
-    cur = IDEAS.find(x => x.id === id); if (!cur) return;
+    cur = id === 'new' ? NEW : IDEAS.find(x => x.id === id); if (!cur) return;
     box.querySelectorAll('.ex-idea').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
+    box.querySelector('[data-new]').setAttribute('aria-pressed', String(id === 'new'));
+    ta.placeholder = id === 'new' ? 'Say what you want Claude to do: a new view, a change to a block, a fix or a question.' : '';
     ico.innerHTML = icon(cur.icon); ttl.textContent = cur.title; sel.hidden = id !== 'translate';
     original = textFor(); ta.value = original; grow(); count();
     ta.style.animation = 'none'; void ta.offsetWidth; ta.style.animation = '';
@@ -300,6 +303,7 @@ function mountExamples(){
   box.addEventListener('click', e => {
     const c = e.target.closest('.ex-cat');
     if (c) { cat = c.dataset.cat; const first = IDEAS.find(inCat); cur = IDEAS.find(x => inCat(x) && cur && x.id === cur.id) || first; draw(); choose(cur.id); return; }
+    if (e.target.closest('[data-new]')) { choose('new'); ta.focus(); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); return; }
     const b = e.target.closest('.ex-idea');
     if (b) { choose(b.dataset.ex); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
     else if (e.target.closest('[data-lang]')) { lang = e.target.closest('[data-lang]').dataset.lang; sel.querySelectorAll('.ex-lang').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.lang === lang))); original = textFor(); ta.value = original; grow(); count(); }
