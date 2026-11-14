@@ -13,6 +13,12 @@ folder `adp/`. The build is deterministic, so the same tree gives the same bytes
 
 If the tag and `metadata.version` differ, the workflow fails before publishing.
 
+The plugin `artifacts-done-properly` is listed in `fblgit/fblgit-claude-marketplace` by repository
+URL, and `.claude-plugin/plugin.json` sets no `version` on purpose (a test keeps it that way).
+Claude Code then takes the commit as the plugin's version, so every commit on `main` is an update
+for plugin installs and a release needs no change for the plugin. The tag and `adp.skill` are for
+the zip install.
+
 ## What CI checks
 
 - `secrets`: gitleaks over the full history.
