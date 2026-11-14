@@ -76,7 +76,13 @@ The CLI needs the unpacked folder. Loading the zip directly is UNVERIFIED; do no
 `setup` does not record a catalog URL. If `~/.adp/config.json` already existed before your first
 `setup` (an earlier ADP run, for example), it may point at someone else's catalog. Check it with
 `cat ~/.adp/config.json`. If it has a `catalog` you did not choose, move the folder aside, do not
-delete it: `mv ~/.adp ~/.adp.bak`. What `setup` does to an existing config is UNVERIFIED.
+delete it: `mv ~/.adp ~/.adp.bak`. `setup` uses a `~/.adp/` that is already there and never
+overwrites a value in an existing config: it only adds the keys the config lacks.
+
+To update, install the newer `adp.skill` over the old one and run `setup --scope <the same scope>`
+again. It replaces each road skill folder that differs from the packaged one (an older release or
+your own edits) and says which. `setup` without `--scope`, or with `--help`, prints its usage and
+sets nothing up.
 
 To verify a download, see "Verify a download" in `docs/RELEASING.md`.
 

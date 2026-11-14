@@ -21,7 +21,7 @@ Use `--help` or a subcommand with no arguments to see its usage; do not guess a 
 ## First run: check before anything else
 
 1. Is `~/.adp/config.json` or `./.adp/config.json` present? If yes, ADP is set up: go to the table.
-2. If not, run `adp.py setup --dry-run`, then ask the user ONE question: which scope (`user`, `project` or `local`). Run `adp.py setup --scope <answer>`. When nobody can answer (an unattended session), use `user` and say so in your report. It copies the four road skills into the skills folder and writes the config. It only prints the lines it would add to CLAUDE.md; add them with `--yes` only if the user agrees.
+2. If not, run `adp.py setup --dry-run`, then ask the user ONE question: which scope (`user`, `project` or `local`). Run `adp.py setup --scope <answer>`. When nobody can answer (an unattended session), use `user` and say so in your report. It copies the four road skills into the skills folder and writes the config; a road skill folder already there that differs (an older release, or local edits) is replaced by the packaged one, so run it again after installing a newer `adp.skill`. A config that already exists is kept: setup only adds the keys it lacks and overwrites no value. A real run needs `--scope`: without it, or with `--help`, setup prints its usage and sets nothing up. It only prints the lines it would add to CLAUDE.md; add them with `--yes` only if the user agrees.
 3. To onboard just a project folder, run `adp.py init [DIR]`. `init` and `setup --scope project|local` also register the project (name, scope, absolute path) in `~/.adp/projects/<name>/config.json`; `adp.py projects` lists the registered projects, so a project is found from any folder.
 
 ## Which road

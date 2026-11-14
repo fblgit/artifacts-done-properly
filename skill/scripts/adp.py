@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """ADP parts tool, adp/2 layout (artifact-dataplane skill; it still reads adp/1 pages): part markers -> per-part hashes -> manifest -> diff.
 
-  adp.py setup [--scope user|project|local] [--dry-run] [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
+  adp.py setup --scope user|project|local [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
+  adp.py setup [--scope ...] --dry-run              what setup would do (scope user when not given); writes nothing. Without --scope or --dry-run, setup prints its usage and writes nothing
   adp.py init [DIR]                                 DIR/.adp/config.json for project onboarding; also registers the project (name, path) in ~/.adp/projects/
   adp.py projects                                   the registered projects: name, scope, path
   --project NAME|PATH                               optional, never a default: the project root instead of cwd (a directory, or the name of a registered project; unknown: exit 1);
@@ -1080,7 +1081,7 @@ def log_path():
 
 def log_line(a, code, ms):
     """One JSON line per subcommand: ts, cmd, args (secrets redacted), exit, duration_ms, cwd. Never raises, never logs file contents."""
-    if a[:1] == ['setup'] and '--dry-run' in a: return      # a dry run writes nothing at all
+    if a[:1] == ['setup'] and {'--dry-run', '--help', '-h'} & set(a): return      # a dry run or a help request writes nothing at all
     try:
         p = log_path(); os.makedirs(os.path.dirname(p), exist_ok=True)
         rec = {'ts': now(), 'cmd': a[0] if a else '', 'args': redact(a[1:]), 'exit': code, 'duration_ms': ms, 'cwd': os.getcwd()}
@@ -1158,8 +1159,17 @@ def tree_files(d):
             for r, ds, fs in os.walk(d) if not ds.__setitem__(slice(None), [x for x in ds if x != '__pycache__']) for f in fs}
 
 
+SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills, write the config, print (--yes: write) the CLAUDE.md pointer
+       adp.py setup [--scope user|project|local] --dry-run   show what it would do (scope user when not given); writes nothing'''
+
+
 def setup_cmd(a):
-    scope = opt(a, '--scope', 'user'); dry, yes = '--dry-run' in a, '--yes' in a
+    if '--help' in a or '-h' in a: print(SETUP_USAGE); return 0
+    extra = [x for i, x in enumerate(a) if i and x not in ('--scope', '--dry-run', '--yes') and a[i - 1] != '--scope']
+    if extra: sys.exit(f'setup: unknown argument {extra[0]}; nothing was set up\n{SETUP_USAGE}')
+    dry, yes = '--dry-run' in a, '--yes' in a
+    scope = opt(a, '--scope', 'user' if dry else None)      # only a dry run may guess the scope: a real run writes into the home or the project
+    if scope is None: sys.exit(f'setup: --scope is needed (or --dry-run to look first); nothing was set up\n{SETUP_USAGE}')
     if scope not in ('user', 'project', 'local'): sys.exit('setup: --scope user|project|local')
     cwd, home = PROJECT if PROJECT and scope != 'user' else os.getcwd(), os.path.expanduser('~')
     refs = os.path.join(HERE, 'refs'); names = sorted(n for n in os.listdir(refs) if os.path.isdir(os.path.join(refs, n))) if os.path.isdir(refs) else []
@@ -1172,18 +1182,18 @@ def setup_cmd(a):
     print(f'config: {cfg}' + ('' if scope == 'user' else f'; registry {os.path.join(ADP_HOME, "projects")}/<name>/config.json (path {cwd})')); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
     modified = [os.path.join(skills, n) for n in names if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
-    for m in modified: print(f'modified {m}: differs from the packaged skill, left untouched')
+    for m in modified: print(f'{"would replace" if dry else "replaced"} {m}: it differs from the packaged skill (an older copy or local edits); setup installs the packaged one')
     if dry: return 0
-    for n in names:
+    for n in names:       # an update is an update: every road skill folder becomes the packaged one, whatever was there
         t = os.path.join(skills, n)
-        if t in modified: continue
         shutil.rmtree(t, ignore_errors=True)
         shutil.copytree(os.path.join(refs, n), t, ignore=shutil.ignore_patterns('__pycache__'))
     os.makedirs(os.path.dirname(cfg), exist_ok=True)
     c = json.load(open(cfg)) if os.path.isfile(cfg) else {}
-    c.update({'schema': 'adp-setup/1', 'scope': scope, 'skill_root': HERE, 'skills': names,
-              'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md')))}, 'at': now()})
-    json.dump(c, open(cfg, 'w'), indent=1)
+    mine = {'schema': 'adp-setup/1', 'scope': scope, 'skill_root': HERE, 'skills': names,
+            'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md')))}, 'at': now()}
+    add = {k: v for k, v in mine.items() if k not in c}     # a config that is already there is used as it is: setup only adds the keys it lacks
+    if add: c.update(add); json.dump(c, open(cfg, 'w'), indent=1)
     if scope != 'user': register_project(cwd, scope)
     if not yes: return 0
     os.makedirs(os.path.dirname(ptr), exist_ok=True)

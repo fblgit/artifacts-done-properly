@@ -19,7 +19,7 @@ First public release of Artifacts Done Properly (ADP): a Claude skill for claude
 1. Download `adp.skill` and `adp.skill.sha256` from this release.
 2. Verify: `sha256sum -c adp.skill.sha256` (macOS: `shasum -a 256 -c adp.skill.sha256`).
 3. Install `adp.skill` as a skill (unzip it so the `adp/` folder sits in your skills folder).
-4. Run `python3 -I adp/scripts/adp.py setup --dry-run`, then `setup --scope user|project|local`. Setup copies the four road skills into `.claude/skills` and writes a config; it only prints the CLAUDE.md lines unless you pass `--yes`.
+4. Run `python3 -I adp/scripts/adp.py setup --dry-run`, then `setup --scope user|project|local`. Setup copies the four road skills into `.claude/skills` (replacing an older or edited copy) and writes a config; it only prints the CLAUDE.md lines unless you pass `--yes`.
 
 ## Commands
 
