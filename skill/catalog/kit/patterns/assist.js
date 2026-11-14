@@ -23,7 +23,7 @@
  *   engine.ping()                 Promise<'pong' | 'timeout'> (90 s)
  *   engine.requests({project, open}) / engine.conversations({project}) / engine.messages(cid) / engine.presence() / engine.thread(rid): live {on(fn) -> off, get()}
  *     requests: [{id, ...doc, state (derived), stuck}] newest first, ping excluded; thread: {id, req, state, stuck, text, response, turns [{id, by, at, text}]} or null
- *     presence: {watching, busy, sessions [{session, at, doing, fresh}]}; messages: [{id, role, by, at, text, quote?}]
+ *     presence: {watching, native, busy, sessions [{session, at, doing, fresh}]} (watching: a fresh presence doc, or native: canSendToClaude answers available); messages: [{id, role, by, at, text, quote?}]
  *   engine.me()                   the viewer's uid ('' when unknown), so a view can say You
  *   engine.state(req)             'queue' | 'ack' | 'working' | 'done';  engine.lanes() the offered lanes;  engine.word(lane);  engine.destroy()
  *   Kit.assist.memory(seed) -> a db-shaped in-memory handle;  Kit.assist.parseShortcut('Mod+Shift+K');  Kit.assist.state(req)
@@ -36,8 +36,8 @@
  * @id        pattern.assist
  * @group     Patterns
  * @status    new
- * @version   0.1.0
- * @updated   2026-11-13
+ * @version   0.1.1
+ * @updated   2026-11-14
  * @summary   The engine of a page that works with Claude: pick a block, send it as a request a watching Claude Code session does and reports on, or ask Claude at once; requests, turns, conversations and presence live in the db.
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
  * @requires  kit.tokens, kit.dom
@@ -183,7 +183,7 @@ function start(o) {
     const c = H.comments; let v = 'none';
     if (c && typeof c.canSendToClaude === 'function') { try { v = await c.canSendToClaude(); } catch (e) { v = 'off'; } if (CAN.indexOf(v) < 0) v = 'off'; }
     if (!enabled()) v = 'off';
-    if (v !== canSend) { canSend = v; notify(); }
+    if (v !== canSend) { canSend = v; notify(); if (cache.p) cache.p.emit(); }      // presence() reads canSend too
     return v;
   }
   const can = () => ({ send: canSend, ask: !!H.sample && !askDead && enabled() && cfg('assist.ask-now', true) !== false });
@@ -220,8 +220,10 @@ function start(o) {
     return cache.p || (cache.p = live(() => {
       const win = (Number(cfg('assist.presence-minutes', '5')) || 5) * 60000;
       const s = pres.map(p => ({ session: p.session || p.id, at: p.at || '', doing: p.doing || '', fresh: clock() - new Date(p.at).getTime() < win })).sort(byAt);
-      const f = s.filter(x => x.fresh);
-      return { watching: f.length > 0, busy: f.some(x => !!x.doing), sessions: s };
+      // native: the platform itself says a watching session would be woken (comments.canSendToClaude), though no fresh presence doc names it.
+      // A session that watches and has not acted for a while is still watching: its presence doc is written only when it acts.
+      const f = s.filter(x => x.fresh), native = !f.length && canSend === 'available';
+      return { watching: f.length > 0 || native, native, busy: f.some(x => !!x.doing), sessions: s };
     }));
   }
   function thread(rid) {

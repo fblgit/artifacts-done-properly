@@ -89,7 +89,7 @@ Written only by Ask now (`engine.ask`). The conversation: `{title, by, at, scope
 
 Written by the sessions, never by the page (`assist.js` header, `@db`). `adp.py requests` writes `{at, doing, session}` under the name given by `--by` (default `agent`) with every request write: `doing` is `'<rid> (<lane>)'` on `--ack` and `--progress` and `''` on `--done`. The engine reads `at`, `doing` and `session` (the doc id when `session` is missing). `kit.claude-lane` reads `presence/<presenceKey>` (default `claude-code`), else the freshest presence doc, and takes `at` in ISO or ms.
 
-Fresh means `now - at` is less than the watching window, which is the switch `assist.presence-minutes`: an enum of `2`, `5` or `15`, default `5`. So with the default, five minutes without a write reads as nobody watching. The list `engine.presence()` yields `{watching, busy, sessions: [{session, at, doing, fresh}]}`; `watching` is true when any session is fresh, `busy` when a fresh session has a non-empty `doing`.
+Fresh means `now - at` is less than the watching window, which is the switch `assist.presence-minutes`: an enum of `2`, `5` or `15`, default `5`. So with the default, a doc five minutes old no longer counts. The list `engine.presence()` yields `{watching, native, busy, sessions: [{session, at, doing, fresh}]}`. `watching` is true when any session is fresh, or when none is fresh but the platform itself says a watching session would be woken (`comments.canSendToClaude()` answers `available`, re-checked every 30 s); `native` is true in that second case. A session that watches and has not acted for a while is still watching, and its presence doc is written only when it acts, so the doc alone would read it as gone. `busy` is true when a fresh session has a non-empty `doing`. A viewer who cannot send gets `writers_only` from the platform, so for them only a fresh doc reads as watching.
 
 What writes `presence/<name>` on a schedule is not in this repo: `adp.py` writes it only as part of a `requests` write. The template copy (`content.js.txt`, `home.about`) says the session writes it "every minute while it watches"; that is a statement of what a session is asked to do, and no code here does it.
 
@@ -164,7 +164,7 @@ The line at the top of the page (`#presence` in the template, `Kit.presence` in 
 | State | Word | Sentence |
 | --- | --- | --- |
 | busy | "A session is working" | `<session>: <doing>`, `(+N more)` when several |
-| watching | "A session is watching" | `<session>, seen <time ago>` |
+| watching | "A session is watching" | `<session>, seen <time ago>`, or "It is woken when you send a request." when the platform says so and no presence doc is fresh (`native`) |
 | away | "No session is watching" | `Last seen <time ago> (<session>)`, or "None has been seen on this artifact yet." |
 
 Busy wins over watching. When the state is away, or after a ping times out, the compact line offers "How to start one": the sentence "Open Claude Code on your computer and tell it:" and the line `watch the artifact <link>` with a Copy button (the template passes no `artifactUrl`, so the link reads `<this artifact's link>`). It adds "Requests you send now wait in the queue and are picked up when a session starts watching." only while sending is `available`, and "Ask now still answers straight away; it needs no session." when Ask now is possible. The template mounts the header line with `canPing: false`; the panel's own presence line has a Ping button.
