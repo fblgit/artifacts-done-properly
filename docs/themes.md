@@ -58,8 +58,8 @@ These are separate from the theme. The `look.mode` setting (`auto`, `light`, `da
 
 ## Add a theme to the catalog
 
-1. Write `skill/catalog/kit/themes/<id>.css` (the three blocks, contract names, the header with `@id theme.<id>`, `@group Themes`, a `@config fonts` line and the font url) and `<id>.json` (the same tokens in `light` and `dark`, plus `fonts`).
-2. Add its entry to `skill/catalog/catalog.json`: the fields every entry has (`docs/architecture.md`, section 7), `kind: "theme"`, both files with `sha256` and `bytes`, `fonts` (the json's url), `requires` (`[]`, or the base theme for a layer), `preview.render: "theme.<id>"` and the entry `hash`.
+1. Write `skill/catalog/kit/themes/<id>.css` (the three blocks, contract names, the header with `@id theme.<id>`, `@kind theme`, `@group Themes`, `@files kit/themes/<id>.json`, `@fonts` with the font url (the tags are in `docs/catalog-header.md`), `@requires` (`none`, or the base theme for a layer) and `@preview` with `"render": "theme.<id>"`) and `<id>.json` (the same tokens in `light` and `dark`, plus `fonts`).
+2. Run `python3 skill/scripts/adp_catalog.py build`: it writes the entry into `skill/catalog/catalog.json` from the header (the fields every entry has, `docs/architecture.md` section 7: both files with `sha256` and `bytes`, `fonts`, `requires`, the entry `hash`). Nothing is added to `catalog.json` by hand.
 3. Set every token `theme.default` sets (section "One convention"); the test names what is missing. No template lists themes and no test pins a count: the assistant and default templates take `theme.*`.
 4. For the catalog page's preview, register `P['theme.<id>']` in `skill/catalog/parts/`. The list at the end of `previews-b8.js` gives a theme the shared preview, which also loads its fonts.
 5. Run `python3 skill/scripts/adp_catalog.py` (it checks the headers too) and `python3 -m unittest discover -s tests`.

@@ -25,6 +25,13 @@ repos:
         language: system
         pass_filenames: false
         files: ^(skill/catalog/|skill/scripts/adp_(catalog|lib)\.py)
+      - id: catalog-roundtrip
+        name: catalog roundtrip (headers, index, files, take, seed, previews)
+        entry: python3 -I tools/roundtrip.py
+        language: system
+        pass_filenames: false
+        stages: [pre-push]          # about 9 s: on push, not on every commit
+        files: ^(skill/|tools/roundtrip\.py)
       - id: catalog-headers
         name: catalog entry headers (docs/catalog-header.md)
         entry: python3 skill/scripts/adp_catalog.py headers

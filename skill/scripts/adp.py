@@ -38,7 +38,7 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
                                                     a files map taking catalog entries by reference, requires first. CATALOG is the catalog
                                                     url (its fetched index is the live one), `-` for the saved catalog, or a local catalog.json
                                                     (the repo's build: not the live catalog, so the output carries a warning)
-  adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--batches] [--dry-run]
+  adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--unpack COLLECTION] [--batches] [--dry-run]
                                                     writes DIR/seed.json (adp-seed/2) and DIR/seed/pack-N.json: the first docs (parts,
                                                     content, changes/000001, agents, manifest/current last) plus every --data doc (a JSON
                                                     list or {docs} of {collection, id, data}, or a DIR of collection/id.json); the page
@@ -892,16 +892,16 @@ def seed_given(d, data=None):
     return [(c, i, x) for (c, i), x in extra.items()] + [(c, i, x) for (c, i), x in over.items()], old
 
 
-def seed_file(d, by=None, version=None, at=None, data=None, summary=None, role=''):
+def seed_file(d, by=None, version=None, at=None, data=None, summary=None, role='', unpack=None):
     """Write DIR/seed.json (adp-seed/2, the index) and DIR/seed/pack-NNN.json (the docs, PACK bytes each, manifest/current the last doc):
     the page expands them when its db is empty and an editor opens it. --data docs given before are kept (replaced by id when given
     again). Unchanged docs keep the files as they are (so `files --since` does not re-send them); returns True when (re)written."""
     given, old = seed_given(d, data); had = read_seed(d)[1]
     by, version = by or old.get('by', 'adp'), version or old.get('version', '1')      # a value given wins; else the seed's own
-    role, summary = role or old.get('role', ''), summary or old.get('summary')
+    role, summary, unpack = role or old.get('role', ''), summary or old.get('summary'), unpack or old.get('unpack')    # unpack: the collection whose docs {path, text} adp.js publishes as real files
     strip = lambda docs: [(c, i, {k: v for k, v in x.items() if k not in ('at', 'last_seen')}) for c, i, x in docs]
     docs, empty = seed_docs(d, by, version, at or old.get('at') or now(), given, role, summary)
-    if old.get('schema') == 'adp-seed/2' and strip(had) == strip(docs): return False
+    if old.get('schema') == 'adp-seed/2' and strip(had) == strip(docs) and old.get('unpack') == unpack: return False
     at = at or now(); docs, empty = seed_docs(d, by, version, at, given, role, summary)
     packs, cur, size = [], [], 0
     for c, i, x in docs:
@@ -922,12 +922,13 @@ def seed_file(d, by=None, version=None, at=None, data=None, summary=None, role='
            'overrides': [{'collection': c, 'id': i, 'data': x} for c, i, x in given if c in PROTO]}
     if role: idx['role'] = role
     if summary: idx['summary'] = summary
+    if unpack: idx['unpack'] = unpack
     json.dump(idx, open(os.path.join(d, SEED), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return True
 
 
 def seed(a):
-    d = bare(a[1:])[0] if bare(a[1:]) else sys.exit('usage: adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--batches] [--dry-run]')
+    d = bare(a[1:])[0] if bare(a[1:]) else sys.exit('usage: adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--unpack COLLECTION] [--batches] [--dry-run]')
     if not os.path.isdir(d): sys.exit(f'seed: {d} is not a directory (adp.py new makes one)')
     at, dry = opt(a, '--at') or now(), '--dry-run' in a
     given, old = seed_given(d, data_docs(optall(a, '--data')))
@@ -945,7 +946,7 @@ def seed(a):
     for c, i, x in docs: n[c] = n.get(c, 0) + 1
     if dry: return emit({'collections': n, 'docs': len(docs), 'batches': math.ceil(len(docs) / 50), 'skipped_empty': empty,
                          'bytes': sum(len(json.dumps(x, ensure_ascii=False).encode()) for c, i, x in docs)})
-    written = seed_file(d, by, version, at, data=given, summary=summary, role=role)
+    written = seed_file(d, by, version, at, data=given, summary=summary, role=role, unpack=opt(a, '--unpack'))
     idx = read_seed(d)[0]
     return emit({'seed': os.path.join(d, SEED), 'written': written, 'docs': idx['docs'], 'collections': idx['collections'], 'packs': idx['packs'],
                  'bytes': sum(os.path.getsize(os.path.join(d, p)) for p in idx['packs']), 'skipped_empty': empty,

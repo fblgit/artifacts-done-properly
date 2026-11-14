@@ -1,33 +1,37 @@
 #!/usr/bin/env python3
-"""Plan, URL-stamp and parity-check a fresh publish of skill/catalog/ (stdlib only).
+"""Plan, URL-stamp and parity-check the packed publish of skill/catalog/ (stdlib only). It publishes nothing itself.
 
-This script never publishes. `plan` writes batch-N.json files holding the
-arguments Claude passes to the Artifact tool.
+The catalog goes up packed: the page's own files (index.html, adp.js, content.js, parts/, styles/) plus a seed (seed.json and seed/ packs,
+made by `adp.py seed --data`) that carries the kit folders and catalog.json as `kitfiles` docs. adp.js's loader writes the docs to the db on
+the first open by an editor: seed.json's `unpack` names the collection, and adp.js publishes its docs as the real files (kit/..., catalog.json),
+then writes the record and reloads. Nothing else unpacks.
 
-  plan [--catalog-dir D] [--out D] [--batch N]   write batch-N.json files
-  set-url URL                                    stamp URL into catalog.json and the index.html comment
-  check URL                                      exit 1 if either place differs from URL
+  plan [--catalog-dir D] [--out D]   stage the page and the seed under OUT/tree, write OUT/publish.json (the Artifact publish call)
+  set-url URL                        stamp URL into catalog.json and the index.html comment (then plan again)
+  check URL                          exit 1 if either place differs from URL
 """
 import argparse
 import difflib
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
-import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CATALOG = ROOT / "skill" / "catalog"
 DEFAULT_OUT = ROOT / "dist" / "catalog-publish"
-MAX_FILE = 16 * 1024 * 1024
-MAX_BATCH = 64 * 1024 * 1024
+ADP = ROOT / "skill" / "scripts" / "adp.py"
 PAGE = "index.html"
-PLACEHOLDER = "<url from batch 1>"
+COLLECTION = "kitfiles"      # seed.json `unpack`: adp.js publishes this collection's docs {path, text} as files
+PACKED = ("kit/", "catalog.json")      # what rides the packs; every other file is the page's own
 CAPABILITIES = {
     "comments": {"customAnchors": True},
     "db": {"rules": [{"path": "", "read": "view", "write": "admin"}]},
     "user": {},
+    "artifact": {},      # adp.js publishes the unpacked files
 }
 COMMENT_RE = re.compile(r"(This artifact's own URL is the catalog URL: )(\S+)[ \t]*$", re.M)
 
@@ -49,88 +53,57 @@ def write_text(p, s):
 def walk(catalog):
     out = []
     for dp, dns, fns in os.walk(catalog):
-        dns.sort()
+        dns[:] = sorted(d for d in dns if d != "__pycache__")
         for fn in sorted(fns):
-            p = Path(dp) / fn
-            out.append((p.relative_to(catalog).as_posix(), p.stat().st_size))
-    out.sort()
-    return out
+            out.append((Path(dp) / fn).relative_to(catalog).as_posix())
+    return sorted(out)
 
 
-def check_dupes(paths):
-    seen = {}
-    for p in paths:
-        k = unicodedata.normalize("NFC", p).casefold()
-        if k in seen:
-            raise Fail("duplicate published path: %r and %r" % (seen[k], p))
-        seen[k] = p
-
-
-def title_of(catalog):
-    m = re.search(r"<title>(.*?)</title>", read_text(catalog / PAGE), re.S)
-    return m.group(1).strip() if m else "Artifact Kit Catalog"
-
-
-def build_batches(entries, batch):
-    """entries: sorted [(path, size)] incl. index.html. Batch 1 holds index.html
-    plus up to batch-1 files; later batches hold up to batch files."""
-    check_dupes([p for p, _ in entries])
-    sizes = dict(entries)
-    if PAGE not in sizes:
-        raise Fail("%s not found in catalog dir" % PAGE)
-    for p, s in entries:
-        if s > MAX_FILE:
-            raise Fail("file over 16 MB: %s (%d bytes)" % (p, s))
-    others = [p for p, _ in entries if p != PAGE]
-    groups, i = [], 0
-    first = max(batch - 1, 0)
-    groups.append(others[:first])
-    i = first
-    while i < len(others):
-        groups.append(others[i:i + batch])
-        i += batch
-    totals = []
-    for gi, g in enumerate(groups):
-        # the page is part of every call per the tool contract, so count it in each
-        t = sizes[PAGE] + sum(sizes[p] for p in g)
-        if t > MAX_BATCH:
-            raise Fail("batch %d is %d bytes, over 64 MB" % (gi + 1, t))
-        totals.append(t)
-    return groups, totals
+def doc_id(path):
+    return path.replace("/", "~")      # a doc id holds no slash
 
 
 def cmd_plan(a):
-    catalog = Path(a.catalog_dir).resolve()
-    out = Path(a.out)
-    if a.batch < 2:
-        raise Fail("--batch must be at least 2")
+    catalog, out = Path(a.catalog_dir).resolve(), Path(a.out).resolve()
     if not (catalog / PAGE).is_file():
         raise Fail("%s not found in %s" % (PAGE, catalog))
-    entries = walk(catalog)
-    groups, totals = build_batches(entries, a.batch)
-    title = title_of(catalog)
-    desc = "%s, published fresh from the repo tree (%d files)." % (title, len(entries))
-    out.mkdir(parents=True, exist_ok=True)
-    for old in out.glob("batch-*.json"):
-        old.unlink()
-    for n, g in enumerate(groups, 1):
-        obj = {
-            "file_path": PAGE,
-            "root": str(catalog),
-            "files": {p: p for p in g},
-            "capabilities": CAPABILITIES,
-            "description": desc,
-            "icon": "catalog",
-            "label": "Fresh publish, batch %d of %d" % (n, len(groups)),
-        }
-        if n > 1:
-            obj["url"] = PLACEHOLDER
-        write_text(out / ("batch-%d.json" % n), json.dumps(obj, indent=1, ensure_ascii=False) + "\n")
-    print("batches: %d" % len(groups))
-    print("files: %d" % len(entries))
-    print("total bytes: %d" % sum(s for _, s in entries))
-    for n, t in enumerate(totals, 1):
-        print("batch %d: %d files, %d bytes (index.html counted in every batch)" % (n, len(groups[n - 1]) + (1 if n == 1 else 0), t))
+    files = walk(catalog)
+    packed = [p for p in files if p.startswith(PACKED)]
+    boot = [p for p in files if p not in packed]
+    docs = []
+    for p in packed:
+        try:
+            text = read_text(catalog / p)
+        except UnicodeDecodeError:
+            raise Fail("%s is not UTF-8 text: a pack holds text" % p)
+        docs.append({"collection": COLLECTION, "id": doc_id(p), "data": {"path": p, "text": text}})
+    tree = out / "tree"
+    if out.exists():
+        shutil.rmtree(out)
+    for p in boot:
+        (tree / p).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(catalog / p, tree / p)
+    data = out / "kitfiles.json"
+    write_text(data, json.dumps({"docs": docs}, ensure_ascii=False))
+    r = subprocess.run([sys.executable, "-I", str(ADP), "seed", str(tree), "--by", "catalog", "--data", str(data), "--unpack", COLLECTION], capture_output=True, text=True)
+    if r.returncode:
+        raise Fail("adp.py seed failed: %s" % (r.stderr or r.stdout).strip()[-600:])
+    staged = walk(tree)
+    title = re.search(r"<title>(.*?)</title>", read_text(catalog / PAGE), re.S)
+    obj = {
+        "file_path": str(tree / PAGE),
+        "root": str(tree),
+        "files": {p: p for p in staged if p != PAGE},
+        "capabilities": CAPABILITIES,
+        "description": "%s, published packed: %d kit files unpack themselves on the first open." % (title.group(1).strip() if title else "Catalog", len(packed)),
+        "icon": "catalog",
+        "label": "Packed publish",
+    }
+    write_text(out / "publish.json", json.dumps(obj, indent=1, ensure_ascii=False) + "\n")
+    packs = [p for p in staged if p.startswith("seed/")]
+    print("page files: %d, packs: %d (%d bytes), kit files packed: %d (%d bytes)" % (
+        len(boot), len(packs), sum((tree / p).stat().st_size for p in packs), len(packed), sum((catalog / p).stat().st_size for p in packed)))
+    print("publish: %s (%d files)" % (out / "publish.json", len(staged)))
     return 0
 
 
@@ -192,7 +165,6 @@ def main(argv=None):
     p = sub.add_parser("plan")
     p.add_argument("--catalog-dir", default=str(DEFAULT_CATALOG))
     p.add_argument("--out", default=str(DEFAULT_OUT))
-    p.add_argument("--batch", type=int, default=250)
     p.set_defaults(fn=cmd_plan)
     for name, fn in (("set-url", cmd_set_url), ("check", cmd_check)):
         p = sub.add_parser(name)

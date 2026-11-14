@@ -10,7 +10,8 @@ Thanks for helping. Participation is covered by the
 
 This installs the commit and push hooks from `.pre-commit-config.yaml`: ruff,
 SKILL.md frontmatter validation, the catalog sha256 check and the catalog
-entry header check on commit, and gitleaks on push.
+entry header check on commit, and gitleaks and the catalog roundtrip
+(`python3 -I tools/roundtrip.py`, about 9 s, needs node for two checks) on push.
 
 ## Run the checks as CI does
 
@@ -20,6 +21,7 @@ CI (`.github/workflows/ci.yml`) runs these on Python 3.12:
     python3 -m unittest discover -s tests -v
     python3 tools/package.py --check
     python3 skill/scripts/adp_catalog.py
+    python3 -I tools/roundtrip.py --require-node
     python3 tools/package.py
 
 Ruff uses `ruff.toml` (pyflakes errors only). CI also runs gitleaks over the

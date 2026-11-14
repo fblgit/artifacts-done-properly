@@ -2,14 +2,14 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/2vo5Ny9dasFyszPCmQwgKY",
  "ver": "",
- "built": "2026-11-14T21:15:20Z",
+ "built": "2026-11-14T22:28:13Z",
  "entries": [
   {
    "id": "runtime.adp",
    "kind": "component",
    "group": "Runtime",
    "name": "ADP runtime",
-   "summary": "The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.",
+   "summary": "The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open (and unpacking packed files) and the page self-check.",
    "tags": [
     "adp",
     "dataplane",
@@ -24,7 +24,7 @@
     "seed"
    ],
    "status": "stable",
-   "version": "2.0.1",
+   "version": "2.1.0",
    "requires": [],
    "globals": [],
    "provides": [
@@ -38,6 +38,7 @@
     "window.ADP.build",
     "window.ADP.integrity",
     "window.ADP.seeded",
+    "window.ADP.unpack",
     "window.ADP.db",
     "window.ADP_CHECK",
     "window.ADP_SEED"
@@ -47,11 +48,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "68045fb1d5d37d9bd457cc349934baa80d1bb238754c3cfde68db17b90355dea",
-     "bytes": 39809
+     "sha256": "bcb49f5a7ebee875df931fe543102ea8348b889cf4983bc7191fc613dbb74646",
+     "bytes": 44754
     }
    ],
-   "hash": "699e33bf83b1"
+   "hash": "e4281e161999"
   },
   {
    "id": "kit.callout-refusal",
@@ -4478,7 +4479,7 @@
     "page"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "requires": [
     "runtime.adp",
     "kit.store",
@@ -4498,8 +4499,8 @@
     {
      "path": "kit/templates/tester.html.txt",
      "role": "template",
-     "sha256": "19222f609e1a57ce22c3513364ec90fecc95235d3668e8c1b924c85cede2dd99",
-     "bytes": 5337
+     "sha256": "fc30ced5ead3ac669a4f1c57dddd8fa75aedd6d8d599eefaf7462235c793ae43",
+     "bytes": 5286
     },
     {
      "path": "kit/templates/tester.css",
@@ -4510,8 +4511,8 @@
     {
      "path": "kit/templates/tester.js",
      "role": "script",
-     "sha256": "21c06ebf5b0e3421aafbca54948bbe20bdb20fe00a63d5ab2d53a2c2f6665ed3",
-     "bytes": 15524
+     "sha256": "c04d6025b519628477eb3e9dc29c57c52331eb5925d2d2fb678b1e14b8974083",
+     "bytes": 15192
     },
     {
      "path": "kit/samples/tester.json",
@@ -4520,7 +4521,7 @@
      "bytes": 800
     }
    ],
-   "hash": "b39debb3b969"
+   "hash": "7cd08e73174b"
   },
   {
    "id": "theme.adr-drafting-table",

@@ -1,7 +1,6 @@
 import contextlib
 import io
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -39,67 +38,55 @@ class Base(unittest.TestCase):
             (self.cat / "styles" / ("f%d.css" % i)).write_text("x" * (i + 1))
         self.out = self.tmp / "out"
 
-    def plan(self, batch="3"):
-        return run("plan", "--catalog-dir", str(self.cat), "--out", str(self.out), "--batch", batch)
+    def plan(self, cat=None):
+        return run("plan", "--catalog-dir", str(cat or self.cat), "--out", str(self.out))
+
+
+def tree_of(root):
+    return sorted(p.relative_to(root).as_posix() for p in Path(root).rglob("*") if p.is_file() and "__pycache__" not in p.parts)
 
 
 class PlanTests(Base):
-    def test_batching(self):
-        code, text, _ = self.plan("3")
-        self.assertEqual(code, 0)
-        self.assertIn("files: 7", text)
-        self.assertIn("batches: 3", text)  # page + 2, then 3, then 1
-        b = [json.loads((self.out / ("batch-%d.json" % n)).read_text()) for n in (1, 2, 3)]
-        self.assertEqual([len(x["files"]) for x in b], [2, 3, 1])
-        allf = [p for x in b for p in x["files"]]
-        self.assertEqual(sorted(allf), sorted(set(allf)))
-        self.assertNotIn("index.html", allf)
-        self.assertEqual(len(allf), 6)
-        self.assertNotIn("url", b[0])
-        self.assertEqual(b[1]["url"], "<url from batch 1>")
-        for x in b:
-            self.assertEqual(x["file_path"], "index.html")
-            self.assertEqual(x["root"], str(self.cat.resolve()))
-            self.assertEqual(x["icon"], "catalog")
-            self.assertEqual(x["capabilities"]["db"]["rules"][0]["write"], "admin")
-            for k in ("description", "label"):
-                self.assertTrue(x[k])
-        self.assertIn("Fake Catalog", b[0]["description"])
-        self.assertEqual(b[0]["files"]["styles/f0.css"], "styles/f0.css")
-
-    def test_determinism(self):
-        self.plan()
-        first = {p.name: p.read_bytes() for p in self.out.glob("*.json")}
-        self.plan()
-        self.assertEqual(first, {p.name: p.read_bytes() for p in self.out.glob("*.json")})
-
-    def test_duplicate_detection(self):
-        with self.assertRaises(pc.Fail):
-            pc.check_dupes(["a/b.css", "a/B.css"])
-        with self.assertRaises(pc.Fail):
-            pc.build_batches([("index.html", 1), ("x", 1), ("x", 1)], 3)
-
-    def test_size_limits(self):
-        with self.assertRaises(pc.Fail):
-            pc.build_batches([("index.html", 1), ("big", pc.MAX_FILE + 1)], 3)
-        with self.assertRaises(pc.Fail):
-            pc.build_batches([("index.html", 1)] + [("f%d" % i, pc.MAX_FILE) for i in range(5)], 10)
-
-    def test_stale_batches_removed(self):
-        self.plan("3")
-        self.plan("100")
-        self.assertEqual([p.name for p in self.out.glob("batch-*.json")], ["batch-1.json"])
-
-    def test_real_catalog_smoke(self):
+    def test_real_catalog_rides_the_packs_and_the_page_goes_up_as_files(self):
         real = REPO / "skill" / "catalog"
-        before = sorted(p.relative_to(REPO).as_posix() for p in REPO.rglob("*") if p.is_file() and "__pycache__" not in p.parts)
-        code, text, _ = run("plan", "--catalog-dir", str(real), "--out", str(self.out), "--batch", "250")
-        after = sorted(p.relative_to(REPO).as_posix() for p in REPO.rglob("*") if p.is_file() and "__pycache__" not in p.parts)
-        self.assertEqual(code, 0)
-        self.assertIn("files: %d\n" % sum(1 for p in real.rglob("*") if p.is_file()), text)      # what the catalog holds today: no count to keep up
-        self.assertIn("batches: 2", text)
-        self.assertEqual(before, after)
-        self.assertEqual(sorted(os.listdir(self.out)), ["batch-1.json", "batch-2.json"])
+        before = tree_of(REPO)
+        code, text, _ = self.plan(real)
+        self.assertEqual(code, 0, text)
+        self.assertEqual(before, tree_of(REPO))      # it publishes nothing and writes nothing in the repo
+        pub = json.loads((self.out / "publish.json").read_text())
+        self.assertEqual(pub["file_path"], str((self.out / "tree" / "index.html").resolve()))
+        for p in pub["files"]:
+            self.assertFalse(p.startswith("kit/") or p == "catalog.json", p)      # the kit rides the packs
+        self.assertIn("seed.json", pub["files"])
+        packs = [p for p in pub["files"] if p.startswith("seed/pack-")]
+        self.assertTrue(packs)
+        for k in ("artifact", "db", "comments", "user"):
+            self.assertIn(k, pub["capabilities"])
+        seed = json.loads((self.out / "tree" / "seed.json").read_text())
+        self.assertEqual(seed["unpack"], pc.COLLECTION)      # adp.js publishes this collection's docs as the files
+        docs = {}
+        for p in packs:
+            for d in json.loads((self.out / "tree" / p).read_text())["docs"]:
+                if d["collection"] == pc.COLLECTION:
+                    docs[d["data"]["path"]] = d
+        want = [p for p in tree_of(real) if p.startswith(pc.PACKED)]
+        self.assertEqual(sorted(docs), want)      # the packs hold exactly the kit folders and catalog.json
+        for p in want:
+            self.assertEqual(docs[p]["id"], p.replace("/", "~"))
+            self.assertEqual(docs[p]["data"]["text"], (real / p).read_text(encoding="utf-8"), p)      # byte for byte
+
+    def test_a_file_that_is_not_text_stops_the_plan(self):
+        (self.cat / "kit").mkdir()
+        (self.cat / "kit" / "x.bin").write_bytes(b"\xff\xfe\x00\x80")
+        code, _, err = self.plan()
+        self.assertEqual(code, 1)
+        self.assertIn("not UTF-8", err)
+
+    def test_a_catalog_without_its_page_stops_the_plan(self):
+        (self.cat / "index.html").unlink()
+        code, _, err = self.plan()
+        self.assertEqual(code, 1)
+        self.assertIn("index.html", err)
 
 
 class UrlTests(Base):

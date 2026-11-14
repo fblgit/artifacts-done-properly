@@ -1,6 +1,6 @@
 /**
  * ADP runtime
- * The adp/2 page runtime. Load it before the page's own scripts, then call ADP.page({view, expected, titles, legacy, all, reveal}) once the views exist. It paints content/<part id> docs live, lists changes/ and active decisions/ in the What changed panel, shows proposals in incoming/, anchors comments to [data-part] elements, hashes the page's parts at open and compares them with manifest/current (integrity), and writes checks/latest when the viewer can edit. It also carries ADP.config (switches in the db doc config/current), ADP.user, ADP.db and ADP.ns(name), and expands the seed packs published beside the page on first open.
+ * The adp/2 page runtime. Load it before the page's own scripts, then call ADP.page({view, expected, titles, legacy, all, reveal}) once the views exist. It paints content/<part id> docs live, lists changes/ and active decisions/ in the What changed panel, shows proposals in incoming/, anchors comments to [data-part] elements, hashes the page's parts at open and compares them with manifest/current (integrity), and writes checks/latest when the viewer can edit. It also carries ADP.config (switches in the db doc config/current), ADP.user, ADP.db and ADP.ns(name), and expands the seed packs published beside the page on first open; a seed whose index names an `unpack` collection also publishes its docs as real files.
  *
  * --accent is the comment highlight.
  *
@@ -8,13 +8,13 @@
  * @kind      component
  * @group     Runtime
  * @status    stable
- * @version   2.0.1
- * @updated   2026-11-14
- * @summary   The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.
+ * @version   2.1.0
+ * @updated   2026-11-15
+ * @summary   The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open (and unpacking packed files) and the page self-check.
  * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
  * @requires  none
  * @files     none
- * @provides  window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
+ * @provides  window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.unpack, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
  * @config    <meta name="adp:build"> | the build number, before the script
  * @config    window.ADP_CONTENT | content.js: the baseline copy of the parts
  * @config    page.header, page.tabs, page.changes | parts the page must render; #wc, #wcN, #wcChanges, #wcDecisions for the panel
@@ -24,7 +24,7 @@
  * @db        reads content; changes; decisions; incoming; manifest/current; config/current / writes status/integrity (attempted for any viewer with a db: it lands only where the db rules allow); checks/latest (editors only); config/current and a changes/d-<time> record when a setting is saved; the seed docs on first open
  * @source    this repository | skill/assets/adp.js | the same bytes
  * @preview   {"render": "runtime.adp", "samples": []}
- * @changed   The catalog runs the same runtime as every page the skill makes: adds ADP.config, ADP.user, ADP.ns, ADP.db, integrity and seeding on first open.
+ * @changed   Adds ADP.unpack and the seed's `unpack` collection: the loader publishes packed files as real files, and a later seed stamp unpacks again and is listed in What changed.
  */
 (function(){
 'use strict';
@@ -242,7 +242,7 @@ const TOUR = [
   ['What changed, and Settings', 'The "What changed" panel in the header reads changes/ live. Settings (the gear) holds the switches, "Incoming", where an agent\'s proposal is applied or declined by an editor, and who may write where.'],
   ['From here', 'Agents export, edit and propose; an editor applies. Nothing lands on this page without a record, and every version stays readable.']
 ];
-function tour(f){
+function tour(f, plain){      // plain: the update sheet (a heading and the progress bar, no tour)
   if (!document.body) return {step(){}, progress(){}, done(){}, fail(){}};
   const st = document.createElement('style');
   st.textContent = '.adp-seed{position:fixed;inset:auto 16px 16px 16px;z-index:9999;max-width:560px;max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;margin:0 auto;padding:16px 18px;border-radius:12px;background:var(--panel,#fff);color:var(--ink,#1c1917);border:1px solid var(--rule,#e7e5e4);box-shadow:0 12px 40px rgba(0,0,0,.18);font:14px/1.45 var(--f-ui,system-ui,sans-serif)}'
@@ -252,12 +252,12 @@ function tour(f){
     + '@media(prefers-reduced-motion:reduce){.adp-seed li,.adp-seed .adp-sd-bar i{transition:none}}';
   document.head.append(st);
   const box = document.createElement('aside'); box.className = 'adp-seed'; box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite'); box.setAttribute('aria-label', 'First open');
-  const h = document.createElement('h2'); h.textContent = 'First open: this page is writing its own record';
+  const h = document.createElement('h2'); h.textContent = plain ? 'A new version was published: unpacking its files' : 'First open: this page is writing its own record';
   const line = document.createElement('p'); line.textContent = 'Reading the seed…';
   const bar = document.createElement('div'); bar.className = 'adp-sd-bar'; const fill = document.createElement('i'); bar.append(fill);
   const ol = document.createElement('ol'); const lis = TOUR.map(([t, d]) => { const li = document.createElement('li'); const b = document.createElement('b'); b.textContent = t; li.append(b, document.createTextNode(d)); ol.append(li); return li; });
   const meta = document.createElement('p'); meta.className = 'adp-sd-meta'; meta.textContent = (f.by ? 'Seeded by ' + f.by + '. ' : '') + (f.docs ? f.docs + ' docs in ' + (f.packs || []).length + ' pack' + ((f.packs || []).length === 1 ? '' : 's') + '.' : '');
-  box.append(h, line, bar, ol, meta); document.body.append(box);
+  plain ? box.append(h, line, bar, meta) : box.append(h, line, bar, ol, meta); document.body.append(box);
   const t0 = Date.now(), counts = {}; let step = -1, closed = false;
   const light = i => { if (i === step || closed) return; step = i; lis.forEach((li, k) => li.classList.toggle('on', k <= i)); };
   const close = () => { if (closed) return; closed = true; box.remove(); };
@@ -277,11 +277,59 @@ function tour(f){
     fail(why){ line.textContent = 'Seeding stopped: ' + why + '. Reload to try again; nothing is half-written as truth, manifest/current goes last.'; btn(); }
   };
 }
+/* ---------- unpack: files that ride the seed as docs ({path, text}; seed.json's `unpack` names their collection) become real published
+   files, written with claude.use('artifact').publish(files) in chunks: a chunk the service calls too_large is halved, a rate_limited one
+   waits and retries. Also ADP.unpack(files, {prefix, progress}) for a page that unpacks by hand. ---------- */
+const UNPACK_FILES = 100, UNPACK_BYTES = 900000;
+async function unpack(files, o){
+  o = o || {};
+  const art = window.claude && typeof window.claude.use === 'function' ? await window.claude.use('artifact').catch(() => null) : null;
+  if (!art) throw new Error('the artifact capability is not available here, so the files stay packed');
+  const pre = o.prefix || '', list = files.filter(x => x && typeof x.path === 'string' && typeof x.text === 'string');
+  let at = 0, retry = 0, max = o.files || UNPACK_FILES, chunks = 0;
+  while (at < list.length) {
+    const map = {}; let n = 0, bytes = 0;
+    while (at + n < list.length && n < max && (n === 0 || bytes + list[at + n].text.length <= (o.bytes || UNPACK_BYTES))) { map[pre + list[at + n].path] = list[at + n].text; bytes += list[at + n].text.length; n++; }
+    try { await art.publish(map); at += n; chunks++; retry = 0; if (o.progress) o.progress(at, list.length); }
+    catch (e) {
+      const code = e && e.code;
+      if (code === 'too_large' && n > 1) { max = Math.max(1, n >> 1); continue; }
+      if (code === 'rate_limited' && retry++ < 5) { await new Promise(r => setTimeout(r, 2000 * retry)); continue; }
+      throw e;
+    }
+  }
+  return {files: list.length, chunks};
+}
+/* A published seed whose index names an `unpack` collection and whose stamp (seed.json `at`, which changes when the packed docs change) is not
+   the one status/unpack holds: unpack its files again, record it in changes/ (What changed lists it) and reload. The db is not re-seeded. */
+async function reunpack(d){
+  let t = null;
+  try {
+    const r = await fetch('seed.json', {cache: 'no-store'}); if (!r.ok) return;
+    const f = await r.json();
+    if (!f || f.schema !== 'adp-seed/2' || typeof f.unpack !== 'string' || !Array.isArray(f.packs)) return;
+    const st = await d.doc('status/unpack').get().catch(() => null);
+    if (st && st.exists && st.data().at === f.at) return;
+    t = tour(f, true); let files = [];
+    for (let k = 0; k < f.packs.length; k++) {
+      const path = String(f.packs[k]); t.step(k + 1, f.packs.length, path);
+      const pr = await fetch(path, {cache: 'no-store'});
+      if (!pr.ok) { t.fail('pack ' + path + ' is not published (' + pr.status + ')'); return pushErr('unpack: ' + path + ' ' + pr.status); }
+      const pk = await pr.json(); files = files.concat((Array.isArray(pk && pk.docs) ? pk.docs : []).filter(x => x && x.collection === f.unpack && x.data).map(x => x.data));
+    }
+    if (!files.length) return t.fail('the packs hold no ' + f.unpack + ' docs');
+    await unpack(files, {progress: (n, m) => t.progress(n, m, {collection: 'files'})});
+    const at = new Date().toISOString(), by = user.id || 'page';
+    await d.doc('status/unpack').set({state: 'done', at: f.at, version: String(f.version || ''), files: files.length, unpacked_at: at, opened_by: by});
+    await d.doc('changes/u-' + Date.now()).set({version: String(f.version || ''), at, by, summary: 'A new version was published: ' + files.length + ' files unpacked (seed ' + f.at + ')', parts: [], threads: [], data: [{doc: 'status/unpack'}]}).catch(() => {});
+    t.done('Unpacked ' + files.length + ' files. Loading…'); setTimeout(() => location.reload(), 800);
+  } catch (e) { const m = e && (e.code || e.message) || e; pushErr('unpack: ' + m); if (t) t.fail(String(m)); }
+}
 async function seedFromFile(d){
   let t = null;
   try {
     const has = async () => { const c = await d.doc('manifest/current').get().catch(() => null); return !!(c && c.exists); };
-    if (await has()) return;
+    if (await has()) return reunpack(d);
     const r = await fetch('seed.json', {cache: 'no-store'}); if (!r.ok) return;
     const f = await r.json();
     const v1 = f && f.schema === 'adp-seed/1' && Array.isArray(f.docs), v2 = f && f.schema === 'adp-seed/2' && Array.isArray(f.packs);
@@ -295,7 +343,10 @@ async function seedFromFile(d){
       const pk = await pr.json(); docs = docs.concat(Array.isArray(pk && pk.docs) ? pk.docs : []);
     }
     docs = docs.filter(x => x && typeof x.collection === 'string' && typeof x.id === 'string' && x.data && typeof x.data === 'object');
+    const un = typeof f.unpack === 'string' ? f.unpack : '', files = un ? docs.filter(x => x.collection === un).map(x => x.data) : [];
+    if (files.length) docs = docs.filter(x => x.collection !== un);       // the files of an `unpack` collection ride the seed but are not db docs
     if (await has()) return t.done('Another editor was first: the record is already written.');   // another editor was first
+    if (files.length) await unpack(files, {progress: (n, m) => t.progress(n, m, {collection: 'files'})});     // before any db write: a failure leaves the db empty, so a reload tries again
     const rest = docs.filter(x => !(x.collection === 'manifest' && x.id === 'current')), man = docs.find(x => x.collection === 'manifest' && x.id === 'current');
     const total = rest.length + (man ? 1 : 0), at0 = new Date().toISOString(); let done = 0;
     const write = async x => { await d.doc(x.collection + '/' + x.id).set(x.data); done++; t.progress(done, total, x);
@@ -305,7 +356,9 @@ async function seedFromFile(d){
     const at = new Date().toISOString();
     seeded = {state: 'done', from: 'seed.json', version: String(f.version || ''), by: f.by || '', opened_by: user.id || 'editor', docs: docs.length, packs: (f.packs || []).length, at};
     await d.doc('status/seed').set(seeded).catch(() => {});
-    window.ADP_SEED = seeded; t.done();
+    if (files.length) await d.doc('status/unpack').set({state: 'done', at: f.at, version: String(f.version || ''), files: files.length, unpacked_at: at, opened_by: user.id || 'editor'}).catch(() => {});     // so the next open does not unpack again
+    window.ADP_SEED = seeded;
+    if (files.length) { t.done('Unpacked ' + files.length + ' files and wrote the record. Loading…'); setTimeout(() => location.reload(), 800); } else t.done();
   } catch (e) { const m = e && (e.code || e.message) || e; pushErr('seed: ' + m); if (t) t.fail(String(m)); }
 }
 
@@ -501,5 +554,5 @@ addEventListener('resize', () => { place(); later(); });
 
 const config = Object.freeze({define, get, all, on, set, reset, ready: readyP, get doc(){ return cdoc; }});
 const ns = name => { if (!db) throw new Error('ADP.ns needs a database'); const b = 'ns/' + name + '/'; return {doc: p => db.doc(b + p), collection: p => db.collection(b + p)}; };
-window.ADP = Object.freeze({build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, get db(){ return db; }});
+window.ADP = Object.freeze({build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, unpack, get db(){ return db; }});
 })();
