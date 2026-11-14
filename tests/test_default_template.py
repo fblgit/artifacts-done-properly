@@ -38,8 +38,8 @@ class DefaultTemplate(unittest.TestCase):
 
     def test_all_themes(self):
         themes = {i for i in self.cat if i.startswith('theme.')}
-        self.assertEqual(len(themes), 13)
-        self.assertLessEqual(themes, set(self.t['take']))
+        self.assertTrue(themes)
+        self.assertLessEqual(themes, set(self.t['take']))      # every theme the catalog has, however many
 
     def test_requires_closure_in_catalog(self):
         seen, todo = set(), list(self.t['take'])

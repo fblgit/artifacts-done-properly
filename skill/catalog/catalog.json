@@ -891,6 +891,89 @@
    "by": "product-designer"
   },
   {
+   "id": "theme.default",
+   "kind": "theme",
+   "group": "Themes",
+   "name": "Default",
+   "summary": "The look every ADP page starts with, as a named theme: cool greys, a carmine accent, Bricolage Grotesque over Atkinson Hyperlegible Next. The same values as the templates' own page.css.",
+   "version": "0.1.0",
+   "status": "new",
+   "tags": [
+    "palette",
+    "tokens",
+    "colours",
+    "dark mode",
+    "default",
+    "starting look",
+    "carmine",
+    "grey",
+    "bricolage"
+   ],
+   "files": [
+    {
+     "path": "kit/themes/default.css",
+     "role": "style",
+     "sha256": "933ba0b6041d13fc945ae11c3412adff48e915d294899edb3b27fe14dd591ad5",
+     "bytes": 3498
+    },
+    {
+     "path": "kit/themes/default.json",
+     "role": "data",
+     "sha256": "ba3e4aac4c98bbab8a35479958378d81b14ee1206f99134bff303d0aca19e35e",
+     "bytes": 1679
+    }
+   ],
+   "fonts": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Atkinson+Hyperlegible+Next:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
+   "requires": [],
+   "globals": [],
+   "provides": [
+    ":root tokens (light, dark, toggle)"
+   ],
+   "needs": {
+    "config": [
+     [
+      "fonts",
+      "Bricolage Grotesque, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts"
+     ],
+     [
+      "json",
+      "{light, dark} maps for Kit.tokens.themeCss"
+     ]
+    ],
+    "db": {
+     "reads": [],
+     "writes": []
+    },
+    "tokens": []
+   },
+   "preview": {
+    "render": "theme",
+    "samples": [
+     "kit/themes/default.json",
+     "kit/samples/viz-chips.json",
+     "kit/samples/viz-stepper.json",
+     "kit/samples/viz-matrix.json"
+    ],
+    "uses": [
+     "viz.core",
+     "viz.stepper",
+     "viz.matrix"
+    ]
+   },
+   "source": [
+    {
+     "board": "ADP starter template",
+     "file": "styles/page.css",
+     "what": "the :root, prefers-color-scheme and [data-theme] blocks"
+    }
+   ],
+   "changed": [],
+   "hash": "14968eb2445d",
+   "at": "2026-11-14T00:00:00Z",
+   "by": "claude-fable",
+   "about": "The values the templates carry in styles/page.css, given a name so a page can say which look it is on, go back to it after another theme, and offer it first in a theme switcher. It sets the shared colours, --shadow and the three font tokens; corners, text size and the meanings it does not name keep the page's and the kit's own fallbacks, as on a page that wears no theme. A test keeps it equal to the starter template's tokens."
+  },
+  {
    "id": "theme.adr-drafting-table",
    "kind": "theme",
    "group": "Themes",

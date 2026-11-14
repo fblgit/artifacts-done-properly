@@ -91,13 +91,24 @@ class ThemeFonts(unittest.TestCase):
         self.themes = sorted(os.path.basename(p)[:-5] for p in glob.glob(os.path.join(THEMES, '*.json')))
 
     def test_every_theme_is_a_catalog_entry_with_its_json_fonts(self):
-        self.assertEqual(len(self.themes), 13)
+        self.assertEqual({'theme.' + t for t in self.themes}, {i for i in self.cat if i.startswith('theme.')})      # the files and the catalog name the same themes; no count to keep up
         for t in self.themes:
             with self.subTest(theme=t):
                 j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
                 self.assertTrue(j.get('fonts', '').startswith('https://fonts.googleapis.com/css2?'), t)
                 self.assertIn('display=swap', j['fonts'])
                 self.assertEqual(self.cat['theme.' + t].get('fonts'), j['fonts'])
+
+    def test_the_default_theme_is_the_templates_starting_look(self):
+        """theme.default names the look a page has before it wears a theme: the starter's page.css tokens and font link, value for value."""
+        norm = lambda v: re.sub(r'\s+', '', v)
+        page = re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'templates', 'starter', 'styles', 'page.css.txt'), encoding='utf-8').read(), flags=re.S)
+        j = json.load(open(os.path.join(THEMES, 'default.json'), encoding='utf-8'))
+        for sel, want in ((':root{', j['light']), (':root[data-theme="dark"]{', j['dark'])):
+            have = dict(re.findall(r'(--[\w-]+):([^;}]+)', page.split(sel, 1)[1].split('}', 1)[0]))
+            self.assertEqual({k: norm(have.get(k, '')) for k in want}, {k: norm(v) for k, v in want.items()})
+        for t in ('starter', 'assistant', 'default'):
+            self.assertIn('href="%s"' % j['fonts'], open(os.path.join(ROOT, 'templates', t, 'index.html.txt'), encoding='utf-8').read(), t)
 
     def test_the_fonts_url_loads_every_family_the_theme_names_first(self):
         for t in self.themes:

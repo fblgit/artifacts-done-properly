@@ -64,6 +64,7 @@
   "kit.chrome",
   "kit.canvas",
   "pattern.mindmap",
+  "theme.default",
   "theme.adr-drafting-table",
   "theme.journey-whiteboard",
   "theme.glaze",

@@ -26,7 +26,9 @@ A layer theme adds to another one: `theme.glaze-depth` requires `theme.glaze`, s
 
 The publish object carries the theme's files by reference, and `index.html` gets two tags: the theme's font link before `styles/page.css`, and `kit/themes/<id>.css` after it (a theme is tokens only, so it overrides the template's placeholder tokens and leaves the page's rules alone). A theme that requires another (Glaze depth) brings that one's stylesheet too. The template's own font link stays.
 
-The `default` template takes all 13 themes but loads none, so they are at hand. Pick the one it wears with `--theme`.
+The `default` template takes every theme but loads none, so they are at hand. Pick the one it wears with `--theme`.
+
+`theme.default` is the look a page has before it wears any theme: the same tokens and font url the templates carry in `styles/page.css` and `index.html` (`tests/test_fonts.py` keeps them equal). Wear it to say which look a page is on, or to go back to the starting look after another theme.
 
 ### Later: switch the theme of an existing page
 
@@ -52,7 +54,7 @@ These are separate from the theme. The `look.mode` setting (`auto`, `light`, `da
 
 1. Write `skill/catalog/kit/themes/<id>.css` (the three blocks, contract names, the header with `@id theme.<id>`, `@group Themes`, a `@config fonts` line and the font url) and `<id>.json` (the same tokens in `light` and `dark`, plus `fonts`).
 2. Add its entry to `skill/catalog/catalog.json`: the fields every entry has (`docs/architecture.md`, section 7), `kind: "theme"`, both files with `sha256` and `bytes`, `fonts` (the json's url), `requires` (`[]`, or the base theme for a layer), `preview.render: "theme.<id>"` and the entry `hash`.
-3. Add `theme.<id>` to the `take` list in `skill/templates/default/template.json`, and raise the theme count in the tests that pin it (`tests/test_default_template.py`, `tests/test_eval_fixes.py`, `tests/test_fonts.py`).
+3. Add `theme.<id>` to the `take` list in `skill/templates/default/template.json`. No test pins a count: they compare against the catalog.
 4. For the catalog page's preview, register `P['theme.<id>']` in `skill/catalog/parts/`. The list at the end of `previews-b8.js` gives a theme the shared preview, which also loads its fonts.
 5. Run `python3 tools/check_catalog.py`, `python3 tools/check_headers.py` and `python3 -m unittest discover -s tests`.
 6. Publishing the catalog artifact is the owner's step (`tools/publish_catalog.py plan` writes the publish batches). Pages built against the live catalog get the new entry, and its `fonts`, only after that publish.

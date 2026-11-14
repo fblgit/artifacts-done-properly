@@ -109,7 +109,7 @@ class ThemeTags(Cmd):
     def test_new_with_any_theme_links_its_web_fonts_once_before_the_page_css(self):
         real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')
         themes = [e for e in json.load(open(real, encoding='utf-8'))['entries'] if e['id'].startswith('theme.')]
-        self.assertEqual(len(themes), 13)
+        self.assertTrue(themes)
         for e in themes:
             with self.subTest(theme=e['id']):
                 d = 'pg-' + e['id']
@@ -118,7 +118,7 @@ class ThemeTags(Cmd):
                 tag = f'<link rel="stylesheet" href="{e["fonts"]}">'
                 self.assertEqual(html.count(tag), 1)
                 self.assertLess(html.index(tag), html.index('href="styles/page.css"'))
-                self.assertNotIn('Bricolage+Grotesque', html)       # the template's placeholder fonts go: the theme brings its own
+                self.assertEqual(html.count('fonts.googleapis.com/css2'), 1)       # one font link, the theme's: the template's own is not left beside it (theme.default's is the same url)
                 self.assertEqual(self.run_adp('check', self.p(d)).returncode, 0)
 
     def test_take_prints_the_fonts_of_the_themes_it_takes(self):

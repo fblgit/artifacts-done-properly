@@ -1,0 +1,82 @@
+/* part:page.style.kit.theme.default */
+/**
+ * Default
+ * The look every ADP page starts with, as a theme with a name: cool proofing-paper greys, one carmine accent, Bricolage Grotesque headings over Atkinson Hyperlegible Next, IBM Plex Mono for ids. The values are the ones the templates carry in styles/page.css, so a page that wears no theme and a page that wears this one look the same; a test keeps the two equal.
+ *
+ * Character: a specimen book. Greys with a little blue in them, near-white panels, near-black ink, and carmine for everything that acts; at night a cool blue-black ground and a soft rose accent.
+ * It sets the shared colours, --shadow and the three font tokens, and nothing else: corners, text size, leading and the meanings it does not name keep the page's and the kit's own fallbacks, as on a page with no theme.
+ * Use it to say which look a page is on, to switch back to the starting look after another theme, and as the first choice of a theme switcher.
+ * Fonts: https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Atkinson+Hyperlegible+Next:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ *
+ * @id        theme.default
+ * @group     Themes
+ * @status    new
+ * @version   0.1.0
+ * @updated   2026-11-14
+ * @summary   The look every ADP page starts with, as a named theme: cool greys, a carmine accent, Bricolage Grotesque over Atkinson Hyperlegible Next. The same values as the templates' own page.css.
+ * @tags      palette, tokens, colours, dark mode, default, starting look, carmine, grey, bricolage
+ * @requires  none
+ * @config    fonts | Bricolage Grotesque, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @db        none
+ */
+/* Layout: none; a palette and type for any page. */
+:root {
+  color-scheme: light;
+  --bg: #e7e8ec;
+  --panel: #f9f9fb;
+  --sunk: #dedfe5;
+  --ink: #19191e;
+  --ink-2: #474852;
+  --ink-3: #62646e;
+  --rule: #c9cbd3;
+  --rule-2: #dcdde3;
+  --accent: #a3163f;
+  --accent-ink: #fff;
+  --accent-soft: #f5dce4;
+  --danger: #a3163f;
+  --ok: #1f6b4a;
+  --shadow: 0 1px 0 rgba(25,25,30,.05),0 14px 34px -18px rgba(25,25,30,.38);
+  --f-ui: "Atkinson Hyperlegible Next","Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-display: "Bricolage Grotesque","Avenir Next Condensed","Arial Narrow",sans-serif;
+  --f-mono: "IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121317;
+    --panel: #1a1b20;
+    --sunk: #23242b;
+    --ink: #e9e9ee;
+    --ink-2: #b4b5bf;
+    --ink-3: #90929c;
+    --rule: #343640;
+    --rule-2: #292a31;
+    --accent: #f2869f;
+    --accent-ink: #2a0811;
+    --accent-soft: #3b1a25;
+    --danger: #f2869f;
+    --ok: #74c9a0;
+    --shadow: 0 1px 0 rgba(0,0,0,.4),0 16px 36px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121317;
+  --panel: #1a1b20;
+  --sunk: #23242b;
+  --ink: #e9e9ee;
+  --ink-2: #b4b5bf;
+  --ink-3: #90929c;
+  --rule: #343640;
+  --rule-2: #292a31;
+  --accent: #f2869f;
+  --accent-ink: #2a0811;
+  --accent-soft: #3b1a25;
+  --danger: #f2869f;
+  --ok: #74c9a0;
+  --shadow: 0 1px 0 rgba(0,0,0,.4),0 16px 36px -18px rgba(0,0,0,.8);
+}
+/* /part:page.style.kit.theme.default */
