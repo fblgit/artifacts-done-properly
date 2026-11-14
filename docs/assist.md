@@ -196,7 +196,7 @@ adp.py requests DUMP.json [--ack RID --by NAME | --progress RID --text T [--by N
 
 Only one of `--ack`, `--progress`, `--done` per call; a missing id or a `RID` not in the dump exits with an error. `--by` defaults to `agent`.
 
-Every write action prints a `batches` list of ArtifactData writes (each doc is also saved as a file under `--out`, default `requests.adp`) and `{request, state}`. Each batch is the request update, then `set` of `presence/<NAME>` with `{at, doing, session: NAME}`.
+Every write action prints a `batches` list of ArtifactData writes (each doc is also saved as a file under `--out`, default `requests/` in the `.adp/` the log uses: the project's, else `~/.adp/`) and `{request, state}`. Each batch is the request update, then `set` of `presence/<NAME>` with `{at, doing, session: NAME}`.
 
 Pinning: the request update carries `if_version` when the dump gave that doc a version, or when `--pins P.json` names `requests/<rid>` (a pin passed in `--pins` is used; the dump's version is only a default). If neither supplies a version, the write has no `if_version` and the output carries `needs_pin: ['requests/<rid>']`: read the doc's version and pass `--pins`. The `presence` write is a `set` and is not pinned.
 
