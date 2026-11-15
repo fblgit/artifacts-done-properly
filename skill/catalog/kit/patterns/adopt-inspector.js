@@ -130,8 +130,12 @@ function mount(root, opts) {
     const f = document.createElement('iframe'); f.className = 'kit-ai-snap-frame'; f.title = 'Picture of ' + c.name; f.setAttribute('sandbox', 'allow-same-origin');      // no scripts: a still picture
     f.style.cssText = 'width:' + (w + 24) + 'px;height:' + (h + 24) + 'px;transform:scale(' + s + ');transform-origin:0 0'; f.srcdoc = src;
     wrap.append(f);
-    const cap = el('p', 'kit-ai-snap-c', (top.length > 1 || els.length > 1 ? els.length + ' elements; showing the largest. ' : '') + 'A still picture of it as it is on screen now (' + w + ' × ' + h + ' px' + (s < 1 ? ', scaled to ' + Math.round(s * 100) + '%' : '') + ').');
-    const build = askBuild(c); snapBody.replaceChildren(wrap, cap, ...(build ? [build] : []));      // a picture of what is on screen is not a preview page: the button is always there
+    const small = w < 160 || h < 90;      // a button or a label: one piece of the component, not the component
+    const cap = el('p', 'kit-ai-snap-c', small ? 'Only a small fragment of it is on screen (' + w + ' × ' + h + ' px). That is not a preview of the component: ask Claude to build one.'
+      : (top.length > 1 || els.length > 1 ? els.length + ' elements; showing the largest. ' : '') + 'A still picture of it as it is on screen now (' + w + ' × ' + h + ' px' + (s < 1 ? ', scaled to ' + Math.round(s * 100) + '%' : '') + ').');
+    if (small) cap.dataset.tone = 'warn';
+    const build = askBuild(c);      // a picture of what is on screen is not a preview page: the button is always there, and first when the picture is only a fragment
+    snapBody.replaceChildren(...(small && build ? [build] : []), wrap, cap, ...(!small && build ? [build] : []));
   }
 
   /* The outline and the picture are separate jobs: one failing must not stop the other, and neither may throw into the page that called select(). */

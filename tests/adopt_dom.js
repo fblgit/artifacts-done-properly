@@ -52,7 +52,7 @@ q(bd, '.kit-ab-chip')[0].click();
   const frame = w.document.querySelector('.kit-ai-frame'), fd = frame.contentDocument, fw = frame.contentWindow;
   fd.body.innerHTML = '<div class="pk-wheel" style="width:40px"><span class="pk-in">x</span></div><div class="w-box">w</div><div class="r-box">r</div><div class="d-box">d</div><div class="z">z</div>';
   fd.head.innerHTML = '<link rel="stylesheet" href="styles/picker.css"><style>.pk-wheel{color:red}</style>';
-  fw.Element.prototype.getBoundingClientRect = function () { return { width: 200, height: 80, left: 0, top: 0, right: 200, bottom: 80 }; };
+  fw.Element.prototype.getBoundingClientRect = function () { return this.classList.contains('d-box') ? { width: 116, height: 40, left: 0, top: 0, right: 116, bottom: 40 } : { width: 200, height: 80, left: 0, top: 0, right: 200, bottom: 80 }; };      // d-box is a button-sized fragment
   frame.dispatchEvent(new w.Event('load')); await sleep(700);
   const cls = s => (fd.querySelector(s).getAttribute('class') || '').split(/\s+/).filter(x => x.indexOf('kit-ai-') === 0).sort();
   out.paint = { wheel: cls('.pk-wheel'), inner: cls('.pk-in'), working: cls('.w-box'), ready: cls('.r-box'), discarded: cls('.d-box'), other: cls('.z') };
@@ -61,6 +61,7 @@ q(bd, '.kit-ab-chip')[0].click();
   out.snapP = { hidden: w.document.querySelector('.kit-ai-snap').hidden, head: w.document.querySelector('.kit-ai-snap-h').textContent, srcdoc: (snapFrame() || {}).srcdoc || '' };
   insp.select('B'); await sleep(20); out.snapLogic = snapText();
   insp.select('N'); await sleep(20); out.snapAbsent = snapText();
+  insp.select('D'); await sleep(20); out.snapFragment = { text: snapText(), tone: (w.document.querySelector('.kit-ai-snap-c') || { dataset: {} }).dataset.tone };
   insp.select('P'); await sleep(20); out.snapAgain = !!snapFrame();
   /* the picker: hover names the owner, a click selects it */
   w.document.querySelector('.kit-ai-btn').click();

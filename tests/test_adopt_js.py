@@ -108,6 +108,11 @@ class Dom(unittest.TestCase):
         self.assertIn('No visual: B draws nothing', self.o['snapLogic']); self.assertIn('Not on screen', self.o['snapAbsent'])
         self.assertTrue(self.o['snapAgain']); self.assertTrue(self.o['nowOnScreen']['srcdoc'])    # it follows the frame when the view changes
 
+    def test_a_button_sized_fragment_is_not_passed_off_as_a_picture_of_the_component(self):
+        f = self.o['snapFragment']      # the panel a person met: "A still picture of it as it is on screen now (116 x 40 px)"
+        self.assertIn('Only a small fragment of it is on screen (116 × 40 px)', f['text']); self.assertIn('not a preview of the component', f['text']); self.assertEqual(f['tone'], 'warn')
+        self.assertNotIn('A still picture of it', f['text'])
+
     def test_an_svg_element_can_be_marked_pictured_and_unmarked(self):
         n = self.o['nowOnScreen']
         self.assertTrue(n['isSvg']); self.assertEqual(n['focus'], ['kit-ai-focus']); self.assertTrue(n['srcdoc']); self.assertTrue(n['svgPicture'])
