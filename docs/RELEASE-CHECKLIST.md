@@ -15,8 +15,8 @@ PRs #1 to #6 are merged into `main`.
 - [ ] 9. [Owner] Tag the merge commit and push the tag (see `docs/RELEASING.md`):
    `git checkout main && git pull && git tag v2.0.0 && git push origin v2.0.0`
 - [ ] 10. [Owner] Watch the `release` workflow. It runs the tests, `package.py --check` and `adp_catalog.py`, and fails before publishing if the tag differs from `metadata.version`.
-- [ ] 11. [Claude] Verify the release: assets are `adp.skill` and `adp.skill.sha256`; download both and run `sha256sum -c adp.skill.sha256`; compare with the SHA-256 in the release notes; unzip and run `python3 -I adp/scripts/adp.py templates` with a temporary HOME (expected: `assistant`, `default`, `starter`).
+- [ ] 11. [Claude] Verify the release: assets are `adp.skill` and `adp.skill.sha256`; download both and run `sha256sum -c adp.skill.sha256`; compare with the SHA-256 in the release notes; unzip and run `python3 -I adp/scripts/adp.py templates` with a temporary HOME (expected: `assistant`, `default`, `starter`); the zip holds under 200 files, and `adp.py setup --scope user` with that HOME fills `~/.adp/catalog` from `adp/catalog.zip` (then `adp.py catalog <the catalog url>` says `complete: true`).
 - [ ] 12. [Owner] Replace the auto-generated notes with `docs/RELEASE-NOTES-v2.0.0.md` if wanted (`gh release edit v2.0.0 --notes-file docs/RELEASE-NOTES-v2.0.0.md`).
 - [ ] 13. [Claude] Give the artifact install block (download `adp.skill`, verify the hash, install it as a skill, run `adp.py setup --dry-run`, then `adp.py setup --scope <user|project|local>`).
 
-Local build measurement on current `main` (`python3 tools/package.py`): `dist/adp.skill` 1,164,716 bytes, 410 files, sha256 `d4c8e25a5560504c4767fbf4620820d51503f9cfcf10e2be43ef6ba034924957`. The hash changes if the tree changes; the published one is what counts.
+Local build measurement on current `main` (`python3 tools/package.py`): `dist/adp.skill` 1,230,751 bytes, 28 files (the catalog is one `catalog.zip`; an upload takes at most 200 files), sha256 `fcb67a1fedcc7165ee9efc0efab0918c61816fd8a21f1da339c9ce71759888d6`. The hash changes if the tree changes; the published one is what counts.

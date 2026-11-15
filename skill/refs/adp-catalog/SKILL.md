@@ -9,11 +9,11 @@ metadata:
 
 The catalog is a published artifact whose files are kit entries, listed in its `catalog.json` (schema `kit-catalog/2`, generated from the header of each entry's main file). Taking an entry by reference means the server copies the files into your artifact: nothing is downloaded, retyped or pasted.
 
-`ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. CATALOG is the catalog url (its fetched index is the live one), `-` for the saved catalog, or a local `catalog.json` (the repo's build is `catalog/catalog.json` in the adp skill's folder: not the live catalog).
+`ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. CATALOG is the catalog url (its fetched index is the live one), `-` for the saved catalog, or a local `catalog.json` (the shipped build is `~/.adp/catalog/catalog.json` after setup: not the live catalog).
 
 ## Save and fetch the user's catalog (My Own Kit)
 
-The user's whole catalog lives on disk in `~/.adp/catalog/`: get it first. `ADP catalog URL` saves the url in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalog/`. Make that read, then run the command again: it prints `fetched: true`, the build date, the entry count and, for every file the index lists that is not on disk yet, `read` calls with `paths` (at most 256 each, `out_dir` `~/.adp/catalog/`). Make them all, run the command once more, and it prints `complete: true`. `take`, `kit` and `suggest` read from that folder (an older `~/.adp/catalogs/<id>/` copy still counts); `adp.py` stays offline, it only prints the calls. `ver` is empty until the catalog's owner sets one, so compare the build date. `ADP catalog` alone shows the saved one. Never assume a catalog.
+The user's whole catalog lives on disk in `~/.adp/catalog/`: get it first. Setup already put the shipped copy there, so `ADP catalog URL` then only lists what differs. `ADP catalog URL` saves the url in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalog/`. Make that read, then run the command again: it prints `fetched: true`, the build date, the entry count and, for every file the index lists that is not on disk yet, `read` calls with `paths` (at most 256 each, `out_dir` `~/.adp/catalog/`). Make them all, run the command once more, and it prints `complete: true`. `take`, `kit` and `suggest` read from that folder (an older `~/.adp/catalogs/<id>/` copy still counts); `adp.py` stays offline, it only prints the calls. `ver` is empty until the catalog's owner sets one, so compare the build date. `ADP catalog` alone shows the saved one. Never assume a catalog.
 
 ## Find
 

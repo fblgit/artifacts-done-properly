@@ -93,7 +93,7 @@ each file's text outside its parts is hashed as _rest:<path>. Schema adp/2 adds 
 Markers (HTML or JS/CSS comments): <!-- part:ID --> ... <!-- /part:ID -->  |  /* part:ID */ ... /* /part:ID */
 ID: dot-separated lowercase kebab, e.g. triage.keys-table. Hash: sha256 of the text between the markers with
 whitespace runs collapsed, first 12 hex; a parent's text includes its children. Stdlib only; run with python3 -I."""
-import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys
+import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys, zipfile
 
 ID = r'[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*'
 TAG = re.compile(r'<[A-Za-z][A-Za-z0-9-]*')   # an opening tag (also inside JS template strings)
@@ -1285,7 +1285,30 @@ def plugin_name():
     except (OSError, ValueError, AttributeError): return None
 
 
-SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills (not in a plugin: it serves them itself), write the config, print (--yes: write) the CLAUDE.md pointer
+def shipped_catalog():
+    """{relative path: bytes} of the catalog this skill folder ships: its catalog/ folder (a plugin, a clone) or the catalog.zip a skill zip carries; {} when it has neither."""
+    d = os.path.join(HERE, 'catalog')
+    if os.path.isfile(os.path.join(d, 'catalog.json')):
+        return {k.replace(os.sep, '/'): v for k, v in tree_files(d).items() if not k.endswith('.pyc')}
+    z = os.path.join(HERE, 'catalog.zip')
+    if not os.path.isfile(z): return {}
+    with zipfile.ZipFile(z) as zf:
+        return {n: zf.read(n) for n in zf.namelist() if not n.endswith('/') and not os.path.isabs(n) and '..' not in n.split('/')}
+
+
+def unpack_catalog(dry):
+    """Put the shipped kit in ~/.adp/catalog (My Own Kit): every file that is not there yet. A file already there is left as it is (it may be newer, fetched from the live catalog). -> (files shipped, files new)"""
+    files = shipped_catalog()
+    dest = os.path.join(ADP_HOME, 'catalog')
+    new = [k for k in files if not os.path.isfile(os.path.join(dest, k))]
+    if not dry:
+        for k in new:
+            p = os.path.join(dest, k); os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'wb') as f: f.write(files[k])
+    return len(files), len(new)
+
+
+SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills (not in a plugin: it serves them itself), write the config, add the shipped catalog's missing files to ~/.adp/catalog, print (--yes: write) the CLAUDE.md pointer
        adp.py setup [--scope user|project|local] --dry-run   show what it would do (scope user when not given); writes nothing'''
 
 
@@ -1310,6 +1333,8 @@ def setup_cmd(a):
     print(f'setup {scope}{" (dry run)" if dry else ""}: ' + (f'the {len(names)} road skills ({", ".join(names)}) come with the plugin {plug} and are not copied' if plug else f'{len(names)} skills ({", ".join(names)}) -> {skills}') + f'; skill_root {HERE}')
     print(f'config: {cfg}' + ('' if scope == 'user' else f'; registry {os.path.join(ADP_HOME, "projects")}/<name>/config.json (path {cwd})')); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
+    total, fresh = unpack_catalog(dry)
+    print(f'catalog (My Own Kit) {os.path.join(ADP_HOME, "catalog")}: ' + (f'{total} shipped files, {fresh} {"would be " if dry else ""}added, the others were already there and are left as they are' if total else 'this skill folder ships none; adp.py catalog URL fetches it'))
     modified = [os.path.join(skills, n) for n in copy if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
     for m in modified: print(f'{"would replace" if dry else "replaced"} {m}: it differs from the packaged skill (an older copy or local edits); setup installs the packaged one')
     if dry: return 0

@@ -2,12 +2,14 @@
 """Validate the ADP skill tree and build a deterministic dist/adp.skill zip."""
 import argparse
 import hashlib
+import io
 import os
 import re
 import sys
 import zipfile
 
 SKILL_NAME = "adp"
+CATALOG_DIR = "catalog"
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 EXCLUDED_DIRS = {"__pycache__", "node_modules"}
 EXCLUDED_FILES = {".DS_Store"}
@@ -150,8 +152,39 @@ def legal_files(skill_dir):
     return [(n, os.path.join(top, n)) for n in LEGAL]
 
 
+MAX_FILES = 200      # claude.ai refuses a skill upload over 200 files
+
+
+def catalog_zip(skill_dir):
+    """The skill's catalog/ folder as one deterministic zip (bytes), or None when there is none. A skill zip carries the kit as this one file,
+    which `adp.py setup` unpacks into ~/.adp/catalog (My Own Kit): the kit is hundreds of files and an upload takes at most MAX_FILES."""
+    root = os.path.join(skill_dir, CATALOG_DIR)
+    if not os.path.isfile(os.path.join(root, "catalog.json")):
+        return None
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+        for dirpath, dirnames, filenames in os.walk(root):
+            dirnames[:] = sorted(d for d in dirnames if d not in EXCLUDED_DIRS)
+            for fn in sorted(filenames):
+                if fn in EXCLUDED_FILES or fn.endswith(".pyc"):
+                    continue
+                full = os.path.join(dirpath, fn)
+                info = zipfile.ZipInfo(os.path.relpath(full, root).replace(os.sep, "/"), FIXED_TIME)
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.create_system = 3
+                info.external_attr = 0o644 << 16
+                with open(full, "rb") as f:
+                    z.writestr(info, f.read(), zipfile.ZIP_DEFLATED, 9)
+    return buf.getvalue()
+
+
 def build(skill_dir, out_dir):
-    files = sorted(collect_files(skill_dir) + legal_files(skill_dir))
+    files = [(r, f) for r, f in collect_files(skill_dir) if not r.startswith(CATALOG_DIR + "/")]
+    files = sorted(files + legal_files(skill_dir))
+    inner = catalog_zip(skill_dir)
+    count = len(files) + (1 if inner is not None else 0)
+    if count > MAX_FILES:
+        raise ValidationError("the skill zip would hold %d files; claude.ai accepts at most %d" % (count, MAX_FILES))
     os.makedirs(out_dir, exist_ok=True)
     target = os.path.join(out_dir, SKILL_NAME + ".skill")
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
@@ -162,11 +195,17 @@ def build(skill_dir, out_dir):
             info.external_attr = (0o755 if os.access(full, os.X_OK) else 0o644) << 16
             with open(full, "rb") as f:
                 z.writestr(info, f.read(), zipfile.ZIP_DEFLATED, 9)
+        if inner is not None:
+            info = zipfile.ZipInfo("%s/%s.zip" % (SKILL_NAME, CATALOG_DIR), FIXED_TIME)
+            info.compress_type = zipfile.ZIP_STORED      # already compressed
+            info.create_system = 3
+            info.external_attr = 0o644 << 16
+            z.writestr(info, inner, zipfile.ZIP_STORED)
     with open(target, "rb") as f:
         sha = hashlib.sha256(f.read()).hexdigest()
     with open(target + ".sha256", "w", encoding="utf-8") as f:
         f.write("%s  %s.skill\n" % (sha, SKILL_NAME))
-    return target, len(files), os.path.getsize(target), sha
+    return target, count, os.path.getsize(target), sha
 
 
 def main(argv=None):
@@ -190,7 +229,11 @@ def main(argv=None):
     print("validation ok")
     if a.check:
         return 0
-    target, count, size, sha = build(a.skill_dir, a.out)
+    try:
+        target, count, size, sha = build(a.skill_dir, a.out)
+    except ValidationError as e:
+        print("error: %s" % e, file=sys.stderr)
+        return 1
     print("built %s: %d files, %d bytes" % (target, count, size))
     print("sha256 %s" % sha)
     return 0

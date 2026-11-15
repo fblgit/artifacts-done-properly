@@ -236,3 +236,44 @@ class SetupSafetyTests(Base):
         r = self.run_adp('setup', '--scope', 'project', '--dry-run')
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertFalse(os.path.exists(os.path.join(self.cwd, '.adp', 'log.jsonl')))
+
+
+class CatalogTests(Base):
+    """setup puts the kit the skill folder ships into ~/.adp/catalog (My Own Kit): from its catalog.zip (a skill zip) or its catalog/ folder (a plugin, a clone)."""
+    FILES = {'catalog.json': b'{"entries": []}', 'kit/a.js': b'A', 'kit/themes/t.css': b'T'}
+
+    def ship_zip(self, extra=None):
+        import zipfile
+        with zipfile.ZipFile(os.path.join(self.root, 'catalog.zip'), 'w') as z:
+            for k, v in {**self.FILES, **(extra or {})}.items(): z.writestr(k, v)
+
+    def mine(self, rel): return os.path.join(self.home, '.adp', 'catalog', rel)
+
+    def test_unpacks_the_shipped_zip_and_leaves_a_file_that_is_already_there(self):
+        self.ship_zip()
+        os.makedirs(os.path.dirname(self.mine('kit/a.js'))); open(self.mine('kit/a.js'), 'wb').write(b'NEWER')      # fetched from the live catalog
+        r = self.run_adp('setup', '--scope', 'user')
+        self.assertEqual(r.returncode, 0, r.stderr); self.assertIn('3 shipped files, 2 added', r.stdout)
+        self.assertEqual(open(self.mine('kit/a.js'), 'rb').read(), b'NEWER')
+        self.assertEqual(open(self.mine('kit/themes/t.css'), 'rb').read(), b'T'); self.assertTrue(os.path.isfile(self.mine('catalog.json')))
+        self.assertIn('0 added', self.run_adp('setup', '--scope', 'user').stdout)      # a second setup adds nothing
+
+    def test_dry_run_writes_no_catalog(self):
+        self.ship_zip()
+        r = self.run_adp('setup', '--scope', 'user', '--dry-run')
+        self.assertIn('3 would be added', r.stdout); self.assertFalse(os.path.exists(self.mine('')))
+
+    def test_unpacks_a_catalog_folder_when_the_skill_ships_one(self):
+        for k, v in self.FILES.items():
+            p = os.path.join(self.root, 'catalog', k); os.makedirs(os.path.dirname(p), exist_ok=True); open(p, 'wb').write(v)
+        self.assertIn('3 shipped files, 3 added', self.run_adp('setup', '--scope', 'user').stdout)
+        self.assertEqual(open(self.mine('kit/a.js'), 'rb').read(), b'A')
+
+    def test_a_zip_entry_that_climbs_out_is_never_written(self):
+        self.ship_zip({'../evil.txt': b'x', '/abs.txt': b'x'})
+        self.run_adp('setup', '--scope', 'user')
+        self.assertFalse(os.path.exists(os.path.join(self.home, '.adp', 'evil.txt'))); self.assertFalse(os.path.exists('/abs.txt'))
+
+    def test_no_shipped_catalog_says_so_and_writes_none(self):
+        r = self.run_adp('setup', '--scope', 'user')
+        self.assertIn('ships none', r.stdout); self.assertFalse(os.path.exists(self.mine('')))

@@ -2,6 +2,9 @@
 
 The repo ships one artifact: `adp.skill`, a zip of `skill/` with the top-level
 folder `adp/`. The build is deterministic, so the same tree gives the same bytes.
+It holds fewer than 200 files, the most claude.ai takes in a skill upload: `skill/catalog/` goes in as
+one `adp/catalog.zip`, which `adp.py setup` unpacks into `~/.adp/catalog`, and `tools/package.py`
+fails when the zip would hold more than 200 files.
 
 ## Cut a release
 

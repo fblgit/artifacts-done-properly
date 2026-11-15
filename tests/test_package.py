@@ -1,3 +1,4 @@
+import io
 import os
 import sys
 import tempfile
@@ -115,6 +116,31 @@ class BuildTests(Base):
             self.assertFalse(n.endswith(".pyc"))
             self.assertFalse(n.endswith(".DS_Store"))
             self.assertFalse(n.startswith("adp/evals/"))
+
+    def test_the_catalog_travels_as_one_zip_and_stays_under_the_upload_limit(self):
+        write(os.path.join(self.skill, "catalog", "catalog.json"), "{}")
+        for i in range(250):                      # a kit far over the 200 files an upload takes
+            write(os.path.join(self.skill, "catalog", "kit", "f%03d.js" % i), "x%d" % i)
+        write(os.path.join(self.skill, "catalog", "kit", "__pycache__", "x.pyc"), "x")
+        _, count, _, _ = package.build(self.skill, self.out)
+        names = self.names()
+        self.assertEqual(count, len(names)); self.assertLessEqual(count, package.MAX_FILES)
+        self.assertIn("adp/catalog.zip", names)
+        self.assertEqual([n for n in names if n.startswith("adp/catalog/")], [])
+        with zipfile.ZipFile(os.path.join(self.out, "adp.skill")) as z, zipfile.ZipFile(io.BytesIO(z.read("adp/catalog.zip"))) as inner:
+            self.assertEqual(len(inner.namelist()), 251)       # catalog.json and the 250 kit files, no cache
+            self.assertEqual(inner.read("kit/f007.js"), b"x7")
+            self.assertTrue(all(i.date_time == (1980, 1, 1, 0, 0, 0) for i in inner.infolist()))
+
+    def test_no_catalog_folder_means_no_catalog_zip(self):
+        package.build(self.skill, self.out)
+        self.assertNotIn("adp/catalog.zip", self.names())
+
+    def test_a_zip_over_the_upload_limit_is_refused(self):
+        for i in range(package.MAX_FILES):
+            write(os.path.join(self.skill, "scripts", "s%03d.py" % i), "x")
+        with self.assertRaises(package.ValidationError):
+            package.build(self.skill, self.out)
 
     def test_deterministic(self):
         _, _, _, sha1 = package.build(self.skill, self.out)
