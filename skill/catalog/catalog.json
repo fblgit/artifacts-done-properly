@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-15T15:55:25Z",
+ "built": "2026-11-15T16:04:42Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -1425,7 +1425,7 @@
     "snapshot"
    ],
    "status": "new",
-   "version": "0.2.0",
+   "version": "0.3.0",
    "requires": [
     "kit.adopt"
    ],
@@ -1438,17 +1438,17 @@
     {
      "path": "kit/patterns/adopt-inspector.js",
      "role": "script",
-     "sha256": "41bc147d20d628fb06bf1f15b3aaf84efd57c9c69e5e2da2873ddfa672f5dbd3",
-     "bytes": 12017
+     "sha256": "d4928407bb214bedd52597e843d5b4c4e6c2bdbc16f8066e483f4971e7edf7c2",
+     "bytes": 14098
     },
     {
      "path": "kit/patterns/adopt-inspector.css",
      "role": "style",
-     "sha256": "b612e797455c05a5bafc08c7fee1dbac2a5d61967a6645d5dad9e6643b348868",
-     "bytes": 1597
+     "sha256": "03b8b41f5c0d6e001fa4b3bb8114ba3091e929742d6d12901cdce0560ac3b82b",
+     "bytes": 1890
     }
    ],
-   "hash": "7880db7aaf34"
+   "hash": "a4f32dd9e671"
   },
   {
    "id": "pattern.answer-queue",

@@ -3,7 +3,7 @@
    Files beside the page, written by `adp.py extract SUBJECT --into DIR`: subject/candidates.json (the analysis) and the subject's own files under subject/.
    The server keeps what the person decided, so a refresh forgets nothing:
      ns/shared/adopt/state   {items: [{id, state, notes, at}]}      ns/shared/adopt/view   {selected, at}: the candidate shown last
-     ns/shared/adopt/packs/<id>   the adp-pack/1 object of a ready candidate */
+     ns/shared/packs/<id>   the adp-pack/1 object of a ready candidate      ns/shared/previews/<id>   {html}: a preview page Claude built for a candidate */
 (function(){
 'use strict';
 const SRC = 'subject/index.html', STATE = 'adopt/state', VIEW = 'adopt/view';
@@ -26,8 +26,8 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
     mount(ctx){
       const Kit = window.Kit || {}, $ = s => document.querySelector(s), note = $('.ad-note'), boardEl = $('.ad-board'), inspEl = $('.ad-inspect');
       if (!Kit.adopt || !Kit.adoptBoard || !Kit.adoptInspector) { boardEl.innerHTML = '<p class="muted">The adopt kits are not installed.</p>'; return {destroy(){}}; }
-      let dead = false, offs = [], board = null, insp = null, base = [], overlay = {}, packs = {}, sel = null, can = true, restored = false, chain = Promise.resolve();
-      const db = window.ADP && ADP.db, ref = db ? ADP.ns('shared').doc(STATE) : null, viewRef = db ? ADP.ns('shared').doc(VIEW) : null, packRef = id => ADP.ns('shared').doc('adopt/packs/' + id);
+      let dead = false, offs = [], pvOff = null, board = null, insp = null, base = [], overlay = {}, packs = {}, sel = null, can = true, restored = false, chain = Promise.resolve();
+      const db = window.ADP && ADP.db, ref = db ? ADP.ns('shared').doc(STATE) : null, viewRef = db ? ADP.ns('shared').doc(VIEW) : null, packRef = id => ADP.ns('shared').doc('packs/' + id), previewRef = id => ADP.ns('shared').doc('previews/' + id);      // a doc path has an even number of parts: ns/shared/packs/<id>
       const status = (t, tone) => { if (board) board.setStatus(t, tone); };
       const merged = () => Kit.adopt.merge(base, overlay);
       const push = () => { const l = merged(); if (board) board.setCandidates(l); if (insp) insp.setCandidates(l); };
@@ -42,8 +42,22 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
         return write(ref, {items: items()}).then(() => status('Saved to the server at ' + hhmm() + '.', 'ok'), e => status('Not saved: ' + why(e) + '. Reload and try again.', 'danger'));
       };
       const remember = id => { if (viewRef) write(viewRef, {selected: id, at: new Date().toISOString()}).catch(() => {}); };
-      const choose = (id, fromUser) => { sel = id; if (board) board.select(id); if (insp) insp.select(id); loadPack(id); if (fromUser) remember(id); };
-      const loadPack = id => { if (!ref || packs[id] !== undefined) return; packs[id] = null; packRef(id).get().then(s => { if (!dead && s && s.exists) { packs[id] = s.data(); if (board) board.setPacks(packs); } }).catch(() => {}); };
+      const choose = (id, fromUser) => { sel = id; if (board) board.select(id); if (insp) insp.select(id); watchPreview(id); loadPack(id); if (fromUser) remember(id); };
+      const loadPack = id => { if (!ref || packs[id] !== undefined) return; packs[id] = null; try { packRef(id).get().then(s => { if (!dead && s && s.exists) { packs[id] = s.data(); if (board) board.setPacks(packs); } }).catch(() => {}); } catch (e) { status('Could not read the pack: ' + why(e), 'warn'); } };
+      /* The selected candidate's preview page, if Claude has written one, follows the db: it appears here the moment it is saved. */
+      const watchPreview = id => {
+        if (pvOff) { try { pvOff(); } catch (e) {} pvOff = null; }
+        if (!db) return;
+        try { pvOff = previewRef(id).onSnapshot(s => { if (!dead && insp) insp.setPreview(id, s && s.exists ? (s.data() || {}).html : null); }, () => {}); } catch (e) { status('Could not read the preview: ' + why(e), 'warn'); }
+      };
+      /* What to build a preview from: the candidate and what it needs, in dependency order, as the files the subject serves under subject/. */
+      const depsOf = id => { const by = {}; merged().forEach(c => { by[c.id] = c; }); const seen = {}, out = []; const go = x => { if (seen[x] || !by[x]) return; seen[x] = true; (by[x].needs || []).forEach(go); out.push(by[x]); }; go(id); return out; };
+      const buildPreview = id => {
+        const e = ctx.engine(); if (!e) return Promise.reject(new Error('Sending needs the assist kit.'));
+        const order = depsOf(id), c = order[order.length - 1], files = order.map(x => (x.files || []).map(f => 'subject/' + f.path).join(' ')).join(' ');
+        return e.send({lane: 'task', scope: {kind: 'part', id: 'adopt.inspect', label: 'Preview of ' + id, hash: ''}, quote: c ? c.name + ' · provides ' + (c.provides || []).join(', ') : '',
+          text: 'Build a preview page for candidate ' + id + ' (docs/adopt.md). Write ONE complete, self-contained HTML document that renders just this component with sample data, and nothing else of the app. Load only these files, in this order, by relative address (they are served under subject/): ' + files + ', plus the stylesheets and scripts that subject/index.html links before them (read it for the order, the theme and the sample data). Call the component\'s public API (' + ((c && c.provides) || []).join(', ') + ') the way the subject does, in a container with room to draw. Save it as the field html of the db doc ns/shared/previews/' + id + ' (collection ns/shared/previews, doc id ' + id + '). Do not change the subject or any candidate\'s state.'});
+      };
       fetch('subject/candidates.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(j => {
         if (dead) return; base = j.candidates || [];
         note.textContent = (j.subject && j.subject.name ? j.subject.name + ': ' : '') + base.length + ' candidates' + (j.namespace ? ' (namespace ' + j.namespace + ')' : '') + '.';
@@ -58,8 +72,8 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
             onWork: (id, text) => { const e = ctx.engine(); if (!e) return Promise.reject(new Error('Sending needs the assist kit.')); const c = merged().find(x => x.id === id);
               const quote = c ? c.name + ' · ' + (c.files || []).map(f => f.path).join(', ') + ' · provides ' + (c.provides || []).join(', ') : '';
               return e.send({lane: 'task', scope: {kind: 'part', id: 'adopt.board', label: 'Candidate ' + id, hash: ''}, quote,
-                text: 'Adopt candidate ' + id + ' of this subject (docs/adopt.md; the candidates contract is there too). ' + text + ' When you change files, put the result in the db doc ns/shared/adopt/packs/' + id + ' (an adp-pack/1 object from adp.py pack) and set state "preview" on the item with id ' + id + ' in the list ns/shared/adopt/state.items (write the whole list back).'}).then(() => { if (c && c.state !== 'working') save(id, {state: 'working'}); }); }});
-          insp = Kit.adoptInspector.mount(inspEl, {src: SRC, candidates: l, selected: sel,
+                text: 'Adopt candidate ' + id + ' of this subject (docs/adopt.md; the candidates contract is there too). ' + text + ' When you change files, put the result in the db doc ns/shared/packs/' + id + ' (collection ns/shared/packs, an adp-pack/1 object from adp.py pack) and set state "preview" on the item with id ' + id + ' in the list ns/shared/adopt/state.items (write the whole list back).'}).then(() => { if (c && c.state !== 'working') save(id, {state: 'working'}); }); }});
+          insp = Kit.adoptInspector.mount(inspEl, {src: SRC, candidates: l, selected: sel, onBuild: buildPreview,
             onPick: p => { if (!p.id) { note.textContent = 'No candidate owns <' + p.tag + '>.'; return; } choose(p.id, true); note.textContent = p.id + ' (matched by ' + p.via + ' ' + p.value + ').'; }});
           if (!can) status('You can look but not change: only editors can save decisions.', 'warn');
           if (ref) offs.push(ref.onSnapshot(s => {
@@ -72,7 +86,7 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
           if (viewRef) offs.push(viewRef.onSnapshot(s => { if (dead || sel || !s || !s.exists) return; const id = (s.data() || {}).selected; if (id && base.some(c => c.id === id)) choose(id, false); }, () => {}));      // the candidate shown last, restored once
         });
       }).catch(() => { boardEl.innerHTML = '<p class="muted">No <code>subject/candidates.json</code> beside this page. Run <code>adp.py extract SUBJECT --into DIR</code> and publish again.</p>'; inspEl.hidden = true; });
-      return {destroy(){ dead = true; offs.forEach(f => { try { f(); } catch (e) {} }); if (board) board.destroy(); if (insp) insp.destroy(); }};
+      return {destroy(){ dead = true; if (pvOff) { try { pvOff(); } catch (e) {} } offs.forEach(f => { try { f(); } catch (e) {} }); if (board) board.destroy(); if (insp) insp.destroy(); }};
     },
   },
   /* /part:adopt */

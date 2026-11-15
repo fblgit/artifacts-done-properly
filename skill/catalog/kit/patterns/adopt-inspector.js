@@ -6,7 +6,10 @@
  * The frame must be same-origin with the page, so the adopter serves a copy of the artifact's files (docs/adopt.md). Scripts in the frame run with the page's own origin: adopt only an artifact you wrote or trust.
  *
  * API:
- *   Kit.adoptInspector.mount(root, {src, candidates, selected, onPick, label}) -> {setCandidates(list), select(id), inspect(on), refresh(), reload(), destroy()}
+ *   Kit.adoptInspector.mount(root, {src, candidates, selected, onPick, onBuild, label}) -> {setCandidates(list), select(id), setPreview(id, html), inspect(on), refresh(), reload(), destroy()}
+ *     setPreview  a preview page for one candidate: a complete HTML document that renders just that component from the artifact's own files with sample data, shown in its own
+ *                 frame (scripts run; relative addresses resolve against this page, so it loads subject/...). It wins over the on-screen picture. setPreview(id, null) removes it.
+ *     onBuild     (id) the person pressed "Ask Claude to build a preview"; the page sends the request. Without it the button is not offered.
  *     src         the frame's address, relative to the page (for example subject/index.html)
  *     candidates  the records Kit.adopt.index reads: {id, name, state, classes, ids, provides, summary}
  *     selected    the candidate shown as a picture and ringed in the frame
@@ -19,19 +22,19 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.2.0
+ * @version   0.3.0
  * @updated   2026-11-15
  * @summary   The artifact running live in a same-origin frame with a dev-tools picker: hover names the owning candidate, a click selects it, elements are painted by candidate state, and the selected one shows as a still picture.
  * @tags      adopt, inspector, picker, iframe, devtools, preview, select, highlight, snapshot
  * @requires  kit.adopt
  * @files     kit/patterns/adopt-inspector.css
  * @provides  Kit.adoptInspector.mount
- * @config    Kit.adoptInspector.mount(root, opts) | src, candidates, selected, onPick({id, via, value, tag}), label
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --accent-ink --warn --f-ui --f-mono
+ * @config    Kit.adoptInspector.mount(root, opts) | src, candidates, selected, onPick({id, via, value, tag}), onBuild(id), label
+ * @tokens   --panel --sunk --ink --ink-2 --rule --accent --accent-ink --warn --f-ui --f-mono
  * @globals   none
  * @db        none
  * @source    Adopt workbench, 2026-11-15 | docs/adopt.md | the inspector view
- * @changed   elements are painted by their candidate's state in the frame; the selected candidate shows as a still picture; both follow the frame when its view changes.
+ * @changed   a candidate can have a preview page built for it (setPreview) that shows whatever the frame is on; without one the picture or a message offers to have one built.
  */
 (function () {
 'use strict';
@@ -48,7 +51,7 @@ const MARKS = /\bkit-ai-(?:st-\w+|focus|hover)\b/g;
 
 function mount(root, opts) {
   const o = Object.assign({ src: '', candidates: [], selected: null, label: 'Live preview of the artifact' }, opts);
-  let cands = o.candidates, sel = o.selected, idx = Kit.adopt.index(cands), on = false, hot = null, marked = [], dead = false, doc = null, mo = null, timer = 0, lastSnap = '';
+  let cands = o.candidates, sel = o.selected, idx = Kit.adopt.index(cands), on = false, hot = null, marked = [], dead = false, doc = null, mo = null, timer = 0, lastSnap = '', previews = {};
   root.classList.add('kit-ai'); root.replaceChildren();
   const bar = el('div', 'kit-ai-bar'), tog = el('button', 'kit-ai-btn', 'Pick an element'), rl = el('button', 'kit-ai-btn', 'Reload'), say = el('span', 'kit-ai-say', 'Loading the artifact.');
   tog.type = 'button'; rl.type = 'button'; tog.setAttribute('aria-pressed', 'false'); say.setAttribute('role', 'status'); bar.append(tog, rl, say);
@@ -71,16 +74,30 @@ function mount(root, opts) {
     if (c) { const n = find(c).length; say.textContent = c.name + ': ' + (n ? n + ' element' + (n === 1 ? '' : 's') + ' outlined in this view.' : (c.classes || c.ids || []).length ? 'not on screen in this view.' : 'draws nothing of its own.'); }
   }
 
+  /* The button under a message: asks the page to have a preview page built for this candidate. */
+  const askBuild = c => {
+    if (!o.onBuild) return null;
+    const b = el('button', 'kit-ai-btn primary', 'Ask Claude to build a preview'); b.type = 'button';
+    b.addEventListener('click', () => { b.disabled = true; Promise.resolve(o.onBuild(c.id)).then(() => { b.textContent = 'Asked. The preview appears here when Claude has written it.'; }, e => { b.disabled = false; b.textContent = 'Could not send (' + ((e && e.message) || 'try again') + '). Ask again'; }); });
+    return b;
+  };
   function snapshot() {
     const c = by(sel); snapBox.hidden = !c; if (!c) return;
     snapHead.textContent = 'Component: ' + c.name + (c.suggested_id ? ' (would become ' + c.suggested_id + ')' : '');
+    const pv = previews[c.id];
+    if (pv) {      // a preview page built for this candidate: it runs the artifact's own files with sample data, whatever the frame below shows
+      if (lastSnap === 'pv:' + pv) return; lastSnap = 'pv:' + pv;
+      const f = document.createElement('iframe'); f.className = 'kit-ai-pv-frame'; f.title = 'Preview of ' + c.name; f.setAttribute('sandbox', 'allow-scripts allow-same-origin'); f.srcdoc = pv;
+      const again = askBuild(c); if (again) again.textContent = 'Ask Claude to change this preview';
+      snapBody.replaceChildren(f, el('p', 'kit-ai-snap-c', 'A preview page built for this component. It runs the artifact\'s own files, so it shows the real code.'), ...(again ? [again] : [])); return;
+    }
     const draws = (c.classes || []).length || (c.ids || []).length, els = doc && draws ? find(c) : [];
     const top = els.filter(e => { for (let p = e.parentElement; p; p = p.parentElement) if (els.indexOf(p) >= 0) return false; return true; })
       .map(e => ({ e, r: e.getBoundingClientRect() })).filter(x => x.r.width > 8 && x.r.height > 8).sort((a, b) => b.r.width * b.r.height - a.r.width * a.r.height);
     if (!top.length) {
       const m = !draws ? 'No visual: ' + c.name + ' draws nothing of its own' + ((c.provides || []).length ? '; it provides ' + c.provides.join(', ') + '.' : '.')
         : 'Not on screen in the preview right now. Open the part of the artifact that shows it; this picture follows.';
-      if (lastSnap !== m) { lastSnap = m; snapBody.replaceChildren(el('p', 'kit-ai-none', m)); } return;
+      if (lastSnap !== m) { lastSnap = m; const b = askBuild(c); snapBody.replaceChildren(el('p', 'kit-ai-none', m), ...(b ? [b] : [])); } return;
     }
     const pick = top[0], r = pick.r, w = Math.ceil(r.width), h = Math.ceil(r.height), clone = pick.e.cloneNode(true);
     [clone].concat(Array.prototype.slice.call(clone.querySelectorAll('[class*="kit-ai-"]'))).forEach(n => { n.className = String(n.className).replace(MARKS, '').trim(); });
@@ -125,6 +142,7 @@ function mount(root, opts) {
   return {
     setCandidates(l) { cands = l || []; idx = Kit.adopt.index(cands); lastSnap = ''; later(); },
     select(id) { sel = id; lastSnap = ''; refresh(); },
+    setPreview(id, html) { if (html) previews[id] = String(html); else delete previews[id]; if (id === sel) { lastSnap = ''; snapshot(); } },
     inspect(v) { if (!tog.disabled) toggle(!!v); },
     refresh,
     reload() { rl.click(); },

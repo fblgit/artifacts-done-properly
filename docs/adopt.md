@@ -57,6 +57,12 @@ Output is `adopt-candidates/1` JSON (`candidates.json`).
 
 An agent writing the file should: split the artifact into components a person would want as one kit each; list for each the files (or, for one big file, the file and a `regions` entry saying which lines); say what it needs from the others; and list the classes and ids it draws, including ones defined in a stylesheet the whole page shares. It then runs `adp.py candidates FILE --subject DIR` and fixes every error. Warnings are worth reading: a candidate nobody can pick, a class two candidates claim, a file in two candidates, a cycle.
 
+## The preview
+
+The inspector shows the live artifact, but most components only exist on screen after a click (a dialog, another tab), so a preview that waits for them is no preview. Each candidate can have a **preview page**: one complete HTML document, built by Claude on request, that loads only the files that component needs (its `needs` in order, from `subject/`), gives it sample data and calls its public API in a container with room to draw. It is stored as the field `html` of `ns/shared/previews/<id>` and shown in its own frame (scripts run; relative addresses resolve against the adopter page, so `subject/...` loads). The board offers "Ask Claude to build a preview" whenever a candidate has none; the request names the files in dependency order. Without a preview the inspector falls back to a still picture of the component if it is on screen, and says so if it is not.
+
+A preview page is a test of the candidate as much as a picture: if a component cannot be drawn from its own files and a few lines, it is not yet standalone, and the work request is where that gets fixed.
+
 ## The pack (`.adp.json`)
 
 A ready candidate becomes one portable file, `adp-pack/1`: JSON with the entry id, kind and version, every file with `sha256` and text, the provenance (subject url, version, source paths and hashes), and `patch`, a unified diff that `git apply` accepts at the root of an ADP repo checkout (paths `skill/catalog/kit/...`). `adp.py unpack X.adp.json` verifies the hashes and the patch; `--to DIR` writes the files; `--apply` runs `git apply` on a checkout. The file is `<entry id>.adp.json`: plain JSON, so an artifact serves it and a browser downloads it as it is. (`.adp` alone is not a web media type, and `DIR.adp/` is already the state folder of `adp.py export`.)
@@ -86,7 +92,7 @@ Open the adopter on a subject, see every candidate, pick one in the preview or t
     python3 -I $ADP pack kit.picker STAGING --candidates ADOPTER/subject/candidates.json --cid c.picker
     python3 -I $ADP unpack kit.picker.adp.json --apply CATALOG_CHECKOUT
 
-The page keeps the person's decisions on the server, so a refresh forgets nothing: `ns/shared/adopt/state` (`{items: [{id, state, notes, at}]}`, a list because ids hold dots), `ns/shared/adopt/view` (`{selected, at}`, the candidate shown last), and a candidate's pack in `ns/shared/adopt/packs/<id>`. The board's status line says Saved, Restored or Not saved. A request sent from the board names both, so the session that does the work records where the result went.
+The page keeps the person's decisions on the server, so a refresh forgets nothing: `ns/shared/adopt/state` (`{items: [{id, state, notes, at}]}`, a list because ids hold dots), `ns/shared/adopt/view` (`{selected, at}`, the candidate shown last), a candidate's pack in `ns/shared/packs/<id>`, and the preview page Claude built for it in `ns/shared/previews/<id>` (`{html}`). The board's status line says Saved, Restored or Not saved. A request sent from the board names both, so the session that does the work records where the result went.
 
 Tested under Node: the engine (`tests/adopt_engine.js`), and with jsdom the board, the inspector over a stand-in frame and the template's `parts/adopt.js` against an in-memory database (`tests/adopt_dom.js`, `tests/adopt_glue.js`; run by `tests/test_adopt_js.py`, which needs `ADOPT_JSDOM_DIR` to hold `node_modules/jsdom` and is skipped without it). Not tested in a real browser or against claude.ai's database: the look of the page, the sandbox of the preview frame, and the db handle's exact behaviour.
 

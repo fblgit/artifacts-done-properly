@@ -10,7 +10,12 @@ const CANDS = { schema: 'adopt-candidates/1', subject: { name: 'toy' }, namespac
 function makeDb() {
   const docs = {}, subs = {}, db = { docs, writes: [], fail: false };
   const snap = p => ({ exists: p in docs, data: () => JSON.parse(JSON.stringify(docs[p])) });
-  db.doc = p => ({
+  db.doc = p => {
+    /* the real handle refuses at once a path that addresses a collection (this is the error that broke the first release) */
+    if (p.split('/').length % 2) throw new TypeError('db doc(): document paths have an even number of segments (collection/id pairs); "' + p + '" has ' + p.split('/').length + ', which addresses a collection');
+    return docAt(p);
+  };
+  const docAt = p => ({
     get: () => Promise.resolve(snap(p)),
     set: d => { db.writes.push([p, JSON.parse(JSON.stringify(d))]); if (db.fail) return Promise.reject({ code: 'permission-denied' }); docs[p] = JSON.parse(JSON.stringify(d)); (subs[p] || []).forEach(f => setTimeout(() => f(snap(p)), 0)); return Promise.resolve(); },
     update: () => Promise.reject({ code: 'update-not-used' }),
@@ -59,6 +64,18 @@ async function session(db, o) {
   out.failed = s.snapshot(); s.m.destroy(); db.fail = false;
   /* 6. someone who can only view */
   s = await session(db, { canWrite: false }); out.viewer = { status: s.snapshot().status, disabled: s.all('.kit-ab-btn').filter(b => b.textContent !== 'Download').every(b => b.disabled) };
+  s.m.destroy();
+  /* 6b. previews: one Claude has written shows at once; without one the button asks for it, naming the files in dependency order */
+  db.docs['ns/shared/previews/c.c'] = { html: '<!doctype html><p id="made">built for c.c</p>' };
+  s = await session(db); s.node('c.c').click(); await sleep(120);
+  const pf = s.q('.kit-ai-pv-frame'); out.previewShown = { frame: !!pf, srcdoc: pf ? pf.srcdoc : '', sandbox: pf ? pf.getAttribute('sandbox') : '', head: s.q('.kit-ai-snap-h').textContent };
+  s.node('c.b').click(); await sleep(120);
+  out.noPreview = { frame: !!s.q('.kit-ai-pv-frame'), button: (s.q('.kit-ai-snap .kit-ai-btn') || {}).textContent || '' };
+  s.q('.kit-ai-snap .kit-ai-btn').click(); await sleep(80);
+  out.buildRequest = s.sent.map(x => ({ id: x.scope.id, label: x.scope.label, text: x.text }));
+  out.buttonAfter = s.q('.kit-ai-snap .kit-ai-btn').textContent;
+  db.docs['ns/shared/previews/c.b'] = { html: '<p>now there is one</p>' }; db.doc('ns/shared/previews/c.b').set({ html: '<p>now there is one</p>' }); await sleep(60);
+  out.arrives = (s.q('.kit-ai-pv-frame') || {}).srcdoc || ''; out.selectDidNotThrow = !s.q('.kit-ab-node[data-id="c.b"]') ? false : true;
   s.m.destroy();
   /* 7. a dotted id is a list entry, never a path */
   out.noDotKeys = Object.keys(db.docs['ns/shared/adopt/state']).every(k => k.indexOf('.') < 0) && db.writes.every(w => Object.keys(w[1]).every(k => k.indexOf('.') < 0));

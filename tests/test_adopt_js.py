@@ -133,7 +133,7 @@ class Glue(unittest.TestCase):
     def test_working_sends_a_request_and_records_it(self):
         o = self.o; s = o['sent'][0]
         self.assertEqual((s['lane'], s['scope']['id'], s['scope']['label']), ('task', 'adopt.board', 'Candidate c.c'))
-        self.assertIn('ns/shared/adopt/packs/c.c', s['text']); self.assertIn('state.items', s['text']); self.assertIn('make it generic', s['text'])
+        self.assertIn('ns/shared/packs/c.c', s['text']); self.assertIn('state.items', s['text']); self.assertIn('make it generic', s['text'])
         self.assertEqual(o['items'], [['c.b', 'working'], ['c.c', 'working']])
 
     def test_a_failed_save_says_so(self):
@@ -141,6 +141,23 @@ class Glue(unittest.TestCase):
 
     def test_a_viewer_can_look_and_not_change(self):
         v = self.o['viewer']; self.assertTrue(v['disabled']); self.assertIn('You can look but not change', v['status'])
+
+    def test_selecting_never_throws_on_a_database_path(self):
+        # the stand-in refuses a path with an odd number of parts, like the real handle; the first release built ns/shared/adopt/packs/<id> and every select threw
+        self.assertTrue(self.o['selectDidNotThrow']); self.assertEqual(self.o['refreshed']['pressed'], 'c.b')
+
+    def test_a_preview_written_by_claude_is_shown_and_arrives_live(self):
+        p = self.o['previewShown']
+        self.assertTrue(p['frame']); self.assertIn('built for c.c', p['srcdoc']); self.assertEqual(p['sandbox'], 'allow-scripts allow-same-origin')
+        self.assertEqual(self.o['arrives'], '<p>now there is one</p>')            # written after the candidate was selected, shown without a reload
+
+    def test_without_a_preview_the_button_asks_for_one_with_the_files_in_order(self):
+        o = self.o
+        self.assertEqual(o['noPreview'], {'frame': False, 'button': 'Ask Claude to build a preview'})
+        r = o['buildRequest'][0]; self.assertEqual((r['id'], r['label']), ('adopt.inspect', 'Preview of c.b'))
+        self.assertIn('subject/c.a.js subject/c.b.js', r['text'])                  # what it needs first, then the candidate
+        self.assertIn('ns/shared/previews/c.b', r['text']); self.assertLess(len(r['text'].encode()), 3500)      # the comment that wakes a session is limited
+        self.assertEqual(o['buttonAfter'], 'Asked. The preview appears here when Claude has written it.')
 
     def test_ids_with_dots_are_list_entries_not_keys(self):
         self.assertTrue(self.o['noDotKeys'])
