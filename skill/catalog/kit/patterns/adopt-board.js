@@ -21,7 +21,7 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.0
+ * @version   0.1.1
  * @updated   2026-11-15
  * @summary   The adoption's candidates as a dependency map coloured by state, with state filters and a work panel: moves, a box to Claude and the .adp download.
  * @tags      adopt, candidates, graph, map, state, kit, extract, claude, work
@@ -33,6 +33,7 @@
  * @globals   none
  * @db        none
  * @source    Adopt workbench, 2026-11-15 | docs/adopt.md | the map and work views
+ * @changed   the map fills the width of its box, follows a resize, and draws larger nodes and text; the work panel is a fixed column beside it.
  */
 (function () {
 'use strict';
@@ -66,7 +67,7 @@ function mount(root, opts) {
     mapBox.replaceChildren();
     const list = shown();
     if (!list.length) { mapBox.append(el('p', 'kit-ab-empty', cands.length ? 'No candidate is in this state.' : 'No candidates yet. Run adp.py extract on the artifact and load candidates.json.')); return; }
-    const ids = new Set(list.map(c => c.id)), L = A().layout(list), pos = {}; L.nodes.forEach(n => { pos[n.id] = n; });
+    const ids = new Set(list.map(c => c.id)), L = A().layout(list, { width: Math.max(0, mapBox.clientWidth - 14) }), pos = {}; L.nodes.forEach(n => { pos[n.id] = n; });
     const svg = sv('svg', { class: 'kit-ab-svg', viewBox: '0 0 ' + L.width + ' ' + L.height, width: L.width, height: L.height, role: 'group', 'aria-label': 'Dependency map: an arrow runs from what is needed to what needs it' });
     const defs = sv('defs'), mk = sv('marker', { id: 'kit-ab-arrow', viewBox: '0 0 8 8', refX: 7, refY: 4, markerWidth: 7, markerHeight: 7, orient: 'auto' });
     mk.append(sv('path', { d: 'M0 0L8 4L0 8z', class: 'kit-ab-head' })); defs.append(mk); svg.append(defs);
@@ -134,11 +135,13 @@ function mount(root, opts) {
   function choose(id) { sel = id; paint(); if (o.onSelect) o.onSelect(id); }
   function paint() { if (dead) return; paintBar(); paintMap(); paintSide(); }
   paint();
+  let raf = 0, lastW = mapBox.clientWidth, ro = null;      // the map follows its box: a new width draws it again at that width
+  if (window.ResizeObserver) { ro = new ResizeObserver(() => { const w = mapBox.clientWidth; if (w === lastW) return; lastW = w; cancelAnimationFrame(raf); raf = requestAnimationFrame(paintMap); }); ro.observe(mapBox); }
   return {
     setCandidates(l) { cands = (l || []).slice(); paint(); },
     select(id) { sel = id; paint(); },
     setPacks(p) { packs = p || {}; paintSide(); },
-    destroy() { dead = true; root.replaceChildren(); root.classList.remove('kit-ab'); },
+    destroy() { dead = true; if (ro) ro.disconnect(); cancelAnimationFrame(raf); root.replaceChildren(); root.classList.remove('kit-ab'); },
   };
 }
 

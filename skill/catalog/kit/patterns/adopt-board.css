@@ -4,9 +4,9 @@
 .kit-ab-bar{display:flex;flex-wrap:wrap;gap:6px}
 .kit-ab-chip{min-height:30px;padding:0 12px;font:600 13px var(--f-ui);color:var(--ink-2);background:var(--panel);border:1px solid var(--rule);border-radius:999px;cursor:pointer}
 .kit-ab-chip[aria-pressed="true"]{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
-.kit-ab-split{display:grid;gap:12px;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);align-items:start}
-@media (max-width:820px){.kit-ab-split{grid-template-columns:minmax(0,1fr)}}
-.kit-ab-map{position:relative;overflow:auto;min-height:160px;padding:6px;background:var(--sunk);border:1px solid var(--rule);border-radius:8px}
+.kit-ab-split{display:grid;gap:12px;grid-template-columns:minmax(0,1fr) minmax(320px,380px);align-items:start}
+@media (max-width:900px){.kit-ab-split{grid-template-columns:minmax(0,1fr)}}
+.kit-ab-map{position:relative;overflow:auto;min-height:360px;padding:6px;background:var(--sunk);border:1px solid var(--rule);border-radius:8px}
 .kit-ab-svg{position:absolute;left:6px;top:6px;pointer-events:none;overflow:visible}
 .kit-ab-edge{fill:none;stroke:var(--rule);stroke-width:1.5}
 .kit-ab-edge.on{stroke:var(--accent);stroke-width:2.5}
@@ -19,8 +19,8 @@
 .kit-ab-node[data-tone="muted"]{opacity:.55}
 .kit-ab-node[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:1px}
 .kit-ab-node:focus-visible,.kit-ab-chip:focus-visible,.kit-ab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.kit-ab-nm{font:600 13px var(--f-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.kit-ab-meta{font:12px var(--f-ui);color:var(--ink-2)}
+.kit-ab-nm{font:600 15px var(--f-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kit-ab-meta{font:13px var(--f-ui);color:var(--ink-2)}
 .kit-ab-sim{position:absolute;right:6px;top:2px;color:var(--warn);font-weight:700}
 .kit-ab-side{display:grid;gap:10px;padding:12px;background:var(--panel);border:1px solid var(--rule);border-radius:8px;min-width:0}
 .kit-ab-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}

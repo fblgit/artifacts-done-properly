@@ -1,8 +1,8 @@
 /* part:page.style.adopt */
-/* The Adopt view's layout: the preview and the board side by side on a wide screen, stacked on a phone. Tokens only. */
-.adopt-view{display:grid;gap:16px;min-width:0}
+/* The Adopt view: as wide as the screen (it leaves the page's width limit), the map first and the live preview under it, each full width. Tokens only. */
+.adopt-view{display:grid;gap:16px;min-width:0;width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);padding:0 clamp(12px,2vw,28px);box-sizing:border-box}
 .adopt-view>*{min-width:0}
-.ad-split{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
-@media (max-width:1100px){.ad-split{grid-template-columns:minmax(0,1fr)}}
+.ad-split{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.ad-inspect .kit-ai-frame{height:75vh}
 .ad-note{margin:0}
 /* /part:page.style.adopt */

@@ -16,8 +16,8 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
     html: () => `<section class="view adopt-view" data-part="adopt" data-comment-target aria-label="Adopt">
       <!-- part:adopt.intro --><div class="card" data-part="adopt.intro" data-comment-target><h2>Adopt</h2><p class="muted">Detect, select, work with Claude, preview, then mark each candidate ready or discard it. Pick an element in the preview or a node in the map; a ready candidate downloads as a <code>.adp.json</code> pack.</p><p class="muted ad-note" role="status"></p></div><!-- /part:adopt.intro -->
       <div class="ad-split">
-        <!-- part:adopt.inspect --><div class="card ad-inspect" data-part="adopt.inspect" data-comment-target aria-label="Live preview of the artifact"></div><!-- /part:adopt.inspect -->
         <!-- part:adopt.board --><div class="card ad-board" data-part="adopt.board" data-comment-target aria-label="Candidates"></div><!-- /part:adopt.board -->
+        <!-- part:adopt.inspect --><div class="card ad-inspect" data-part="adopt.inspect" data-comment-target aria-label="Live preview of the artifact"></div><!-- /part:adopt.inspect -->
       </div>
     </section>`,
     mount(ctx){

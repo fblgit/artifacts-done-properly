@@ -12,8 +12,9 @@
  *   Kit.adopt.can(from, to) -> boolean    Kit.adopt.label(state) -> the word    Kit.adopt.tone(state) -> ok | warn | accent | muted | ''
  *   Kit.adopt.merge(candidates, overlay)  -> candidates with {state, notes} from overlay {id: {state, notes, at}}; a state that is not in STATES is ignored
  *   Kit.adopt.counts(candidates)          -> {state: n, all: n}
- *   Kit.adopt.layout(candidates, {colW, rowH, nodeW, nodeH, pad}) -> {nodes [{id, x, y, w, h, layer}], edges [{from, to}], width, height}
- *                                          layer 0 holds candidates that need nothing; an edge runs from what is needed to what needs it
+ *   Kit.adopt.layout(candidates, {colW, rowH, nodeW, nodeH, pad, width}) -> {nodes [{id, x, y, w, h, layer}], edges [{from, to}], width, height}
+ *                                          layer 0 holds candidates that need nothing; an edge runs from what is needed to what needs it;
+ *                                          width (pixels available) spreads the columns across it and widens the nodes
  *   Kit.adopt.index(candidates)           -> {classes: {class: id}, ids: {dom id: id}}
  *   Kit.adopt.ownerOf(el, index)          -> {id, via, value} for the nearest element at or above el whose class or id a candidate owns, else {id: null}
  *   Kit.adopt.verifyPack(pack)            -> Promise<[problem]> ([] when every file's sha256 and size match; needs crypto.subtle)
@@ -23,18 +24,19 @@
  * @kind      component
  * @group     Board kit
  * @status    new
- * @version   0.1.0
+ * @version   0.1.1
  * @updated   2026-11-15
  * @summary   The adopt flow without a view: candidate states and moves, a layered graph layout, which candidate owns a DOM element, counts, a .adp pack check and a download.
  * @tags      adopt, extract, candidates, state machine, graph, layout, pack, adp
  * @requires  none
  * @files     none
  * @provides  Kit.adopt.STATES, Kit.adopt.MOVES, Kit.adopt.can, Kit.adopt.label, Kit.adopt.tone, Kit.adopt.merge, Kit.adopt.counts, Kit.adopt.layout, Kit.adopt.index, Kit.adopt.ownerOf, Kit.adopt.verifyPack, Kit.adopt.download
- * @config    Kit.adopt.layout(candidates, opts) | colW, rowH, nodeW, nodeH, pad (pixels)
+ * @config    Kit.adopt.layout(candidates, opts) | colW, rowH, nodeW, nodeH, pad, width (pixels; width fills the space given)
  * @tokens    none
  * @globals   none
  * @db        none
  * @source    Adopt workbench, 2026-11-15 | docs/adopt.md | the states and the owner-by-class rule of the adopt flow
+ * @changed   layout takes the width available and spreads the columns and widens the nodes to fill it.
  */
 (function () {
 'use strict';
@@ -71,7 +73,7 @@ function counts(cands) {
 
 /* Layer = the longest chain of needs below a candidate; a cycle is cut where it is found, so the layout always ends. */
 function layout(cands, opts) {
-  const o = Object.assign({ colW: 190, rowH: 64, nodeW: 150, nodeH: 44, pad: 16 }, opts), by = {}, depth = {}, busy = {};
+  const o = Object.assign({ colW: 220, rowH: 76, nodeW: 180, nodeH: 54, pad: 16, width: 0 }, opts), by = {}, depth = {}, busy = {};
   (cands || []).forEach(c => { by[c.id] = c; });
   const d = id => {
     if (id in depth) return depth[id];
@@ -84,6 +86,10 @@ function layout(cands, opts) {
   };
   const layers = [];
   (cands || []).forEach(c => { const l = d(c.id); (layers[l] = layers[l] || []).push(c); });
+  if (o.width && layers.length > 1) {      // fill the width given: the columns spread, and the nodes grow with them up to 300 px
+    o.colW = Math.max(o.colW, Math.floor((o.width - 2 * o.pad - o.nodeW) / (layers.length - 1)));
+    o.nodeW = Math.min(300, Math.max(o.nodeW, o.colW - 48));
+  }
   const nodes = [];
   layers.forEach((col, l) => (col || []).sort((a, b) => (b.bytes || 0) - (a.bytes || 0)).forEach((c, i) => nodes.push({ id: c.id, layer: l, x: o.pad + l * o.colW, y: o.pad + i * o.rowH, w: o.nodeW, h: o.nodeH })));
   const edges = [];
