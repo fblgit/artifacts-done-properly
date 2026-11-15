@@ -1,0 +1,2140 @@
+{
+"schema": "adp-seed/2",
+"pack": 1,
+"of": 1,
+"docs": [
+{
+"collection": "parts",
+"id": "canvas",
+"data": {
+"title": "canvas",
+"parent": "page.script.app",
+"hash": "b0d6f0d85126",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "canvas.board",
+"data": {
+"title": "canvas.board",
+"parent": "canvas",
+"hash": "94582ec8622e",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "canvas.intro",
+"data": {
+"title": "Canvas intro",
+"parent": "canvas",
+"hash": "a2ec85b78957",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "data",
+"data": {
+"title": "data",
+"parent": "page.script.app",
+"hash": "6244e7ebf67b",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "data.actions",
+"data": {
+"title": "Actions",
+"parent": "data",
+"hash": "6fad52068941",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "data.caps",
+"data": {
+"title": "Capabilities and rules",
+"parent": "data",
+"hash": "f053e6c38467",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "data.model",
+"data": {
+"title": "Data model",
+"parent": "data",
+"hash": "5c0756130dfb",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "engines",
+"data": {
+"title": "engines",
+"parent": "page.script.app",
+"hash": "2230917235f8",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "engines.contract",
+"data": {
+"title": "The engine adapter contract",
+"parent": "engines",
+"hash": "a787c075c270",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "engines.env",
+"data": {
+"title": "Environment notes",
+"parent": "engines",
+"hash": "65dcc7573b4f",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "engines.table",
+"data": {
+"title": "Engines and their state",
+"parent": "engines",
+"hash": "9dc5aad87a6d",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "how",
+"data": {
+"title": "how",
+"parent": "page.script.app",
+"hash": "d397c7814879",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "how.flow",
+"data": {
+"title": "One clip, end to end",
+"parent": "how",
+"hash": "6ae711afb78f",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "how.layers",
+"data": {
+"title": "Three layers",
+"parent": "how",
+"hash": "7495a67d2c67",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "how.lifecycle",
+"data": {
+"title": "Job lifecycle",
+"parent": "how",
+"hash": "2eced4bfe84d",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "how.local",
+"data": {
+"title": "Local development and publishing",
+"parent": "how",
+"hash": "2fa7fb75972a",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "journeys",
+"data": {
+"title": "journeys",
+"parent": "page.script.app",
+"hash": "9ed7c7d207bc",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "journeys.j1",
+"data": {
+"title": "J1 to J4",
+"parent": "journeys",
+"hash": "127b8637a3cf",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "journeys.j5",
+"data": {
+"title": "J5 to J8",
+"parent": "journeys",
+"hash": "fe901add539e",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "kits",
+"data": {
+"title": "kits",
+"parent": "page.script.app",
+"hash": "38cffa04ba12",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "kits.missing",
+"data": {
+"title": "What is genuinely missing",
+"parent": "kits",
+"hash": "156773faf927",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "kits.new",
+"data": {
+"title": "The four new kits",
+"parent": "kits",
+"hash": "5fd248eadf29",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "kits.reuse",
+"data": {
+"title": "What the catalog already gives",
+"parent": "kits",
+"hash": "2c7c84771c37",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "kits.rules",
+"data": {
+"title": "What a contributed kit must be",
+"parent": "kits",
+"hash": "7e8b1d089fce",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "mycatalog",
+"data": {
+"title": "mycatalog",
+"parent": "page.script.app",
+"hash": "04032ee80ce7",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "mycatalog.intro",
+"data": {
+"title": "My catalog intro",
+"parent": "mycatalog",
+"hash": "547f3594358c",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "mycatalog.list",
+"data": {
+"title": "mycatalog.list",
+"parent": "mycatalog",
+"hash": "575cf24b828c",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "overview",
+"data": {
+"title": "overview",
+"parent": "page.script.app",
+"hash": "d0c4d5d2c476",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "overview.principles",
+"data": {
+"title": "Principles",
+"parent": "overview",
+"hash": "fef61c464d31",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "overview.purpose",
+"data": {
+"title": "What it is and why",
+"parent": "overview",
+"hash": "f1c4878a7eec",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "overview.squads",
+"data": {
+"title": "Who works on it",
+"parent": "overview",
+"hash": "0873ae3c49c3",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "page.assist",
+"data": {
+"title": "page.assist",
+"parent": "",
+"hash": "4e65e17a80c3",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "index.html"
+}
+},
+{
+"collection": "parts",
+"id": "page.changes",
+"data": {
+"title": "page.changes",
+"parent": "page.header",
+"hash": "f38c155648c9",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "index.html"
+}
+},
+{
+"collection": "parts",
+"id": "page.header",
+"data": {
+"title": "page.header",
+"parent": "",
+"hash": "e9de18aeb3ca",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "index.html"
+}
+},
+{
+"collection": "parts",
+"id": "page.lead",
+"data": {
+"title": "Lead",
+"parent": "page.header",
+"hash": "da3c687e9fdf",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "index.html"
+}
+},
+{
+"collection": "parts",
+"id": "page.script.app",
+"data": {
+"title": "page.script.app",
+"parent": "",
+"hash": "bf84abbb131e",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "page.script.content",
+"data": {
+"title": "page.script.content",
+"parent": "",
+"hash": "cb738a6344c8",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "content.js"
+}
+},
+{
+"collection": "parts",
+"id": "page.style",
+"data": {
+"title": "page.style",
+"parent": "",
+"hash": "2b6cd53ae3ae",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "styles/page.css"
+}
+},
+{
+"collection": "parts",
+"id": "page.style.assist",
+"data": {
+"title": "page.style.assist",
+"parent": "",
+"hash": "380f3db9f601",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "styles/assist.css"
+}
+},
+{
+"collection": "parts",
+"id": "page.style.canvas",
+"data": {
+"title": "page.style.canvas",
+"parent": "",
+"hash": "a0f55a70a066",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "styles/canvas.css"
+}
+},
+{
+"collection": "parts",
+"id": "page.style.changes",
+"data": {
+"title": "page.style.changes",
+"parent": "page.style",
+"hash": "e63759216e73",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "styles/page.css"
+}
+},
+{
+"collection": "parts",
+"id": "page.style.chrome",
+"data": {
+"title": "page.style.chrome",
+"parent": "page.style",
+"hash": "be29fbfb8d36",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "styles/page.css"
+}
+},
+{
+"collection": "parts",
+"id": "page.style.settings",
+"data": {
+"title": "page.style.settings",
+"parent": "page.style",
+"hash": "957f20b60f49",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "styles/page.css"
+}
+},
+{
+"collection": "parts",
+"id": "page.tabs",
+"data": {
+"title": "page.tabs",
+"parent": "",
+"hash": "4e6d94e92e39",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "index.html"
+}
+},
+{
+"collection": "parts",
+"id": "pieces",
+"data": {
+"title": "pieces",
+"parent": "page.script.app",
+"hash": "6f57b76d832b",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "pieces.jobs",
+"data": {
+"title": "Settings, queue, review, assets",
+"parent": "pieces",
+"hash": "5e632b244416",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "pieces.map",
+"data": {
+"title": "The pieces",
+"parent": "pieces",
+"hash": "a26db63726fa",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "pieces.shelf",
+"data": {
+"title": "Shelf, board and inspector",
+"parent": "pieces",
+"hash": "1b978948b42e",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "pieces.stage",
+"data": {
+"title": "Stage, timeline and narration",
+"parent": "pieces",
+"hash": "b95141faa150",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "plan",
+"data": {
+"title": "plan",
+"parent": "page.script.app",
+"hash": "64dd355ced5f",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "plan.decisions",
+"data": {
+"title": "Decisions to make",
+"parent": "plan",
+"hash": "76b086dddf5d",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "plan.slices",
+"data": {
+"title": "Slices",
+"parent": "plan",
+"hash": "6c7d7efbe9c7",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "quality",
+"data": {
+"title": "quality",
+"parent": "page.script.app",
+"hash": "a8df0fa8d3fe",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "quality.gates",
+"data": {
+"title": "Gates",
+"parent": "quality",
+"hash": "47284c8d151a",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "quality.risks",
+"data": {
+"title": "Risks",
+"parent": "quality",
+"hash": "c7f6e4ee1f4f",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "requests",
+"data": {
+"title": "requests",
+"parent": "page.script.app",
+"hash": "a785ee3ce6ae",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "requests.intro",
+"data": {
+"title": "Requests intro",
+"parent": "requests",
+"hash": "8c2f1bc311e7",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "requests.list",
+"data": {
+"title": "requests.list",
+"parent": "requests",
+"hash": "a2c9ccbd288c",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "scenes",
+"data": {
+"title": "scenes",
+"parent": "page.script.app",
+"hash": "73bc8ad6dfe7",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "scenes.format",
+"data": {
+"title": "The spec",
+"parent": "scenes",
+"hash": "47257709874e",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "scenes.outputs",
+"data": {
+"title": "Outputs and files",
+"parent": "scenes",
+"hash": "98aa0de06115",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "scenes.types",
+"data": {
+"title": "Scene types",
+"parent": "scenes",
+"hash": "83d421646624",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "settings",
+"data": {
+"title": "settings",
+"parent": "page.script.app",
+"hash": "97f390b776b4",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "settings.inbox",
+"data": {
+"title": "settings.inbox",
+"parent": "settings",
+"hash": "9e8731aee450",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "settings.intro",
+"data": {
+"title": "Settings intro",
+"parent": "settings",
+"hash": "620575bb0509",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "settings.namespaces",
+"data": {
+"title": "settings.namespaces",
+"parent": "settings",
+"hash": "829db140b8e2",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "parts",
+"id": "settings.switches",
+"data": {
+"title": "settings.switches",
+"parent": "settings",
+"hash": "6b446a1d705c",
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "added in the first build",
+"holder": "",
+"hold_until": "",
+"file": "parts/app.js"
+}
+},
+{
+"collection": "content",
+"id": "requests.intro",
+"data": {
+"part": "requests.intro",
+"title": "Requests intro",
+"html": "<h2>Requests</h2><p>Every request sent from this page, newest first. Each card shows where it is, what the session has done and what changed, and takes a reply once Claude has answered.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "canvas.intro",
+"data": {
+"part": "canvas.intro",
+"title": "Canvas intro",
+"html": "<h2>Canvas</h2><p>Draw, write and diagram on a free surface: storyboards, scene sketches, a mind map of a journey. Undo and redo are there; the <b>Mind map</b> mode arranges ideas as a tree.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "mycatalog.intro",
+"data": {
+"part": "mycatalog.intro",
+"title": "My catalog intro",
+"html": "<h2>My catalog</h2><p>What this page has installed from the catalog. A component with a place on this page has <b>Show it</b> and <b>Work on it</b>, which opens Work with Claude with that block picked.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "settings.intro",
+"data": {
+"part": "settings.intro",
+"title": "Settings intro",
+"html": "<h2>Settings</h2><p>The switches below are stored in the database, so a flip reaches every viewer and every agent at once, with no republish. Editors can flip them; everyone else sees them read-only.</p><p>Locks and namespaces are described under the switches: they say which parts are frozen and who may write where.</p><p>The <b>assist</b> switches choose which kinds of request the pane offers, whether Ask now is offered, and the shortcut.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "page.lead",
+"data": {
+"part": "page.lead",
+"title": "Lead",
+"html": "The spec of the ADP Media Studio: a page where people and agents make the clips, demos and narrated films that explain ADP. Read it, comment on any part, and take the piece your squad owns.",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "overview.purpose",
+"data": {
+"part": "overview.purpose",
+"title": "What it is and why",
+"html": "<h2>ADP Media Studio</h2>\n<p>A studio page, built on ADP, where a person sets up a clip in the browser and a watching Claude Code session renders it with real engines. The page holds the controls, the preview and the record. The session holds the engines. Every clip is described by a spec, so it can be rendered again when the product changes.</p>\n<h3>The problem</h3>\n<ul>\n<li>The pitch site and the journeys page have twelve media placeholders and no way to fill them that an agent can repeat.</li>\n<li>A spike (two clips, a runner, Playwright and ffmpeg) proved the engines work. It is one JavaScript file per clip, with no controls, no review and no record.</li>\n<li>Demos go stale the day the UI or the CLI changes. A hand-recorded clip cannot be regenerated.</li>\n</ul>\n<h3>What done looks like</h3>\n<ul>\n<li>A person adds a scene, edits its spec, previews it, requests a render and approves the result, all in the browser.</li>\n<li>An agent session turns a request into a clip with one command, and writes the result and its hash back to the page.</li>\n<li>Changing the product and pressing \"re-render\" gives a new clip from the same spec.</li>\n<li>The studio's own reusable parts (player, timeline, spec editor, narration panel) are catalog kits other pages can take.</li>\n</ul>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "overview.principles",
+"data": {
+"part": "overview.principles",
+"title": "Principles",
+"html": "<ol>\n<li><b>Spec first.</b> A clip is data. The page edits the spec, the engines read it. No clip exists only as a recording.</li>\n<li><b>The browser asks, the session does.</b> The browser cannot run ffmpeg, Chrome capture or a model. It never pretends to: it writes a job and shows its state.</li>\n<li><b>Local first.</b> Everything works against <code>adp.py dev serve</code> and <code>dev watch</code> before anything is published.</li>\n<li><b>Deterministic or flagged.</b> The same spec and the same inputs give the same output hash, or the job says why not.</li>\n<li><b>Real over staged.</b> Terminal scenes run the real commands. Page scenes record the real page in the dev emulator. A scripted transcript is labelled as scripted.</li>\n<li><b>ADP all the way.</b> Parts with ids and hashes, copy as data, comments on parts, a record of every change, kits taken from the catalog, new kits contributed back.</li>\n</ol>\n<h3>Not in scope</h3>\n<ul>\n<li>A general video editor. Hand-made effects, colour grading, music.</li>\n<li>Cloud rendering and hosted render APIs.</li>\n<li>Live-streaming a session. Clips only.</li>\n</ul>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "overview.squads",
+"data": {
+"part": "overview.squads",
+"title": "Who works on it",
+"html": "<table>\n<thead><tr><th>Squad</th><th>Owns</th><th>First deliverable</th></tr></thead>\n<tbody>\n<tr><td>Engines</td><td>Engine adapters, the <code>studio</code> CLI, determinism, budgets</td><td>S1: render one scene of each type to mp4 and gif</td></tr>\n<tr><td>Kits</td><td>K1 to K4, the four parts the catalog does not have</td><td>S2: media stage and clip timeline, with previews and samples</td></tr>\n<tr><td>Studio page</td><td>The ADP artifact, the data model, the job loop, the views</td><td>S3: projects, scenes, jobs and review on the dev emulator</td></tr>\n<tr><td>Journeys and QA</td><td>Scene library, end-to-end journeys, quality gates</td><td>S4: journeys J1 to J3 pass from a clean machine</td></tr>\n<tr><td>Skill and docs</td><td>The studio skill models read, the contributor guide</td><td>S5: an agent with only the skill makes a clip</td></tr>\n</tbody>\n</table>\n<p class=\"muted\">Comment on any part of this page to ask or object. The ADP record (What changed) lists every edit with who made it.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "how.layers",
+"data": {
+"part": "how.layers",
+"title": "Three layers",
+"html": "<h3>Browser, session, engines</h3>\n<table>\n<thead><tr><th>Layer</th><th>Runs</th><th>Does</th><th>Cannot</th></tr></thead>\n<tbody>\n<tr><td><b>Browser</b><br>the studio page</td><td>On the person's screen</td><td>Edits specs, previews outputs, queues jobs, reviews, comments, approves. May run in-browser helpers (narration preview).</td><td>Render video, run commands, read files outside its folder.</td></tr>\n<tr><td><b>Session</b><br>a watching Claude Code session</td><td>On the person's machine</td><td>Reads a job, calls the engines, writes progress and results back to the page's record, answers the request.</td><td>Decide quality. A person approves.</td></tr>\n<tr><td><b>Engines</b></td><td>Called by the session through the <code>studio</code> CLI</td><td>Turn a scene spec into frames, then a file. See Engines.</td><td>Talk to the page. They only read a spec and write files.</td></tr>\n</tbody>\n</table>\n<h3>Why the split</h3>\n<p>A page on claude.ai cannot run local programs. The Work with Claude loop already lets a page send a request to a session that watches it, and the dev emulator reproduces that loop offline. The studio uses that loop and adds a typed job on top of it.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "how.flow",
+"data": {
+"part": "how.flow",
+"title": "One clip, end to end",
+"html": "<ol>\n<li>A person edits a scene in the spec editor. The page saves the spec to the db and shows its hash.</li>\n<li>They press <b>Render</b>. The page writes a job document (queued) and sends a request to the session: \"render job j-0042\".</li>\n<li>The watching session reads the job and the spec, checks the spec hash, and calls <code>studio render</code> with the engine the job names.</li>\n<li>The CLI runs the engine. It prints progress lines; the session copies them into the job's progress list. The page shows them live.</li>\n<li>The engine writes the file under the studio's media folder. The CLI computes its sha256, size and duration and returns them.</li>\n<li>The session sets the job to <b>review</b>, with the outputs listed, and answers the request in one line.</li>\n<li>The person plays the output in the stage, comments on a moment, then approves or sends it back with a note (a new request on the same job).</li>\n<li>An approved clip can be published: the page publishes the file into the artifact, or the session copies it where a page expects it (for the pitch site, <code>assets/media/</code>).</li>\n</ol>\n<p><b>Rule:</b> only the session writes a job's progress and outputs. Only a person writes approval. Both are enforced by the db rules, not by convention.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "how.local",
+"data": {
+"part": "how.local",
+"title": "Local development and publishing",
+"html": "<ul>\n<li><b>Local:</b> <code>adp.py dev serve DIR</code> stands in for the db, user, comments and <code>artifact.publish</code>. <code>adp.py dev watch DIR</code> prints each message the page sends and keeps the \"a session is watching\" beat. Output files sit in the studio folder, served by the same server. <em>Verified in this repo for the assistant template; the studio's own job loop is to be built.</em></li>\n<li><b>Published:</b> the page runs on claude.ai with the same code. Rendering still needs a local session, so a published studio shows state and previews; it cannot render by itself. <em>Limit to state in the UI.</em></li>\n<li><b>Output size:</b> a binary file in an artifact is at most 15 MB, an asset at most 20 MiB, a publish call 255 files and 64 MB. The studio budgets for this (see Quality).</li>\n</ul>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "how.lifecycle",
+"data": {
+"part": "how.lifecycle",
+"title": "Job lifecycle",
+"html": "<table>\n<thead><tr><th>State</th><th>Set by</th><th>Meaning</th><th>Next</th></tr></thead>\n<tbody>\n<tr><td><code>queued</code></td><td>page</td><td>Written by Render. Nothing has seen it.</td><td>running, canceled</td></tr>\n<tr><td><code>running</code></td><td>session</td><td>An engine is working. Progress lines accrue.</td><td>review, failed, canceled</td></tr>\n<tr><td><code>review</code></td><td>session</td><td>Outputs exist and are listed with hashes. Waiting for a person.</td><td>approved, queued (changes requested)</td></tr>\n<tr><td><code>approved</code></td><td>person</td><td>The clip may be published or used.</td><td>published</td></tr>\n<tr><td><code>published</code></td><td>page or session</td><td>The file is in the artifact or in its target folder. Its path is recorded.</td><td>queued (re-render when the spec or the product changes)</td></tr>\n<tr><td><code>failed</code></td><td>session</td><td>The engine stopped. The job holds the engine's last lines and a reason.</td><td>queued</td></tr>\n<tr><td><code>canceled</code></td><td>page or session</td><td>Stopped on request. Partial files are not kept.</td><td>queued</td></tr>\n</tbody>\n</table>\n<p>A job is stale when its spec hash differs from the project's current spec hash. The page marks it and offers re-render. It never deletes the old output.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "pieces.map",
+"data": {
+"part": "pieces.map",
+"title": "The pieces",
+"html": "<p>Each piece is a part of the studio page with a stable id. The kit column says where it comes from: <b>take</b> an existing catalog entry as it is, <b>new</b> a kit this project contributes. The catalog was read entry by entry (see Kits to contribute); nothing is rebuilt that it already has.</p>\n<table>\n<thead><tr><th>Id</th><th>Piece</th><th>Kit</th></tr></thead>\n<tbody>\n<tr><td><code>studio.shelf</code></td><td>Project shelf: projects, state, last render, stale marks, batch re-render</td><td>take <code>pattern.master-detail</code> with <code>pattern.facet-batch</code> (count tiles with digit keys, group by, selectable rows and a batch bar)</td></tr>\n<tr><td><code>studio.board</code></td><td>Scene board: scenes in order as cards, a preview frame on each</td><td>take <code>viz.buckets</code> (drag with a drop line, plus a Move to menu for keyboard), one bucket per act</td></tr>\n<tr><td><code>studio.inspector</code></td><td>Scene inspector: the typed form and the JSON of one scene</td><td>new K3 <code>pattern.spec-editor</code>, with <code>kit.chrome</code> fields, <code>kit.callout-refusal</code> for errors, <code>kit.save-status</code>, <code>kit.keep-state</code>; opens in <code>kit.drawer</code></td></tr>\n<tr><td><code>studio.stage</code></td><td>Stage: plays an output, steps frames, shows captions</td><td>new K1 <code>pattern.media-stage</code>; its scrub bar is <code>Kit.sparkline.wave</code> (a slider with marked windows)</td></tr>\n<tr><td><code>studio.timeline</code></td><td>Clip timeline: scenes and narration as tracks along time, editable</td><td>new K2 <code>pattern.clip-timeline</code>, drawing on the scale logic of <code>viz.shelf</code> and the tick strip of <code>viz.replay</code></td></tr>\n<tr><td><code>studio.narration</code></td><td>Narration panel: script per scene, voice, timing, preview</td><td>new K4 <code>pattern.narration-panel</code>; the audio view is <code>Kit.sparkline.wave</code></td></tr>\n<tr><td><code>studio.engines</code></td><td>Engine and output settings: engine, size, fps, formats, budgets</td><td>take <code>pattern.settings</code>, <code>pattern.capability-picker</code> (an engine and what it needs)</td></tr>\n<tr><td><code>studio.queue</code></td><td>Render queue: jobs, progress lines, outputs, actions</td><td>take <code>pattern.job-tray</code> with a studio adapter; <code>pattern.status-columns</code> for the board by state</td></tr>\n<tr><td><code>studio.review</code></td><td>Review: old and new output, comments on moments, approve or send back</td><td>take <code>viz.compare</code> (Before, After, Wipe), <code>pattern.gate</code> (approve or reject with a reason the asker reads), <code>pattern.card-history</code></td></tr>\n<tr><td><code>studio.assets</code></td><td>Asset shelf: outputs with hash, size, duration, path, copy</td><td>take <code>pattern.file-map</code> (area is bytes, so the budget is visible), <code>layout.file-browser</code>, <code>pattern.filter-table</code>, <code>kit.copy</code></td></tr>\n<tr><td><code>studio.ask</code></td><td>Work with Claude: free requests to the session</td><td>take <code>pattern.assist</code>, <code>pattern.assist-panel</code>, <code>pattern.request-card</code>, <code>kit.claude-lane</code></td></tr>\n<tr><td><code>studio.history</code></td><td>What changed and renders, with who and when</td><td>ADP runtime; <code>pattern.event-log</code>, <code>viz.version-compare</code></td></tr>\n<tr><td><code>studio.shell</code></td><td>Header, views, themes, command palette</td><td>take <code>layout.topbar</code>, <code>kit.skins</code>, <code>kit.tabs</code>, <code>kit.palette</code> (Ctrl+K: \"render scene…\")</td></tr>\n</tbody>\n</table>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "pieces.shelf",
+"data": {
+"part": "pieces.shelf",
+"title": "Shelf, board and inspector",
+"html": "<h3>Project shelf <code>studio.shelf</code></h3>\n<p><b>Has:</b> a row per project: title, owner, scenes, spec hash, newest job state, stale mark. Filters by state and owner, search.<br><b>Actions:</b> new project, duplicate, archive, open.<br><b>States:</b> empty (one line saying how to start), loading, error.</p>\n<h3>Scene board <code>studio.board</code></h3>\n<p><b>Has:</b> scenes as cards in order. Each card: type glyph, title, seconds, caption flag, narration flag, last output frame, job state. Keyboard reordering (move earlier, move later) alongside drag.<br><b>Actions:</b> add scene (type picker), reorder, duplicate, delete, open in inspector, render this scene.<br><b>Rules:</b> scene ids never change once created. The order is data (a list of ids), not position in the page.</p>\n<h3>Inspector <code>studio.inspector</code></h3>\n<p><b>Has:</b> a form generated from the scene type's schema, a JSON tab holding the same data, field-level validation, a diff against the saved spec, undo and redo.<br><b>Actions:</b> edit, save (writes the spec and its hash), revert, copy JSON, paste JSON.<br><b>Rules:</b> an invalid spec cannot be rendered. The page shows which field and why.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "pieces.stage",
+"data": {
+"part": "pieces.stage",
+"title": "Stage, timeline and narration",
+"html": "<h3>Stage <code>studio.stage</code></h3>\n<p><b>Has:</b> a video or image view, play and pause, scrub, frame step (one frame back and forward), speed, loop a range, captions on and off, size toggle (full, 390 px), a readout of time and frame.<br><b>Keys:</b> space, left and right (one frame), shift with them (one second), J K L, comma and period.<br><b>Rules:</b> honours <code>prefers-reduced-motion</code> (does not autoplay). A caption track is a separate file, never burned in unless the output says so.</p>\n<h3>Clip timeline <code>studio.timeline</code></h3>\n<p><b>Has:</b> tracks (scenes, narration, captions), clips as bars with label and length, a playhead, zoom, snap to scene edges.<br><b>Actions:</b> move a clip, trim its start or end, split, delete, jump the stage to a time. Everything is operable by keyboard (select, arrows, trim keys).<br><b>Rules:</b> it edits spec fields (start, seconds), it does not hold its own copy of the project.</p>\n<h3>Narration <code>studio.narration</code></h3>\n<p><b>Has:</b> one script box per scene, a voice picker, an estimated spoken length against the scene's seconds (a warning when the text will not fit), a preview button, a \"generate\" action that asks the session to produce the audio file.<br><b>Rules:</b> preview may run in the browser (an injected <code>speak</code> function). The audio that ships is made by the session and recorded with a hash like any output.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "pieces.jobs",
+"data": {
+"part": "pieces.jobs",
+"title": "Settings, queue, review, assets",
+"html": "<h3>Engine and output settings <code>studio.engines</code></h3>\n<p><b>Has:</b> engine choice per project or scene, size presets (1280x720, 1280x1000, 1080x1080, 1080x1920), fps, formats (mp4, webm, gif, png still), budgets (gif size, mp4 size, length), narration on or off.<br><b>Rules:</b> an engine that is not installed is shown disabled with the reason.</p>\n<h3>Render queue <code>studio.queue</code></h3>\n<p><b>Has:</b> jobs newest first. Each: scene or project, engine, state word and glyph (never colour alone), progress lines, outputs with hash and size, error text. Finished jobs fold to one line.<br><b>Actions:</b> render scene, render project, cancel, retry, re-render stale, open in stage.<br>\n<b>Built from:</b> <code>pattern.job-tray</code>, not a new kit. Its transport is an adapter <code>{start(kind, params), poll(id, since), resume()}</code> returning <code>{id, title, kind, status, banner, log, leases, result}</code>. The studio's adapter:</p>\n<table>\n<thead><tr><th>Job state</th><th>Tray view</th></tr></thead>\n<tbody>\n<tr><td><code>queued</code></td><td>status running, banner \"waiting for a session\"</td></tr>\n<tr><td><code>running</code></td><td>status running, the engine's lines in <code>log</code></td></tr>\n<tr><td><code>review</code></td><td>status paused (ended waiting for you), actions Open in stage, Approve, Send back</td></tr>\n<tr><td><code>approved</code>, <code>published</code></td><td>status done, the output path in <code>result</code></td></tr>\n<tr><td><code>failed</code></td><td>status failed, last lines, actions Try again, Dismiss</td></tr>\n<tr><td><code>canceled</code></td><td>status done, a line saying it was canceled</td></tr>\n</tbody>\n</table>\n<p><code>start</code> writes <code>jobs/&lt;jid&gt;</code> and sends the request; <code>poll</code> reads the job document. A job the db no longer has is marked lost by the tray.</p>\n<h3>Review <code>studio.review</code></h3>\n<p><b>Has:</b> the stage with the job's outputs, comments anchored to a time (moment) and to a part, a decision bar: approve, send back with a note.<br><b>Rules:</b> only an admin or the owner can approve. Sending back creates a request on the same job with the note and the timestamps.</p>\n<h3>Asset shelf <code>studio.assets</code></h3>\n<p><b>Has:</b> every output as a tile with thumbnail, format, size, duration, sha256 (short), path, and \"published to\" marks. Copy path, copy the markup that embeds it, open in stage.<br><b>Actions:</b> publish, unpublish, delete (admin).</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "scenes.format",
+"data": {
+"part": "scenes.format",
+"title": "The spec",
+"html": "<p>The spec is JSON, schema <code>studio-spec/1</code>. One project is one spec. The inspector, the CLI and the engines all read the same file. Fields marked * are required.</p>\n<pre><code>{\n  \"schema\": \"studio-spec/1\",\n  \"id\": \"j3-catalog-road\",            // * kebab, never changes\n  \"title\": \"Catalog tour\",\n  \"size\": [1280, 1000], \"fps\": 30,    // * pixels, frames per second\n  \"scenes\": [\n    { \"id\": \"s1\", \"type\": \"title\", \"text\": \"Take a part instead of rebuilding it\", \"seconds\": 2.5 },\n    { \"id\": \"s2\", \"type\": \"browser\", \"url\": \"{{catalog}}\",\n      \"steps\": [ {\"click\": \"Visualizations\"}, {\"click\": \"Pebble map\"}, {\"wait\": 3}, {\"click\": \"Glaze\"} ],\n      \"caption\": \"Preview an entry in a theme before taking it.\" },\n    { \"id\": \"s3\", \"type\": \"terminal\", \"env\": \"throwaway-home\",\n      \"cmds\": [\"adp.py take CATALOG kit.tabs\"] }\n  ],\n  \"narration\": { \"voice\": \"af_heart\", \"lines\": { \"s1\": \"Take a part instead of rebuilding it.\" } },\n  \"outputs\": [ { \"format\": \"mp4\" }, { \"format\": \"gif\", \"width\": 960, \"fps\": 10 } ]\n}</code></pre>\n<p><b>Spec hash:</b> sha256 of the spec with keys sorted and whitespace removed. A job records the hash it rendered. A changed hash marks the job stale.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "scenes.types",
+"data": {
+"part": "scenes.types",
+"title": "Scene types",
+"html": "<table>\n<thead><tr><th>Type</th><th>What it shows</th><th>Key fields</th><th>Engine</th><th>Status</th></tr></thead>\n<tbody>\n<tr><td><code>browser</code></td><td>A real page driven by steps</td><td>url, steps (click, type, wait, scroll, theme), viewport</td><td>Playwright, served by the dev emulator</td><td>Spike done (J3 clip)</td></tr>\n<tr><td><code>terminal</code></td><td>Real commands, real output, typed on screen</td><td>cmds, env, theme, speed</td><td>Playwright terminal page</td><td>Spike done (J1 clip)</td></tr>\n<tr><td><code>title</code></td><td>A title or lower-third card</td><td>text, subtitle, seconds, theme</td><td>HyperFrames or Remotion</td><td>To do</td></tr>\n<tr><td><code>transcript</code></td><td>A scripted conversation between a person and an agent, labelled scripted</td><td>turns [{who, text, at}]</td><td>HyperFrames or Remotion</td><td>To do</td></tr>\n<tr><td><code>clip</code></td><td>An existing video or image</td><td>src, in, out</td><td>ffmpeg</td><td>To do</td></tr>\n<tr><td><code>compose</code></td><td>A hand-written composition</td><td>path, props</td><td>HyperFrames or Remotion</td><td>To do</td></tr>\n</tbody>\n</table>\n<h3>Step vocabulary (browser)</h3>\n<p><code>click \"text\"</code>, <code>type \"text\"</code>, <code>wait seconds</code>, <code>scroll px</code>, <code>theme name</code>, <code>press key</code>, <code>hover \"text\"</code>, <code>mark \"label\"</code> (adds a caption moment). A step that does not resolve fails the scene with the step and the page text it saw.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "scenes.outputs",
+"data": {
+"part": "scenes.outputs",
+"title": "Outputs and files",
+"html": "<ul>\n<li><b>Folder:</b> <code>media/&lt;project-id&gt;/&lt;scene-id or \"full\"&gt;.&lt;format&gt;</code>, beside the studio page. A manifest <code>media/&lt;project-id&gt;/manifest.json</code> lists each file with sha256, bytes, duration, spec hash, engine and version.</li>\n<li><b>Formats:</b> mp4 (h264, yuv420p, faststart) for the web and LinkedIn, webm optional, gif (palette-quantized) for the README, png for stills.</li>\n<li><b>Captions:</b> a <code>.vtt</code> file from the captions and narration, kept next to the video.</li>\n<li><b>Reproducible:</b> same spec hash and same engine versions should give the same sha256. When they do not (a network font, a clock), the manifest says <code>deterministic: false</code> and why.</li>\n</ul>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "data.model",
+"data": {
+"part": "data.model",
+"title": "Data model",
+"html": "<p>All studio data sits under <code>ns/shared/studio/</code> in the page's db. Documents are small; files are never stored in the db.</p>\n<table>\n<thead><tr><th>Document</th><th>Holds</th><th>Written by</th></tr></thead>\n<tbody>\n<tr><td><code>projects/&lt;pid&gt;</code></td><td>title, owner, status, scene order, current spec hash, created, updated</td><td>person</td></tr>\n<tr><td><code>specs/&lt;pid&gt;</code></td><td>the spec JSON (kept under 200 KB), its hash, a version counter</td><td>person</td></tr>\n<tr><td><code>jobs/&lt;jid&gt;</code></td><td>pid, scene or \"all\", engine and version, spec hash, state, progress lines, outputs [{path, sha256, bytes, duration, format}], error, by, times</td><td>page creates; session updates state, progress and outputs</td></tr>\n<tr><td><code>approvals/&lt;jid&gt;</code></td><td>decision, by, note, moments [{t, text}]</td><td>admin or owner only</td></tr>\n<tr><td><code>moments/&lt;jid&gt;/&lt;id&gt;</code></td><td>a review comment pinned to a time</td><td>person</td></tr>\n<tr><td><code>requests/&lt;rid&gt;</code></td><td>the Work with Claude records, including the render request that wakes the session</td><td>the assist engine</td></tr>\n</tbody>\n</table>\n<p>The ADP record (<code>manifest/</code>, <code>parts/</code>, <code>content/</code>, <code>changes/</code>) is unchanged. A render adds a line to What changed only when an output is published, not on every progress line.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "data.actions",
+"data": {
+"part": "data.actions",
+"title": "Actions",
+"html": "<table>\n<thead><tr><th>Action</th><th>Who</th><th>Writes</th><th>Result</th></tr></thead>\n<tbody>\n<tr><td>Create or duplicate project</td><td>interact</td><td>projects, specs</td><td>New project, scenes empty or copied</td></tr>\n<tr><td>Edit spec, add or move a scene</td><td>interact</td><td>specs (with version pin), projects</td><td>New spec hash, jobs become stale</td></tr>\n<tr><td>Request render</td><td>interact</td><td>jobs (queued), requests</td><td>The session is woken</td></tr>\n<tr><td>Run render</td><td>session</td><td>jobs (running, progress)</td><td>Live progress in the queue</td></tr>\n<tr><td>Finish render</td><td>session</td><td>jobs (review, outputs) or failed</td><td>Outputs listed with hashes</td></tr>\n<tr><td>Cancel</td><td>job's author or admin</td><td>jobs</td><td>canceled</td></tr>\n<tr><td>Comment on a moment</td><td>interact</td><td>moments</td><td>A pin on the timeline</td></tr>\n<tr><td>Approve or send back</td><td>admin or owner</td><td>approvals, jobs</td><td>approved, or queued with a note</td></tr>\n<tr><td>Publish output</td><td>editor</td><td>artifact files, jobs (published), changes</td><td>File in the artifact, path recorded</td></tr>\n<tr><td>Delete output or project</td><td>admin</td><td>artifact files, projects</td><td>Removed, with a record</td></tr>\n</tbody>\n</table>\n<p>Specs use <code>if_version</code> pins. A refused write means someone edited first: the page re-reads and shows both versions. Nothing is merged silently.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "data.caps",
+"data": {
+"part": "data.caps",
+"title": "Capabilities and rules",
+"html": "<table>\n<thead><tr><th>Capability</th><th>Why the studio needs it</th></tr></thead>\n<tbody>\n<tr><td><code>db</code></td><td>Projects, specs, jobs, approvals, moments. Rules: shared studio data readable by viewers, writable by interact; <code>approvals</code> writable by admin only; a job's progress and outputs are written by the session, which acts as an editor.</td></tr>\n<tr><td><code>user</code></td><td>Names on jobs, comments and approvals; owner and admin checks.</td></tr>\n<tr><td><code>comments</code> (custom anchors)</td><td>Comments on parts and on moments in a clip.</td></tr>\n<tr><td><code>artifact</code></td><td>Page-side publish of approved outputs into the artifact (editors only; file limits apply).</td></tr>\n<tr><td><code>assets</code></td><td>Optional store for large outputs (20 MiB each) referenced by id from the job.</td></tr>\n<tr><td><code>sample</code></td><td>\"Ask now\" answers without a watching session.</td></tr>\n<tr><td><code>downloads</code></td><td>Save a clip or a spec to disk from the page.</td></tr>\n</tbody>\n</table>\n<p class=\"muted\">Declared on the first publish only. Not declared: <code>mcp</code>, <code>files</code>, <code>room</code>, <code>tts</code>, <code>dictation</code>. Narration preview uses an in-browser engine, not the <code>tts</code> capability, so the same voice can be rendered by the session later.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "journeys.j1",
+"data": {
+"part": "journeys.j1",
+"title": "J1 to J4",
+"html": "<h3>J1. First clip from a catalog page</h3>\n<p><b>Who:</b> a person with the studio open and a session watching. <b>Trigger:</b> \"I need a 15 second tour of the catalog.\"<br>\n<b>Steps:</b> new project from the <code>browser</code> template, set the URL, add steps (click a tab, open an entry, switch a theme), press Render, watch the queue, play the output in the stage, approve.<br>\n<b>Done when:</b> an mp4 and a gif exist in <code>media/</code> with hashes in the manifest, the job is approved, and no file was written by hand.<br>\n<b>If it fails:</b> the job shows the step that did not resolve and the text on the page at that moment.</p>\n<h3>J2. A terminal demo from real commands</h3>\n<p><b>Trigger:</b> \"Show the installer on a fresh machine.\"<br>\n<b>Steps:</b> add a <code>terminal</code> scene with <code>env: throwaway-home</code> and the commands. The session runs them in a temporary HOME, captures the output, and the terminal scene types them out.<br>\n<b>Done when:</b> the clip shows the real output of the version in the repo, and the manifest records the commit it ran against.</p>\n<h3>J3. Title card and narration</h3>\n<p><b>Trigger:</b> \"Open with a title and speak the captions.\"<br>\n<b>Steps:</b> add a <code>title</code> scene, write narration per scene, check the length warning, generate audio, render.<br>\n<b>Done when:</b> the mp4 has the audio, the <code>.vtt</code> matches the narration, and the narration fits every scene's length.</p>\n<h3>J4. The product changed, re-render</h3>\n<p><b>Trigger:</b> a release changed the UI or the CLI output.<br>\n<b>Steps:</b> the shelf marks affected projects stale (spec hash or engine version changed, or the product commit differs). Press \"re-render stale\", review the new output next to the old, approve.<br>\n<b>Done when:</b> the new output replaces the old in its target folder, and the old is kept in history with its hash.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "journeys.j5",
+"data": {
+"part": "journeys.j5",
+"title": "J5 to J8",
+"html": "<h3>J5. Review with comments on moments</h3>\n<p><b>Who:</b> a reviewer who did not make the clip.<br>\n<b>Steps:</b> open the job in review, play, pin a comment at 00:07 (\"the theme switch is too fast\"), send back. The session gets a request with the note and the timestamp, edits the spec (a longer wait), renders again.<br>\n<b>Done when:</b> the second job references the first, the comment is resolved, and approval is by a person.</p>\n<h3>J6. Hand off between squads</h3>\n<p><b>Steps:</b> the Engines squad adds an engine adapter and marks it available. The Studio page squad sees it in engine settings the same day, without a page change. A Journeys squad member picks a scene from the shelf and extends it.<br>\n<b>Done when:</b> nobody needed to publish over someone else's work. Each edit is in What changed with its author.</p>\n<h3>J7. Harvest a scene into the catalog</h3>\n<p><b>Trigger:</b> a scene type works well and others would want it.<br>\n<b>Steps:</b> the session proposes it as a catalog entry (a scene template with a header), an editor applies it, <code>adp_catalog.py build</code> regenerates the index.<br>\n<b>Done when:</b> another page takes the template by reference and renders it.</p>\n<h3>J8. Recover from a failure</h3>\n<p><b>Cases:</b> engine not installed, Chrome refuses a debugging port, the dev server is down, a step does not resolve, the file is over budget.<br>\n<b>Steps:</b> the job fails with the last engine lines and a named reason. The page offers the matching action (choose another engine, open the setup note, shorten, retry).<br>\n<b>Done when:</b> no failure leaves a half-written file in <code>media/</code>.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "kits.rules",
+"data": {
+"part": "kits.rules",
+"title": "What a contributed kit must be",
+"html": "<p>Each new part is built as a catalog entry first and used by the studio second, so other pages can take it. The studio page takes its kits by reference like any ADP page.</p>\n<ul>\n<li><b>Entry:</b> files under <code>skill/catalog/kit/</code> with a header comment in the format of <code>docs/catalog-header.md</code> (id, kind, group, status new, version 0.1.0, summary, tags, requires, files, provides, config, tokens, preview, samples, changed).</li>\n<li><b>Look:</b> colours only from tokens, no literal colour. Works under every catalog theme, light and dark, and at 390 px.</li>\n<li><b>Behaviour:</b> keyboard complete, visible focus, a role and an accessible name for every control, <code>prefers-reduced-motion</code> respected, state announced in a live region where it changes.</li>\n<li><b>Data:</b> holds no storage of its own. Data goes in, changes come out through a callback, the page decides what to do. A sample bundle under <code>kit/samples/</code> shows it with invented data.</li>\n<li><b>Preview:</b> a catalog preview that runs the kit on its sample, with the states (empty, loading, error, full).</li>\n<li><b>Checks:</b> <code>python3 -I skill/scripts/adp_catalog.py</code> passes, the suite passes, a test covers the kit's pure logic.</li>\n<li><b>Path:</b> branch, files, <code>adp_catalog.py build</code>, pull request. The live catalog changes by proposal, not by a publish over it.</li>\n</ul>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "kits.new",
+"data": {
+"part": "kits.new",
+"title": "The four new kits",
+"html": "<h3>K1 <code>pattern.media-stage</code></h3>\n<p><b>Does:</b> plays one video or still with transport controls, frame stepping, range loop, captions, speed. The scrub bar is <code>Kit.sparkline.wave</code> (click, drag, arrows, marked windows for scenes), so only the video element and the frame math are new.<br>\n<b>Config:</b> <code>mount(box, {src, poster, fps, captions, onTime(t, frame), onEnded})</code>. <b>Returns:</b> <code>{play, pause, seek(t), step(n), setRange(a,b), destroy}</code>.<br>\n<b>Tokens:</b> <code>--panel --ink --ink-2 --rule --accent</code>. <b>Needs:</b> <code>kit.tokens</code>, <code>kit.dom</code>. <b>Done when:</b> frame step is exact at the given fps, keys work, reduced motion stops autoplay.</p>\n<h3>K2 <code>pattern.clip-timeline</code></h3>\n<p><b>Does:</b> tracks and clips along time with a playhead, zoom, snap, move and trim. <code>viz.shelf</code> already draws tracks on one scale with proportional segments, tooltips and keyboard stops, but only to read. K2 adds the editing (move, trim, split, snap) and a time axis; it should reuse the shelf's scale code or extend it, to be decided after reading the file.<br>\n<b>Config:</b> <code>mount(box, {tracks:[{id,label,clips:[{id,start,dur,label,kind}]}], playhead, zoom, snap, onChange(change), onSeek(t)})</code>.<br>\n<b>Done when:</b> every move and trim is possible by keyboard, <code>onChange</code> carries the new start and duration, and a screen reader hears \"clip s2, 3 seconds, starts at 2.5\".</p>\n<h3>K3 <code>pattern.spec-editor</code></h3>\n<p><b>Does:</b> edits a JSON document through a form generated from a small schema, with a JSON tab, validation, a diff and undo.<br>\n<b>Config:</b> <code>mount(box, {schema, value, onChange(value, valid), onInvalid(errors)})</code>. Schema: types, enums, required, ranges, per-type field lists.<br>\n<b>Done when:</b> an invalid value never reaches <code>onChange</code> as valid, errors name the field, and the form and JSON stay in step.</p>\n<h3>K4 <code>pattern.narration-panel</code></h3>\n<p><b>Does:</b> a script box per scene, a voice picker, spoken-length estimate against the scene length, preview, and the audio drawn with <code>Kit.sparkline.wave</code> (played part, marked windows).<br>\n<b>Config:</b> <code>mount(box, {scenes:[{id,seconds,text}], voices, speak(text, voice) -> Promise&lt;Blob&gt;, onChange})</code>. The kit holds no speech engine; the page injects one.<br>\n<b>Done when:</b> the length warning appears before a render, not after, and preview works with a stub engine in the catalog sample.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "kits.reuse",
+"data": {
+"part": "kits.reuse",
+"title": "What the catalog already gives",
+"html": "<p>All 141 entries were listed and the likely ones read through their headers (what they draw, their config, their requires). Versions are the catalog's. Nothing below is rebuilt.</p>\n<table>\n<thead><tr><th>Studio need</th><th>Take</th><th>What it gives, from its header</th></tr></thead>\n<tbody>\n<tr><td>Render queue</td><td><code>pattern.job-tray</code> 0.1.0</td><td>Capsules with state bead, run time, progress wave, last log line, pills for what a job holds; waiting-for-you jobs first; Continue, Try again, Dismiss; an adapter <code>{start, poll, resume}</code> so the studio brings its own transport.</td></tr>\n<tr><td>Old against new clip</td><td><code>viz.compare</code> 0.1.0</td><td><code>Kit.compare.stage</code>: Before, After and a Wipe divider over two DOM nodes (two <code>&lt;video&gt;</code> elements keep their own state); the divider is a real range input.</td></tr>\n<tr><td>Approve or send back</td><td><code>pattern.gate</code> 0.1.0, <code>pattern.decisions-ack</code> 0.1.0</td><td>A card per request with risk, preview and Approve or Reject; Reject asks for a reason the asker reads; an acknowledgement block records who read the answer.</td></tr>\n<tr><td>Job history</td><td><code>pattern.card-history</code> 0.1.0, <code>pattern.event-log</code> 0.1.0</td><td>A track with a node at each state change, the ask, answer and reply turns; a log grouped by day with repeats folded.</td></tr>\n<tr><td>Scrub and audio view</td><td><code>viz.sparkline</code> 0.1.0 (<code>Kit.sparkline.wave</code>)</td><td>A mirrored-bar waveform with a played part and marked windows (hatched, labelled, keyboard reachable); with <code>onSeek</code> it is a slider: click, drag, arrows, Home and End.</td></tr>\n<tr><td>Track scale</td><td><code>viz.shelf</code> 0.1.0, <code>viz.replay</code> 0.1.0</td><td>Tracks on one scale with proportional segments, tooltips and keyboard stops (read only); a tick strip drawn to scale on a real time axis with play and scrub.</td></tr>\n<tr><td>Scenes in order</td><td><code>viz.buckets</code> 0.1.0</td><td>Cards in ordered buckets, drag with a drop line, and a Move to menu on every card so no drag is needed.</td></tr>\n<tr><td>Jobs by state or owner</td><td><code>pattern.status-columns</code> 0.1.0</td><td>A board with a column per state or per a key, the waiting column widest, empty columns folded, limits per lane.</td></tr>\n<tr><td>Project list and stale batch</td><td><code>pattern.master-detail</code> 0.1.0, <code>pattern.facet-batch</code> 0.1.0, <code>pattern.filter-table</code> 0.1.0</td><td>A searchable list with a detail pane; count tiles with digit keys, group by, sort, selectable rows and a batch bar; a sortable table with chips.</td></tr>\n<tr><td>Files and budgets</td><td><code>pattern.file-map</code> 0.1.0, <code>layout.file-browser</code> 0.2.0, <code>kit.copy</code> 0.1.0</td><td>A squarified map where area is bytes; a tree with hashes, versions and marks per file; copy buttons with a select fallback.</td></tr>\n<tr><td>Ask Claude, requests</td><td><code>pattern.assist</code>, <code>pattern.assist-panel</code>, <code>pattern.request-card</code> 0.1.2, <code>kit.claude-lane</code> 0.1.3, <code>pattern.presence</code></td><td>The engine that writes <code>requests/&lt;rid&gt;</code> and wakes the session; the panel; a request followed from queued to done (finished ones fold); whether a session is listening.</td></tr>\n<tr><td>Forms, errors, saving</td><td><code>kit.chrome</code> 0.1.2, <code>kit.callout-refusal</code> 0.1.0, <code>kit.save-status</code> 0.1.0, <code>kit.keep-state</code> 0.1.0, <code>kit.store</code> 0.1.0</td><td>A form dialog with text, textarea, checkbox and checklist fields; an error that names the code and the field refused; a saved, saving, offline line; drafts that survive a redraw; per-document write queues with optimistic paint.</td></tr>\n<tr><td>Shell</td><td><code>layout.topbar</code>, <code>kit.skins</code>, <code>kit.tabs</code>, <code>kit.palette</code>, <code>kit.drawer</code>, <code>kit.vocab</code>, <code>kit.tooltip</code></td><td>Header and theme switch; whole-page skins kept per viewer; ARIA tabs with deep links; a Ctrl+K command palette; a right-hand drawer; one table of state words, glyphs and tones (the studio adds its own job-state enum); one shared tooltip.</td></tr>\n<tr><td>Try a kit live</td><td><code>pattern.playground</code> 0.1.2, <code>pattern.prototype</code> 0.1.0</td><td>Pick any catalog entry, edit its sample, switch theme, mode and width; a mock-up at real size with keys and numbered markers. Both are ready-made <code>browser</code> scene sources for kit demos.</td></tr>\n<tr><td>Run a step from outside</td><td><code>template.tester</code> 0.1.0</td><td>A step harness where a person presses a step and Claude presses the same step from outside: the shape of the studio's job loop, taken as text.</td></tr>\n</tbody>\n</table>\n<h3>For the spec artifact itself</h3>\n<p>Later versions of this page can show its own content with <code>pattern.steps</code> and <code>pattern.steps-owners</code> (journeys), <code>viz.wires</code> (slices and their dependencies on lanes), <code>pattern.questions</code> or <code>pattern.options</code> (the decisions), <code>pattern.blueprint</code> (browser, session and engine lanes per journey step), <code>pattern.scenarios</code> (failure cases), <code>pattern.capability-picker</code> and <code>pattern.namespaces</code> (capabilities and db rules), <code>viz.flow</code> or <code>viz.topology</code> (the architecture). They are not used yet: this first version is plain cards.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "kits.missing",
+"data": {
+"part": "kits.missing",
+"title": "What is genuinely missing",
+"html": "<p>After the survey, four parts have no catalog equivalent (searched by name, tag and header):</p>\n<ul>\n<li><b>K1</b> a video and still stage with transport, frame stepping and range loop. The catalog has a waveform slider and a history replay, nothing that plays media.</li>\n<li><b>K2</b> an editable multi-track clip timeline. <code>viz.shelf</code> reads; nothing moves or trims.</li>\n<li><b>K3</b> a schema-driven editor with a JSON tab, diff and undo. <code>kit.chrome</code> has simple dialog fields; <code>kit.view-registry</code> validates layouts against typed kinds, which is a different job.</li>\n<li><b>K4</b> a per-scene narration panel with a spoken-length estimate. Nothing in the catalog knows speech or timing.</li>\n</ul>\n<p class=\"muted\">If a squad finds an entry that already does one of these, say so in a comment: the kit is dropped, not built twice.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "engines.table",
+"data": {
+"part": "engines.table",
+"title": "Engines and their state",
+"html": "<p>State on the maintainer's Mac, 2026-11-15. <b>Verified</b> means it ran here. <b>Installed</b> means the package is present and was not run. Sources for the unverified claims are the packages' own descriptions and secondary articles.</p>\n<table>\n<thead><tr><th>Tool</th><th>Role</th><th>State</th><th>Notes</th></tr></thead>\n<tbody>\n<tr><td>Playwright 1.48.2</td><td>Drive and record pages and the terminal page</td><td>Verified</td><td>Recorded both spike clips. Uses its own Chromium.</td></tr>\n<tr><td>ffmpeg 9.0.2</td><td>Encode, trim, join, frames, contact sheets</td><td>Verified</td><td>mp4 and frame extraction in use.</td></tr>\n<tr><td>gifski</td><td>High-quality small gif</td><td>Verified</td><td>1.8 and 2.9 MB for 16 and 18 second clips.</td></tr>\n<tr><td>HyperFrames 0.9.52</td><td>HTML, CSS and animation to mp4, deterministic frame seek, built for agents</td><td>Installed</td><td>Needs Node 22 or newer (here 24.21). Capture mode on macOS unverified. postinstall scripts need approval.</td></tr>\n<tr><td>Remotion 4.0.543</td><td>React compositions to mp4</td><td>Installed</td><td>Free for individuals and teams up to 3 (per its docs); a company licence above. Renders with its own headless Chrome.</td></tr>\n<tr><td>kokoro-js 1.2.1</td><td>Offline text to speech, in the browser or Node</td><td>Installed</td><td>Voice quality and licence to confirm. Model download size to measure.</td></tr>\n<tr><td>Editly 0.14.2</td><td>JSON clip editing on ffmpeg</td><td>Failed</td><td>Native <code>canvas</code> does not build on Node 24 here. Decision D1: drop.</td></tr>\n<tr><td>VHS and ttyd</td><td>Terminal recording</td><td>Blocked</td><td>Needs Chrome remote debugging, which this Mac disables by policy. Not used.</td></tr>\n</tbody>\n</table>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "engines.contract",
+"data": {
+"part": "engines.contract",
+"title": "The engine adapter contract",
+"html": "<p>An adapter is a module with three functions. The <code>studio</code> CLI knows nothing else about an engine.</p>\n<pre><code>available() -> { ok: boolean, reason?: string, version?: string }\nrender(scene, ctx) -> AsyncIterable&lt;{ line?: string, progress?: number }&gt; then { file, sha256, bytes, duration, deterministic }\nestimate(scene) -> { seconds: number }       // for the queue and the narration warning</code></pre>\n<ul>\n<li><b>ctx:</b> the output folder, size, fps, the dev server URL, a temp folder, an abort signal.</li>\n<li><b>Failure:</b> throw with a short reason and the last lines. Never leave a partial file.</li>\n<li><b>Selection:</b> the scene's engine, else the project's, else the first available that supports the type.</li>\n</ul>\n<h3>The CLI</h3>\n<pre><code>studio check                         # which engines are available, and why not\nstudio render SPEC [--scene ID] [--engine NAME] [--out DIR]\nstudio narrate SPEC [--scene ID]      # audio files and the .vtt\nstudio verify DIR                     # re-hash outputs against manifest.json</code></pre>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "engines.env",
+"data": {
+"part": "engines.env",
+"title": "Environment notes",
+"html": "<ul>\n<li><b>Node:</b> 22 or newer. nvm install steps are in the README's Requirements.</li>\n<li><b>Chrome policy:</b> a managed Mac can forbid remote debugging in branded Chrome. Playwright and Remotion bring their own browsers; HyperFrames needs checking. The CLI's <code>check</code> must run a one-frame capture to prove it, not trust a version number.</li>\n<li><b>npm install scripts:</b> esbuild, onnxruntime-node, sharp and protobufjs ask for approval. Approve them in one reviewed step and record which.</li>\n<li><b>Network:</b> pages loaded in a scene may fetch fonts or libraries. A scene that needs the network says so; a deterministic scene does not.</li>\n<li><b>Disk:</b> models and browsers are hundreds of MB. <code>studio check</code> reports sizes, and nothing downloads without being asked.</li>\n</ul>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "quality.gates",
+"data": {
+"part": "quality.gates",
+"title": "Gates",
+"html": "<table>\n<thead><tr><th>Gate</th><th>Check</th><th>Where</th></tr></thead>\n<tbody>\n<tr><td>ADP</td><td><code>adp.py check</code> passes: markers balance, ids unique, parts have <code>data-part</code>.</td><td>Studio page</td></tr>\n<tr><td>Catalog</td><td><code>adp_catalog.py</code> passes: headers valid, hashes match.</td><td>Each kit</td></tr>\n<tr><td>Spec</td><td>Spec validates against <code>studio-spec/1</code>. Unknown fields are refused.</td><td>CLI and inspector</td></tr>\n<tr><td>Reproduce</td><td>Same spec hash and engine version gives the same sha256, or <code>deterministic: false</code> with a reason.</td><td>CLI</td></tr>\n<tr><td>Budget</td><td>gif at most 3 MB, mp4 at most 2 MB for 20 seconds, length within the project's limit, narration fits its scene.</td><td>CLI and queue</td></tr>\n<tr><td>Accessibility</td><td>Every clip has alt text and captions or a transcript. Page controls keyboard complete. No flashing above three per second.</td><td>Review</td></tr>\n<tr><td>Truth</td><td>A terminal scene ran the commands. A scripted transcript is labelled. A clip names the commit it showed.</td><td>Manifest</td></tr>\n<tr><td>Review</td><td>A person approves. A clip is never published by the session alone.</td><td>db rules</td></tr>\n<tr><td>Tests</td><td>Pure logic of each kit and of the CLI has a test. Tests are not longer than the code they cover.</td><td>CI</td></tr>\n</tbody>\n</table>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "quality.risks",
+"data": {
+"part": "quality.risks",
+"title": "Risks",
+"html": "<table>\n<thead><tr><th>Risk</th><th>Effect</th><th>Answer</th></tr></thead>\n<tbody>\n<tr><td>HyperFrames or Remotion does not run under this machine's Chrome policy</td><td>No title or compose scenes</td><td>One-frame capture check in <code>studio check</code>; fall back to Playwright title pages</td></tr>\n<tr><td>Output over the 15 MB file limit</td><td>Cannot publish into an artifact</td><td>Budgets, mp4 over gif, assets capability, or link to the repo path</td></tr>\n<tr><td>Clips in git bloat the repo</td><td>Slow clones</td><td>Decision D7; keep clips small or build them in CI</td></tr>\n<tr><td>Two squads edit the same part</td><td>Lost work</td><td>ADP hold and version pins; proposals for the live catalog</td></tr>\n<tr><td>Scenes drift from the product</td><td>Stale demos</td><td>Spec hash plus commit in the manifest; re-render stale</td></tr>\n<tr><td>Remotion licence</td><td>Cost or non-compliance above 3 people</td><td>Decision D5 before it is used for shipped work</td></tr>\n</tbody>\n</table>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "plan.slices",
+"data": {
+"part": "plan.slices",
+"title": "Slices",
+"html": "<table>\n<thead><tr><th>Slice</th><th>Squad</th><th>Delivers</th><th>Done when</th></tr></thead>\n<tbody>\n<tr><td>S0</td><td>Studio page</td><td>This spec as an ADP artifact, commentable</td><td>Published, reviewed, decisions D1 to D8 answered</td></tr>\n<tr><td>S1</td><td>Engines</td><td>The <code>studio</code> CLI, spec schema, adapters for Playwright and ffmpeg, then one of HyperFrames or Remotion</td><td>One scene of each v1 type renders to mp4 and gif with a manifest</td></tr>\n<tr><td>S2</td><td>Kits</td><td>K1 and K2 with previews, samples and tests; K3 and K4 after</td><td>Entries pass the catalog check and preview under every theme</td></tr>\n<tr><td>S3</td><td>Studio page</td><td>Shelf, board, inspector, stage, queue, review on the dev emulator</td><td>J1 works end to end locally with a watching session</td></tr>\n<tr><td>S4</td><td>Journeys and QA</td><td>Scene library, J1 to J4 automated, budgets enforced</td><td>A clean machine reproduces the twelve site clips</td></tr>\n<tr><td>S5</td><td>Skill and docs</td><td>The studio skill and the contributor guide</td><td>A session with only the skill makes a clip</td></tr>\n<tr><td>S6</td><td>All</td><td>Publish the studio, contribute K1 to K4 to the live catalog by proposal</td><td>Other pages take the kits</td></tr>\n</tbody>\n</table>\n<p>S1, S2 and S3 can start together once the spec format (Scene spec view) and the adapter contract (Engines view) are agreed. S4 needs S1 and S3. S5 needs S1.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "content",
+"id": "plan.decisions",
+"data": {
+"part": "plan.decisions",
+"title": "Decisions to make",
+"html": "<table>\n<thead><tr><th>Id</th><th>Question</th><th>Options</th><th>Recommendation</th></tr></thead>\n<tbody>\n<tr><td>D1</td><td>Editly</td><td>Drop, or retry on Node 22</td><td>Drop. HyperFrames or Remotion plus ffmpeg cover it.</td></tr>\n<tr><td>D2</td><td>First composition engine</td><td>HyperFrames, Remotion</td><td>Run the same 15 second scene in both, keep the one that runs here and renders deterministically. Lean HyperFrames: HTML in, agent-first.</td></tr>\n<tr><td>D3</td><td>Where outputs live when the studio is published</td><td>Artifact files, assets, repo path only</td><td>Repo path for shipped clips, artifact files for review copies under 15 MB.</td></tr>\n<tr><td>D4</td><td>Narration engine</td><td>Kokoro in the browser, Kokoro in the session, system voice</td><td>Preview in the browser, final audio in the session. Confirm quality and licence first.</td></tr>\n<tr><td>D5</td><td>Remotion licence</td><td>Use, avoid</td><td>Avoid for shipped work until headcount and terms are checked.</td></tr>\n<tr><td>D6</td><td>Where the CLI lives</td><td><code>tools/media</code> in this repo, a <code>studio/</code> package, its own repo</td><td>A <code>studio/</code> package in this repo; split later.</td></tr>\n<tr><td>D7</td><td>Clips in git</td><td>Commit small files, generate in CI, store elsewhere</td><td>Commit under 3 MB each for now; revisit past 50 MB total.</td></tr>\n<tr><td>D8</td><td>Chrome policy</td><td>Ask IT, use bundled browsers only</td><td>Bundled browsers only; the check proves it.</td></tr>\n</tbody>\n</table>\n<p class=\"muted\">Answer a decision by commenting on this part. The studio page squad records the answer in What changed.</p>",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"since": "1"
+}
+},
+{
+"collection": "changes",
+"id": "000001",
+"data": {
+"version": "1",
+"at": "2026-11-15T14:17:57Z",
+"by": "claude",
+"summary": "adp/2 adopted: first build",
+"parts": [
+{
+"id": "canvas",
+"from": "",
+"to": "b0d6f0d85126"
+},
+{
+"id": "canvas.board",
+"from": "",
+"to": "94582ec8622e"
+},
+{
+"id": "canvas.intro",
+"from": "",
+"to": "a2ec85b78957"
+},
+{
+"id": "data",
+"from": "",
+"to": "6244e7ebf67b"
+},
+{
+"id": "data.actions",
+"from": "",
+"to": "6fad52068941"
+},
+{
+"id": "data.caps",
+"from": "",
+"to": "f053e6c38467"
+},
+{
+"id": "data.model",
+"from": "",
+"to": "5c0756130dfb"
+},
+{
+"id": "engines",
+"from": "",
+"to": "2230917235f8"
+},
+{
+"id": "engines.contract",
+"from": "",
+"to": "a787c075c270"
+},
+{
+"id": "engines.env",
+"from": "",
+"to": "65dcc7573b4f"
+},
+{
+"id": "engines.table",
+"from": "",
+"to": "9dc5aad87a6d"
+},
+{
+"id": "how",
+"from": "",
+"to": "d397c7814879"
+},
+{
+"id": "how.flow",
+"from": "",
+"to": "6ae711afb78f"
+},
+{
+"id": "how.layers",
+"from": "",
+"to": "7495a67d2c67"
+},
+{
+"id": "how.lifecycle",
+"from": "",
+"to": "2eced4bfe84d"
+},
+{
+"id": "how.local",
+"from": "",
+"to": "2fa7fb75972a"
+},
+{
+"id": "journeys",
+"from": "",
+"to": "9ed7c7d207bc"
+},
+{
+"id": "journeys.j1",
+"from": "",
+"to": "127b8637a3cf"
+},
+{
+"id": "journeys.j5",
+"from": "",
+"to": "fe901add539e"
+},
+{
+"id": "kits",
+"from": "",
+"to": "38cffa04ba12"
+},
+{
+"id": "kits.missing",
+"from": "",
+"to": "156773faf927"
+},
+{
+"id": "kits.new",
+"from": "",
+"to": "5fd248eadf29"
+},
+{
+"id": "kits.reuse",
+"from": "",
+"to": "2c7c84771c37"
+},
+{
+"id": "kits.rules",
+"from": "",
+"to": "7e8b1d089fce"
+},
+{
+"id": "mycatalog",
+"from": "",
+"to": "04032ee80ce7"
+},
+{
+"id": "mycatalog.intro",
+"from": "",
+"to": "547f3594358c"
+},
+{
+"id": "mycatalog.list",
+"from": "",
+"to": "575cf24b828c"
+},
+{
+"id": "overview",
+"from": "",
+"to": "d0c4d5d2c476"
+},
+{
+"id": "overview.principles",
+"from": "",
+"to": "fef61c464d31"
+},
+{
+"id": "overview.purpose",
+"from": "",
+"to": "f1c4878a7eec"
+},
+{
+"id": "overview.squads",
+"from": "",
+"to": "0873ae3c49c3"
+},
+{
+"id": "page.assist",
+"from": "",
+"to": "4e65e17a80c3"
+},
+{
+"id": "page.changes",
+"from": "",
+"to": "f38c155648c9"
+},
+{
+"id": "page.header",
+"from": "",
+"to": "e9de18aeb3ca"
+},
+{
+"id": "page.lead",
+"from": "",
+"to": "da3c687e9fdf"
+},
+{
+"id": "page.script.app",
+"from": "",
+"to": "bf84abbb131e"
+},
+{
+"id": "page.script.content",
+"from": "",
+"to": "cb738a6344c8"
+},
+{
+"id": "page.style",
+"from": "",
+"to": "2b6cd53ae3ae"
+},
+{
+"id": "page.style.assist",
+"from": "",
+"to": "380f3db9f601"
+},
+{
+"id": "page.style.canvas",
+"from": "",
+"to": "a0f55a70a066"
+},
+{
+"id": "page.style.changes",
+"from": "",
+"to": "e63759216e73"
+},
+{
+"id": "page.style.chrome",
+"from": "",
+"to": "be29fbfb8d36"
+},
+{
+"id": "page.style.settings",
+"from": "",
+"to": "957f20b60f49"
+},
+{
+"id": "page.tabs",
+"from": "",
+"to": "4e6d94e92e39"
+},
+{
+"id": "pieces",
+"from": "",
+"to": "6f57b76d832b"
+},
+{
+"id": "pieces.jobs",
+"from": "",
+"to": "5e632b244416"
+},
+{
+"id": "pieces.map",
+"from": "",
+"to": "a26db63726fa"
+},
+{
+"id": "pieces.shelf",
+"from": "",
+"to": "1b978948b42e"
+},
+{
+"id": "pieces.stage",
+"from": "",
+"to": "b95141faa150"
+},
+{
+"id": "plan",
+"from": "",
+"to": "64dd355ced5f"
+},
+{
+"id": "plan.decisions",
+"from": "",
+"to": "76b086dddf5d"
+},
+{
+"id": "plan.slices",
+"from": "",
+"to": "6c7d7efbe9c7"
+},
+{
+"id": "quality",
+"from": "",
+"to": "a8df0fa8d3fe"
+},
+{
+"id": "quality.gates",
+"from": "",
+"to": "47284c8d151a"
+},
+{
+"id": "quality.risks",
+"from": "",
+"to": "c7f6e4ee1f4f"
+},
+{
+"id": "requests",
+"from": "",
+"to": "a785ee3ce6ae"
+},
+{
+"id": "requests.intro",
+"from": "",
+"to": "8c2f1bc311e7"
+},
+{
+"id": "requests.list",
+"from": "",
+"to": "a2c9ccbd288c"
+},
+{
+"id": "scenes",
+"from": "",
+"to": "73bc8ad6dfe7"
+},
+{
+"id": "scenes.format",
+"from": "",
+"to": "47257709874e"
+},
+{
+"id": "scenes.outputs",
+"from": "",
+"to": "98aa0de06115"
+},
+{
+"id": "scenes.types",
+"from": "",
+"to": "83d421646624"
+},
+{
+"id": "settings",
+"from": "",
+"to": "97f390b776b4"
+},
+{
+"id": "settings.inbox",
+"from": "",
+"to": "9e8731aee450"
+},
+{
+"id": "settings.intro",
+"from": "",
+"to": "620575bb0509"
+},
+{
+"id": "settings.namespaces",
+"from": "",
+"to": "829db140b8e2"
+},
+{
+"id": "settings.switches",
+"from": "",
+"to": "6b446a1d705c"
+}
+],
+"threads": []
+}
+},
+{
+"collection": "agents",
+"id": "claude",
+"data": {
+"role": "",
+"session": "",
+"last_seen": "2026-11-15T14:17:57Z",
+"holds": []
+}
+},
+{
+"collection": "manifest",
+"id": "current",
+"data": {
+"schema": "adp/2",
+"version": "1",
+"page_hash": "cac6c5ccd6a4",
+"parts": {
+"_rest:content.js": "e3b0c44298fc",
+"_rest:index.html": "fc9dfe729aef",
+"_rest:parts/app.js": "e3b0c44298fc",
+"_rest:styles/assist.css": "2526afde0d30",
+"_rest:styles/canvas.css": "e3b0c44298fc",
+"_rest:styles/page.css": "e3b0c44298fc",
+"canvas": "b0d6f0d85126",
+"canvas.board": "94582ec8622e",
+"canvas.intro": "a2ec85b78957",
+"data": "6244e7ebf67b",
+"data.actions": "6fad52068941",
+"data.caps": "f053e6c38467",
+"data.model": "5c0756130dfb",
+"engines": "2230917235f8",
+"engines.contract": "a787c075c270",
+"engines.env": "65dcc7573b4f",
+"engines.table": "9dc5aad87a6d",
+"how": "d397c7814879",
+"how.flow": "6ae711afb78f",
+"how.layers": "7495a67d2c67",
+"how.lifecycle": "2eced4bfe84d",
+"how.local": "2fa7fb75972a",
+"journeys": "9ed7c7d207bc",
+"journeys.j1": "127b8637a3cf",
+"journeys.j5": "fe901add539e",
+"kits": "38cffa04ba12",
+"kits.missing": "156773faf927",
+"kits.new": "5fd248eadf29",
+"kits.reuse": "2c7c84771c37",
+"kits.rules": "7e8b1d089fce",
+"mycatalog": "04032ee80ce7",
+"mycatalog.intro": "547f3594358c",
+"mycatalog.list": "575cf24b828c",
+"overview": "d0c4d5d2c476",
+"overview.principles": "fef61c464d31",
+"overview.purpose": "f1c4878a7eec",
+"overview.squads": "0873ae3c49c3",
+"page.assist": "4e65e17a80c3",
+"page.changes": "f38c155648c9",
+"page.header": "e9de18aeb3ca",
+"page.lead": "da3c687e9fdf",
+"page.script.app": "bf84abbb131e",
+"page.script.content": "cb738a6344c8",
+"page.style": "2b6cd53ae3ae",
+"page.style.assist": "380f3db9f601",
+"page.style.canvas": "a0f55a70a066",
+"page.style.changes": "e63759216e73",
+"page.style.chrome": "be29fbfb8d36",
+"page.style.settings": "957f20b60f49",
+"page.tabs": "4e6d94e92e39",
+"pieces": "6f57b76d832b",
+"pieces.jobs": "5e632b244416",
+"pieces.map": "a26db63726fa",
+"pieces.shelf": "1b978948b42e",
+"pieces.stage": "b95141faa150",
+"plan": "64dd355ced5f",
+"plan.decisions": "76b086dddf5d",
+"plan.slices": "6c7d7efbe9c7",
+"quality": "a8df0fa8d3fe",
+"quality.gates": "47284c8d151a",
+"quality.risks": "c7f6e4ee1f4f",
+"requests": "a785ee3ce6ae",
+"requests.intro": "8c2f1bc311e7",
+"requests.list": "a2c9ccbd288c",
+"scenes": "73bc8ad6dfe7",
+"scenes.format": "47257709874e",
+"scenes.outputs": "98aa0de06115",
+"scenes.types": "83d421646624",
+"settings": "97f390b776b4",
+"settings.inbox": "9e8731aee450",
+"settings.intro": "620575bb0509",
+"settings.namespaces": "829db140b8e2",
+"settings.switches": "6b446a1d705c"
+},
+"elements": {
+"_rest:content.js": 0,
+"_rest:index.html": 239,
+"_rest:parts/app.js": 0,
+"_rest:styles/assist.css": 0,
+"_rest:styles/canvas.css": 0,
+"_rest:styles/page.css": 0,
+"canvas": 1,
+"canvas.board": 1,
+"canvas.intro": 1,
+"data": 1,
+"data.actions": 1,
+"data.caps": 1,
+"data.model": 1,
+"engines": 1,
+"engines.contract": 1,
+"engines.env": 1,
+"engines.table": 1,
+"how": 1,
+"how.flow": 1,
+"how.layers": 1,
+"how.lifecycle": 1,
+"how.local": 1,
+"journeys": 1,
+"journeys.j1": 1,
+"journeys.j5": 1,
+"kits": 1,
+"kits.missing": 1,
+"kits.new": 1,
+"kits.reuse": 1,
+"kits.rules": 1,
+"mycatalog": 1,
+"mycatalog.intro": 1,
+"mycatalog.list": 1,
+"overview": 1,
+"overview.principles": 1,
+"overview.purpose": 1,
+"overview.squads": 1,
+"page.assist": 4,
+"page.changes": 11,
+"page.header": 23,
+"page.lead": 1,
+"page.script.app": 144,
+"page.script.content": 1170,
+"page.style": 1,
+"page.style.assist": 0,
+"page.style.canvas": 2,
+"page.style.changes": 0,
+"page.style.chrome": 0,
+"page.style.settings": 0,
+"page.tabs": 2,
+"pieces": 1,
+"pieces.jobs": 1,
+"pieces.map": 1,
+"pieces.shelf": 1,
+"pieces.stage": 1,
+"plan": 1,
+"plan.decisions": 1,
+"plan.slices": 1,
+"quality": 1,
+"quality.gates": 1,
+"quality.risks": 1,
+"requests": 1,
+"requests.intro": 1,
+"requests.list": 1,
+"scenes": 1,
+"scenes.format": 1,
+"scenes.outputs": 1,
+"scenes.types": 1,
+"settings": 1,
+"settings.inbox": 1,
+"settings.intro": 1,
+"settings.namespaces": 1,
+"settings.switches": 1
+},
+"files": {
+"adp.js": "68045fb1d5d3",
+"content.js": "70236c7e85de",
+"index.html": "767ab18e1fd9",
+"installed.json": "fa6a7a320e1e",
+"parts/app.js": "3cebf45931da",
+"styles/assist.css": "1fb5cc28571a",
+"styles/canvas.css": "180eaaf55893",
+"styles/page.css": "d2eb9ead49c9"
+},
+"part_file": {
+"_rest:content.js": "content.js",
+"_rest:index.html": "index.html",
+"_rest:parts/app.js": "parts/app.js",
+"_rest:styles/assist.css": "styles/assist.css",
+"_rest:styles/canvas.css": "styles/canvas.css",
+"_rest:styles/page.css": "styles/page.css",
+"canvas": "parts/app.js",
+"canvas.board": "parts/app.js",
+"canvas.intro": "parts/app.js",
+"data": "parts/app.js",
+"data.actions": "parts/app.js",
+"data.caps": "parts/app.js",
+"data.model": "parts/app.js",
+"engines": "parts/app.js",
+"engines.contract": "parts/app.js",
+"engines.env": "parts/app.js",
+"engines.table": "parts/app.js",
+"how": "parts/app.js",
+"how.flow": "parts/app.js",
+"how.layers": "parts/app.js",
+"how.lifecycle": "parts/app.js",
+"how.local": "parts/app.js",
+"journeys": "parts/app.js",
+"journeys.j1": "parts/app.js",
+"journeys.j5": "parts/app.js",
+"kits": "parts/app.js",
+"kits.missing": "parts/app.js",
+"kits.new": "parts/app.js",
+"kits.reuse": "parts/app.js",
+"kits.rules": "parts/app.js",
+"mycatalog": "parts/app.js",
+"mycatalog.intro": "parts/app.js",
+"mycatalog.list": "parts/app.js",
+"overview": "parts/app.js",
+"overview.principles": "parts/app.js",
+"overview.purpose": "parts/app.js",
+"overview.squads": "parts/app.js",
+"page.assist": "index.html",
+"page.changes": "index.html",
+"page.header": "index.html",
+"page.lead": "index.html",
+"page.script.app": "parts/app.js",
+"page.script.content": "content.js",
+"page.style": "styles/page.css",
+"page.style.assist": "styles/assist.css",
+"page.style.canvas": "styles/canvas.css",
+"page.style.changes": "styles/page.css",
+"page.style.chrome": "styles/page.css",
+"page.style.settings": "styles/page.css",
+"page.tabs": "index.html",
+"pieces": "parts/app.js",
+"pieces.jobs": "parts/app.js",
+"pieces.map": "parts/app.js",
+"pieces.shelf": "parts/app.js",
+"pieces.stage": "parts/app.js",
+"plan": "parts/app.js",
+"plan.decisions": "parts/app.js",
+"plan.slices": "parts/app.js",
+"quality": "parts/app.js",
+"quality.gates": "parts/app.js",
+"quality.risks": "parts/app.js",
+"requests": "parts/app.js",
+"requests.intro": "parts/app.js",
+"requests.list": "parts/app.js",
+"scenes": "parts/app.js",
+"scenes.format": "parts/app.js",
+"scenes.outputs": "parts/app.js",
+"scenes.types": "parts/app.js",
+"settings": "parts/app.js",
+"settings.inbox": "parts/app.js",
+"settings.intro": "parts/app.js",
+"settings.namespaces": "parts/app.js",
+"settings.switches": "parts/app.js"
+},
+"content": {
+"requests.intro": "563a83ed25bc",
+"canvas.intro": "61edab9d4d8d",
+"mycatalog.intro": "a8530b2a6380",
+"settings.intro": "79379dcd891a",
+"page.lead": "0ae0664c04ef",
+"overview.purpose": "f1eb61a6f57f",
+"overview.principles": "fcc453cfbb47",
+"overview.squads": "a683599d73ee",
+"how.layers": "1e43fad0e981",
+"how.flow": "d2d9a68a8871",
+"how.local": "e28e20f7da71",
+"how.lifecycle": "c032ae2d7491",
+"pieces.map": "6b6dda787600",
+"pieces.shelf": "78c8ebcd94fd",
+"pieces.stage": "16e3cc076bba",
+"pieces.jobs": "6549e7ce174c",
+"scenes.format": "c0cd84d242f4",
+"scenes.types": "741f4f0a4b3d",
+"scenes.outputs": "8b2a39547ec7",
+"data.model": "96572fe415ec",
+"data.actions": "5befd32a0d33",
+"data.caps": "75c0a56709fa",
+"journeys.j1": "b122ea838df8",
+"journeys.j5": "61fe6142638e",
+"kits.rules": "ac3ac5ec4603",
+"kits.new": "1a1dc2779228",
+"kits.reuse": "e946678904e0",
+"kits.missing": "da05b1a8d418",
+"engines.table": "f2f181b13b18",
+"engines.contract": "44f8dac939b5",
+"engines.env": "ba713b7904c7",
+"quality.gates": "dac15895de54",
+"quality.risks": "0bc97e027194",
+"plan.slices": "03b07b0607be",
+"plan.decisions": "e3de5f4b4eb1"
+},
+"at": "2026-11-15T14:17:57Z",
+"by": "claude"
+}
+}
+]
+}
