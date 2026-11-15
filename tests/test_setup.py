@@ -236,3 +236,67 @@ class SetupSafetyTests(Base):
         r = self.run_adp('setup', '--scope', 'project', '--dry-run')
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertFalse(os.path.exists(os.path.join(self.cwd, '.adp', 'log.jsonl')))
+
+
+class CatalogTests(Base):
+    """setup puts the kit the skill folder ships into ~/.adp/catalog (My Own Kit): from its catalog-pack-NN.json files (a skill zip, which may not hold a zip) or its catalog/ folder (a plugin, a clone)."""
+    FILES = {'catalog.json': '{"entries": []}', 'kit/a.js': 'A', 'kit/themes/t.css': 'T é'}
+
+    def ship_packs(self, extra=None):
+        files = {**self.FILES, **(extra or {})}; keys = sorted(files)
+        for i, part in enumerate((keys[:2], keys[2:]), 1):      # two packs
+            json.dump({'schema': 'adp-catalog-pack/1', 'files': {k: files[k] for k in part}}, open(os.path.join(self.root, 'catalog-pack-%02d.json' % i), 'w', encoding='utf-8'), ensure_ascii=False)
+
+    def mine(self, rel): return os.path.join(self.home, '.adp', 'catalog', rel)
+
+    def test_unpacks_the_shipped_packs_and_leaves_a_file_that_is_already_there(self):
+        self.ship_packs()
+        os.makedirs(os.path.dirname(self.mine('kit/a.js'))); open(self.mine('kit/a.js'), 'wb').write(b'NEWER')      # fetched from the live catalog
+        r = self.run_adp('setup', '--scope', 'user')
+        self.assertEqual(r.returncode, 0, r.stderr); self.assertIn('3 shipped files, 2 added', r.stdout)
+        self.assertEqual(open(self.mine('kit/a.js'), 'rb').read(), b'NEWER')
+        self.assertEqual(open(self.mine('kit/themes/t.css'), 'rb').read(), 'T é'.encode()); self.assertTrue(os.path.isfile(self.mine('catalog.json')))
+        self.assertIn('0 added', self.run_adp('setup', '--scope', 'user').stdout)      # a second setup adds nothing
+
+    def test_dry_run_writes_no_catalog(self):
+        self.ship_packs()
+        r = self.run_adp('setup', '--scope', 'user', '--dry-run')
+        self.assertIn('3 would be added', r.stdout); self.assertFalse(os.path.exists(self.mine('')))
+
+    def test_unpacks_a_catalog_folder_when_the_skill_ships_one(self):
+        for k, v in self.FILES.items():
+            p = os.path.join(self.root, 'catalog', k); os.makedirs(os.path.dirname(p), exist_ok=True); open(p, 'w', encoding='utf-8').write(v)
+        self.assertIn('3 shipped files, 3 added', self.run_adp('setup', '--scope', 'user').stdout)
+        self.assertEqual(open(self.mine('kit/a.js'), 'rb').read(), b'A')
+
+    def test_a_pack_entry_that_climbs_out_is_never_written(self):
+        self.ship_packs({'../evil.txt': 'x', '/abs.txt': 'x'})
+        self.run_adp('setup', '--scope', 'user')
+        self.assertFalse(os.path.exists(os.path.join(self.home, '.adp', 'evil.txt'))); self.assertFalse(os.path.exists('/abs.txt'))
+
+    def test_a_broken_or_foreign_pack_is_skipped(self):
+        open(os.path.join(self.root, 'catalog-pack-01.json'), 'w').write('{not json')
+        json.dump({'schema': 'other/1', 'files': {'x.js': 'x'}}, open(os.path.join(self.root, 'catalog-pack-02.json'), 'w'))
+        r = self.run_adp('setup', '--scope', 'user')
+        self.assertEqual(r.returncode, 0, r.stderr); self.assertIn('ships none', r.stdout)
+
+    def test_no_shipped_catalog_says_so_and_writes_none(self):
+        r = self.run_adp('setup', '--scope', 'user')
+        self.assertIn('ships none', r.stdout); self.assertFalse(os.path.exists(self.mine('')))
+
+
+class RoadFileTests(Base):
+    """A skill zip holds one SKILL.md, so its roads are refs/<road>/road.md; setup installs them as SKILL.md, and an unchanged install is not reported as modified."""
+    def as_zip_roads(self):
+        for d in os.listdir(os.path.join(self.root, 'refs')):
+            os.rename(os.path.join(self.root, 'refs', d, 'SKILL.md'), os.path.join(self.root, 'refs', d, 'road.md'))
+
+    def test_setup_installs_a_road_md_as_skill_md_with_its_version(self):
+        self.as_zip_roads()
+        r = self.run_adp('setup', '--scope', 'project')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d = os.path.join(self.cwd, '.claude', 'skills', 'adp-new')
+        self.assertEqual(sorted(os.listdir(d)), ['SKILL.md', 'sub']); self.assertFalse(os.path.exists(os.path.join(d, 'road.md')))
+        self.assertTrue(open(os.path.join(d, 'SKILL.md')).read().startswith('---\nname: adp-new'))
+        self.assertEqual(json.load(open(os.path.join(self.cwd, '.adp', 'config.json')))['version']['adp-new'], '1.2.3')
+        self.assertNotIn('replace', self.run_adp('setup', '--scope', 'project').stdout)      # the same roads: nothing to replace

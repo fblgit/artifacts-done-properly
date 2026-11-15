@@ -7,7 +7,7 @@ metadata:
 
 # Edit an ADP artifact (read, hold, publish, record)
 
-Why: several agents change the page over many versions. The only lock is the `if_version` pin on a db write; a refused write means someone wrote first. Full text: `catalog/kit/guides/artifact-dataplane.md` in the adp skill's folder, read only if this road leaves a question open.
+Why: several agents change the page over many versions. The only lock is the `if_version` pin on a db write; a refused write means someone wrote first. Full text: `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there), read only if this road leaves a question open.
 
 `ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. DIR is the artifact laid out at its published paths and must hold EVERY published file. Batches are written to files (`--out`, default `DIR.adp/`) and printed as `writes` lists whose entries carry `file_path`. P.json maps `"collection/doc"` to the version you read, e.g. `{"manifest/current": 4, "parts/home": 2}`.
 

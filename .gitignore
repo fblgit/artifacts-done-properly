@@ -2,6 +2,8 @@
 __pycache__/
 *.pyc
 /dist/
+/release/
+.adp-dev/
 .claude/
 .ruff_cache/
 .adp/
