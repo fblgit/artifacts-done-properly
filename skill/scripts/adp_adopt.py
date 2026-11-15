@@ -158,6 +158,77 @@ def extract(a):
     return A.emit(out)
 
 
+# ---- the contract: any analyzer (extract, or an agent that read the artifact) writes this file (docs/adopt.md, "The analysis contract") ----
+
+STATES = ('detected', 'selected', 'working', 'preview', 'ready', 'discarded')
+KIND_ID = re.compile(r'(kit|layout|pattern|viz|theme|runtime|template|guide)\.[a-z0-9][a-z0-9-]*')
+CID = re.compile(r'[a-z0-9][a-z0-9._-]*')
+
+
+def validate_candidates(doc, subject=None):
+    """-> {errors, warnings}: what makes the board or the picker misbehave, each with the candidate and the field."""
+    err, warn = [], []
+    e = lambda c, f, m: err.append({'candidate': c, 'field': f, 'problem': m})
+    w = lambda c, f, m: warn.append({'candidate': c, 'field': f, 'problem': m})
+    if not isinstance(doc, dict) or doc.get('schema') != CAND: return {'errors': [{'candidate': None, 'field': 'schema', 'problem': 'must be "%s"' % CAND}], 'warnings': []}
+    cs = doc.get('candidates')
+    if not isinstance(cs, list) or not cs: return {'errors': [{'candidate': None, 'field': 'candidates', 'problem': 'a non-empty list'}], 'warnings': []}
+    ids = [c.get('id') for c in cs if isinstance(c, dict)]
+    owner_cls, owner_path = {}, {}
+    for i, c in enumerate(cs):
+        if not isinstance(c, dict): e(None, 'candidates[%d]' % i, 'not an object'); continue
+        cid = c.get('id')
+        if not isinstance(cid, str) or not CID.fullmatch(cid): e(cid, 'id', 'lowercase letters, digits, dot, dash or underscore'); continue
+        if ids.count(cid) > 1: e(cid, 'id', 'appears more than once')
+        if not c.get('name'): e(cid, 'name', 'required: the word on the node')
+        if c.get('state', 'detected') not in STATES: e(cid, 'state', 'one of ' + ', '.join(STATES))
+        if c.get('suggested_id') and not KIND_ID.fullmatch(c['suggested_id']): e(cid, 'suggested_id', 'kind.name, kind one of kit layout pattern viz theme runtime template guide')
+        fs = c.get('files')
+        if not isinstance(fs, list) or not fs: e(cid, 'files', 'a non-empty list of {path, sha256?, bytes?}')
+        for f in fs if isinstance(fs, list) else []:
+            p = f.get('path') if isinstance(f, dict) else None
+            if not isinstance(p, str) or not safe(p): e(cid, 'files', 'unsafe or missing path %r' % (p,)); continue
+            owner_path.setdefault(p, []).append(cid)
+            if subject is not None:
+                fp = os.path.join(subject, p)
+                if not os.path.isfile(fp): e(cid, 'files', '%s is not in the subject folder' % p)
+                elif f.get('sha256') and sha(open(fp, 'rb').read()) != f['sha256']: e(cid, 'files', '%s differs from its sha256: the subject changed since the analysis' % p)
+        for k in ('provides', 'needs', 'classes', 'ids'):
+            if k in c and not (isinstance(c[k], list) and all(isinstance(x, str) for x in c[k])): e(cid, k, 'a list of strings')
+        for n in c.get('needs') or []:
+            if n == cid: e(cid, 'needs', 'needs itself')
+            elif n not in ids: e(cid, 'needs', '%s is not a candidate id (the map draws no edge to it)' % n)
+        for k in c.get('classes') or []: owner_cls.setdefault(k, []).append(cid)
+        if not (c.get('classes') or c.get('ids')): w(cid, 'classes', 'no classes or ids: the preview picker can never select this candidate by clicking')
+    for k, o in owner_cls.items():
+        if len(o) > 1: w(o[0], 'classes', 'class %s is listed by %s; the first one wins in the picker' % (k, ', '.join(o)))
+    for p, o in owner_path.items():
+        if len(o) > 1: w(o[0], 'files', '%s belongs to %s: it would be packed more than once' % (p, ', '.join(o)))
+    seen, state = set(), {}
+    by = {c['id']: c for c in cs if isinstance(c, dict) and isinstance(c.get('id'), str)}
+    def dfs(x, trail):
+        if state.get(x) == 2 or x in seen: return
+        if state.get(x) == 1: w(x, 'needs', 'cycle: ' + ' -> '.join(trail + [x])); seen.add(x); return
+        state[x] = 1
+        for n in by.get(x, {}).get('needs') or []:
+            if n in by: dfs(n, trail + [x])
+        state[x] = 2
+    for x in by: dfs(x, [])
+    return {'errors': err, 'warnings': warn}
+
+
+def candidates_cmd(a):
+    pos = A.bare(a[1:])
+    if len(pos) != 1 or not os.path.isfile(pos[0]): sys.exit('usage: adp.py candidates FILE [--subject DIR]   (checks an adopt-candidates/1 file, from extract or written by an agent)')
+    sd = A.opt(a, '--subject')
+    if sd and not os.path.isdir(sd): sys.exit('--subject: no folder ' + sd)
+    try: doc = json.load(open(pos[0], encoding='utf-8'))
+    except ValueError as x: A.emit({'ok': False, 'errors': [{'candidate': None, 'field': 'file', 'problem': 'not JSON: %s' % x}], 'warnings': []}); return 1
+    r = validate_candidates(doc, sd); r['ok'] = not r['errors']; r['candidates'] = len(doc.get('candidates', [])) if isinstance(doc, dict) else 0
+    r['checked_files'] = bool(sd)
+    A.emit(r); return 0 if r['ok'] else 1
+
+
 # ---- pack and unpack ----
 
 def safe(p):

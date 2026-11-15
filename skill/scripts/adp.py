@@ -55,6 +55,7 @@ Adopt (docs/adopt.md: an artifact into kits, one candidate at a time):
   adp.py extract DIR [--catalog -|catalog.json] [--ns NAME] [--out candidates.json] [--into ADOPTER_DIR]
                                                     candidates of the artifact in DIR (adopt-candidates/1: files, provides, needs, classes, catalog overlap); --into also
                                                     copies the artifact to ADOPTER_DIR/subject/ with candidates.json, for the adopter template's live preview
+  adp.py candidates FILE [--subject DIR]            check an adopt-candidates/1 file (from extract, or written by an agent that read the artifact) against the contract: exit 1 on errors
   adp.py pack ENTRY_ID STAGING_DIR [--candidates F --cid ID] [--version V] [--requires id,id] [--out FILE.adp.json]
                                                     one portable adp-pack/1 file: the files laid out as under skill/catalog/, their sha256, the provenance, a git-apply patch
   adp.py unpack FILE.adp.json [--to DIR] [--apply REPO]
@@ -1407,7 +1408,7 @@ adp_loop.A = adp_dev.A = adp_adopt.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main, 'extract': adp_adopt.extract, 'pack': adp_adopt.pack_cmd, 'unpack': adp_adopt.unpack_cmd}
+    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main, 'extract': adp_adopt.extract, 'pack': adp_adopt.pack_cmd, 'unpack': adp_adopt.unpack_cmd, 'candidates': adp_adopt.candidates_cmd}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):

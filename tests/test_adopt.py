@@ -84,6 +84,40 @@ class Adopt(Cmd):
         self.assertNotEqual(self.run_adp('pack', 'kit.a', st).returncode, 0)
 
 
+class Contract(Cmd):
+    subject = Adopt.subject
+
+    def doc(self):
+        s = self.subject(); c = self.p('c.json'); self.ok('extract', s, '--out', c)
+        return s, c, json.load(open(c))
+
+    def test_what_extract_writes_passes_with_the_files_checked(self):
+        s, c, _ = self.doc(); r = self.ok('candidates', c, '--subject', s)
+        self.assertTrue(r['ok']); self.assertEqual(r['errors'], []); self.assertEqual(r['candidates'], 4); self.assertTrue(r['checked_files'])
+
+    def test_an_agent_written_file_is_held_to_the_contract(self):
+        s, c, d = self.doc()
+        d['candidates'][0]['needs'] = ['c.nope']; d['candidates'][1]['id'] = d['candidates'][2]['id']; d['candidates'][2]['state'] = 'done'
+        d['candidates'][3]['files'][0]['path'] = 'parts/missing.js'; d['candidates'][3]['suggested_id'] = 'Widget'
+        bad = self.p('bad.json'); json.dump(d, open(bad, 'w'))
+        r = self.run_adp('candidates', bad, '--subject', s); self.assertEqual(r.returncode, 1)
+        out = json.loads(r.stdout); fields = {(x['field'], x['problem'].split()[0]) for x in out['errors']}
+        for want in (('needs', 'c.nope'), ('id', 'appears'), ('state', 'one'), ('files', 'parts/missing.js'), ('suggested_id', 'kind.name,')):
+            self.assertIn(want, fields)
+
+    def test_a_changed_subject_and_an_unpickable_candidate_are_told_apart(self):
+        s, c, d = self.doc()
+        open(os.path.join(s, 'parts', 'color.js'), 'a').write('// edited')
+        out = json.loads(self.run_adp('candidates', c, '--subject', s).stdout)
+        self.assertFalse(out['ok']); self.assertIn('differs from its sha256', out['errors'][0]['problem'])
+        no_css = [w for w in out['warnings'] if 'never be selected' in w['problem'] or 'can never' in w['problem']]
+        self.assertTrue(no_css)          # c.color and c.app own no classes: clicking can not select them
+
+    def test_not_json_and_the_wrong_schema_are_errors(self):
+        open(self.p('x.json'), 'w').write('{'); self.assertEqual(self.run_adp('candidates', self.p('x.json')).returncode, 1)
+        self.write_json('y.json', {'schema': 'other'}); self.assertEqual(self.run_adp('candidates', self.p('y.json')).returncode, 1)
+
+
 CATALOG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill', 'catalog', 'catalog.json')
 
 
