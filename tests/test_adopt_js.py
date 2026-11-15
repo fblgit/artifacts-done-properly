@@ -151,6 +151,12 @@ class Glue(unittest.TestCase):
         self.assertTrue(p['frame']); self.assertIn('built for c.c', p['srcdoc']); self.assertEqual(p['sandbox'], 'allow-scripts allow-same-origin')
         self.assertEqual(self.o['arrives'], '<p>now there is one</p>')            # written after the candidate was selected, shown without a reload
 
+    def test_a_blank_or_failing_preview_says_so(self):
+        o = self.o
+        self.assertEqual(o['capError'], 'The preview reported a problem: boom @picker.js:9')
+        self.assertEqual(o['capBlank'], 'The preview page loaded but drew nothing.')
+        self.assertTrue(o['capOk'].startswith('A preview page built for this component'))
+
     def test_without_a_preview_the_button_asks_for_one_with_the_files_in_order(self):
         o = self.o
         self.assertEqual(o['noPreview'], {'frame': False, 'button': 'Ask Claude to build a preview'})

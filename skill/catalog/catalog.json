@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-15T16:04:42Z",
+ "built": "2026-11-15T16:21:05Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -1438,17 +1438,17 @@
     {
      "path": "kit/patterns/adopt-inspector.js",
      "role": "script",
-     "sha256": "d4928407bb214bedd52597e843d5b4c4e6c2bdbc16f8066e483f4971e7edf7c2",
-     "bytes": 14098
+     "sha256": "e00dbd84b41b0058dce97899da1ad567735028f41761e2869a8a639f6be3867e",
+     "bytes": 15038
     },
     {
      "path": "kit/patterns/adopt-inspector.css",
      "role": "style",
-     "sha256": "03b8b41f5c0d6e001fa4b3bb8114ba3091e929742d6d12901cdce0560ac3b82b",
-     "bytes": 1890
+     "sha256": "183b56dd4e00f0f35ba1d97c2112f426ba129ecdd452f3c45fdb9be9b461b983",
+     "bytes": 1958
     }
    ],
-   "hash": "a4f32dd9e671"
+   "hash": "32b39f7193e2"
   },
   {
    "id": "pattern.answer-queue",

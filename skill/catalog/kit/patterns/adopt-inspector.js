@@ -89,7 +89,16 @@ function mount(root, opts) {
       if (lastSnap === 'pv:' + pv) return; lastSnap = 'pv:' + pv;
       const f = document.createElement('iframe'); f.className = 'kit-ai-pv-frame'; f.title = 'Preview of ' + c.name; f.setAttribute('sandbox', 'allow-scripts allow-same-origin'); f.srcdoc = pv;
       const again = askBuild(c); if (again) again.textContent = 'Ask Claude to change this preview';
-      snapBody.replaceChildren(f, el('p', 'kit-ai-snap-c', 'A preview page built for this component. It runs the artifact\'s own files, so it shows the real code.'), ...(again ? [again] : [])); return;
+      const said = 'A preview page built for this component. It runs the artifact\'s own files, so it shows the real code.', cap = el('p', 'kit-ai-snap-c', 'Loading the preview.'); cap.setAttribute('role', 'status');
+      /* A blank preview must not look like a working one: once the page has loaded, say what it reported (it keeps script errors in window.__pvErrors) or that it drew nothing. */
+      f.addEventListener('load', () => setTimeout(() => {
+        if (dead || previews[c.id] !== pv) return;
+        try {
+          const d = f.contentDocument, errs = (f.contentWindow && f.contentWindow.__pvErrors) || [], blank = !d || !d.body || !d.body.children.length;
+          cap.textContent = errs.length ? 'The preview reported a problem: ' + errs.slice(0, 3).join(' · ') : blank ? 'The preview page loaded but drew nothing.' : said; cap.dataset.tone = errs.length || blank ? 'warn' : '';
+        } catch (e) { cap.textContent = 'The preview frame cannot be read here (' + ((e && e.message) || 'blocked') + ').'; cap.dataset.tone = 'warn'; }
+      }, 1500));
+      snapBody.replaceChildren(f, cap, ...(again ? [again] : [])); return;
     }
     const draws = (c.classes || []).length || (c.ids || []).length, els = doc && draws ? find(c) : [];
     const top = els.filter(e => { for (let p = e.parentElement; p; p = p.parentElement) if (els.indexOf(p) >= 0) return false; return true; })
