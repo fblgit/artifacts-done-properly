@@ -131,7 +131,7 @@ function mount(root, opts) {
     f.style.cssText = 'width:' + (w + 24) + 'px;height:' + (h + 24) + 'px;transform:scale(' + s + ');transform-origin:0 0'; f.srcdoc = src;
     wrap.append(f);
     const cap = el('p', 'kit-ai-snap-c', (top.length > 1 || els.length > 1 ? els.length + ' elements; showing the largest. ' : '') + 'A still picture of it as it is on screen now (' + w + ' × ' + h + ' px' + (s < 1 ? ', scaled to ' + Math.round(s * 100) + '%' : '') + ').');
-    snapBody.replaceChildren(wrap, cap);
+    const build = askBuild(c); snapBody.replaceChildren(wrap, cap, ...(build ? [build] : []));      // a picture of what is on screen is not a preview page: the button is always there
   }
 
   /* The outline and the picture are separate jobs: one failing must not stop the other, and neither may throw into the page that called select(). */

@@ -41,6 +41,10 @@ class Engine(unittest.TestCase):
         self.assertTrue(L['wideFits']); self.assertTrue(L['widerNodes']); self.assertEqual(L['edges'], 3)
         self.assertTrue(self.o['cycleEnds'])
 
+    def test_seven_columns_fit_a_1190_px_map_and_never_overlap(self):
+        f = self.o['fit']          # the real Hue map: 7 columns in about 1190 px overflowed and hid its last column (seen in a real browser)
+        self.assertTrue(f['fits'], f); self.assertEqual(f['columns'], 7); self.assertGreaterEqual(f['nodeW'], 120); self.assertTrue(f['noOverlap'])
+
     def test_the_nearest_owned_ancestor_is_the_owner(self):
         a, b, c, d = self.o['owner']
         self.assertEqual((a['id'], a['via'], a['value']), ('pk', 'class', 'pk-wheel'))      # found two levels up

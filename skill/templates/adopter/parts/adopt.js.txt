@@ -27,10 +27,16 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
       const Kit = window.Kit || {}, $ = s => document.querySelector(s), note = $('.ad-note'), boardEl = $('.ad-board'), inspEl = $('.ad-inspect');
       if (!Kit.adopt || !Kit.adoptBoard || !Kit.adoptInspector) { boardEl.innerHTML = '<p class="muted">The adopt kits are not installed.</p>'; return {destroy(){}}; }
       let dead = false, offs = [], pvOff = null, board = null, insp = null, base = [], overlay = {}, packs = {}, sel = null, can = true, restored = false, chain = Promise.resolve();
-      const db = window.ADP && ADP.db, ref = db ? ADP.ns('shared').doc(STATE) : null, viewRef = db ? ADP.ns('shared').doc(VIEW) : null, packRef = id => ADP.ns('shared').doc('packs/' + id), previewRef = id => ADP.ns('shared').doc('previews/' + id);      // a doc path has an even number of parts: ns/shared/packs/<id>
+      /* The runtime connects to the database after the page starts: ADP.db is null until then. Reading it once at mount, as the first releases did, left every database feature
+         (decisions, the selection, stored previews) silently off whenever this tab was already open on a refresh. So everything that keeps state waits for the connection. */
+      let db = null, ref = null, viewRef = null, diagRef = null;
+      const packRef = id => ADP.ns('shared').doc('packs/' + id), previewRef = id => ADP.ns('shared').doc('previews/' + id);      // a doc path has an even number of parts: ns/shared/packs/<id>
+      const connect = () => { db = window.ADP && ADP.db; ref = db ? ADP.ns('shared').doc(STATE) : null; viewRef = db ? ADP.ns('shared').doc(VIEW) : null; diagRef = db ? ADP.ns('shared').doc('adopt/diag') : null; };
+      const connected = Promise.resolve(window.ADP && ADP.config && ADP.config.ready).catch(() => null).then(() => new Promise(r => { let n = 0; const t = () => { if ((window.ADP && ADP.db) || n++ > 80) { connect(); r(); } else setTimeout(t, 100); }; t(); }));
+      note.textContent = 'Connecting to the server…';
       const status = (t, tone) => { if (board) board.setStatus(t, tone); };
       /* What each preview did when it loaded here (ok, blank, error, unreadable), kept in ns/shared/adopt/diag so a session can read what a person sees without asking. */
-      const diagRef = db ? ADP.ns('shared').doc('adopt/diag') : null, diag = {};
+      const diag = {};
       const reportPreview = s => { diag[s.id] = Object.assign({}, s, {at: new Date().toISOString(), page: String(location.pathname).slice(-80)}); if (diagRef) write(diagRef, {items: Object.keys(diag).map(k => Object.assign({}, diag[k]))}).catch(() => {}); };
       const merged = () => Kit.adopt.merge(base, overlay);
       const push = () => { const l = merged(); if (board) board.setCandidates(l); if (insp) insp.setCandidates(l); };
@@ -70,7 +76,7 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
         return e.send({lane: 'task', scope: {kind: 'part', id: 'adopt.inspect', label: 'Preview of ' + id, hash: ''}, quote: c ? c.name + ' · provides ' + (c.provides || []).join(', ') : '',
           text: 'Build a preview page for candidate ' + id + ' (docs/adopt.md). Write ONE complete, self-contained HTML document that renders just this component with sample data, and nothing else of the app. Load only these files, in this order, by relative address (they are served under subject/): ' + files + ', plus the stylesheets and scripts that subject/index.html links before them (read it for the order, the theme and the sample data). Call the component\'s public API (' + ((c && c.provides) || []).join(', ') + ') the way the subject does, in a container with room to draw. Save it as the field html of the db doc ns/shared/previews/' + id + ' (collection ns/shared/previews, doc id ' + id + '). Do not change the subject or any candidate\'s state.'});
       };
-      fetch('subject/candidates.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(j => {
+      connected.then(() => fetch('subject/candidates.json')).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(j => {
         if (dead) return; base = j.candidates || [];
         note.textContent = (j.subject && j.subject.name ? j.subject.name + ': ' : '') + base.length + ' candidates' + (j.namespace ? ' (namespace ' + j.namespace + ')' : '') + '.';
         /* can() answers with a promise: an editor can write the db; anyone else sees the decisions and cannot change them. */
@@ -89,7 +95,8 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
             /* A block nobody owns, given to a candidate: its classes and ids join that candidate's, on the server, and the candidate is selected. */
             onAssign: a => { const had = overlay[a.id] || {}, add = (x, y) => (x || []).concat((y || []).filter(k => (x || []).indexOf(k) < 0)); return save(a.id, {classes: add(had.classes, a.classes), ids: add(had.ids, a.ids)}).then(() => { choose(a.id, true); note.textContent = 'Assigned ' + a.classes.concat(a.ids.map(i => '#' + i)).slice(0, 4).join(' ') + ' to ' + a.id + '. Clicking it now selects that candidate.'; }); },
             onPick: p => { if (!p.id) { note.textContent = 'Nobody owns ' + (p.label || '<' + p.tag + '>') + '. Assign it to a candidate under the preview.'; return; } choose(p.id, true); note.textContent = p.id + ' (matched by ' + p.via + ' ' + p.value + ').'; }});
-          if (!can) status('You can look but not change: only editors can save decisions.', 'warn');
+          if (!db) status('Not connected to the server: decisions will not be kept after a reload.', 'warn');
+          else if (!can) status('You can look but not change: only editors can save decisions.', 'warn');
           if (ref) offs.push(ref.onSnapshot(s => {
             if (dead) return; overlay = s && s.exists ? fromItems(s.data()) : {}; push();
             const n = Object.keys(overlay).length;

@@ -26,6 +26,10 @@ const chain = [c('a', 'detected'), c('b', 'detected', ['a']), c('c', 'detected',
 const narrow = K.layout(chain), wide = K.layout(chain, { width: 1600 });
 const right = L => Math.max.apply(null, L.nodes.map(n => n.x + n.w));
 out.layout = { layers: chain.map(x => narrow.nodes.find(n => n.id === x.id).layer), narrowRight: right(narrow), wideRight: right(wide), wideFits: right(wide) <= 1600, edges: wide.edges.length, widerNodes: wide.nodes[0].w > narrow.nodes[0].w };
+/* seven columns in a box 1190 px wide (the real map's case): they must fit, not overflow and scroll */
+const deep = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].map((id, i, all) => c(id, 'detected', i ? [all[i - 1]] : []));
+const fit = K.layout(deep, { width: 1186 }), tooNarrow = K.layout(deep, { width: 400 });
+out.fit = { right: right(fit), fits: right(fit) <= 1186, nodeW: fit.nodes[0].w, columns: new Set(fit.nodes.map(n => n.x)).size, noOverlap: tooNarrow.nodes.every((n, i, a) => !i || n.x >= a[i - 1].x + a[i - 1].w) };
 const cyc = K.layout([c('p', 'detected', ['q']), c('q', 'detected', ['p'])]);
 out.cycleEnds = cyc.nodes.length === 2;
 

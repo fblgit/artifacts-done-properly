@@ -92,10 +92,10 @@ function layout(cands, opts) {
   };
   const layers = [];
   (cands || []).forEach(c => { const l = d(c.id); (layers[l] = layers[l] || []).push(c); });
-  if (o.width && layers.length > 1) {      // fill the width given: the columns spread, and the nodes grow with them up to 300 px
+  if (o.width && layers.length > 1) {      // fit the width given, wider or narrower: the node width first (120 to 300 px), then the columns that leave the last node inside it
     const room = o.width - 2 * o.pad, gaps = layers.length - 1;
-    o.nodeW = Math.min(300, Math.max(o.nodeW, Math.floor(0.78 * (room - o.nodeW) / gaps)));      // the node width first, then the columns that leave the last node inside the width
-    o.colW = Math.max(o.colW, Math.floor((room - o.nodeW) / gaps));
+    o.nodeW = Math.min(300, Math.max(120, Math.floor(0.8 * room / layers.length)));
+    o.colW = Math.max(o.nodeW + 12, Math.floor((room - o.nodeW) / gaps));      // never closer than a node and a gap: past that the map scrolls rather than overlap
   }
   const nodes = [];
   layers.forEach((col, l) => (col || []).sort((a, b) => (b.bytes || 0) - (a.bytes || 0)).forEach((c, i) => nodes.push({ id: c.id, layer: l, x: o.pad + l * o.colW, y: o.pad + i * o.rowH, w: o.nodeW, h: o.nodeH })));
