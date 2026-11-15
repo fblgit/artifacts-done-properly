@@ -9,8 +9,8 @@
  * with their ifMatch (content null: the file is removed, with its reason); a part with kind content is copy whose content/<id> doc moves (its file rides along). Apply (editors) makes one debounced files-form publish with an ifMatch per file; after {shas} it writes manifest/current, parts/<id>, content/<id>,
  * changes/<seq> and sets the proposal applied; on conflict it names the files that moved and leaves the proposal held. Decline asks for a reason and records it.
  * A presence line says whether an agent is watching (a presence/* doc fresher than assist.presence-minutes, or comments.canSendToClaude() answering available); else it offers
- * the handoff to copy. After Apply, a publish conflict, a hold on open or Decline it wakes the watching sessions with comments.sendToClaude (docs/assist.md: the comment is only
- * the wake-up, the proposal doc is the record; the trailer line is "· adp proposal {<pid>} · applied <version> | held | declined"); the thread id is kept on the proposal as
+ * the handoff to copy. After a publish conflict, a hold on open or Decline it wakes the watching sessions with comments.sendToClaude; a successful Apply wakes nobody (docs/assist.md: the comment is only
+ * the wake-up, the proposal doc is the record; the trailer line is "· adp proposal {<pid>} · held | declined"); the thread id is kept on the proposal as
  * wake.thread and later events reply into it. Without a listening session the data change stands and the next export finds it. Nothing is published on load.
  *
  * API:
@@ -28,7 +28,7 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.2.0
+ * @version   0.2.1
  * @updated   2026-11-15
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
@@ -44,7 +44,7 @@
  * @source    ADP 0.3.0, 2026-10-27 | the explainer's proposed-version card | one proposal applied by a person, generalised to the inbox
  * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/patterns.json#inbox"]}
  * @samples   inbox
- * @changed   autoApply and onAutoApplied (opt-in): a page that ships its own files as proposals applies them itself, one at a time, retries a failed one once, warns and does not call onAutoApplied while one is failed or held, and sends no wake-up for a proposal it applied itself; the default stays an editor's press.
+ * @changed   autoApply and onAutoApplied (opt-in): a page that ships its own files as proposals applies them itself, one at a time, retries a failed one once, warns and does not call onAutoApplied while one is failed or held, and a successful Apply, by the page or by a press, sends no wake-up comment (held and declined still do); the default stays an editor's press.
  */
 (function () {
 'use strict';
@@ -80,7 +80,7 @@ function mount(root, opts) {
   const usr = () => o.user || (window.ADP && window.ADP.user) || {};
   const classify = (...a) => (o.classify || window.ADP.classify)(...a);
   const canEdit = () => !!usr().canEdit, by = () => usr().id || 'page';
-  let props = [], man = null, presence = [], requests = [], art = null, artWhy = 'checking…', dead = false, busy = {}, timers = {}, notes = {}, cm = null, canSend = '', autoTried = new Set(), autoQuiet = new Set(), autoRetried = new Set(), autoFailed = new Set(), autoRunning = false, autoOk = 0, autoCalled = false;
+  let props = [], man = null, presence = [], requests = [], art = null, artWhy = 'checking…', dead = false, busy = {}, timers = {}, notes = {}, cm = null, canSend = '', autoTried = new Set(), autoRetried = new Set(), autoFailed = new Set(), autoRunning = false, autoOk = 0, autoCalled = false;
   const offs = [];
   const box = el('section', B + 'root'); box.setAttribute('aria-label', 'Incoming proposals'); root.replaceChildren(box);
 
@@ -161,7 +161,7 @@ function mount(root, opts) {
       for (;;) {
         const p = props.find(x => x.status === 'merged' && !autoTried.has(x.pid) && !busy[x.pid]);
         if (!p) break;
-        autoTried.add(p.pid); autoQuiet.add(p.pid); await applyNow(p);
+        autoTried.add(p.pid); await applyNow(p);
         if (!notes[p.pid]) continue;
         if (notes[p.pid].startsWith('Not applied') && !autoRetried.has(p.pid)) {       // an error, not a conflict: one more try after a pause
           autoRetried.add(p.pid); autoTried.delete(p.pid); notes[p.pid] = ''; await new Promise(r => setTimeout(r, 1500));
@@ -215,7 +215,7 @@ function mount(root, opts) {
       await D.doc('incoming/' + p.pid).update({ status: 'applied', applied: { version: res.version || '', at } });
       await dataChange('Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)'));
       notes[p.pid] = ''; autoFailed.delete(p.pid); autoOk++;
-      if (!autoQuiet.has(p.pid)) wake(p, 'Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)') + '.', 'applied ' + (res.version || 'records'));      // a proposal the page applied on its own wakes nobody
+      // a successful Apply wakes nobody: the changes/<seq> record and the proposal's status are the notice
     } catch (e) {
       if (e && e.code === 'conflict') {
         const moved = (e.paths || []).map(x => ({ path: x.path, expected: x.expected, actual: x.actual }));
@@ -243,7 +243,7 @@ function mount(root, opts) {
     const fresh = presence.filter(x => now - Date.parse(x.last_seen || x.at || 0) < mins * 60000);
     const line = el('div', B + 'presence');
     if (fresh.length) { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, (fresh[0].name || fresh[0].id) + ' is watching')); return line; }
-    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'A Claude session is listening: it is woken when a proposal is decided here.')); return line; }
+    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'A Claude session is listening: it is woken when a proposal is held or declined here.')); return line; }
     const handoff = 'watch the artifact ' + (o.url || '(this artifact\'s link)') + (requests.length ? ' — open requests: ' + requests.join(', ') : '');
     const b = el('button', B + 'btn', 'Copy the handoff'); b.type = 'button';
     b.addEventListener('click', () => { (navigator.clipboard ? navigator.clipboard.writeText(handoff) : Promise.reject()).then(() => { b.textContent = 'Copied'; }, () => { b.textContent = 'Select and copy below'; }); });
