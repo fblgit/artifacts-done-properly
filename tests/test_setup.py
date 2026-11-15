@@ -283,3 +283,20 @@ class CatalogTests(Base):
     def test_no_shipped_catalog_says_so_and_writes_none(self):
         r = self.run_adp('setup', '--scope', 'user')
         self.assertIn('ships none', r.stdout); self.assertFalse(os.path.exists(self.mine('')))
+
+
+class RoadFileTests(Base):
+    """A skill zip holds one SKILL.md, so its roads are refs/<road>/road.md; setup installs them as SKILL.md, and an unchanged install is not reported as modified."""
+    def as_zip_roads(self):
+        for d in os.listdir(os.path.join(self.root, 'refs')):
+            os.rename(os.path.join(self.root, 'refs', d, 'SKILL.md'), os.path.join(self.root, 'refs', d, 'road.md'))
+
+    def test_setup_installs_a_road_md_as_skill_md_with_its_version(self):
+        self.as_zip_roads()
+        r = self.run_adp('setup', '--scope', 'project')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d = os.path.join(self.cwd, '.claude', 'skills', 'adp-new')
+        self.assertEqual(sorted(os.listdir(d)), ['SKILL.md', 'sub']); self.assertFalse(os.path.exists(os.path.join(d, 'road.md')))
+        self.assertTrue(open(os.path.join(d, 'SKILL.md')).read().startswith('---\nname: adp-new'))
+        self.assertEqual(json.load(open(os.path.join(self.cwd, '.adp', 'config.json')))['version']['adp-new'], '1.2.3')
+        self.assertNotIn('replace', self.run_adp('setup', '--scope', 'project').stdout)      # the same roads: nothing to replace

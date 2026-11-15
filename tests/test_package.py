@@ -107,7 +107,8 @@ class BuildTests(Base):
         names = self.names()
         self.assertEqual({n.split("/")[0] for n in names}, {"adp"})
         self.assertIn("adp/SKILL.md", names)
-        self.assertIn("adp/refs/alpha/SKILL.md", names)
+        self.assertIn("adp/refs/alpha/road.md", names)      # claude.ai takes exactly one SKILL.md: a road skill goes in as road.md
+        self.assertEqual([n for n in names if n.endswith("SKILL.md")], ["adp/SKILL.md"])
         self.assertIn("adp/refs/alpha/evals/keep.md", names)
         self.assertEqual(names, sorted(names))
         for n in names:

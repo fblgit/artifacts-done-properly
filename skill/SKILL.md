@@ -33,7 +33,7 @@ Use `--help` or a subcommand with no arguments to see its usage; do not guess a 
 | to edit or publish an artifact others also work on, or answer its comments | `adp-edit` |
 | an existing artifact put on ADP (adopt it, move it to adp/2) | `adp-adopt` |
 
-In a plugin install the road names carry the plugin's prefix, for example `artifacts-done-properly:adp-new`. Each road is also a plain file in this skill's folder, `refs/<road>/SKILL.md` (for example `refs/adp-new/SKILL.md`): when the Skill tool does not know a road, read that file; setup is not needed for it. Each road is complete on its own; the full standard is `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there; read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
+In a plugin install the road names carry the plugin's prefix, for example `artifacts-done-properly:adp-new`. Each road is also a plain file in this skill's folder, `refs/<road>/SKILL.md` (`refs/<road>/road.md` in a zip install; for example `refs/adp-new/SKILL.md`): when the Skill tool does not know a road, read that file; setup is not needed for it. Each road is complete on its own; the full standard is `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there; read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
 
 ## Log
 

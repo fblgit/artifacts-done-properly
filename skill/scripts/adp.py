@@ -1259,6 +1259,13 @@ def init_cmd(a):
     print(f'created {p}; registered in {reg}'); return 0
 
 
+def road_tree(d):
+    """{relative path: bytes} of a road skill folder under refs/. A skill zip may hold only one SKILL.md, so the zip's roads are refs/<road>/road.md: it comes back as SKILL.md."""
+    t = tree_files(d)
+    if 'road.md' in t and 'SKILL.md' not in t: t['SKILL.md'] = t.pop('road.md')
+    return t
+
+
 def ref_version(skill_md):
     """metadata.version from a SKILL.md frontmatter, or None."""
     try: lines = open(skill_md).read().split('\n')
@@ -1338,17 +1345,19 @@ def setup_cmd(a):
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
     total, fresh = unpack_catalog(dry)
     print(f'catalog (My Own Kit) {os.path.join(ADP_HOME, "catalog")}: ' + (f'{total} shipped files, {fresh} {"would be " if dry else ""}added, the others were already there and are left as they are' if total else 'this skill folder ships none; adp.py catalog URL fetches it'))
-    modified = [os.path.join(skills, n) for n in copy if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
+    modified = [os.path.join(skills, n) for n in copy if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != road_tree(os.path.join(refs, n))]
     for m in modified: print(f'{"would replace" if dry else "replaced"} {m}: it differs from the packaged skill (an older copy or local edits); setup installs the packaged one')
     if dry: return 0
     for n in copy:        # an update is an update: every road skill folder becomes the packaged one, whatever was there
         t = os.path.join(skills, n)
         shutil.rmtree(t, ignore_errors=True)
-        shutil.copytree(os.path.join(refs, n), t, ignore=shutil.ignore_patterns('__pycache__'))
+        for rel, data in road_tree(os.path.join(refs, n)).items():
+            p = os.path.join(t, rel); os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'wb') as f: f.write(data)
     os.makedirs(os.path.dirname(cfg), exist_ok=True)
     c = json.load(open(cfg)) if os.path.isfile(cfg) else {}
     mine = {'schema': 'adp-setup/1', 'scope': scope, **({'plugin': plug} if plug else {'skill_root': HERE}), 'skills': names,     # a plugin's folder changes with every version: record its name, not its path
-            'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md')))}, 'at': now()}
+            'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md' if os.path.isfile(os.path.join(refs, n, 'SKILL.md')) else 'road.md')))}, 'at': now()}
     add = {k: v for k, v in mine.items() if k not in c}     # a config that is already there is used as it is: setup only adds the keys it lacks
     if add: c.update(add); json.dump(c, open(cfg, 'w'), indent=1)
     if scope != 'user': register_project(cwd, scope)

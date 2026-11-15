@@ -82,7 +82,8 @@ folders beside it (in the project's `.claude/skills` when `setup` ran with scope
 `adp.skill` is a zip whose root folder is `adp/`. It holds under 200 files, the most a skill upload
 takes: the catalog's kit travels in it as a few JSON packs (`catalog-pack-NN.json`; a zip may not
 hold a zip), which `setup` unpacks (see "First
-run"). Get it from the
+run"). It holds exactly one `SKILL.md`, the most an upload takes: the four road skills are
+`refs/<road>/road.md` in it, and `setup` installs them as `SKILL.md`. Get it from the
 [latest release](https://github.com/fblgit/artifacts-done-properly/releases/latest), or build it in a clone:
 `python3 tools/package.py` writes `dist/adp.skill`. If the release page shows 404, no release is published yet: build it.
 The two routes below use it.

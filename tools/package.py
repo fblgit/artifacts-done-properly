@@ -155,7 +155,19 @@ def legal_files(skill_dir):
 MAX_FILES = 200      # claude.ai refuses a skill upload over 200 files
 
 
-PACK_BYTES = 900 * 1024      # a pack is split before it passes this size (the skill zip compresses each one)
+ROAD_FILE = "road.md"
+
+
+def zip_name(rel):
+    """The path a file has in the zip. claude.ai accepts exactly one SKILL.md in a skill upload, so each road skill's refs/<road>/SKILL.md goes in as refs/<road>/road.md;
+    `adp.py setup` writes it back as SKILL.md. The repo (and so a plugin install) keeps SKILL.md."""
+    parts = rel.split("/")
+    if len(parts) == 3 and parts[0] == "refs" and parts[2] == "SKILL.md":
+        return "refs/%s/%s" % (parts[1], ROAD_FILE)
+    return rel
+
+
+PACK_BYTES = 900 * 1024     # a pack is split before it passes this size (the skill zip compresses each one)
 
 
 def catalog_packs(skill_dir):
@@ -199,6 +211,10 @@ def build(skill_dir, out_dir):
     count = len(files) + len(packs)
     if count > MAX_FILES:
         raise ValidationError("the skill zip would hold %d files; claude.ai accepts at most %d" % (count, MAX_FILES))
+    files = sorted((zip_name(r), f) for r, f in files)
+    skill_mds = [r for r, _ in files if r.rsplit("/", 1)[-1] == "SKILL.md"]
+    if len(skill_mds) != 1:
+        raise ValidationError("the skill zip would hold %d SKILL.md files; claude.ai accepts exactly one" % len(skill_mds))
     os.makedirs(out_dir, exist_ok=True)
     target = os.path.join(out_dir, SKILL_NAME + ".skill")
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
