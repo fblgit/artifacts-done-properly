@@ -94,6 +94,7 @@ Markers (HTML or JS/CSS comments): <!-- part:ID --> ... <!-- /part:ID -->  |  /*
 ID: dot-separated lowercase kebab, e.g. triage.keys-table. Hash: sha256 of the text between the markers with
 whitespace runs collapsed, first 12 hex; a parent's text includes its children. Stdlib only; run with python3 -I."""
 import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys
+from html import escape as html_escape
 
 ID = r'[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*'
 TAG = re.compile(r'<[A-Za-z][A-Za-z0-9-]*')   # an opening tag (also inside JS template strings)
@@ -568,6 +569,24 @@ def add_kit_tags(d, files, fonts=()):
     return True
 
 
+def fill_info(d, ix, index, cat):
+    """Fill the info panel of DIR/index.html (the green dot, top left; tabs About, Help, Status): the skill's version, the sha256 of the page's adp.js,
+    the catalog it was built from, and the components table as built: one row for each entry the page takes (id, version, hash from the catalog's index)."""
+    p = os.path.join(d, 'index.html')
+    try:
+        with open(p, encoding='utf-8') as f: text = f.read()
+        with open(os.path.join(d, 'adp.js'), 'rb') as f: sha = hashlib.sha256(f.read()).hexdigest()
+    except OSError: return
+    if '{{adp_' not in text: return
+    by = {e['id']: e for e in index.get('entries', [])}
+    cell = lambda v: '<td>' + html_escape(str(v or '')) + '</td>'
+    rows = ''.join('<tr>' + cell(e['id']) + cell(e.get('version')) + cell((by.get(e['id']) or {}).get('hash')) + '</tr>' for e in ix['entries'])
+    for key, val in (('adp_version', html_escape(ref_version(os.path.join(HERE, 'SKILL.md')) or 'unknown')), ('adp_sha12', sha[:12]), ('adp_sha', sha),
+                     ('adp_catalog', html_escape(cat)), ('adp_components', rows or '<tr><td colspan="3">none taken</td></tr>')):
+        text = text.replace('{{' + key + '}}', val)
+    with open(p, 'w', encoding='utf-8') as f: f.write(text)
+
+
 def new(a):
     pos = bare(a[1:]); tier = opt(a, '--tier')
     if '--tier' in a:
@@ -607,8 +626,9 @@ def new(a):
         with open(src, encoding='utf-8') as f, open(dst, 'w', encoding='utf-8') as g: g.write(sub(f.read()))
     built = build_content(d, content) if content else None
     tk = list(dict.fromkeys(expand(meta.get('take', []), ids) + themes + optall(a, '--layout')))
+    ix = installed_index(index, csrc, tk)
+    fill_info(d, ix, index, cat)
     if any(tmeta(l).get('installed') for l in layers):     # the My catalog tab lists this file
-        ix = installed_index(index, csrc, tk)
         given = opt(a, '--url') or (cat if CAT_URL.match(cat) else '')
         ix['take'] = tk       # what this page asked for: `files` takes the same entries again
         if given: ix['url'] = given       # the link the owner gave (or the catalog url this run used) wins over the one inside the file

@@ -141,7 +141,7 @@ function mountRequests(){
     rows.forEach((r, i) => {
       let c = cards.get(r.id);
       if (!c) { const el = document.createElement('div'); el.className = 'req-item';
-        c = {el, m: Kit.requestCard.mount(el, {engine, rid: r.id, me: engine.me(), titles: TITLES, onReveal: reveal})}; cards.set(r.id, c); }
+        c = {el, m: Kit.requestCard.mount(el, {engine, rid: r.id, me: engine.me(), titles: TITLES, onReveal: reveal, fold: true, open: i === 0})}; cards.set(r.id, c); }      // a done request folds to one line; the newest stays open
       if (box.children[i] !== c.el) box.insertBefore(c.el, box.children[i] || null);
     });
     empty.hidden = rows.length > 0; if (!empty.parentNode) box.append(empty);
