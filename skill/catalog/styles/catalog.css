@@ -37,7 +37,13 @@
   --cat-ok: #74c9a0; --cat-warn: #e9b25e; --cat-bad: #f2869f; --cat-shadow: 0 1px 0 rgba(0, 0, 0, .4), 0 16px 36px -18px rgba(0, 0, 0, .8);
   color-scheme: dark;
 }
-
+/* adp.js's first-open sheet reads the standard ADP tokens, which this page names --cat-*: give the sheet (only) the page's own colours, so it is dark on a dark page */
+.adp-seed { --panel: var(--cat-sheet); --ink: var(--cat-ink); --ink-3: var(--cat-ink-3); --rule: var(--cat-rule); --sunk: var(--cat-sunk); --accent-soft: var(--cat-accent-soft); --f-ui: var(--cat-f-body); }
+.about { font: 500 12px var(--cat-f-mono); color: var(--cat-ink-2); text-decoration: none; border: 1px solid var(--cat-rule); border-radius: 999px; padding: 5px 12px; }
+.about:hover { color: var(--cat-ink); border-color: var(--cat-ink-3); }
+/* the Incoming panel (kit/patterns/inbox) reads the same standard tokens */
+.incoming { --bg: var(--cat-ground); --panel: var(--cat-sheet); --sunk: var(--cat-sunk); --ink: var(--cat-ink); --ink-2: var(--cat-ink-2); --ink-3: var(--cat-ink-3); --rule: var(--cat-rule);
+  --accent-ink: var(--cat-accent-ink); --ok: var(--cat-ok); --warn: var(--cat-warn); --danger: var(--cat-bad); --f-ui: var(--cat-f-body); --f-mono: var(--cat-f-mono); padding-block: 14px 4px; }
 * { box-sizing: border-box; }
 body { background: var(--cat-ground); color: var(--cat-ink); font: 15px/1.55 var(--cat-f-body); -webkit-font-smoothing: antialiased; }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--cat-ground); }

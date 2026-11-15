@@ -18,6 +18,7 @@
  * CSS classes: .kit-finding .kit-sev
  *
  * @id        pattern.findings
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -25,12 +26,17 @@
  * @summary   Severity finding cards (critical, high, medium, low, clear) with a kind tag, the evidence, where/what pairs and a fix, sorted worst first with a count line.
  * @tags      findings, severity, review, audit, issues, triage, evidence, fix, chip
  * @requires  none
+ * @files     kit/patterns/findings.css, kit/samples/patterns.json
  * @provides  Kit.findings.render, Kit.findings.chip, Kit.findings.LEVELS
  * @config    Kit.findings.render(box, opts) | items [{severity: crit|high|med|low|ok, tag, title, body, evidence: [[key, value]], fix}], sort, summary, cols, label
  * @config    Kit.findings.chip(severity, label) | the severity chip alone
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --f-display --danger --warn --ok --info? --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --f-display --danger --warn --ok --info?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | severity cards with a kind tag, evidence and citations, a card with an icon and title, a triage card with a fix, and the severity chip with an icon
+ * @preview   {"render": "pattern.findings", "samples": ["kit/samples/patterns.json#findings"]}
+ * @samples   findings
+ * @changed   No coloured left rail on the card: the tone is carried by the chip's glyph and word.
  */
 (function () {
 'use strict';

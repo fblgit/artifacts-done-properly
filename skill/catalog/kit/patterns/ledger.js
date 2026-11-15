@@ -20,6 +20,7 @@
  *     onToggle  (row, open) when a row opens or closes (a board can scroll to the card it links to)
  *
  * @id        pattern.ledger
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -27,11 +28,16 @@
  * @summary   Grouped, dated ledger of settled items with filter chips that show counts and rows that open to outcome, call and answer.
  * @tags      ledger, log, decisions, history, filter, details, dated, progress, settled
  * @requires  none
+ * @files     kit/patterns/ledger.css, kit/samples/patterns.json
  * @provides  Kit.ledger.mount
  * @config    Kit.ledger.mount(box, opts) | groups [{id, title, range, rows}] or rows, filters [{id, label, test}], label, expandable, onToggle(row, open); row {id, n, tag {label, tone}, title, when, mark, detail [{label, body, tone}], open}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 3 artifacts' index.html | a decisions board's grouped settled ledger with filters and row detail, a dated progress table, and a work board's push ledger that links to its cards
+ * @preview   {"render": "pattern.ledger", "samples": ["kit/samples/patterns.json#ledger"]}
+ * @samples   ledger
+ * @changed   Rows are native details, so they open from the keyboard and print open.
  */
 (function () {
 'use strict';

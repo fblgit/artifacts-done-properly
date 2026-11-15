@@ -29,8 +29,10 @@
  * Use the class on an element, or the token in your own rule: font: var(--kit-t-card). Reading roles (body, lede, hint) are capped near 65ch. Number roles use tabular numerals.
  * The tokens are declared on :root and on .kit-tr: when your theme tokens live on an element rather than :root (a stage, a scoped block), put .kit-tr on that element.
  * Muted roles use --ink-2 (not --ink-3), so they keep AA contrast in every kit theme.
+ * Also provides (not globals): the class .kit-t-<role> and the custom property --kit-t-<role>, one of each per role.
  *
  * @id        kit.type-roles
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -38,11 +40,17 @@
  * @summary   Twenty named type roles, each a font shorthand token and a class, so no two kinds of text look alike: statements, titles, labels, hints, numerals, units, buttons, chips, code.
  * @tags      typography, type scale, roles, headings, labels, numerals, fonts
  * @requires  kit.tokens
+ * @files     kit/samples/kit.json
+ * @provides  none
  * @config    tokens | --f-display, --f-ui and --f-mono come from the theme
  * @config    scope | the --kit-t-* tokens are declared on :root and on .kit-tr; add .kit-tr to the element that carries your theme tokens when they are not on :root
- * @tokens    --f-display --f-ui --f-mono --ink --ink-2 --danger
+ * @tokens    --f-display --f-ui --f-mono --ink-2 --danger
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's type specimen and roles stylesheet | the roles table and the size, weight, italic and tracking of each role
+ * @preview   {"render": "kit.type-roles", "samples": ["kit/samples/kit.json#type-roles"]}
+ * @samples   type-roles
+ * @changed   Rebuilt on the catalog's three families; the nine named families of the source are gone, and the role names no longer name faces.
  */
 :root, .kit-tr {
   --kit-t-hero: 500 clamp(2.6rem, 8vw, 5rem)/.98 var(--f-display);

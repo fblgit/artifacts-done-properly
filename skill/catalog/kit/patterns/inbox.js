@@ -9,8 +9,8 @@
  * with their ifMatch (content null: the file is removed, with its reason); a part with kind content is copy whose content/<id> doc moves (its file rides along). Apply (editors) makes one debounced files-form publish with an ifMatch per file; after {shas} it writes manifest/current, parts/<id>, content/<id>,
  * changes/<seq> and sets the proposal applied; on conflict it names the files that moved and leaves the proposal held. Decline asks for a reason and records it.
  * A presence line says whether an agent is watching (a presence/* doc fresher than assist.presence-minutes, or comments.canSendToClaude() answering available); else it offers
- * the handoff to copy. After Apply, a publish conflict, a hold on open or Decline it wakes the watching sessions with comments.sendToClaude (docs/assist.md: the comment is only
- * the wake-up, the proposal doc is the record; the trailer line is "· adp proposal {<pid>} · applied <version> | held | declined"); the thread id is kept on the proposal as
+ * the handoff to copy. After a publish conflict, a hold on open or Decline it wakes the watching sessions with comments.sendToClaude; a successful Apply wakes nobody (docs/assist.md: the comment is only
+ * the wake-up, the proposal doc is the record; the trailer line is "· adp proposal {<pid>} · held | declined"); the thread id is kept on the proposal as
  * wake.thread and later events reply into it. Without a listening session the data change stands and the next export finds it. Nothing is published on load.
  *
  * API:
@@ -19,22 +19,32 @@
  *     config    ADP.config (assist.presence-minutes)      url   the artifact's claude.ai url for the handoff line (optional; the line says "this artifact" without it)
  *     comments  the comments capability handle, or a promise of it (default claude.use('comments')); without sendToClaude on it, no wake-up is sent
  *     classify  (base, live, incoming) => classes (default ADP.classify)      debounce  ms Apply waits for a second press to fold into one call (default 600)
+ *     autoApply  true applies every proposal that classifies as merged, one at a time (editors, with the artifact capability): a page that ships its own files as proposals; default false, an editor presses Apply
+ *     onAutoApplied  (n) => void, called once when that queue has applied n proposals and none is left open, failed or held (a failed one is retried once, then the panel warns): the page can reload to use the files
  * The proposal's live_files {path: sha256} is the live listing the agent exported; Apply records it, so a record-only proposal (no files) still trues manifest.files.
+ * Methods of what Kit.inbox.mount returns: update(), destroy()
  *
  * @id        pattern.inbox
+ * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.0
- * @updated   2026-11-13
+ * @version   0.2.1
+ * @updated   2026-11-15
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
  * @requires  kit.tokens, kit.dom
+ * @files     kit/patterns/inbox.css, kit/samples/patterns.json
  * @provides  Kit.inbox.mount
- * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or promise (default claude.use('artifact')), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms; returns {update, destroy}
+ * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or promise (default claude.use('artifact')), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms, autoApply (apply each merged proposal, one at a time), onAutoApplied(n); returns {update, destroy}
  * @config    ADP.classify(base, live, incoming) | contract 4 of docs/architecture.md, in adp.js
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono --radius?
+ * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui? --f-mono? --radius?
  * @globals   none
- * @db        reads incoming; manifest/current; content; presence; requests / writes incoming; manifest/current; parts; content; changes / Writes only for editors and only on Apply, Decline, a pick or the classification of a new proposal; incoming sits under the root rule.
+ * @db        reads incoming; manifest/current; content; presence; requests / writes incoming; manifest/current; parts; content; changes / note Writes only for editors and only on Apply, Decline, a pick or the classification of a new proposal; incoming sits under the root rule.
+ * @source    ADP 0.3.0, 2026-10-27 | docs/assist.md contracts 3 and 5 | the incoming document, the card's reads, writes, Apply and conflict path
+ * @source    ADP 0.3.0, 2026-10-27 | the explainer's proposed-version card | one proposal applied by a person, generalised to the inbox
+ * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/patterns.json#inbox"]}
+ * @samples   inbox
+ * @changed   autoApply and onAutoApplied (opt-in): a page that ships its own files as proposals applies them itself, one at a time, retries a failed one once, warns and does not call onAutoApplied while one is failed or held, and a successful Apply, by the page or by a press, sends no wake-up comment (held and declined still do); the default stays an editor's press.
  */
 (function () {
 'use strict';
@@ -70,12 +80,12 @@ function mount(root, opts) {
   const usr = () => o.user || (window.ADP && window.ADP.user) || {};
   const classify = (...a) => (o.classify || window.ADP.classify)(...a);
   const canEdit = () => !!usr().canEdit, by = () => usr().id || 'page';
-  let props = [], man = null, presence = [], requests = [], art = null, artWhy = 'checking…', dead = false, busy = {}, timers = {}, notes = {}, cm = null, canSend = '';
+  let props = [], man = null, presence = [], requests = [], art = null, artWhy = 'checking…', dead = false, busy = {}, timers = {}, notes = {}, cm = null, canSend = '', autoTried = new Set(), autoRetried = new Set(), autoFailed = new Set(), autoRunning = false, autoOk = 0, autoCalled = false;
   const offs = [];
   const box = el('section', B + 'root'); box.setAttribute('aria-label', 'Incoming proposals'); root.replaceChildren(box);
 
   Promise.resolve(o.artifact !== undefined ? o.artifact : (window.claude && typeof claude.use === 'function' ? claude.use('artifact') : null))
-    .then(a => { art = a && typeof a.publish === 'function' ? a : null; artWhy = art ? '' : 'Apply needs the artifact capability, which this page does not declare.'; draw(); },
+    .then(a => { art = a && typeof a.publish === 'function' ? a : null; artWhy = art ? '' : 'Apply needs the artifact capability, which this page does not declare.'; draw(); autoApply(); },
       e => { art = null; artWhy = 'The artifact capability is unavailable here (' + (e && e.code || e) + ').'; draw(); });
 
   Promise.resolve(o.comments !== undefined ? o.comments : (window.claude && typeof claude.use === 'function' ? claude.use('comments') : null))
@@ -141,6 +151,26 @@ function mount(root, opts) {
       } catch (e) { notes[p.pid] = 'Could not classify: ' + (e && (e.code || e.message) || e); }
       delete busy[p.pid]; draw();
     }
+    autoApply();
+  }
+  /* autoApply: every proposal that classified as merged is applied, one at a time (two Applies at once would number the same changes/<seq>); a held, failed or declined one is left for a person. onAutoApplied(n) fires once when the queue has applied n and nothing is left open. */
+  async function autoApply() {
+    if (!o.autoApply || autoRunning || dead || !art || !canEdit()) return;
+    autoRunning = true;
+    try {
+      for (;;) {
+        const p = props.find(x => x.status === 'merged' && !autoTried.has(x.pid) && !busy[x.pid]);
+        if (!p) break;
+        autoTried.add(p.pid); await applyNow(p);
+        if (!notes[p.pid]) continue;
+        if (notes[p.pid].startsWith('Not applied') && !autoRetried.has(p.pid)) {       // an error, not a conflict: one more try after a pause
+          autoRetried.add(p.pid); autoTried.delete(p.pid); notes[p.pid] = ''; await new Promise(r => setTimeout(r, 1500));
+        } else autoFailed.add(p.pid);
+      }
+      const open = props.some(x => x.status === 'new' || x.status === 'held' || (x.status === 'merged' && !autoTried.has(x.pid)));
+      if (autoOk && !open && !autoFailed.size && !autoCalled && o.onAutoApplied) { autoCalled = true; o.onAutoApplied(autoOk); }      // never when one failed: the files would be missing
+      draw();
+    } finally { autoRunning = false; }
   }
 
   async function fileContent(p, f) {
@@ -180,12 +210,12 @@ function mount(root, opts) {
       }
       await D.doc('changes/' + seq).set({ version: res.version || '', at, by: by(), summary: p.summary || 'Proposal ' + p.pid,
         parts: parts.map(x => ({ id: x.id, from: x.from, to: x.retired ? null : x.to })), files: files.map(f => ({ path: f.path, from: f.ifMatch || null, to: (res.shas || {})[f.path] || null })), threads: p.threads || [] });
-      // the manifest goes last, as adp.py seed writes it: a write that fails before it leaves the records behind the manifest, never the manifest ahead of the records
+      // the manifest goes last, as the page's seed loader (seedFromFile in adp.js) writes it: a write that fails before it leaves the records behind the manifest, never the manifest ahead of the records
       await D.doc('manifest/current').set(Object.assign({}, m, { parts: mp, files: mf, content: mc, seq: n, version: res.version || m.version || '', at, by: by() }));
       await D.doc('incoming/' + p.pid).update({ status: 'applied', applied: { version: res.version || '', at } });
       await dataChange('Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)'));
-      notes[p.pid] = '';
-      wake(p, 'Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)') + '.', 'applied ' + (res.version || 'records'));
+      notes[p.pid] = ''; autoFailed.delete(p.pid); autoOk++;
+      // a successful Apply wakes nobody: the changes/<seq> record and the proposal's status are the notice
     } catch (e) {
       if (e && e.code === 'conflict') {
         const moved = (e.paths || []).map(x => ({ path: x.path, expected: x.expected, actual: x.actual }));
@@ -195,7 +225,7 @@ function mount(root, opts) {
         wake(p, 'Proposal ' + p.pid + ' held: publish conflict on ' + (moved.map(x => x.path).join(', ') || 'the version') + '. Export again and propose on the live files.', 'held');
       } else notes[p.pid] = 'Not applied: ' + (e && (e.message || e.code) || e);
     }
-    delete busy[p.pid]; draw();
+    delete busy[p.pid]; draw(); autoApply();      // a press that fixes the last failed one lets the queue finish (and the page reload)
   }
   async function pick(p, id, take) {
     const picks = Object.assign({}, p.picks); picks[id] = { take, by: by(), at: new Date().toISOString() };
@@ -213,7 +243,7 @@ function mount(root, opts) {
     const fresh = presence.filter(x => now - Date.parse(x.last_seen || x.at || 0) < mins * 60000);
     const line = el('div', B + 'presence');
     if (fresh.length) { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, (fresh[0].name || fresh[0].id) + ' is watching')); return line; }
-    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'A Claude session is listening: it is woken when a proposal is decided here.')); return line; }
+    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'A Claude session is listening: it is woken when a proposal is held or declined here.')); return line; }
     const handoff = 'watch the artifact ' + (o.url || '(this artifact\'s link)') + (requests.length ? ' — open requests: ' + requests.join(', ') : '');
     const b = el('button', B + 'btn', 'Copy the handoff'); b.type = 'button';
     b.addEventListener('click', () => { (navigator.clipboard ? navigator.clipboard.writeText(handoff) : Promise.reject()).then(() => { b.textContent = 'Copied'; }, () => { b.textContent = 'Select and copy below'; }); });
@@ -279,7 +309,8 @@ function mount(root, opts) {
     if (!props.length) list.append(el('p', B + 'muted', 'No proposals. An agent proposes with adp.py propose; it lands here to apply or decline.'));
     props.forEach(p => list.append(card(p)));
     if (!canEdit()) list.append(el('p', B + 'muted', 'Read only: you cannot edit this artifact. Apply and Decline need an editor (admin) of it: the owner, or a session the owner shared it with as an editor.'));
-    box.replaceChildren(head, presenceLine(), list);
+    const warn = autoFailed.size ? el('p', B + 'warn', autoFailed.size + ' proposal' + (autoFailed.size === 1 ? '' : 's') + ' could not be applied, so the page was not reloaded. Each card says why; press Apply on it to try again.') : null;
+    box.replaceChildren(...[head, warn, presenceLine(), list].filter(Boolean));
   }
   draw();
   return { update: draw, destroy() { dead = true; offs.forEach(f => { try { typeof f === 'function' && f(); } catch (e) {} }); Object.values(timers).forEach(clearTimeout); root.replaceChildren(); } };

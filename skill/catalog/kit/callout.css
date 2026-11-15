@@ -10,8 +10,10 @@
  * Every tint is color-mix of a meaning token into --panel; text stays --ink; kickers and marks take the tone mixed 78% with --ink, 4.5:1 or more on their tint in the kit's three themes.
  *
  * Optional custom property --seam is the note tone's edge; it falls back to --accent.
+ * Also provides (not a global): the classes .kit-callout and .kit-mark.
  *
  * @id        kit.callout
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -19,11 +21,18 @@
  * @summary   Note, verified, warn, danger and pending callouts with a kicker and a glaze orb, plus inline verified, inference, estimate and unverified marks.
  * @tags      callout, note, warning, danger, banner, admonition, inference, verified, estimate, pending, owner input
  * @requires  none
+ * @files     kit/samples/kit.json
+ * @provides  none
+ * @extends   kit.chrome
  * @config    markup | aside.kit-callout[data-tone=note|ok|warn|danger|pending] > p.kit-callout-k + p (+ ul)
  * @config    marks | span.kit-mark[data-mark=verified|inference|estimate|unverified]
- * @tokens    --panel --ink --ink-2 --rule --accent --ok --warn --danger --f-ui --f-mono
+ * @tokens    --panel --ink --ink-2 --accent --ok --warn --danger --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 4 artifacts' index.html | three-tone callouts with a mono kicker, a Glaze note with an orb, the verified and inference marker, and a pending-input box
+ * @preview   {"render": "kit.callout", "samples": ["kit/samples/kit.json#callout"]}
+ * @samples   callout
+ * @changed   New file kit/callout.css beside kit/chrome.css; chrome.css is unchanged.
  */
 .kit-callout { --tone: var(--accent); --edge: var(--seam, var(--accent));
   position: relative; display: grid; gap: 4px; margin: 0;

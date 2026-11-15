@@ -15,8 +15,10 @@
  *     threads    the threads/ docs {id: {part, status}}     since  the version after which changes are marked (default: the one before the latest; "" marks every change)
  *     measure    "bytes" (default) or "parts" (a file without parts counts as one)     selected  a path     now  ISO or Date for holds     label  the map's name (default "File map")
  *     onSelect(path)  called when the reader picks a tile; select() never calls it
+ * Methods of what Kit.fileMap.mount returns: select(path), update(data), setSince(version), setMeasure(measure)
  *
  * @id        pattern.file-map
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -24,11 +26,18 @@
  * @summary   Every published file at once, its area true to its share of the bytes or the parts, with changed, held and commented files marked, so the weight and the work show before anything is opened.
  * @tags      files, treemap, map, bytes, size, parts, holds, changed, adp/2, overview
  * @requires  kit.tokens, kit.dom
+ * @files     kit/patterns/file-map.css, kit/samples/layout.json
  * @provides  Kit.fileMap.mount
+ * @related   layout.file-browser
  * @config    Kit.fileMap.mount(root, opts) | manifest {files, part_file}, sizes {path: bytes}, parts {id: parts doc}, changes [changes docs], threads {id: threads doc}, since ("" marks every change), measure bytes | parts, selected, now, label, onSelect(path); returns {select, update, setSince, setMeasure, destroy}
  * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-soft --warn --danger --f-ui --f-mono --seam? --radius?
  * @globals   none
- * @db        reads manifest/current; parts; changes; threads / The pattern does not read the db itself: the page passes the docs in.
+ * @db        reads manifest/current; parts; changes; threads / note The pattern does not read the db itself: the page passes the docs in.
+ * @source    Catalog batch 15, 2026-10-26 | the size view of a disk usage tool | nested rectangles whose area is the bytes
+ * @source    Catalog batch 15, 2026-10-26 | skills/artifact-dataplane/scripts/adp.py manifest() and diff() | the adp/2 manifest the tree is drawn from, and added, changed, removed
+ * @preview   {"render": "pattern.file-map", "samples": ["kit/samples/layout.json#file-browser"]}
+ * @samples   file-browser
+ * @changed   Areas use the squarified layout so tiles stay near square.
  */
 (function () {
 'use strict';

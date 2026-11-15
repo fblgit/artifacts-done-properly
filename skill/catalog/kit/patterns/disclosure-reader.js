@@ -23,6 +23,7 @@
  * CSS classes: .kit-rdr
  *
  * @id        pattern.disclosure-reader
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -30,12 +31,18 @@
  * @summary   An upgrade of pattern.disclosure: glance tiles, a filter box that says "3 of 9 sections" with a designed empty state, and an index that follows the section in view.
  * @tags      reader, filter, index, table of contents, search, glance, tiles, reference, sections, empty state
  * @requires  kit.tokens, pattern.disclosure
+ * @files     kit/patterns/disclosure-reader.css, kit/samples/patterns.json
  * @provides  Kit.disclosureReader.mount
+ * @extends   pattern.disclosure
  * @config    Kit.disclosureReader.mount(root, opts) | cards selector, titleOf, textOf, tiles [{label, value}] | false, filter, index, scroller, hash, words, onFilter; returns {setFilter, current, refresh, destroy}
  * @config    IntersectionObserver | follows the section in view; optional
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --seam? --kit-topbar-h?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --f-display --seam? --kit-topbar-h?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's reference page | a filter with an n of m sections count and an empty state, an On this page index that follows the section in view, glance tiles
+ * @preview   {"render": "pattern.disclosure-reader", "samples": ["kit/samples/patterns.json#disclosure-reader"], "uses": ["pattern.disclosure"]}
+ * @samples   disclosure-reader
+ * @changed   Extends pattern.disclosure as new files; disclosure.js and disclosure.css are unchanged.
  */
 (function () {
 'use strict';

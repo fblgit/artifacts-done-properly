@@ -3,6 +3,7 @@ Component inventory
 The inventory taken from the Journey Whiteboard and the ADR Drafting Table before the kit was cut. It names the five building blocks both boards share, which became the first kit components here.
 
 @id        guide.component-inventory
+@kind      guide
 @group     Guides
 @status    stable
 @version   0.1.0
@@ -10,8 +11,13 @@ The inventory taken from the Journey Whiteboard and the ADR Drafting Table befor
 @summary   What both boards build today, function by function, with its db reads and writes, its coupling and what it takes to share it.
 @tags      inventory, audit, components, coupling, journey, adr
 @requires  none
+@files     none
+@provides  none
+@tokens    none
 @globals   none
 @db        none
+@source    this session | components.md | read from both boards' sources on 2026-10-24
+@preview   {"render": "guide", "samples": ["kit/guides/component-inventory.md"]}
 -->
 
 # Component inventory: Journey Whiteboard (JW) and ADR Drafting Table (ADR)

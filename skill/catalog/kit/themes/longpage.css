@@ -9,8 +9,10 @@
  * Text pairs (--ink, --ink-2, --ink-3, --accent, --danger, --ok, --warn, --info, --wait, --k-idea on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes;
  * --ink-3 is darkened (or lightened at night) from the skin's faint tone to pass. The texture (--bg-image) belongs on the ground only: never behind text a reader must read.
  * Fonts: https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Atkinson+Hyperlegible+Next:wght@200..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle); --seam; --radius, --radius-lg, --edge-w, --outline; --text-size, --leading, --measure, --pad; --label-case, --label-caps, --head-case; --bg-image, --bg-size.
  *
  * @id        theme.longpage
+ * @kind      theme
  * @group     Themes
  * @status    new
  * @version   0.1.1
@@ -18,11 +20,17 @@
  * @summary   The reading one: cool grey paper, ink blue, a stamp-red second voice, 15px on 1.6 in a 68ch measure, rounder corners and soft tinted states.
  * @tags      palette, tokens, colours, dark mode, longpage, report, reading, grey, blue, stamp, soft tints
  * @requires  none
+ * @files     kit/themes/longpage.json
+ * @provides  none
  * @config    fonts | Schibsted Grotesk, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Atkinson+Hyperlegible+Next:wght@200..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
  * @db        none
+ * @source    Catalog harvest 2, 2026-10-25 | a skin of the hub design family | the hub's Long page skin
+ * @preview   {"render": "theme.longpage", "samples": ["kit/themes/longpage.json"], "uses": []}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
  */
 /* Layout: none; a palette, type and a feel for any page. */
 :root {

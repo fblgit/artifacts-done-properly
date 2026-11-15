@@ -22,6 +22,7 @@
  *     onSelect      (item) after a selection
  *
  * @id        pattern.master-detail
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -29,11 +30,16 @@
  * @summary   A filterable, searchable list on the left and the selected record on the right; the list becomes a select when the component is narrow.
  * @tags      layout, master detail, list, detail, filter, search, listbox, split view, phone, inspector
  * @requires  none
+ * @files     kit/patterns/master-detail.css, kit/samples/patterns.json
  * @provides  Kit.masterDetail.mount
  * @config    Kit.masterDetail.mount(root, opts) | items [{id, name, group, sub, chips [{label, tone}], keys}], renderDetail(item) -> Node, groups, filters [{id, label, test}], search {placeholder, label}, selected, label, narrow, emptyList, emptyDetail, onSelect
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --ok --warn --danger --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --accent-ink --ok --warn --danger --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 1 artifact's index.html | a runbook's cluster browser: the filter-button list, the search box, the detail pane and the select that replaces the list on a phone
+ * @preview   {"render": "pattern.master-detail", "samples": ["kit/samples/patterns.json#master-detail"]}
+ * @samples   master-detail
+ * @changed   The list is a listbox with roving focus and arrow keys; the source was a column of buttons.
  */
 (function () {
 'use strict';

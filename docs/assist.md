@@ -302,7 +302,7 @@ Chunked files (text over 200 KiB in bytes): `incoming/<pid>/chunks/<i>` with `{p
 
 ## 11. Contract 5: what the page does with a proposal
 
-`Kit.inbox.mount(root, {db, user, artifact, config, url, comments, classify, debounce})`, in the template's Settings view under "Incoming" (`settings.inbox`).
+`Kit.inbox.mount(root, {db, user, artifact, config, url, comments, classify, debounce, autoApply, onAutoApplied})`, in the template's Settings view under "Incoming" (`settings.inbox`). `autoApply: true` (default false) makes the page apply every proposal that classifies as merged itself, one at a time, and `onAutoApplied(n)` is called once when none is left open: the packed catalog ships its kit folders as proposals and reloads there.
 
 ### Statuses
 
@@ -338,13 +338,13 @@ An editor presses Decline, types a reason, and the inbox writes `status: 'declin
 
 ### The wake-up
 
-After Apply, a publish conflict, a hold on open, and Decline, the inbox sends a comment with `comments.sendToClaude` when `canSendToClaude()` answers `available` (no wake-up on `merged`, none otherwise). It is only the wake-up; the proposal doc is the record. The text is the event line, then "Proposal incoming/<pid> on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal <pid>; reply here with the version your record shows and resolve the thread.", then the trailer `· adp proposal {<pid>} · <status>`, where `<status>` is `applied <version>` (`applied records` when no version), `held` or `declined`. The thread id is stored on the proposal as `wake: {thread, at}` and later events reply into that thread. Without a listening session the data change stands and the next `adp.py export` finds the status.
+After a publish conflict, a hold on open, and Decline, the inbox sends a comment with `comments.sendToClaude` when `canSendToClaude()` answers `available` (no wake-up on a successful Apply, none on `merged`, none otherwise). It is only the wake-up; the proposal doc is the record. The text is the event line, then "Proposal incoming/<pid> on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal <pid>; reply here with the version your record shows and resolve the thread.", then the trailer `· adp proposal {<pid>} · <status>`, where `<status>` is `held` or `declined`. The thread id is stored on the proposal as `wake: {thread, at}` and later events reply into that thread. Without a listening session the data change stands and the next `adp.py export` finds the status.
 
 `adp.py ack DIR --proposal <pid>` is refused unless the last export shows the proposal `applied` or `declined`; for `applied` it moves the project's base to the proposed work (see `docs/architecture.md`).
 
 ### The handoff
 
-When no `presence/*` doc is fresh and `canSendToClaude()` is not `available`, the inbox says "Nobody is watching. Paste this into any session:" and shows `watch the artifact <url>` (`(this artifact's link)` when no `url` is given), followed by ` — open requests: <ids>` when requests are open (status not `done` or `closed`), with a Copy button. When a presence doc is fresh it says `<name> is watching`; when `canSendToClaude()` is `available` it says a session is listening and will be woken when a proposal is decided. Freshness uses `last_seen` or `at`, and the name is `name` or the doc id, within `assist.presence-minutes`, or 5 minutes when that switch cannot be read (the same default as the engine's).
+When no `presence/*` doc is fresh and `canSendToClaude()` is not `available`, the inbox says "Nobody is watching. Paste this into any session:" and shows `watch the artifact <url>` (`(this artifact's link)` when no `url` is given), followed by ` — open requests: <ids>` when requests are open (status not `done` or `closed`), with a Copy button. When a presence doc is fresh it says `<name> is watching`; when `canSendToClaude()` is `available` it says a session is listening and will be woken when a proposal is held or declined. Freshness uses `last_seen` or `at`, and the name is `name` or the doc id, within `assist.presence-minutes`, or 5 minutes when that switch cannot be read (the same default as the engine's).
 
 ### Who can do what
 

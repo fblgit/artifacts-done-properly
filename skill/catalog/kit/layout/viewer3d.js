@@ -24,6 +24,7 @@
  *   If the library or WebGL is unavailable the view says so, the controls stay, and model() is not called (it needs THREE).
  *
  * @id        layout.viewer3d
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -31,13 +32,18 @@
  * @summary   A WebGL viewport beside a sidebar of view controls, number parameters, fixed dimensions and readouts that pass or fail; the model rebuilds on input.
  * @tags      3d, three.js, viewer, parametric, cad, readouts, explode, webgl
  * @requires  none
+ * @files     kit/layout/viewer3d.css, kit/samples/layout.json
  * @provides  Kit.viewer3d.mount
  * @config    Kit.viewer3d.mount(root, opts) | title, note, params [{id, label, value, min, max, step, unit}], view [{id, label, type range|check, value}], fixed [[k, v]], legend [{label, token}], model(ctx), applyView(ctx, built), home, hud, three
  * @config    model(ctx) | ctx {THREE, p, view, tok(name), mat(token|css, extra)}; return {group, parts, readouts [{k, v, ok}]}
  * @config    network | the three.js module from cdnjs.cloudflare.com (0.160.0)
- * @tokens    --bg --panel --sunk --ink --ink-2 --rule --ok --danger --accent --f-ui --f-mono --seam?
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --ok --danger --accent --f-ui --f-mono --seam? --kit-v3-h?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | index.html of a parametric 3D rack viewer | the viewport and sidebar grid, parameters rebuilt on input, readouts with pass/fail colour, the explode slider and layer toggles, and materials rebuilt when the colour scheme changes
+ * @preview   {"render": "layout.viewer3d", "samples": ["kit/samples/layout.json#viewer3d"]}
+ * @samples   viewer3d
+ * @changed   Readouts carry a mark and a hidden word as well as a colour.
  */
 (function () {
 'use strict';

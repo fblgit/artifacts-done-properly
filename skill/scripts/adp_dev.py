@@ -1,7 +1,10 @@
 """adp.py dev: a local stand-in for the claude.ai viewer, so a page can be tried offline (docs/assist.md "Local emulator").
 Imported by adp.py, which sets A to itself. Stdlib only.
 
-  dev serve DIR [--port 8787] [--user ID]   serve DIR (missing paths from the skill's catalog/) with window.claude stood in
+  dev serve DIR [--port 8787] [--user ID] [--no-fallback]
+                                            serve DIR (missing paths from the skill's catalog/, unless --no-fallback) with window.claude
+                                            stood in: db, user, comments and artifact.publish (it writes files into DIR; an ifMatch that
+                                            is not the file's sha256 is a conflict)
   dev watch DIR                             runs until stopped: prints each message the page sends, one JSON line, and moves its file
                                             to inbox/done/; keeps watch.beat fresh, so the page reads a session as listening
   dev send DIR FILE                         POST the batches a command printed (adp.py requests) to the server: applied as ArtifactData
@@ -9,7 +12,7 @@ Imported by adp.py, which sets A to itself. Stdlib only.
                                             each doc written as {collection, id, data, version}, the dump of the next step
 
 State lives in DIR/.adp-dev/: db/<collection, / as ~>.json {doc_id: {data, version}}, inbox/<ns>.jsonl, inbox/done/, watch.beat, server.json."""
-import contextlib, copy, http.server, json, mimetypes, os, queue, re, sys, threading, time, types, urllib.request
+import contextlib, copy, hashlib, http.server, json, mimetypes, os, queue, re, sys, threading, time, types, urllib.request
 
 A: types.ModuleType = types.ModuleType('adp')      # the adp module, set by adp.py at import
 SHIM = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'adp_dev.js')
@@ -91,7 +94,30 @@ def inject(html):
             '</head><body>' + html + '</body></html>')      # the skeleton the platform wraps a head-less page in
 
 
-def handler(d, state, user):
+def publish(d, state, files):
+    """claude.use('artifact').publish(files) against DIR: {path: text | {content, contentType, ifMatch} | {delete, ifMatch} | null}. All or nothing:
+    an ifMatch that is not the sha256 of the file now is a conflict naming the paths that moved (an empty ifMatch asks for nothing). -> {version, shas}"""
+    base, plan, moved = os.path.normpath(d), {}, []
+    for rel, v in files.items():
+        p = os.path.normpath(os.path.join(base, rel))
+        if not isinstance(rel, str) or rel.startswith('/') or not p.startswith(base + os.sep) or os.sep + '.adp-dev' + os.sep in p:
+            return fail('invalid_argument', f'bad path {rel}')
+        v = v if isinstance(v, dict) else {'content': v}
+        cur = hashlib.sha256(open(p, 'rb').read()).hexdigest() if os.path.isfile(p) else None
+        if v.get('ifMatch') and v['ifMatch'] != cur: moved.append({'path': rel, 'expected': v['ifMatch'], 'actual': cur})
+        plan[rel] = (p, None if v.get('delete') or v.get('content') is None else v['content'])
+    if moved: return {'error': {'code': 'conflict', 'message': 'files moved since they were read', 'paths': moved, 'live': ''}}
+    shas = {}
+    for rel, (p, text) in plan.items():
+        if text is None:
+            if os.path.isfile(p): os.remove(p)
+            shas[rel] = None; continue
+        os.makedirs(os.path.dirname(p), exist_ok=True); b = text.encode('utf-8'); open(p, 'wb').write(b); shas[rel] = hashlib.sha256(b).hexdigest()
+    n = os.path.join(state, 'publish.n'); k = int(open(n).read() or 0) + 1 if os.path.isfile(n) else 1; open(n, 'w').write(str(k))
+    return {'version': f'dev-{k}', 'shas': shas}
+
+
+def handler(d, state, user, fallback=True):
     store, subs = Store(state), []
     inbox = os.path.join(state, 'inbox'); os.makedirs(inbox, exist_ok=True)
 
@@ -119,7 +145,7 @@ def handler(d, state, user):
             if path == '/__adp/db': return self.send({'docs': store.all(), 'canSend': 'available' if listening(state) else 'no_session'})
             if path == '/__adp/events': return self.events()
             rel = path.lstrip('/') or 'index.html'
-            f = next((p for base in (d, os.path.join(A.HERE, 'catalog')) for p in [os.path.normpath(os.path.join(base, rel))]
+            f = next((p for base in ((d, os.path.join(A.HERE, 'catalog')) if fallback else (d,)) for p in [os.path.normpath(os.path.join(base, rel))]
                       if p.startswith(os.path.normpath(base) + os.sep) and os.path.isfile(p)), None)
             if not f: return self.send(fail('not_found', rel), code=404)
             b, ctype = open(f, 'rb').read(), mimetypes.guess_type(f)[0] or 'application/octet-stream'
@@ -147,8 +173,10 @@ def handler(d, state, user):
                 with store.mu: err = store.write(b.get('op'), b.get('path', ''), b.get('data'))
                 if not err: push([b.get('path')])
                 return self.send(err or {'ok': True})
+            if path == '/__adp/publish':
+                with store.mu: return self.send(publish(d, state, b.get('files') or {}))
             if path == '/__adp/outbox':
-                batches = b.get('batches') if isinstance(b, dict) else b
+                batches = (b.get('batches') or ([b['writes']] if 'writes' in b else None)) if isinstance(b, dict) else b      # {batches: [[w]]}, [[w]], or one ArtifactData batch call {writes: [w]}
                 if batches and isinstance(batches[0], dict): batches = [batches]
                 with store.mu: res = store.apply(batches or [])
                 push([f"{x['collection']}/{x['id']}" for r in res if r['ok'] for x in r['docs']])
@@ -174,7 +202,7 @@ def state_of(d):
 def serve(a, d):
     if not os.path.isfile(os.path.join(d, 'index.html')): sys.exit(f'{d}: no index.html')
     s = state_of(d)
-    srv = http.server.ThreadingHTTPServer(('127.0.0.1', int(A.opt(a, '--port', 8787))), handler(d, s, A.opt(a, '--user', 'dev-user')))
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', int(A.opt(a, '--port', 8787))), handler(d, s, A.opt(a, '--user', 'dev-user'), '--no-fallback' not in a))
     srv.daemon_threads = True
     json.dump({'port': srv.server_port}, open(os.path.join(s, 'server.json'), 'w'))
     A.emit({'url': f'http://127.0.0.1:{srv.server_port}/', 'state': os.path.abspath(s)}); sys.stdout.flush()

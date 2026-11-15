@@ -22,8 +22,10 @@
  *     onSend     (name, text) => Promise|void; set it and the drawer shows a send line      onOpen  (name) after a drawer opens
  *     drawerHost an element (position: relative) to confine the drawer to; default the page
  *     timeZone   for the clock text (default: the viewer's; the preview passes "UTC")
+ * Methods of what Kit.rosterWall.mount returns: update(actors, claims), setView, setFilter, open(name)
  *
  * @id        pattern.roster
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -31,12 +33,19 @@
  * @summary   A wall of cards, one per person or agent (state and activity pills, what it holds, a queue count, a Live or Stale last-seen), a team table, and a claims table with expiry.
  * @tags      roster, presence, members, team, claims, last seen, live, stale, wall, drawer
  * @requires  kit.tokens, kit.vocab, kit.drawer, kit.keep-state
- * @provides  Kit.rosterWall.mount, setView, setFilter
+ * @files     kit/patterns/roster-wall.css, kit/samples/patterns.json
+ * @provides  Kit.rosterWall.mount
  * @config    Kit.rosterWall.mount(box, opts) | actors [{name, role, state, activity, holds [{name, kind}], queued, lastSeen, items [{id, title, state}]}], claims [{resource, holder, until, state}], now, liveMin, view wall | team | claims, filter, stateEnum, activityEnum, itemEnum, remember, onSend(name, text), onOpen, drawerHost, timeZone; returns {update, setView, setFilter, open, destroy}
  * @config    Kit.vocab.define({...}) | optional: your own actor-state and actor-activity tables (word, short, glyph, tone, motion per value); the file supplies small defaults when they are missing
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --ok --accent-ink? --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --ok --danger --accent-ink? --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a component family's member wall and roster | the member card (state, activity, holds, queue count, last seen) and the roster's send line
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's team and status pass | the live and stale beat
+ * @source    Catalog harvest, 2026-10-25 | a task page's team table and claims table | the claims table with expiry
+ * @preview   {"render": "pattern.roster", "samples": ["kit/samples/patterns.json#roster-wall"]}
+ * @samples   roster-wall
+ * @changed   Rebuilt as plain DOM over kit.vocab: no state is a hub value, and a state the table does not know is flagged, not hidden.
  */
 (function () {
 'use strict';

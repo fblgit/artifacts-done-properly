@@ -35,7 +35,7 @@ The Claude desktop app's skill library, or a manual install:
 ## Known gaps
 
 - `--tier full` is not available yet (`adp.py new --tier full` says so); the full tier is meant to be the published catalog, later.
-- No catalog entry-add command: adding an entry means editing files under `catalog/kit/` and `catalog.json` by hand (stated in `adp-catalog`).
-- All 138 catalog entries carry a header in the format of `docs/catalog-header.md`. `catalog.json` is still the full index, not yet generated from the headers.
+- No catalog entry-add command: adding an entry means writing its files under `catalog/kit/` with a header, then running `adp_catalog.py build`, which writes `catalog.json` (stated in `adp-catalog`).
+- All 141 catalog entries carry a header in the format of `docs/catalog-header.md`, and `catalog.json` (`kit-catalog/2`) is generated from those headers by `adp_catalog.py build`.
 - The catalog page loads marked, DOMPurify and htm/preact from public CDNs, and fonts from Google Fonts.
 - No license file in this draft: the owner must add one before publishing.

@@ -7,7 +7,7 @@
  *   Kit.trustTree.mount(box, opts) -> handle
  *     opts   { authorities, leaves, kinds, groups, holders, enum: "life", perRow: 7, gap: 44, compact: "auto" | true | false, compactBelow: 640, sections, titles, captions, legend: true,
  *              label, host, onOpen(id, opener) }
- *              authorities  [{id, name, parent, sub, glyph, state, life, left, standalone, ghost, r, x, y, facts, chips, caps}]
+ *              authorities  [{id, name, parent, sub, glyph, state, life, left, ghost, r, x, y, facts, chips, caps}]
  *                             parent is an authority id or null; the first parentless authority is the root, later ones are stand-alone. state is a value of the enum (default "life"); life
  *                             (0 to 1) is the ring; left is the text for the time left ("5 years left"); glyph a Kit.vocab glyph for the medallion; r, x, y override the layout
  *              leaves       [{id, authority, kind, label, state, life, left, short, subject, group, facts, chips, caps}]   short: true draws a dashed disc with no ring (ends by design)
@@ -33,6 +33,7 @@
  * Also needs kit.drawer (the host's detail drawer; optional at run time).
  *
  * @id        viz.trust-tree
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -40,13 +41,20 @@
  * @summary   A signing hierarchy drawn as porcelain medallions on gold seams: pick or hover one and the chain up to the root lights; arrow keys walk it; phones get a nested list.
  * @tags      trust, tree, hierarchy, certificate, authority, signing, chain, medallion, seam, keyboard, porcelain
  * @requires  viz.seal, kit.vocab, kit.callout, kit.glaze-surfaces, theme.glaze-depth
- * @provides  Kit.trustTree.mount, Kit.trustTree.chainEl, handle.light, handle.clear, handle.pin, handle.focus, handle.chainOf, handle.chainEl, handle.detailEl
- * @config    Kit.trustTree.mount(box, {authorities, leaves, kinds, groups, holders, captions, onOpen}) | authorities [{id, name, parent, sub, glyph, state, life, left, standalone, ghost, caps, facts}], leaves [{id, authority, kind, label, state, life, left, short, subject, group, facts}], kinds {key: {label, short, plural, mark, authority, limits}}; layout is computed (override with x, y, r)
+ * @files     kit/viz/trust-tree.css, kit/samples/viz.json
+ * @provides  Kit.trustTree.mount, Kit.trustTree.chainEl
+ * @config    Kit.trustTree.mount(box, {authorities, leaves, kinds, groups, holders, captions, onOpen}) | authorities [{id, name, parent, sub, glyph, state, life, left, ghost, caps, facts}], leaves [{id, authority, kind, label, state, life, left, short, subject, group, facts}], kinds {key: {label, short, plural, mark, authority, limits}}; layout is computed (override with x, y, r)
  * @config    onOpen(id, opener) | the host opens its detail (kit.drawer) with handle.detailEl(id); handle.pin(null) when it closes
  * @config    states | values of the Kit.vocab enum 'life' (viz.seal defines it): ok, soon, urgent, expired, revoked, ended, replaced, unknown
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --accent-ink --f-display --f-mono --seam? --seam-0? --seam-1? --seam-2? --seam-3? --seam-4? --pebble-hi? --rim? --pool?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --accent-ink --f-display? --f-mono --seam? --seam-<n>? --pebble-hi? --rim? --pool? --ink-3 --glz-r-l? --glz-r-m? --glz-sh-1? --hi? --shade? --sunk-2?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate trust page | the medallion family tree with gold seams, the lit chain, the roving-focus keyboard, the phone stack
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate trust page | hardware-key holders, who may sign what, subject lanes, limits pebbles, the chain breadcrumb with hops, the detail content
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's trust page stylesheet | tree, medallions, seams, stack, lanes, passes
+ * @preview   {"render": "viz.trust-tree", "samples": ["kit/samples/viz.json#trust-tree"], "uses": ["viz.capability-wheel", "kit.drawer"]}
+ * @samples   trust-tree
+ * @changed   Authorities, kinds, groups, holders and every sentence are config; the source had its own hierarchy, names and name-matching rules built in.
  */
 (function () {
 'use strict';

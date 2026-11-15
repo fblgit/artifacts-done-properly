@@ -1,8 +1,0 @@
-{
- "note": "Invented loan records from a tool library.",
- "records": [
-  { "id": "r1", "name": "Tile saw", "sub": "On loan to Marta", "tone": "info", "state": "Out", "facts": [["Borrowed", "Mon 12 Oct"], ["Due back", "Mon 26 Oct"], ["Deposit", "40 paid"], ["Shelf", "C3"]], "chain": ["Reserved on 9 Oct", "Collected 12 Oct", "Reminder sent 23 Oct"] },
-  { "id": "r2", "name": "Post-hole digger", "sub": "Overdue by three days", "tone": "bad", "state": "Late", "facts": [["Borrowed", "Fri 2 Oct"], ["Due back", "Fri 16 Oct"], ["Deposit", "25 held"], ["Shelf", "A1"]], "chain": ["Collected 2 Oct", "Extended once", "Two reminders sent"] },
-  { "id": "r3", "name": "Orbital sander", "sub": "Back on the shelf", "tone": "ok", "state": "In", "facts": [["Last loan", "Sat 17 Oct"], ["Condition", "New pad fitted"], ["Deposit", "none"], ["Shelf", "B2"]], "chain": ["Returned 17 Oct", "Pad replaced", "Shelved"] }
- ]
-}

@@ -16,6 +16,7 @@
  * Optional custom properties: --seam.
  *
  * @id        kit.dial
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -23,12 +24,17 @@
  * @summary   Segmented control with a sliding thumb (preview as, audience); arrow keys, digit keys, reduced motion; inline redaction marks.
  * @tags      dial, segmented, control, audience, preview as, redaction, radio, toggle
  * @requires  none
+ * @files     kit/dial.css, kit/samples/kit.json
  * @provides  Kit.dial.mount, Kit.dial.marks
  * @config    Kit.dial.mount(el, {label, options, value, onChange, keys}) | options [{id, label, hint}]; onChange(id, option) on every change; keys wires the digits 1 to 9
  * @config    Kit.dial.marks(root, {verdict, labels}) | verdict(key, dialValue) -> clear | fine | redact | held, for each span[data-kit-id]; paint(dialValue) repaints
- * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui --f-mono
+ * @tokens    --sunk --ink --ink-2 --rule --accent --accent-ink --ok --f-ui --f-mono --seam?
  * @globals   none
- * @db        none
+ * @db        note None. What the dial chooses is the board's to keep or forget.
+ * @source    Catalog harvest, 2026-10-25 | a share-readiness sheet's index.html | the audience dial with its thumb, digit keys, per-reader verdict text, and the inline identifier redaction
+ * @preview   {"render": "kit.dial", "samples": ["kit/samples/kit.json#dial"]}
+ * @samples   dial
+ * @changed   Arrow-key radio behaviour added; the source was buttons with aria-pressed.
  */
 (function () {
 'use strict';

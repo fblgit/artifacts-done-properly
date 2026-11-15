@@ -24,6 +24,7 @@
  * Also load kit/vocab.css.
  *
  * @id        viz.dial-meter
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -31,12 +32,18 @@
  * @summary   A 270 degree dial tile with a gold bead at the end of its arc, a big number and a unit; segments can split the arc by kind; the caption gives way to action buttons on hover or focus.
  * @tags      dial, meter, gauge, arc, tile, countdown, drain, segments, kpi
  * @requires  kit.vocab
+ * @files     kit/viz/dial-meter.css, kit/samples/viz.json
  * @provides  Kit.dialMeter.make, Kit.dialMeter.dial, Kit.dialMeter.drain, Kit.dialMeter.arcPath
  * @config    Kit.dialMeter.make({title, value, unit, frac, tone, segments, caption, actions, onAction}) | returns {el, update(patch), destroy()}; tone is ok | warn | bad | idle or a Kit.vocab tone; no frac means no arc
  * @config    Kit.dialMeter.drain({title, total, remaining, warnAt, caption, actions, onTick, onEnd, word}) | returns {el, remaining(), reset(seconds), pause(), resume(), destroy()}
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-display --seam? --kind-1? --kind-2? --kind-3? --kind-4? --rim? --pool? --glz-r-l?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-display? --seam? --kind-1? --kind-2? --kind-3? --kind-4? --rim? --pool? --glz-r-l? --danger --ink-3 --danger-ink? --danger-soft? --edge? --edge-gold? --glz-sh-1? --glz-sh-2? --sunk-2?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | arcPath, the dial with a gold bead, the meter tile and its swapping caption
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's vault page | the ring that drains while the vault is open
+ * @preview   {"render": "viz.dial-meter", "samples": ["kit/samples/viz.json#dial-meter"]}
+ * @samples   dial-meter
+ * @changed   The number, unit, caption and actions are config; the draining ring is a component with its own clock and a spoken form of the time left.
  */
 (function () {
 'use strict';

@@ -17,7 +17,7 @@
 
 ARTIFACT KIT CATALOG v2. Building blocks for claude.ai artifacts: components, themes, templates, guides.
 You TAKE an entry's files BY REFERENCE. You do not copy code by hand.
-This artifact's own URL is the catalog URL: https://claude.ai/artifact/2vo5Ny9dasFyszPCmQwgKY
+This artifact's own URL is the catalog URL: https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu
 
 WHERE TO START
   1. Read catalog.json (id, name, summary, tags). Do not open every page.
@@ -37,7 +37,7 @@ HOW ADP WORKS (guide: entry guide.artifact-dataplane, file kit/guides/artifact-d
   stable id, marked in the source and with data-part. Per-part hashes say what changed. Copy lives in
   content docs, with content.js as the fallback. Comment anchors are part ids. Several agents edit through
   read, hold, publish, record, with if_version pinned on every write. python3 -I adp.py check must say ok.
-THIS PAGE: entries load from catalog.json. The text of the how-to panel is content.js, key catalog.howto.</pre>
+THIS PAGE: catalog.json is the index; the header comment of an entry's main file describes it. The text of the how-to panel is content.js, key catalog.howto.</pre>
 </section>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,6 +52,7 @@ THIS PAGE: entries load from catalog.json. The text of the how-to panel is conte
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles/catalog.css">
+<link rel="stylesheet" href="kit/patterns/inbox.css">
 
 <!-- part:page.header -->
 <header class="top" data-part="page.header" data-comment-target>
@@ -62,6 +63,7 @@ THIS PAGE: entries load from catalog.json. The text of the how-to panel is conte
     </div>
     <div class="top-side">
       <p class="top-meta" id="topMeta" aria-live="polite">Opening the catalog…</p>
+      <a class="about" id="aboutAdp" href="welcome.html" hidden>About ADP</a>
       <!-- part:page.changes -->
       <details class="wc" id="wc" data-part="page.changes" data-comment-target hidden>
         <summary><span>What changed</span><span class="wc-n" id="wcN"></span></summary>
@@ -76,6 +78,7 @@ THIS PAGE: entries load from catalog.json. The text of the how-to panel is conte
 </header>
 <!-- /part:page.header -->
 <!-- part:page.tabs --><nav class="tabs" aria-label="Kinds of entry" data-part="page.tabs" data-comment-target><div class="wrap tabs-in" id="tabs"></div></nav><!-- /part:page.tabs -->
+<!-- part:catalog.incoming --><section class="wrap incoming" id="incoming" data-part="catalog.incoming" data-comment-target hidden><div id="incomingBox"></div></section><!-- /part:catalog.incoming -->
 <main class="wrap" id="app"><div class="boot"><b>Artifact Kit Catalog</b><span>Loading the entries…</span></div></main>
 
 <script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
@@ -102,6 +105,10 @@ THIS PAGE: entries load from catalog.json. The text of the how-to panel is conte
 <script src="parts/previews-b15.js"></script>
 <script src="parts/previews-b16.js"></script>
 <script src="parts/previews-b17.js"></script>
+<script src="kit/tokens.js"></script>
+<script src="kit/dom.js"></script>
+<script src="kit/patterns/inbox.js"></script>
+<script src="parts/files.js"></script>
 <script src="parts/catalog.js"></script>
 
 </body></html>

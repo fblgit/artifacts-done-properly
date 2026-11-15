@@ -22,8 +22,10 @@
  *     onReply(rid, text) -> Promise   the static form's reply (without engine or onReply there is no reply box)
  *     canReply   false hides the reply box (default true)     markdown(text) -> html   default Kit.md when it and its libraries are loaded, else plain paragraphs
  *     now        ISO or Date for "x min ago" and stuck (default the clock)     words  {lanes: {lane: word}, states: {state: word}, reply, replyHint, stuck, waitAnswer, noSend}
+ * Methods of what Kit.requestCard.mount returns: update({request, thread})
  *
  * @id        pattern.request-card
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.1
@@ -31,12 +33,19 @@
  * @summary   One request to Claude as its sender follows it: kind, block, a four-station track from queued to done, the conversation with Claude's answer, progress lines, the blocks it changed, and a reply box.
  * @tags      request, task, claude, progress, track, thread, reply, conversation, assist, status
  * @requires  kit.tokens, kit.vocab, kit.keep-state, kit.dom
+ * @files     kit/patterns/request-card.css, kit/samples/patterns.json
  * @provides  Kit.requestCard.mount, Kit.requestCard.state, Kit.requestCard.steps, Kit.requestCard.vocab
+ * @related   pattern.assist, pattern.assist-panel, pattern.answer-queue, pattern.questions
+ * @optional  pattern.assist, kit.md
  * @config    Kit.requestCard.mount(box, opts) | engine and rid (live), or request {id, lane, scope, text, quote, by, at, status, state, ackBy, progress, response, changed, version} and thread {text, response, turns} (static); me, names {uid: name}, titles, onReveal(partId), onReply(rid, text) for the static form, canReply, markdown(text), now, words; returns {update, destroy}
  * @config    engine | optional: a Kit.assist engine (pattern.assist); the card reads engine.thread(rid) and writes only through engine.reply
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --warn --f-ui --f-mono --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink? --warn --f-ui --f-mono --seam?
  * @globals   none
- * @db        none
+ * @db        note none directly; with an engine, the engine reads requests/<rid> and its turns and writes the reply
+ * @source    Catalog batch 16, 2026-10-26 | a drafting board's request card | the lane eyebrow, the state pill, the four-segment track, the thread, the progress log, the changed chips, the reply box
+ * @preview   {"render": "pattern.request-card", "samples": ["kit/samples/patterns.json#request-card"]}
+ * @samples   request-card
+ * @changed   The track is one seam with a word under every station; the source coloured four segments.
  */
 (function () {
 'use strict';

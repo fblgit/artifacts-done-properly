@@ -1,9 +1,12 @@
 /* part:page.script.catalog */
-/* The catalog: entries from the db (entries/*, live) or catalog.json (the snapshot published with the page), search and filters,
-   one specimen sheet at a time, the proofing stage, the take reference, file hashes checked in the browser. */
+/* The catalog: entries from the db (entries/*, live) or catalog.json (the index published with the page), search and filters,
+   one specimen sheet at a time, the proofing stage, the take reference, file hashes checked in the browser.
+   The index is short: what an entry is about, what it needs, where it came from and how it previews are read from the
+   header comment of its main file (CatalogFiles, parts/files.js) when the entry is opened. */
 (function () {
 'use strict';
 const { html, render, useState, useEffect, useRef, Component } = window.htmPreact;
+const F = window.CatalogFiles;
 const $ = s => document.querySelector(s);
 const CDN = {
   'htm-preact': { label: 'htm and preact (standalone)', tag: '<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>' },
@@ -27,7 +30,25 @@ function useS() { const [, f] = useState(0); const seen = ver;
 
 const ID = /^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*$/;
 function clean(list) {
-  return (list || []).filter(e => e && ID.test(e.id || '') && KIND[e.kind]).map(e => Object.assign({ files: [], requires: [], globals: [], provides: [], tags: [], needs: {}, source: [], changed: [] }, e));
+  return (list || []).filter(e => e && ID.test(e.id || '') && KIND[e.kind]).map(e => Object.assign({ files: [], requires: [], globals: [], provides: [], tags: [] }, e));
+}
+// The index record plus what only the header of the entry's main file says: about, needs (config, tokens, db), source,
+// changed, preview, updated. These are never read from the record.
+function withHeader(e, h) {
+  h = h || {};
+  return Object.assign({}, e, { about: h.about || '', needs: { config: h.config || [], tokens: h.tokens || [], db: h.db || {} }, source: h.source || [], changed: h.changed || [], preview: h.preview || null, updated: h.updated || '' });
+}
+// { e: null } while the header is read, then { e: the full entry }, with err when the header could not be read
+function useFull(e) {
+  const [st, setSt] = useState({ e: null });
+  useEffect(() => {
+    let off = false; const m = F.main(e);
+    setSt({ e: null });
+    (m ? F.header(m) : Promise.reject(new Error('the entry names no main file')))
+      .then(h => { if (!off) setSt({ e: withHeader(e, h) }); }, err => { if (!off) setSt({ e: withHeader(e), err: (err && err.message) || String(err) }); });
+    return () => { off = true; };
+  }, [e.id, e.hash]);
+  return st;
 }
 const byId = id => S.entries.find(e => e.id === id);
 function closure(e) {
@@ -37,6 +58,9 @@ function closure(e) {
 }
 const kb = n => n >= 1024 ? (n / 1024).toFixed(1) + ' kB' : n + ' B';
 const short = h => (h || '').slice(0, 12);
+
+// the About ADP page (welcome.html) is published beside the catalog; the link shows only when it is there
+const about = $('#aboutAdp'); if (about) fetch('welcome.html', { method: 'HEAD' }).then(r => { if (r.ok) about.hidden = false; }, () => {});
 
 // ---------------------------------------------------------------- data: catalog.json first, then the db when it answers
 fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
@@ -51,6 +75,15 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
     if (docs.length) set({ entries: clean(docs), src: 'db' });
   }, () => {});
   db.doc('catalog/self').onSnapshot(d => { if (d.exists) { const v = d.data() || {}; set({ self: { url: v.url || S.self.url, ver: v.ver || S.self.ver } }); } }, () => {});
+  // the packed catalog's kit files wait in proposals (incoming/); an editor applies them here, with the inbox every ADP page has
+  // mounted once status/seed says done: on a first open the seed is still writing the proposals, and the inbox reads incoming/ when it mounts
+  const box = $('#incomingBox'), sec = $('#incoming'); let inbox = false;
+  if (box && sec && window.Kit && Kit.inbox) db.doc('status/seed').onSnapshot(d => {
+    if (inbox || !d.exists || (d.data() || {}).state !== 'done') return;
+    inbox = true; sec.hidden = false;
+    // bootstrap: the packed catalog's kit folders are applied by the page itself, then it reloads to load them
+    Kit.inbox.mount(box, { db, autoApply: true, onAutoApplied: () => setTimeout(() => location.reload(), 1500) });
+  }, () => {});
 })();
 
 // ---------------------------------------------------------------- routing: #<entry id>
@@ -63,11 +96,28 @@ function open(id) {
 }
 
 // ---------------------------------------------------------------- search
+// The index has no about or source text: both are in the header of an entry's main file. On the first keystroke the
+// main file of every entry is read (6 at a time, each once; CatalogFiles keeps the text) and its header's about and
+// source are matched with the index fields. Until an entry's header is in, or when it cannot be read, that entry
+// matches on its index fields alone.
+const heads = {}, seen = new Set(), queue = []; let busy = 0;
+function pump() {
+  while (busy < 6 && queue.length) {
+    const e = queue.shift(); busy++;
+    F.header(F.main(e)).then(h => { heads[e.id] = { about: h.about || '', source: (h.source || []).map(s => s.board + ' ' + s.file + ' ' + s.what).join(' ') }; set({}); }, () => {})
+      .then(() => { busy--; pump(); });
+  }
+}
+function readHeads() {
+  for (const e of S.entries) if (F.main(e) && !seen.has(e.id)) { seen.add(e.id); queue.push(e); }
+  pump();
+}
 function terms(q) { return q.toLowerCase().split(/\s+/).filter(Boolean); }
 function score(e, ts) {
   if (!ts.length) return 1;
-  const f = [[e.name, 6], [e.id, 4], [(e.tags || []).join(' '), 3], [e.group + ' ' + KIND[e.kind], 2], [e.summary, 2], [e.about, 1],
-    [(e.provides || []).join(' '), 1], [(e.source || []).map(s => s.board + ' ' + s.file + ' ' + s.what).join(' '), 1]].map(([t, w]) => [String(t || '').toLowerCase(), w]);
+  const m = heads[e.id] || {};
+  const f = [[e.name, 6], [e.id, 4], [(e.tags || []).join(' '), 3], [e.group + ' ' + KIND[e.kind], 2], [e.summary, 2], [m.about, 1],
+    [(e.provides || []).join(' '), 1], [m.source, 1]].map(([t, w]) => [String(t || '').toLowerCase(), w]);
   let s = 0;
   for (const t of ts) { const hit = f.filter(([x]) => x.includes(t)); if (!hit.length) return 0; s += Math.max(...hit.map(([, w]) => w)); }
   return s;
@@ -141,7 +191,7 @@ function Index() {
       <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5l3.3 3.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <label class="sr" for="q">Search the catalog</label>
       <input id="q" ref=${inp} type="search" autocomplete="off" placeholder="Search: canvas, tree, tokens…" value=${s.q}
-        onInput=${e => set({ q: e.target.value })} onKeyDown=${e => { if (e.key === 'Escape') set({ q: '' }); }}/>
+        onInput=${e => { set({ q: e.target.value }); readHeads(); }} onKeyDown=${e => { if (e.key === 'Escape') set({ q: '' }); }}/>
       ${s.q ? '' : html`<kbd aria-hidden="true">/</kbd>`}
     </form>
     <p class="count" aria-live="polite">${s.src === 'loading' ? 'Loading…' : ts.length ? `${list.length} ${list.length === 1 ? 'match' : 'matches'} for “${s.q}”` : `${list.length} entries`}</p>
@@ -169,13 +219,13 @@ function Howto() {
 function Landing() {
   const s = useS();
   const k = Object.keys(KIND).map(x => [x, s.entries.filter(e => e.kind === x)]).filter(([, l]) => l.length);
-  const recent = [...s.entries].sort((a, b) => String(b.at || '').localeCompare(String(a.at || ''))).slice(0, 20);
+  const fresh = s.entries.filter(e => e.status === 'new').slice(0, 20);      // the index carries no date: new is a status
   return html`<section class="sheet" data-part="catalog.landing" data-comment-target aria-label="Catalog">
     <div class="land">
       <h2>Take a part instead of rebuilding it</h2>
       <div class="land-kinds">${k.map(([x, l]) => html`<button type="button" class="kcard" onClick=${() => open(l[0].id)}><b>${l.length}</b><span><${Glyph} kind=${x}/>${KIND[x]}${l.length > 1 ? 's' : ''}</span></button>`)}</div>
       <${Howto}/>
-      ${recent.length ? html`<div class="recent"><h3>Latest entries</h3>${recent.map(e => html`<button type="button" class="irow" onClick=${() => open(e.id)}><${Glyph} kind=${e.kind}/><span class="row-n">${e.name}</span><span class="row-v">${(e.at || '').slice(0, 10)}</span><span class="row-s">${e.summary}</span></button>`)}</div>` : ''}
+      ${fresh.length ? html`<div class="recent"><h3>New entries</h3>${fresh.map(e => html`<button type="button" class="irow" onClick=${() => open(e.id)}><${Glyph} kind=${e.kind}/><span class="row-n">${e.name}</span><span class="row-v">${e.version}</span><span class="row-s">${e.summary}</span></button>`)}</div>` : ''}
     </div>
   </section>`;
 }
@@ -210,6 +260,7 @@ const loaded = {};
 function loadFile(path) {
   if (loaded[path]) return loaded[path];
   let p;
+  if (document.querySelector((path.endsWith('.css') ? 'link[href="' : 'script[src="') + path + '"]')) return loaded[path] = Promise.resolve();      // the page already loads it (the inbox's own files)
   if (path.endsWith('.css')) p = new Promise((res, rej) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = path; l.onload = res; l.onerror = () => rej(new Error('could not load ' + path)); document.head.append(l); });
   else if (path.endsWith('.js')) p = new Promise((res, rej) => { const s = document.createElement('script'); s.src = path; s.async = false; s.onload = res; s.onerror = () => rej(new Error('could not load ' + path)); document.head.append(s); });
   else p = fetch(path).then(r => { if (!r.ok) throw new Error(path + ': HTTP ' + r.status); return path.endsWith('.json') ? r.json() : r.text(); });
@@ -221,7 +272,14 @@ async function prepare(e) {
   for (const x of chain) for (const f of x.files || []) if (f.role === 'style' && f.path.endsWith('.css') && x.kind !== 'theme') await loadFile(f.path);
   for (const x of chain) for (const f of x.files || []) if (f.role === 'script' && x.id !== 'runtime.adp') await loadFile(f.path);
   const samples = {};
-  for (const p of (e.preview && e.preview.samples) || []) samples[p] = await loadFile(p);
+  for (const p of (e.preview && e.preview.samples) || []) {
+    const at = p.indexOf('#');
+    if (at < 0) { samples[p] = await loadFile(p); continue; }
+    // path#key: one sample out of a bundle (the bundle is fetched once). The previews read it as kit/samples/<key>.json, as before the bundles.
+    const file = p.slice(0, at), key = p.slice(at + 1), bundle = await loadFile(file);
+    if (!bundle || typeof bundle !== 'object' || !(key in bundle)) throw new Error(file + ' has no sample ' + key);
+    samples['kit/samples/' + key + '.json'] = bundle[key];
+  }
   return samples;
 }
 
@@ -260,13 +318,19 @@ function Stage({ e }) {
 function captionOf(e) {
   const scripts = (e.files || []).filter(f => f.role === 'script').map(f => f.path);
   const smp = (e.preview && e.preview.samples) || [];
-  const real = smp.some(p => p.includes('samples/viz-'));
+  const real = smp.some(p => /samples\/viz-|#viz-/.test(p));
   if (e.kind === 'theme') return html`Drawn from <code>${(e.files.find(f => f.path.endsWith('.json')) || {}).path}</code>, with the kit’s own files on the Journey Whiteboard sample.`;
   return html`Running ${scripts.length ? scripts.map((p, i) => html`${i ? ', ' : ''}<code>${p}</code>`) : 'the entry'}${smp.length ? html` on ${smp.map((p, i) => html`${i ? ', ' : ''}<code>${p}</code>`)}` : ''}.${real ? ' The sample is real: the Journey Whiteboard’s own journey, as cached on 2026-10-20.' : ''} What you change here stays in this preview.`;
 }
 
 // ---------------------------------------------------------------- panels
 /* part:entry.needs */
+// does a theme define the token? `--c-<pen>` names a family: any property that fits the name with the placeholder filled
+function defines(have, token) {
+  if (!token.includes('<')) return token in have;
+  const fit = new RegExp('^' + token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/<[^>]*>/g, '[A-Za-z0-9_-]+') + '$');
+  return Object.keys(have).some(k => fit.test(k));
+}
 function Needs({ e }) {
   const n = e.needs || {}, dbn = n.db || {};
   const [fit, setFit] = useState(null);
@@ -288,7 +352,7 @@ function Needs({ e }) {
     ${(n.tokens || []).length ? html`<h3>Theme tokens it reads</h3>
       <div class="chips">${n.tokens.map(t => html`<code class="tok">${t}</code>`)}</div>
       <div class="fit">${!fit ? html`<span class="c-faint">Checking the themes…</span>` : fit.map(([t, j]) => { const have = j ? Object.assign({}, j.light) : {};
-        const miss = n.tokens.filter(x => x.startsWith('--') && !(x in have));
+        const miss = n.tokens.filter(x => !x.endsWith('?') && !defines(have, x));      // `--x?` is optional
         return html`<span>${t.name}: ${miss.length ? html`<span class="no">missing ${miss.join(', ')}</span>` : html`<span class="ok">defines all of them</span>`}</span>`; })}</div>` : ''}
   </div>`;
 }
@@ -388,7 +452,7 @@ function Origin({ e }) {
     <dl class="dl">
       <div><dt>version</dt><dd>${e.version}</dd></div>
       <div><dt>content hash</dt><dd><code>${e.hash || '–'}</code>: sha256 over the sorted <code>path=sha256</code> lines of its files</dd></div>
-      ${e.at ? html`<div><dt>recorded</dt><dd>${e.at}${e.by ? ' by ' + e.by : ''}</dd></div>` : ''}
+      ${e.updated ? html`<div><dt>updated</dt><dd>${e.updated}</dd></div>` : ''}
     </dl>
   </div>`;
 }
@@ -403,6 +467,7 @@ function PreviewPanel({ e }) {
 /* part:entry.sheet */
 function Sheet({ e }) {
   const s = useS();
+  const full = useFull(e), fe = full.e;
   const bytes = (e.files || []).reduce((a, f) => a + (f.bytes || 0), 0);
   const tab = TABS.some(([t]) => t === s.tab) ? s.tab : 'preview';
   const tabKey = ev => { const i = TABS.findIndex(([t]) => t === tab); const d = { ArrowRight: 1, ArrowLeft: -1 }[ev.key]; if (!d) return; ev.preventDefault();
@@ -419,13 +484,15 @@ function Sheet({ e }) {
         <div><dt>Version</dt><dd>${e.version}</dd></div>
         <div><dt>Content hash</dt><dd title=${e.hash || ''}>${short(e.hash) || '–'}</dd></div>
         <div><dt>Files</dt><dd>${(e.files || []).length} · ${kb(bytes)}</dd></div>
-        <div><dt>From</dt><dd>${(e.source || []).map(x => x.board).filter((x, i, a) => a.indexOf(x) === i).join(', ') || '–'}</dd></div>
+        <div><dt>From</dt><dd>${!fe ? '…' : (fe.source || []).map(x => x.board).filter((x, i, a) => a.indexOf(x) === i).join(', ') || '–'}</dd></div>
       </dl>
     </div>
     <div class="stabs" role="tablist" aria-label="About this entry" onKeyDown=${tabKey}>${TABS.map(([t, l]) => html`<button type="button" class="stab" role="tab" id=${'st-' + t} aria-selected=${tab === t} tabindex=${tab === t ? 0 : -1} onClick=${() => set({ tab: t })}>${l}</button>`)}</div>
-    ${tab === 'preview' ? html`<${PreviewPanel} e=${e} key=${e.id}/>`
-      : tab === 'needs' ? html`<${Needs} e=${e} key=${e.id}/>` : tab === 'take' ? html`<${Take} e=${e} key=${e.id}/>`
-      : tab === 'files' ? html`<${Files} e=${e} key=${e.id}/>` : html`<${Origin} e=${e}/>`}
+    ${full.err ? html`<p class="note">The header of <code>${F.main(e) || 'the main file'}</code> could not be read (${full.err}), so the description, the needs, the origin and the preview of this entry are missing here.</p>` : ''}
+    ${tab === 'take' ? html`<${Take} e=${e} key=${e.id}/>` : tab === 'files' ? html`<${Files} e=${e} key=${e.id}/>`
+      : !fe ? html`<div class="panel" data-part=${'entry.' + tab} data-part-key=${e.id} role="tabpanel" aria-busy="true"><div class="stage-load">Reading the header of ${F.main(e)}…</div></div>`
+      : tab === 'preview' ? html`<${PreviewPanel} e=${fe} key=${e.id}/>`
+      : tab === 'needs' ? html`<${Needs} e=${fe} key=${e.id}/>` : html`<${Origin} e=${fe}/>`}
   </section>`;
 }
 
@@ -448,8 +515,8 @@ render(html`<${App}/>`, $('#app'));
 render(html`<${Tabs}/>`, $('#tabs'));
 render(html`<${Meta}/>`, $('#topMeta'));
 
-const PARTS = ['page.header', 'page.tabs', 'page.changes', 'catalog.lead', 'catalog.index', 'catalog.landing', 'catalog.howto', 'entry.sheet', 'entry.preview', 'entry.needs', 'entry.take', 'entry.files', 'entry.origin'];
-const TITLES = { 'page.header': 'Header', 'page.tabs': 'Kinds of entry', 'page.changes': 'What changed', 'catalog.lead': 'Catalog description', 'catalog.index': 'Entry index and search',
+const PARTS = ['page.header', 'page.tabs', 'page.changes', 'catalog.incoming', 'catalog.lead', 'catalog.index', 'catalog.landing', 'catalog.howto', 'entry.sheet', 'entry.preview', 'entry.needs', 'entry.take', 'entry.files', 'entry.origin'];
+const TITLES = { 'page.header': 'Header', 'page.tabs': 'Kinds of entry', 'page.changes': 'What changed', 'catalog.incoming': 'Incoming', 'catalog.lead': 'Catalog description', 'catalog.index': 'Entry index and search',
   'catalog.landing': 'Catalog landing', 'catalog.howto': 'How taking works', 'entry.sheet': 'Entry sheet', 'entry.preview': 'Preview', 'entry.needs': 'What it needs', 'entry.take': 'Take it', 'entry.files': 'Files', 'entry.origin': 'Origin' };
 if (window.ADP) window.ADP.page({
   view: () => S.sel && byId(S.sel) ? 'entry.' + S.tab : 'landing',

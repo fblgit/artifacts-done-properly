@@ -17,6 +17,7 @@
  * Uses ResizeObserver; without it the wires redraw on window resize only.
  *
  * @id        viz.wires
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -24,12 +25,17 @@
  * @summary   Items as nodes on lanes by phases, joined by orthogonal wires drawn from their dependencies; a filter dims, never hides.
  * @tags      wires, dependencies, swimlane, schematic, lanes, phases, graph, after, filter, dim
  * @requires  kit.tokens, kit.vocab
+ * @files     kit/viz/wires.css, kit/samples/viz.json
  * @provides  Kit.wires.mount
  * @config    Kit.wires.mount(box, {lanes, phases, nodes, label, filter, stateEnum, doneStates, onSelect}) | lanes [{id, label, sub}], phases [{id, label}], nodes [{id, title, lane, phase, state, after: [id], href}]; returns {update(opts), setFilter(f), destroy()}
  * @config    Kit.vocab | node states come from a Kit.vocab enum (default 'state'); load kit/vocab.js and kit/vocab.css first
  * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --ok --f-ui --f-mono --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's blueprint skin | the lanes by phases schematic and the wires between its components
+ * @preview   {"render": "viz.wires", "samples": ["kit/samples/viz.json#viz-wires"], "uses": ["kit.vocab"]}
+ * @samples   viz-wires
+ * @changed   Generalised from one skin's task list to any items with lanes, phases and dependencies; the state word and tone come from the vocabulary instead of a task status.
  */
 (function () {
 'use strict';

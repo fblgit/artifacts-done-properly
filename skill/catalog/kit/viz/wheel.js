@@ -15,6 +15,7 @@
  * Kit.viz.wheelUtil: {hue(code), neighbours(code), codes, fill(code, pct, opts)}
  *
  * @id        viz.wheel
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -22,12 +23,18 @@
  * @summary   The Camelot key wheel with neighbours or per-key counts, a key chip with its hue, and a 0 to 100 valence and arousal plot.
  * @tags      wheel, camelot, key, music, mood, valence, arousal, scatter, chip, harmonic mixing
  * @requires  viz.core
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.KeyWheel, Kit.viz.KeyChip, Kit.viz.MoodPlot, Kit.viz.wheelUtil
  * @config    KeyWheel({size, active, counts, max, center, onPick, label, lightness, chroma}) | active "8A" lights it and its neighbours; counts {"8A": 3} tints by count
  * @config    KeyChip({code, name, label}) | code "8A", name "A minor"
  * @config    MoodPlot({size, points, active, xLabel, yLabel, onPick, label}) | points [{id, label, x, y}], x and y 0 to 100
+ * @tokens    --panel --ink --ink-2 --rule --rule-2 --accent --f-ui --seam?
  * @globals   htm-preact
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | YouTuner Uplift, parts/base.js | the Camelot wheel (active and count modes), the Camelot chip with hue and lightness, and the valence/arousal plot
+ * @preview   {"render": "viz.wheel", "samples": ["kit/samples/viz.json#wheel"]}
+ * @samples   wheel
+ * @changed   Fills are mixes of the key's hue into --panel, not fixed fills with a fixed ink, so labels pass 4.5:1 on porcelain and on tenmoku.
  */
 (function () {
 'use strict';

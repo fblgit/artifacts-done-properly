@@ -12,7 +12,11 @@
  *   Kit.glaze.segOf(box, {value, onChange(id)})        -> {get(), set(id), destroy()}   buttons with data-id inside .kit-seg; one pressed; arrow keys move
  *   Kit.glaze.busy(btn, on, {label})                   toggles kit-loading, aria-busy and aria-disabled on a button; label (optional) replaces its text while busy
  *
+ * The optional tokens are the ones theme.glaze-depth sets.
+ * Also provides (not globals): the classes .kit-orb .kit-chip .kit-btn .kit-field .kit-switch .kit-seg .kit-card .kit-row .kit-ava .kit-empty.
+ *
  * @id        kit.glaze-surfaces
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -20,12 +24,18 @@
  * @summary   Porcelain-made parts in CSS: glossy beads, lacquer buttons, sunken fields, a switch, soft rows, lit cards with a pooled foot, an avatar disc and the kiln fleck layer.
  * @tags      glaze, button, orb, chip, switch, segmented, card, row, avatar, empty state, porcelain, fleck
  * @requires  theme.glaze-depth, kit.tokens
+ * @files     kit/glaze-surfaces.css, kit/samples/kit.json
  * @provides  Kit.glaze.defs, Kit.glaze.speck, Kit.glaze.tone, Kit.glaze.switchOf, Kit.glaze.segOf, Kit.glaze.busy
  * @config    classes | kit-orb, kit-chip, kit-btn, kit-input, kit-switch, kit-seg, kit-card, kit-facts, kit-row, kit-ava, kit-empty; the state on the part or an ancestor: kit-is-ok | warn | bad | info | wait | idle
  * @config    Kit.glaze.defs(host?) | writes the gold and pebble gradients and the fleck filter into a hidden svg; call once before using kit-speck or url(#kit-g-gold)
- * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono --danger-bead? --danger-edge? --danger-ink? --danger-soft? --edge? --edge-gold? --f-display? --glyph-drop? --glz-r-l? --glz-r-m? --glz-sh-1? --glz-sh-2? --gold? --hi? --info? --info-bead? --info-ink? --info-soft? --lac-rim? --lo? --ok-bead? --ok-ink? --ok-soft? --on-accent? --on-state? --pebble-hi? --pool? --rim? --seam? --shade? --speck-invert? --speck-opacity? --sunk-2? --wait? --wait-bead? --wait-ink? --wait-soft? --warn-bead? --warn-ink? --warn-soft? --seam-<n>?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's Glaze design system | orb, chip, button, forms, switch, segmented control, card, facts, row, avatar, empty state, the kiln flecks, the gold and pebble gradients
+ * @source    Catalog harvest, 2026-10-25 | the same console's controls add-on | button and form edges, the loading button
+ * @preview   {"render": "kit.glaze-surfaces", "samples": ["kit/samples/kit.json#glaze-surfaces"]}
+ * @samples   glaze-surfaces
+ * @changed   Re-prefixed to kit-, scoped by the kit's token contract instead of a skin attribute; every depth token has a fallback built from the contract tokens.
  */
 (function () {
 'use strict';

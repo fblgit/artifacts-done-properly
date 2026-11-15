@@ -10,8 +10,8 @@ import unittest
 from urllib.parse import unquote_plus
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'skill')
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tools'))
-import check_headers  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'skill', 'scripts'))
+import adp_lib  # noqa: E402
 FILES = sorted(glob.glob(os.path.join(ROOT, 'templates', '*', 'styles', '*.txt'))
                + glob.glob(os.path.join(ROOT, 'catalog', 'kit', '*.css'))
                + glob.glob(os.path.join(ROOT, 'catalog', 'kit', 'patterns', '*.css')))
@@ -175,9 +175,9 @@ class ThemeFonts(unittest.TestCase):
         (the colours and shadows). A theme may set more; the default sets nothing that is not shared."""
         root = os.path.join(ROOT, 'catalog')
         need = {}
-        for path, e in check_headers.load(root)[1].items():
-            tags = dict(check_headers.parse(check_headers.comment_of(open(os.path.join(root, path), encoding='utf-8').read(), path) or '')[2])
-            for tok in check_headers.split(tags.get('tokens', ''), spaces=True):
+        for path, e in adp_lib.load(root)[1].items():
+            tags = dict(adp_lib.parse(adp_lib.comment_of(open(os.path.join(root, path), encoding='utf-8').read(), path) or '')[2])
+            for tok in adp_lib.split(tags.get('tokens', ''), spaces=True):
                 if tok.startswith('--') and not tok.endswith('?') and '<' not in tok:
                     need.setdefault(tok, e['id'])
         self.assertGreater(len(need), 20)

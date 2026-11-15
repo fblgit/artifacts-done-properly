@@ -27,8 +27,10 @@
  * Keys on the tree (role tree, treeitems with aria-expanded and aria-selected): Up and Down in reading order, Left to the parent or collapse, Right to the first child or expand.
  * The tree pans by scrolling and by dragging empty space, inside its own frame; the page never scrolls sideways. On touch, a node drags at once, and empty space scrolls.
  * Classes: .kit-mm (root), .kit-mm-bar, .kit-mm-scroll > .kit-mm-tree > .kit-mm-node[data-root] (.kit-mm-sel, .kit-mm-dim, .kit-mm-into) and svg.kit-mm-links, .kit-mm-drop, .kit-mm-menu, .kit-mm-ghost.
+ * Methods of what Kit.mindmap.mount returns: update(next), destroy()
  *
  * @id        pattern.mindmap
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.1
@@ -36,11 +38,16 @@
  * @summary   A mind-map you make and arrange with drag and drop: a tidy tree left to right, add, edit and delete nodes, drop on a node or on a line between siblings, and a Move to menu that does every drop from the keyboard.
  * @tags      mind map, tree, drag and drop, outline, hierarchy, move, keyboard, pointer events
  * @requires  kit.dom
+ * @files     kit/patterns/mindmap.css, kit/samples/patterns.json
  * @provides  Kit.mindmap.mount
  * @config    Kit.mindmap.mount(root, opts) | data {nodes [{id, text, parent, order, collapsed, x?, y?}]}, onChange(next) with the whole next data, readOnly, label, layout 'tree' (default) or 'free'; returns {update(next), destroy()}
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --danger --f-ui --accent-soft? --shadow? --r?
+ * @tokens    --panel --sunk --ink --ink-3 --rule --rule-2 --accent --accent-ink --danger --f-ui --accent-soft? --shadow? --r?
  * @globals   none
  * @db        none
+ * @source    Catalog, 2026-11-13 | viz.buckets (kit/viz/buckets.js) | the pointer drag with a drop line, and a Move to menu that does the same without a drag
+ * @preview   {"render": "pattern.mindmap", "samples": ["kit/samples/patterns.json#mindmap"]}
+ * @samples   mindmap
+ * @changed   0.1.1: layout 'free': nodes can carry x and y and a drag drops a node, with its subtree, anywhere on the map; the default stays the tidy tree.
  */
 (function () {
 'use strict';
