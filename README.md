@@ -80,7 +80,8 @@ folders beside it (in the project's `.claude/skills` when `setup` ran with scope
 ### The `adp.skill` zip
 
 `adp.skill` is a zip whose root folder is `adp/`. It holds under 200 files, the most a skill upload
-takes: the catalog's kit travels in it as one file, `catalog.zip`, which `setup` unpacks (see "First
+takes: the catalog's kit travels in it as a few JSON packs (`catalog-pack-NN.json`; a zip may not
+hold a zip), which `setup` unpacks (see "First
 run"). Get it from the
 [latest release](https://github.com/fblgit/artifacts-done-properly/releases/latest), or build it in a clone:
 `python3 tools/package.py` writes `dist/adp.skill`. If the release page shows 404, no release is published yet: build it.

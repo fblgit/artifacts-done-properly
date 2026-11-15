@@ -93,7 +93,7 @@ each file's text outside its parts is hashed as _rest:<path>. Schema adp/2 adds 
 Markers (HTML or JS/CSS comments): <!-- part:ID --> ... <!-- /part:ID -->  |  /* part:ID */ ... /* /part:ID */
 ID: dot-separated lowercase kebab, e.g. triage.keys-table. Hash: sha256 of the text between the markers with
 whitespace runs collapsed, first 12 hex; a parent's text includes its children. Stdlib only; run with python3 -I."""
-import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys, zipfile
+import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys
 
 ID = r'[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*'
 TAG = re.compile(r'<[A-Za-z][A-Za-z0-9-]*')   # an opening tag (also inside JS template strings)
@@ -1286,14 +1286,17 @@ def plugin_name():
 
 
 def shipped_catalog():
-    """{relative path: bytes} of the catalog this skill folder ships: its catalog/ folder (a plugin, a clone) or the catalog.zip a skill zip carries; {} when it has neither."""
+    """{relative path: bytes} of the catalog this skill folder ships: its catalog/ folder (a plugin, a clone) or the catalog-pack-NN.json files a skill zip carries (a zip may not hold a zip); {} when it has neither."""
     d = os.path.join(HERE, 'catalog')
     if os.path.isfile(os.path.join(d, 'catalog.json')):
         return {k.replace(os.sep, '/'): v for k, v in tree_files(d).items() if not k.endswith('.pyc')}
-    z = os.path.join(HERE, 'catalog.zip')
-    if not os.path.isfile(z): return {}
-    with zipfile.ZipFile(z) as zf:
-        return {n: zf.read(n) for n in zf.namelist() if not n.endswith('/') and not os.path.isabs(n) and '..' not in n.split('/')}
+    out = {}
+    for n in sorted(x for x in os.listdir(HERE) if re.fullmatch(r'catalog-pack-\d+\.json', x)):
+        try: pack = json.load(open(os.path.join(HERE, n), encoding='utf-8'))
+        except (OSError, ValueError): continue
+        if not isinstance(pack, dict) or pack.get('schema') != 'adp-catalog-pack/1' or not isinstance(pack.get('files'), dict): continue
+        out.update({k: v.encode('utf-8') for k, v in pack['files'].items() if isinstance(v, str) and not os.path.isabs(k) and '..' not in k.split('/')})
+    return out
 
 
 def unpack_catalog(dry):

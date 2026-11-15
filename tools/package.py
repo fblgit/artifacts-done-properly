@@ -2,7 +2,7 @@
 """Validate the ADP skill tree and build a deterministic dist/adp.skill zip."""
 import argparse
 import hashlib
-import io
+import json
 import os
 import re
 import sys
@@ -155,34 +155,48 @@ def legal_files(skill_dir):
 MAX_FILES = 200      # claude.ai refuses a skill upload over 200 files
 
 
-def catalog_zip(skill_dir):
-    """The skill's catalog/ folder as one deterministic zip (bytes), or None when there is none. A skill zip carries the kit as this one file,
-    which `adp.py setup` unpacks into ~/.adp/catalog (My Own Kit): the kit is hundreds of files and an upload takes at most MAX_FILES."""
+PACK_BYTES = 900 * 1024      # a pack is split before it passes this size (the skill zip compresses each one)
+
+
+def catalog_packs(skill_dir):
+    """The skill's catalog/ folder as [(name, bytes)]: JSON packs `catalog-pack-NN.json`, each {"schema": "adp-catalog-pack/1", "files": {path: text}}, deterministic.
+    A skill zip carries the kit this way, because an upload takes at most MAX_FILES files and a zip may not hold a zip; `adp.py setup` writes the files into ~/.adp/catalog
+    (My Own Kit). The kit is text; a file that is not UTF-8 fails the build. [] when there is no catalog folder."""
     root = os.path.join(skill_dir, CATALOG_DIR)
     if not os.path.isfile(os.path.join(root, "catalog.json")):
-        return None
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
-        for dirpath, dirnames, filenames in os.walk(root):
-            dirnames[:] = sorted(d for d in dirnames if d not in EXCLUDED_DIRS)
-            for fn in sorted(filenames):
-                if fn in EXCLUDED_FILES or fn.endswith(".pyc"):
-                    continue
-                full = os.path.join(dirpath, fn)
-                info = zipfile.ZipInfo(os.path.relpath(full, root).replace(os.sep, "/"), FIXED_TIME)
-                info.compress_type = zipfile.ZIP_DEFLATED
-                info.create_system = 3
-                info.external_attr = 0o644 << 16
-                with open(full, "rb") as f:
-                    z.writestr(info, f.read(), zipfile.ZIP_DEFLATED, 9)
-    return buf.getvalue()
+        return []
+    texts = {}
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d not in EXCLUDED_DIRS)
+        for fn in sorted(filenames):
+            if fn in EXCLUDED_FILES or fn.endswith(".pyc"):
+                continue
+            full = os.path.join(dirpath, fn)
+            rel = os.path.relpath(full, root).replace(os.sep, "/")
+            try:
+                with open(full, encoding="utf-8", newline="") as f:
+                    texts[rel] = f.read()
+            except UnicodeDecodeError:
+                raise ValidationError("%s/%s is not UTF-8 text; the catalog pack carries text only" % (CATALOG_DIR, rel))
+    groups, cur, size = [], {}, 0
+    for rel in sorted(texts):
+        if cur and size + len(texts[rel]) > PACK_BYTES:
+            groups.append(cur)
+            cur, size = {}, 0
+        cur[rel] = texts[rel]
+        size += len(texts[rel])
+    if cur:
+        groups.append(cur)
+    return [("%s-pack-%02d.json" % (CATALOG_DIR, i + 1),
+             json.dumps({"schema": "adp-catalog-pack/1", "files": g}, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+            for i, g in enumerate(groups)]
 
 
 def build(skill_dir, out_dir):
     files = [(r, f) for r, f in collect_files(skill_dir) if not r.startswith(CATALOG_DIR + "/")]
     files = sorted(files + legal_files(skill_dir))
-    inner = catalog_zip(skill_dir)
-    count = len(files) + (1 if inner is not None else 0)
+    packs = catalog_packs(skill_dir)
+    count = len(files) + len(packs)
     if count > MAX_FILES:
         raise ValidationError("the skill zip would hold %d files; claude.ai accepts at most %d" % (count, MAX_FILES))
     os.makedirs(out_dir, exist_ok=True)
@@ -195,12 +209,12 @@ def build(skill_dir, out_dir):
             info.external_attr = (0o755 if os.access(full, os.X_OK) else 0o644) << 16
             with open(full, "rb") as f:
                 z.writestr(info, f.read(), zipfile.ZIP_DEFLATED, 9)
-        if inner is not None:
-            info = zipfile.ZipInfo("%s/%s.zip" % (SKILL_NAME, CATALOG_DIR), FIXED_TIME)
-            info.compress_type = zipfile.ZIP_STORED      # already compressed
+        for name, data in packs:
+            info = zipfile.ZipInfo("%s/%s" % (SKILL_NAME, name), FIXED_TIME)
+            info.compress_type = zipfile.ZIP_DEFLATED
             info.create_system = 3
             info.external_attr = 0o644 << 16
-            z.writestr(info, inner, zipfile.ZIP_STORED)
+            z.writestr(info, data, zipfile.ZIP_DEFLATED, 9)
     with open(target, "rb") as f:
         sha = hashlib.sha256(f.read()).hexdigest()
     with open(target + ".sha256", "w", encoding="utf-8") as f:
