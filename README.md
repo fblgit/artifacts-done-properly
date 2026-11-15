@@ -128,6 +128,24 @@ The CLI needs the unpacked folder. Loading the zip directly is UNVERIFIED; do no
 delete it: `mv ~/.adp ~/.adp.bak`. `setup` uses a `~/.adp/` that is already there and never
 overwrites a value in an existing config: it only adds the keys the config lacks.
 
+### The catalog
+
+The kit catalog is a published claude.ai artifact: 141 entries (components, themes, page templates,
+guides), each with a preview, what it needs and the exact line to take it. Its page, About ADP, is
+at <https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu> (the owner shares the artifact for view;
+until then only they can open it).
+
+1. Point your ADP at it: `python3 -I <skill folder>/scripts/adp.py catalog https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu`.
+   This saves the URL in `~/.adp/config.json` and prints the Artifact reads that copy the whole kit
+   into `~/.adp/catalog` (My Own Kit). Make those reads, then run the same command again: it says
+   `complete: true` when every file is local.
+2. From then on the agent works from that local copy: `adp.py kit list`, `kit show ID`, `kit describe ID`
+   and `suggest` read the entries' headers on disk, and `adp.py take` gives a files map that takes
+   an entry by reference, so a taken part costs a few tokens and a written one costs thousands.
+3. To update, run `adp.py catalog` again.
+
+Maintainers publish and update the catalog as `docs/RELEASING.md` describes ("Publish the catalog").
+
 To update a zip install, install the newer `adp.skill` over the old one and run
 `setup --scope <the same scope>` again. It replaces each road skill folder that differs from the
 packaged one (an older release or your own edits) and says which. The plugin needs neither: its
