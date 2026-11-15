@@ -3,21 +3,29 @@
  * Journey Whiteboard
  * The Journey Whiteboard's token blocks as the board has them. The kit files read these names, so this theme needs no aliases.
  *
- * Values are the board's own, unchanged. Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap
+ * Values are the board's own, unchanged; the names the board never used (--focus, --seam, --gold-leaf, --info, --wait, a -soft tint per meaning, --outline and the feel tokens) are derived from them, so the theme sets the whole shared convention. Load this file instead of the board's token blocks; fonts: https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle).
  *
  * @id        theme.journey-whiteboard
+ * @kind      theme
  * @group     Themes
  * @status    new
- * @version   0.1.1
- * @updated   2026-11-13
+ * @version   0.2.0
+ * @updated   2026-11-14
  * @summary   A cool workbench: chalk ground, white panels, a blue accent and six pens. Its names are the kit contract.
  * @tags      palette, tokens, colours, dark mode, journey, whiteboard
  * @requires  none
+ * @files     kit/themes/journey-whiteboard.json, kit/samples/viz.json
+ * @provides  none
  * @config    fonts | Familjen Grotesk, IBM Plex Sans, IBM Plex Mono and Kalam from Google Fonts
  * @config    json | {light, dark} maps for Kit.tokens.themeCss
  * @tokens    none
  * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap
  * @db        none
+ * @source    Journey Whiteboard | app.css | the :root, prefers-color-scheme and [data-theme] blocks
+ * @preview   {"render": "theme", "samples": ["kit/themes/journey-whiteboard.json", "kit/samples/viz.json#viz-chips", "kit/samples/viz.json#viz-stepper", "kit/samples/viz.json#viz-matrix"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
+ * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
  */
 /* Layout: a full-height workbench: top bar, one view at a time (journey, canvas, MoSCoW, pages), a side drawer for the selected item or the Claude chat. */
 :root {
@@ -59,6 +67,23 @@
   --f-ui: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --f-hand: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
+  --focus: #2350c2;
+  --seam: #2350c2;
+  --gold-leaf: #2350c2;
+  --info: #2350c2;
+  --wait: #6a48c0;
+  --danger-soft: #f6e5e3;
+  --ok-soft: #f8fbfa;
+  --warn-soft: #f8f4ed;
+  --info-soft: #e2e8f7;
+  --wait-soft: #ece7f7;
+  --outline: #dcdfd8;
+  --edge-w: 1px;
+  --text-size: 15px;
+  --leading: 1.55;
+  --head-case: none;
+  --bg-image: none;
+  --bg-size: auto;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -68,6 +93,7 @@
     --c-ink: #e6e9ef; --c-blue: #86a6ff; --c-red: #ff8c79; --c-green: #6fd3a0; --c-amber: #f0b54a; --c-violet: #b8a1ff;
     --st-yellow: #e6d26a; --st-blue: #9fc5ec; --st-pink: #eaaab1; --st-green: #a1d8b2; --sticky-ink: #1d1f24;
     --canvas: #15181d; --dot: rgba(230, 233, 239, .10); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 28px -12px rgba(0,0,0,.7);
+    --focus: #86a6ff; --seam: #86a6ff; --gold-leaf: #86a6ff; --info: #86a6ff; --wait: #b8a1ff; --danger-soft: #382728; --ok-soft: #21332e; --warn-soft: #362e20; --info-soft: #252b3d; --wait-soft: #2d2b3d; --outline: #2d323b;
     color-scheme: dark;
   }
 }
@@ -78,6 +104,7 @@
   --c-ink: #e6e9ef; --c-blue: #86a6ff; --c-red: #ff8c79; --c-green: #6fd3a0; --c-amber: #f0b54a; --c-violet: #b8a1ff;
   --st-yellow: #e6d26a; --st-blue: #9fc5ec; --st-pink: #eaaab1; --st-green: #a1d8b2; --sticky-ink: #1d1f24;
   --canvas: #15181d; --dot: rgba(230, 233, 239, .10); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 28px -12px rgba(0,0,0,.7);
+  --focus: #86a6ff; --seam: #86a6ff; --gold-leaf: #86a6ff; --info: #86a6ff; --wait: #b8a1ff; --danger-soft: #382728; --ok-soft: #21332e; --warn-soft: #362e20; --info-soft: #252b3d; --wait-soft: #2d2b3d; --outline: #2d323b;
   color-scheme: dark;
 }
 /* /part:page.style.kit.theme.journey-whiteboard */

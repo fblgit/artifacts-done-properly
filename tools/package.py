@@ -2,12 +2,14 @@
 """Validate the ADP skill tree and build a deterministic dist/adp.skill zip."""
 import argparse
 import hashlib
+import json
 import os
 import re
 import sys
 import zipfile
 
 SKILL_NAME = "adp"
+CATALOG_DIR = "catalog"
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 EXCLUDED_DIRS = {"__pycache__", "node_modules"}
 EXCLUDED_FILES = {".DS_Store"}
@@ -150,8 +152,69 @@ def legal_files(skill_dir):
     return [(n, os.path.join(top, n)) for n in LEGAL]
 
 
+MAX_FILES = 200      # claude.ai refuses a skill upload over 200 files
+
+
+ROAD_FILE = "road.md"
+
+
+def zip_name(rel):
+    """The path a file has in the zip. claude.ai accepts exactly one SKILL.md in a skill upload, so each road skill's refs/<road>/SKILL.md goes in as refs/<road>/road.md;
+    `adp.py setup` writes it back as SKILL.md. The repo (and so a plugin install) keeps SKILL.md."""
+    parts = rel.split("/")
+    if len(parts) == 3 and parts[0] == "refs" and parts[2] == "SKILL.md":
+        return "refs/%s/%s" % (parts[1], ROAD_FILE)
+    return rel
+
+
+PACK_BYTES = 900 * 1024     # a pack is split before it passes this size (the skill zip compresses each one)
+
+
+def catalog_packs(skill_dir):
+    """The skill's catalog/ folder as [(name, bytes)]: JSON packs `catalog-pack-NN.json`, each {"schema": "adp-catalog-pack/1", "files": {path: text}}, deterministic.
+    A skill zip carries the kit this way, because an upload takes at most MAX_FILES files and a zip may not hold a zip; `adp.py setup` writes the files into ~/.adp/catalog
+    (My Own Kit). The kit is text; a file that is not UTF-8 fails the build. [] when there is no catalog folder."""
+    root = os.path.join(skill_dir, CATALOG_DIR)
+    if not os.path.isfile(os.path.join(root, "catalog.json")):
+        return []
+    texts = {}
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d not in EXCLUDED_DIRS)
+        for fn in sorted(filenames):
+            if fn in EXCLUDED_FILES or fn.endswith(".pyc"):
+                continue
+            full = os.path.join(dirpath, fn)
+            rel = os.path.relpath(full, root).replace(os.sep, "/")
+            try:
+                with open(full, encoding="utf-8", newline="") as f:
+                    texts[rel] = f.read()
+            except UnicodeDecodeError:
+                raise ValidationError("%s/%s is not UTF-8 text; the catalog pack carries text only" % (CATALOG_DIR, rel))
+    groups, cur, size = [], {}, 0
+    for rel in sorted(texts):
+        if cur and size + len(texts[rel]) > PACK_BYTES:
+            groups.append(cur)
+            cur, size = {}, 0
+        cur[rel] = texts[rel]
+        size += len(texts[rel])
+    if cur:
+        groups.append(cur)
+    return [("%s-pack-%02d.json" % (CATALOG_DIR, i + 1),
+             json.dumps({"schema": "adp-catalog-pack/1", "files": g}, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+            for i, g in enumerate(groups)]
+
+
 def build(skill_dir, out_dir):
-    files = sorted(collect_files(skill_dir) + legal_files(skill_dir))
+    files = [(r, f) for r, f in collect_files(skill_dir) if not r.startswith(CATALOG_DIR + "/")]
+    files = sorted(files + legal_files(skill_dir))
+    packs = catalog_packs(skill_dir)
+    count = len(files) + len(packs)
+    if count > MAX_FILES:
+        raise ValidationError("the skill zip would hold %d files; claude.ai accepts at most %d" % (count, MAX_FILES))
+    files = sorted((zip_name(r), f) for r, f in files)
+    skill_mds = [r for r, _ in files if r.rsplit("/", 1)[-1] == "SKILL.md"]
+    if len(skill_mds) != 1:
+        raise ValidationError("the skill zip would hold %d SKILL.md files; claude.ai accepts exactly one" % len(skill_mds))
     os.makedirs(out_dir, exist_ok=True)
     target = os.path.join(out_dir, SKILL_NAME + ".skill")
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
@@ -162,11 +225,17 @@ def build(skill_dir, out_dir):
             info.external_attr = (0o755 if os.access(full, os.X_OK) else 0o644) << 16
             with open(full, "rb") as f:
                 z.writestr(info, f.read(), zipfile.ZIP_DEFLATED, 9)
+        for name, data in packs:
+            info = zipfile.ZipInfo("%s/%s" % (SKILL_NAME, name), FIXED_TIME)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            info.external_attr = 0o644 << 16
+            z.writestr(info, data, zipfile.ZIP_DEFLATED, 9)
     with open(target, "rb") as f:
         sha = hashlib.sha256(f.read()).hexdigest()
     with open(target + ".sha256", "w", encoding="utf-8") as f:
         f.write("%s  %s.skill\n" % (sha, SKILL_NAME))
-    return target, len(files), os.path.getsize(target), sha
+    return target, count, os.path.getsize(target), sha
 
 
 def main(argv=None):
@@ -190,7 +259,11 @@ def main(argv=None):
     print("validation ok")
     if a.check:
         return 0
-    target, count, size, sha = build(a.skill_dir, a.out)
+    try:
+        target, count, size, sha = build(a.skill_dir, a.out)
+    except ValidationError as e:
+        print("error: %s" % e, file=sys.stderr)
+        return 1
     print("built %s: %d files, %d bytes" % (target, count, size))
     print("sha256 %s" % sha)
     return 0

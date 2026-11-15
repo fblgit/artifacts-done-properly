@@ -5,9 +5,10 @@
  *
  * API: Kit.flow.mount(box, {stages, numbered, label, caption}) -> {update(patch), destroy()}
  *   stages    [ [node, …] | {nodes: [node, …], link: "ok" | "blocked" | "none", linkLabel} , … ]   the link belongs to the gap before that column
- *   node      {id, title, text, kind: "step" | "source" | "sink" | "human" | "blocked", tag: {text, tone}, dashed}   tone: ok warn danger accent muted; the tag shows a mark (check, bang, cross) and its words
+ *   node      {title, text, kind: "step" | "source" | "sink" | "human" | "blocked", tag: {text, tone}, dashed}   tone: ok warn danger accent muted; the tag shows a mark (check, bang, cross) and its words
  *
  * @id        viz.flow
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -15,11 +16,16 @@
  * @summary   Columns of nodes joined by arrows: a source feeding sinks, a pipeline, a human step, a blocked path.
  * @tags      flow, pipeline, diagram, steps, arrows, human in the loop, blocked, fan-out
  * @requires  none
+ * @files     kit/viz/flow.css, kit/samples/viz.json
  * @provides  Kit.flow.mount
- * @config    Kit.flow.mount(box, opts) | stages [[node] | {nodes, link: ok | blocked | none, linkLabel}], numbered, label, caption; node {id, title, text, kind: step | source | sink | human | blocked, tag {text, tone}, dashed}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --accent-ink --accent-soft --ok --warn --danger --seam?
+ * @config    Kit.flow.mount(box, opts) | stages [[node] | {nodes, link: ok | blocked | none, linkLabel}], numbered, label, caption; node {title, text, kind: step | source | sink | human | blocked, tag {text, tone}, dashed}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --accent --accent-ink --accent-soft --ok --warn --danger
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | four reports' index.html | a source-to-sinks grid flow, a row of layer boxes joined by arrows, an inline-SVG pipeline with arrowheads, a strip with human steps
+ * @preview   {"render": "viz.flow", "samples": ["kit/samples/viz.json#flow"]}
+ * @samples   flow
+ * @changed   One component for the four forms, in HTML so the text wraps and can be selected; arrows are drawn in css.
  */
 (function () {
 'use strict';

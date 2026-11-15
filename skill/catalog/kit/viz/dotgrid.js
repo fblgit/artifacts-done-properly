@@ -12,6 +12,7 @@
  *   onPick      (itemId) when set, a press on a flagged mark calls it
  *
  * @id        viz.dotgrid
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -19,12 +20,17 @@
  * @summary   A dense grid with one mark per item, a category list that lights its marks, and an optional pointer lens.
  * @tags      grid, dots, scan, lens, categories, shapes, count, highlight, files
  * @requires  kit.tooltip
+ * @files     kit/viz/dotgrid.css, kit/samples/viz.json
  * @provides  Kit.dotgrid.mount
  * @config    Kit.dotgrid.mount(box, opts) | items [{id, label, cats}], categories [{id, label, tone, note}], mode: full | lens, size, gap, noun, label, onPick, host, lensRadius
  * @config    requires | kit.tooltip
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --f-ui --f-mono --accent --ok --warn --danger --c-blue --c-amber --c-violet --c-green --c-red --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a secret-scan report, index.html | the one-mark-per-file grid with a pointer lens, and the detector table whose rows light their marks
+ * @preview   {"render": "viz.dotgrid", "samples": ["kit/samples/viz.json#dotgrid"]}
+ * @samples   dotgrid
+ * @changed   Categories have shapes as well as colours, and the category list works from the keyboard.
  */
 (function () {
 'use strict';

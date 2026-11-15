@@ -11,9 +11,11 @@
  * API:
  *   Kit.skins.init({skins, skin, mode, modes, key, target, persist}) -> handle      call once, as early as you can
  *     skins    [{name, label, href, tokens: {light, dark}, json, fonts}]   href: a stylesheet file; tokens: {"--name": "value"} maps (the shape Kit.tokens.themeCss takes); json: a theme json file
- *              (kit/themes/<name>.json) fetched once, its light and dark maps used as tokens (the skin applies when it arrives; give href or tokens instead where a flash matters)
+ *              (kit/themes/<name>.json) fetched once, its light and dark maps used as tokens (the skin applies when it arrives; give href or tokens instead where a flash matters).
+ *              A skin with none of the three sets data-skin and nothing else: the page's own look.
  *              fonts: the web-font stylesheet url the skin's --f-* families need (a theme json's "fonts"), linked once when the skin is chosen; a json skin uses its json's fonts
- *     skin     the default skin name (default the first)       mode  the default mode: "system" (default) | "light" | "dark"       modes  the offered modes (default all three)
+ *     skin     the default skin name (default the first)       mode  the default mode: "system" (default) | "light" | "dark"       modes  the offered modes (default all three);
+ *              modes: [] when the page keeps light and dark itself: the kit then never writes data-theme, and resolved() reads it
  *     key      storage prefix (default "kit-skins"; the keys are <key>:skin and <key>:mode)       persist  false keeps the choice in memory only
  *     target   the element that carries the attributes (default the document element). A target that is not the document element gets its own scoped tokens and a link-free skin, for a framed preview.
  *   handle   {skin(), mode(), resolved(), set(name), setMode(mode), list(), render(el), on(fn) -> off, pairViews(board, map) -> off, destroy()}
@@ -22,22 +24,30 @@
  *     pairViews     board is what Kit.views.mount returns (kit/view-registry.js); map is {skinName: {blockId: viewName}}. When the skin changes each listed block is switched to its view
  *                   (board.choose), so a skin can bring its own view of the data. Blocks that do not offer the view are left alone.
  * requires layout.topbar (Kit.theme is the sibling for one look; not called), kit.tokens, kit.view-registry (only for pairViews)
+ * Also provides (not globals): the kit:skin event, a CustomEvent on the document; and render and pairViews, methods of the handle init returns.
  *
  * @id        kit.skins
+ * @kind      component
  * @group     Board kit
  * @status    new
- * @version   0.1.1
- * @updated   2026-11-13
+ * @version   0.1.2
+ * @updated   2026-11-14
  * @summary   An upgrade of layout.topbar: several whole-page skins in one page, applied before first paint, kept per viewer, followed across tabs and announced by an event; light and dark are separate from the skin.
  * @tags      skin, theme switch, dark mode, no flash, storage event, persist, light dark system, selector, view registry
  * @requires  layout.topbar, kit.tokens, kit.view-registry
- * @provides  Kit.skins.init, handle.render, handle.pairViews
+ * @files     kit/skins.css, kit/samples/kit.json
+ * @provides  Kit.skins.init, Kit.skins.modes
+ * @extends   layout.topbar
  * @config    Kit.skins.init(opts) | skins [{name, label, href | tokens {light, dark} | json, fonts}], skin, mode system | light | dark, modes, key, target, persist; returns {skin, mode, resolved, set, setMode, list, render, on, pairViews, destroy}
  * @config    kit:skin | a CustomEvent on the document, detail {skin, mode, resolved, source}
  * @config    theme css | skin stylesheets that scope their tokens on :root and [data-theme] work as they are (one link is enabled); token maps are scoped by the file
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --seam?
+ * @tokens    --sunk --ink --ink-2 --rule --accent --accent-ink --f-ui --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's skin engine | attributes set at once, one skin link left enabled, light and dark apart from the skin, the storage event, the change event, the selector
+ * @preview   {"render": "kit.skins", "samples": ["kit/samples/kit.json#skins"], "uses": ["kit.view-registry"]}
+ * @samples   skins
+ * @changed   A skin links its web fonts when chosen: fonts on the skin, or the fonts url of its theme json.
  */
 (function () {
 'use strict';
@@ -81,10 +91,10 @@ function init(opts) {
     if ([...document.querySelectorAll('link[rel="stylesheet"]')].some(l => l.getAttribute('href') === u)) return;
     const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = u; l.dataset.kitSkinsFonts = ''; (document.head || document.documentElement).append(l);
   }
-  const resolved = () => mode === 'system' ? (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : mode;
+  const resolved = () => { const m = modes.length ? mode : root.getAttribute('data-theme') || 'system'; return m === 'system' ? (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : m; };
   function apply() {
     if (skin) root.setAttribute('data-skin', skin);
-    if (mode === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', mode);
+    if (modes.length) { if (mode === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', mode); }      // modes: [] leaves data-theme to the page
     links.forEach((l, n) => { l.disabled = n !== skin; });
     fonts(skins.find(s => s.name === skin));
   }
@@ -92,7 +102,8 @@ function init(opts) {
   function announce(source) { const d = detail(source); subs.forEach(f => { try { f(d); } catch (_) {} }); document.dispatchEvent(new CustomEvent('kit:skin', { detail: d })); }
   skins.forEach(linkFor); sheet(); apply();
   skins.filter(s => s.json && !s.tokens).forEach(s => { fetch(s.json).then(r => r.ok ? r.json() : null).then(j => { if (j && j.light) { s._json = j; sheet(); if (s.name === skin) fonts(s); } }).catch(() => {}); });
-  if (window.matchMedia) { try { mq = matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener('change', () => { if (mode === 'system') announce('system'); }); } catch (_) {} }
+  const onScheme = () => { if (mode === 'system') announce('system'); };
+  if (window.matchMedia) { try { mq = matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener('change', onScheme); } catch (_) {} }
   const onStorage = e => {
     if (e.key === K_SKIN && known(e.newValue) && e.newValue !== skin) { skin = e.newValue; apply(); announce('storage'); }
     if (e.key === K_MODE && modes.includes(e.newValue) && e.newValue !== mode) { mode = e.newValue; apply(); announce('storage'); }
@@ -121,7 +132,7 @@ function init(opts) {
       const go = s => { const m = byskin && byskin[s]; if (!m || !board || typeof board.choose !== 'function') return; Object.keys(m).forEach(id => { try { board.choose(id, m[id]); } catch (_) {} }); };
       go(skin); return h.on(d => go(d.skin));
     },
-    destroy() { window.removeEventListener('storage', onStorage); subs.clear(); if (styleEl) styleEl.remove(); links.forEach(l => { if (l.dataset.skin && l.dataset.kitSkinsMade) l.remove(); }); root.removeAttribute('data-skin'); },
+    destroy() { window.removeEventListener('storage', onStorage); if (mq) { try { mq.removeEventListener('change', onScheme); } catch (_) {} } subs.clear(); if (styleEl) styleEl.remove(); links.forEach(l => { if (l.dataset.skin && l.dataset.kitSkinsMade) l.remove(); }); root.removeAttribute('data-skin'); },
   };
   return h;
 }

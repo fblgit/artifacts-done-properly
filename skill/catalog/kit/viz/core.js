@@ -11,8 +11,10 @@
  * Figures({items: [{value, label, tone}]})
  *
  * Tone colours: --c-<pen> for each pen tone used.
+ * Not listed in @tokens: --kv-c, set by the tone classes (.kv-t-<tone>), and --n, the column count viz.buckets sets on .kv-cols.
  *
  * @id        viz.core
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -20,15 +22,20 @@
  * @summary   The small marks every board view uses: kind and status chips, a tally strip of counts per step, a row of big figures.
  * @tags      chip, badge, status, tally, counts, stats, figures, kpi
  * @requires  none
+ * @files     kit/viz/viz.css, kit/samples/viz.json
  * @provides  Kit.viz.Chip, Kit.viz.KindChip, Kit.viz.StatusChip, Kit.viz.Tally, Kit.viz.Figures, Kit.viz.mount, Kit.viz.util
  * @config    Chip | {label, code, tone, title}: tone is a pen (ink red green amber blue violet) or a meaning (ok warn danger accent muted)
  * @config    KindChip | {kind, code, kinds}: kinds {kind: {label, tone}}
  * @config    StatusChip | {status, statuses}: statuses {status: tone}
  * @config    Tally | {items: [{id, label, count, tone}], onClick(id)}
  * @config    Figures | {items: [{value, label, tone}]}
- * @tokens    --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-soft --ok --warn --danger --f-ui --f-mono --f-display --c-ink --c-red --c-green --c-amber --c-blue --c-violet
+ * @tokens    --panel --ink --ink-2 --ink-3 --rule --rule-2 --sunk --accent --accent-soft --ok --warn --danger --f-ui --f-mono --f-display --c-ink? --c-red --c-green --c-amber --c-blue --c-violet --accent-ink --shadow --canvas? --dot? --kv-col-h?
  * @globals   htm-preact
  * @db        none
+ * @source    Journey Whiteboard | app.js | KindChip, StatusChip, EstChip, QueueStrip counts, the stats strip, pv-stats
+ * @preview   {"render": "viz.core", "samples": ["kit/samples/viz.json#viz-chips"]}
+ * @samples   viz-chips
+ * @changed   Tones replace the board's fixed kind and status classes, so any enum maps to a colour by config.
  */
 (function () {
 'use strict';

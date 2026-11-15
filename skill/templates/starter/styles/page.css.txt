@@ -2,8 +2,8 @@
 /* STARTING LOOK: the catalog page's shell (a specimen book: cool proofing-paper greys, carmine accent, Bricolage Grotesque / Atkinson Hyperlegible Next / IBM Plex Mono). It is where a page starts, not its design: a page with its own content changes the values or wears a theme.
    Keep: the token names (components use tokens only), the three theme blocks (light on :root, dark under prefers-color-scheme guarded by :root:not([data-theme="light"])
    and again under :root[data-theme="dark"]), and the selectors adp.js and the settings pattern rely on (.wc*, .gear, .settings-view, .muted).
-   Change the rest as the content needs. Values: wear a catalog theme (theme.* entries; `adp.py new --theme` links its fonts before this file and kit/themes/<id>.css after it, so it overrides these tokens) or set
-   your own. Layout, type scale, surfaces, rhythm: written for this page's content (a rail for many views, columns for comparisons, a reading measure for prose, real
+   Change the rest as the content needs. Values: the page wears a catalog theme (theme.default unless `adp.py new --theme` named another; its fonts are linked before this file and
+   kit/themes/<id>.css after it, so it overrides these tokens: they are the fallback for a page with no theme linked). For values of your own, set them here and remove the theme's link. Layout, type scale, surfaces, rhythm: written for this page's content (a rail for many views, columns for comparisons, a reading measure for prose, real
    diagram sizing), not inherited from here. Generate it: a short script that emits this file and the views from the content is faster than typing, and never retype a kit file. */
 :root{
   --bg:#e7e8ec;--panel:#f9f9fb;--sunk:#dedfe5;--ink:#19191e;--ink-2:#474852;--ink-3:#62646e;--rule:#c9cbd3;--rule-2:#dcdde3;

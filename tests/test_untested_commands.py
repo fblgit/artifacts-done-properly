@@ -2,7 +2,7 @@
 `pins`, `suggest`, `kit list|show|describe`, `classify` (CLI), `diff`, `diff-pages`, `files --batch` and `new --content`.
 Same style as test_commands.py: the real script in a subprocess, a throwaway project, no network. The catalog is a small local
 catalog.json written here, so nothing drifts with the shipped one."""
-import json, os, re, shutil, sys, unittest
+import hashlib, json, os, re, shutil, sys, unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from test_commands import Cmd
@@ -116,6 +116,109 @@ class Kit(Untested):
 
     def test_saved_catalog_default_needs_one(self):
         self.assertIn('no saved catalog', self.fails('kit', 'list').stderr)
+
+
+HEADER = '/**\nChips\nColour labels drawn from an enum, a quartz glaze.\n\n@id viz.chips\n@db reads none / note keeps nothing\n@status stable\n@version 1.0.0\n*/\nwindow.X=1;\n'
+SLIM = {'schema': 'kit-catalog/2', 'ver': '', 'built': '', 'entries': [
+    {'id': 'viz.chips', 'name': 'Chips', 'summary': 'Status chips.', 'tags': ['chip'], 'main': 'kit/viz/chips.js', 'requires': [], 'provides': ['Chip'],
+     'globals': [], 'files': [{'path': 'kit/viz/chips.js', 'role': 'script'}]},
+    {'id': 'viz.timeline', 'name': 'Timeline', 'summary': 'Events.', 'tags': ['time'], 'main': 'kit/viz/timeline.js', 'requires': [], 'provides': [],
+     'globals': [], 'files': [{'path': 'kit/viz/timeline.js', 'role': 'script'}]}]}
+
+
+class Headers(Untested):
+    """The slim index keeps no about text: kit show|describe and suggest read it from each entry's main-file header, on disk."""
+    URL = 'https://claude.ai/artifact/abc123'
+
+    def local(self):
+        self.write_json('cat/catalog.json', SLIM)
+        os.makedirs(self.p('cat', 'kit', 'viz'))
+        with open(self.p('cat', 'kit', 'viz', 'chips.js'), 'w') as f: f.write(HEADER)
+        return self.p('cat', 'catalog.json')
+
+    def fetched(self):
+        d = os.path.join(self.home, '.adp', 'catalogs', 'abc123')
+        os.makedirs(os.path.join(d, 'kit', 'viz'))
+        json.dump(SLIM, open(os.path.join(d, 'catalog.json'), 'w'))
+        return d
+
+    def test_show_reads_about_and_header_fields_from_the_main_file(self):
+        out = self.ok('kit', 'show', 'viz.chips', self.local())
+        self.assertEqual(out['about'], 'Colour labels drawn from an enum, a quartz glaze.')
+        self.assertEqual(out['status'], 'stable')
+        self.assertEqual(out['db']['note'], 'keeps nothing')
+
+    def bundled(self):
+        """viz.chips owns kit/samples/viz.json, a bundle: its @preview names the key viz-chips; viz.timeline requires viz.chips."""
+        cat = json.loads(json.dumps(SLIM))
+        cat['entries'][0]['files'].append({'path': 'kit/samples/viz.json', 'role': 'sample'})
+        cat['entries'][1]['requires'] = ['viz.chips']
+        for e in cat['entries']:
+            for f in e['files']:
+                f['sha256'] = 'x'          # take prints each file's sha256
+        self.write_json('bun/catalog.json', cat)
+        os.makedirs(self.p('bun', 'kit', 'viz'))
+        with open(self.p('bun', 'kit', 'viz', 'chips.js'), 'w') as f:
+            f.write(HEADER.replace('@version 1.0.0\n', '@version 1.0.0\n@preview {"render": "viz.chips", "samples": ["kit/samples/viz.json#viz-chips"]}\n@samples viz-chips\n'))
+        os.makedirs(self.p('bun', 'kit', 'samples'))
+        with open(self.p('bun', 'kit', 'samples', 'viz.json'), 'w') as f:
+            json.dump({'viz-chips': {'note': 'Invented.', 'chips': [{'id': 'é', 'n': 1}]}, 'viz-other': {'x': 1}}, f)
+        return self.p('bun', 'catalog.json')
+
+    def test_describe_names_the_bundle_and_the_key_of_the_sample(self):
+        out = self.ok('kit', 'describe', 'viz.chips', self.bundled())
+        self.assertEqual((out['sample'], out['sample_key']), ('kit/samples/viz.json', 'viz-chips'))
+        self.assertNotIn('sample_key', self.ok('kit', 'describe', 'viz.chips', self.local()))      # no @preview key, no sample_key
+
+    def test_take_of_an_entry_asked_for_takes_its_bundle_by_reference_and_names_only_its_own_key(self):
+        out = self.ok('take', self.bundled(), 'viz.chips', '--url', self.URL)
+        self.assertEqual(out['files']['kit/samples/viz.json'], {'artifact': self.URL, 'path': 'kit/samples/viz.json'})      # the whole bundle, copied by the server
+        self.assertEqual(out['samples'], {'viz.chips': ['kit/samples/viz.json#viz-chips']})      # the output names its own key, never the other samples
+        self.assertNotIn('viz-other', json.dumps(out))
+
+    def test_take_of_an_entry_that_owns_no_sample_names_none(self):
+        out = self.ok('take', self.bundled(), 'viz.timeline', '--url', self.URL)
+        self.assertEqual([p for p in out['files'] if p.startswith('kit/samples/')], [])
+        self.assertNotIn('samples', out)
+
+    def test_take_of_a_dependency_leaves_the_bundle_out(self):
+        out = self.ok('take', self.bundled(), 'viz.timeline', '--url', self.URL)
+        self.assertEqual(out['entries'], ['viz.chips', 'viz.timeline'])
+        self.assertNotIn('kit/samples/viz.json', out['files'])
+        self.assertNotIn('samples', out)
+
+    def test_suggest_searches_the_about_text_of_the_header(self):
+        out = self.ok('suggest', self.local(), '--for', 'quartz glaze')
+        self.assertEqual([x['id'] for x in out], ['viz.chips'])
+        self.assertIn('about: glaze, quartz', out[0]['why'])
+
+    def test_suggest_notes_a_header_missing_on_a_local_catalog(self):
+        r = self.run_adp('suggest', self.local(), '--for', 'chip')
+        self.assertIn('note: 1 main-file headers are not on disk', r.stderr)
+
+    def test_show_of_a_fetched_catalog_prints_the_read_call_for_the_missing_header(self):
+        self.fetched()
+        out = self.ok('kit', 'show', 'viz.chips', self.URL)
+        call = out['fetch'][0]
+        self.assertEqual((call['action'], call['url'], call['paths']), ('read', self.URL, ['kit/viz/chips.js']))
+        self.assertEqual(call['out_dir'], os.path.join(self.home, '.adp', 'catalogs', 'abc123'))
+        self.assertEqual(out['about'], '')
+
+    def test_once_the_header_is_on_disk_the_next_run_reads_it(self):
+        d = self.fetched()
+        with open(os.path.join(d, 'kit', 'viz', 'chips.js'), 'w') as f: f.write(HEADER)
+        out = self.ok('kit', 'show', 'viz.chips', self.URL)
+        self.assertNotIn('fetch', out)
+        self.assertIn('quartz', out['about'])
+
+    def test_suggest_splits_the_missing_paths_in_reads_of_at_most_256(self):
+        d = self.fetched()
+        many = {**SLIM, 'entries': [{**SLIM['entries'][0], 'id': f'viz.e{i}', 'main': f'kit/viz/e{i}.js'} for i in range(300)]}
+        json.dump(many, open(os.path.join(d, 'catalog.json'), 'w'))
+        r = self.run_adp('suggest', self.URL, '--for', 'chip')
+        calls = [json.loads(x) for x in r.stderr.splitlines() if x.startswith('{')]
+        self.assertEqual([len(c['paths']) for c in calls], [256, 44])
+        self.assertIn('note: 300 main-file headers', r.stderr)
 
 
 class Classify(Untested):
@@ -297,6 +400,65 @@ A lead for the page.
         r = self.build('## Lead\nonly a lead\n')
         self.assertEqual(r.returncode, 2)
         self.assertIn('no `## View: <label> (id: <id>)` with sections', r.stderr)
+
+
+class MyOwnKit(Untested):
+    """`adp.py catalog URL` brings the whole kit to ~/.adp/catalog: it prints the reads (256 paths at most each, folders kept together) and says
+    `complete` once every file the index lists is there with its sha256. An older ~/.adp/catalogs/<id>/ copy still counts."""
+    URL = 'https://claude.ai/artifact/abc123'
+
+    def kit(self, folders, **put):
+        """An index of folders {name: count}: one entry per file name, written to ~/.adp/catalog when put['write'] is not False."""
+        entries, root = [], os.path.join(self.home, '.adp', 'catalog')
+        for folder, n in folders.items():
+            for i in range(n):
+                path, body = f'kit/{folder}/f{i:03d}.js', f'/* {folder} {i} */\n'
+                entries.append({'id': f'{folder}.f{i:03d}', 'name': 'n', 'summary': 's', 'tags': [], 'main': path, 'requires': [], 'provides': [], 'globals': [],
+                                'files': [{'path': path, 'role': 'script', 'sha256': hashlib.sha256(body.encode()).hexdigest(), 'bytes': len(body)}]})
+                if put.get('write', True):
+                    os.makedirs(os.path.dirname(os.path.join(root, path)), exist_ok=True)
+                    with open(os.path.join(root, path), 'w') as f: f.write(body)
+        os.makedirs(root, exist_ok=True)
+        json.dump({'schema': 'kit-catalog/2', 'ver': '', 'built': 'x', 'entries': entries}, open(os.path.join(root, 'catalog.json'), 'w'))
+        return root
+
+    def test_an_unfetched_kit_prints_the_index_read_into_the_kit_folder(self):
+        out = self.ok('catalog', self.URL)
+        self.assertFalse(out['fetched'])
+        self.assertEqual(out['fetch']['out_dir'], os.path.join(self.home, '.adp', 'catalog'))
+
+    def test_a_kit_with_its_files_is_complete_and_prints_no_reads(self):
+        root = self.kit({'viz': 3})
+        out = self.ok('catalog', self.URL)
+        self.assertEqual((out['kit'], out['files'], out['missing'], out['complete']), (root, 3, 0, True))
+        self.assertNotIn('reads', out)
+
+    def test_missing_and_changed_files_come_back_as_reads(self):
+        root = self.kit({'viz': 3})
+        os.remove(os.path.join(root, 'kit', 'viz', 'f000.js'))
+        with open(os.path.join(root, 'kit', 'viz', 'f001.js'), 'w') as f: f.write('changed')
+        out = self.ok('catalog', self.URL)
+        self.assertEqual((out['missing'], out['complete'], out['calls']), (2, False, 1))
+        call = out['reads'][0]
+        self.assertEqual((call['action'], call['url'], call['out_dir']), ('read', self.URL, root))
+        self.assertEqual(call['paths'], ['kit/viz/f000.js', 'kit/viz/f001.js'])
+
+    def test_reads_hold_at_most_256_paths_and_keep_a_folder_together(self):
+        self.kit({'a': 200, 'b': 100}, write=False)
+        out = self.ok('catalog', self.URL)
+        self.assertEqual((out['files'], out['missing'], out['calls'], out['per_call']), (300, 300, 2, [200, 100]))
+        self.assertTrue(all(p.startswith('kit/a/') for p in out['reads'][0]['paths']))
+
+    def test_a_folder_over_256_is_split_into_plain_chunks(self):
+        self.kit({'a': 300}, write=False)
+        self.assertEqual(self.ok('catalog', self.URL)['per_call'], [256, 44])
+
+    def test_an_older_catalogs_copy_still_counts_until_the_new_folder_has_an_index(self):
+        d = os.path.join(self.home, '.adp', 'catalogs', 'abc123'); os.makedirs(d)
+        json.dump({'schema': 'kit-catalog/2', 'entries': []}, open(os.path.join(d, 'catalog.json'), 'w'))
+        self.assertEqual(self.ok('catalog', self.URL)['kit'], d)
+        self.kit({'viz': 1})
+        self.assertEqual(self.ok('catalog', self.URL)['kit'], os.path.join(self.home, '.adp', 'catalog'))
 
 
 if __name__ == '__main__':

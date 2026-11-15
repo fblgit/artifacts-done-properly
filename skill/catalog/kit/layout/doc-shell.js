@@ -26,6 +26,7 @@
  * ResizeObserver is used when present. When a sticky bar sits above, --kit-topbar-h (written by Kit.topbar) is read.
  *
  * @id        layout.doc-shell
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -33,13 +34,18 @@
  * @summary   A sticky contents rail that marks the section in view, beside a 65ch reading column with optional marginalia; a Contents menu under 760px.
  * @tags      layout, document, toc, contents, scroll spy, rail, sidebar, reading column, marginalia, sticky, phone
  * @requires  none
+ * @files     kit/layout/doc-shell.css, kit/samples/layout.json
  * @provides  Kit.docShell.mount
  * @config    Kit.docShell.mount(root, opts) | sections (selector), heading, label, hash (default true), scroller, offset (px), onChange(id)
  * @config    markup | .kit-doc > nav.kit-doc-toc + .kit-doc-main > section.kit-doc-sec[id] (> aside.kit-doc-note + .kit-doc-body)
  * @config    --kit-topbar-h | written by Kit.topbar when a sticky bar sits above
- * @tokens    --bg --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --f-display
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --accent --f-ui --f-mono --f-display --kit-topbar-h? --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | 5 artifacts' index.html | the scroll-spy sidebar, a sticky rail beside a reading column, a left contents list, a runbook's section rail with a scroll-position spy, and a section grid with a mono marginalia rail
+ * @preview   {"render": "layout.doc-shell", "samples": ["kit/samples/layout.json#doc-shell"]}
+ * @samples   doc-shell
+ * @changed   The spy reads scroll position, not an observer, so a short last section still lights up.
  */
 (function () {
 'use strict';

@@ -43,6 +43,15 @@ button.kit-rc-part { cursor: pointer; text-decoration: underline; text-decoratio
 .kit-rc-prog li[data-now] span::after { content: " …"; }
 .kit-rc-changed { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
 .kit-rc-changed code { font: 12px var(--f-mono); color: var(--ink-2); }
+.kit-rc-fold { display: grid; gap: 12px; min-width: 0; }
+.kit-rc-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-width: 0; list-style: none; cursor: pointer; }
+.kit-rc-sum::-webkit-details-marker { display: none; }
+.kit-rc-sum::before { content: ""; flex: none; width: 7px; height: 7px; border-right: 2px solid var(--ink-2); border-bottom: 2px solid var(--ink-2); transform: rotate(-45deg); transition: transform .15s; }
+.kit-rc-fold[open] > .kit-rc-sum::before { transform: rotate(45deg); }
+.kit-rc-snip { flex: 1 1 12em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.kit-rc-fold[open] > .kit-rc-sum .kit-rc-snip { white-space: normal; }
+.kit-rc-fold[open] > .kit-rc-sum :is(.kit-vo-pill, .kit-rc-sw, .kit-rc-at) { display: none; }      /* open, the header below says the kind, the state and the time */
+.kit-rc-sw { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
 .kit-rc-hint { font-size: 12.5px; color: var(--ink-2); }
 .kit-rc-hint[data-err] { color: var(--ink); font-weight: 600; }
 .kit-rc-reply { display: grid; gap: 6px; }

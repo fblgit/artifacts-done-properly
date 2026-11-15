@@ -3,8 +3,10 @@ adp/2 page shell
 This entry is taken as text. An HTML page cannot be copied between artifacts server-side, so there is no files map for it: open Take it, copy the shell, and save it as your artifact’s index.html. Then rename the title and fonts, keep the three page parts and the panel markup the runtime fills, and add your own styles and parts files. It comes from the skill’s example shell, from YouTuner Uplift v14.
 
 Delete this comment when you copy the template into your page.
+Provides (no global): index.html skeleton.
 
 @id        template.adp2-shell
+@kind      template
 @group     Templates
 @status    stable
 @version   0.1.1
@@ -12,11 +14,17 @@ Delete this comment when you copy the template into your page.
 @summary   The thin index.html of an adp/2 artifact. Taken as text, not by reference: copy it into your own index.html.
 @tags      shell, index.html, starter, adp/2, layout, skeleton
 @requires  runtime.adp
+@files     none
+@provides  none
 @config    title, fonts | the artifact's own
 @config    adp:build | its build number
 @config    files it loads | adp.js, data.js, content.js, parts/*.js, styles/*.css
+@tokens    none
 @globals   none
 @db        none
+@source    eventhub plugin | skills/artifact-dataplane/assets/example-shell.html | YouTuner Uplift v14 shell
+@preview   {"render": "template", "samples": ["kit/templates/adp2-shell.html.txt"]}
+@changed   Published as .html.txt: as .html it would be a second page of this catalog, and HTML files cannot be copied between artifacts server-side.
 -->
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>YouTuner Uplift</title>

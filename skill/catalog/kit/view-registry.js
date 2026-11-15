@@ -37,6 +37,7 @@
  * localStorage is used only when storageKey is given; every read and write is guarded.
  *
  * @id        kit.view-registry
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -44,13 +45,20 @@
  * @summary   A page drawn from a layout document: regions of blocks, each bound to a data kind and a registered view, with alternative views the viewer can switch between and a validator that refuses what it cannot draw.
  * @tags      layout, registry, views, validator, board, regions, blocks, alternatives, filter, refusal, data-first
  * @requires  kit.tokens
- * @provides  Kit.views.kind, Kit.views.register, Kit.views.get, Kit.views.list, Kit.views.alternatives, Kit.views.validate, Kit.views.describe, Kit.views.checkFilter, Kit.views.filter, Kit.views.mount
+ * @files     kit/view-registry.css, kit/samples/kit.json
+ * @provides  Kit.views.kind, Kit.views.register, Kit.views.get, Kit.views.list, Kit.views.alternatives, Kit.views.validate, Kit.views.describe, Kit.views.checkFilter, Kit.views.filter, Kit.views.mount, Kit.views.kinds, Kit.views.arms, Kit.views.Refused, Kit.views.ARMS, Kit.views.OPS
  * @config    Kit.views.kind(id, {label, fields}) | fields {name: {type: enum | integer | bool | string | content | message, values, fields}}
  * @config    Kit.views.register({kind, name, label, form, options, columns, render}) | render(box, {rows, options, block, kind}) returns {update(ctx), destroy()}
  * @config    Kit.views.mount(box, {layout, rows, storageKey, label, onRefuse, onSwitch}) | layout {regions: [{id, shape, columns, blocks: [{id, title, view: {data, view, views, <arm>: {filter, columns}}}]}]}; returns {setRows(kind, rows), chosen(id), choose(id, name), on(fn), problems, destroy()}
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --danger --f-ui --f-display --f-mono --seam? --radius?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2? --accent --accent-ink --danger --f-ui --f-display? --f-mono --seam? --radius-lg?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a component family's Board page | regions and blocks drawn from a layout, and the per-viewer alternative-view switcher
+ * @source    Catalog harvest, 2026-10-25 | a component family's view registry and layout validator | the registry by kind and name, and the typed refusals
+ * @source    Catalog harvest, 2026-10-25 | a component family's typed filter check | filters over enums, numbers and flags, never text
+ * @preview   {"render": "kit.view-registry", "samples": ["kit/samples/kit.json#view-registry"], "uses": ["kit.vocab"]}
+ * @samples   view-registry
+ * @changed   Rebuilt without the hub: no protobuf kinds, gateway or skin loader. Kinds and their row shapes are declared by the page, and the refusal codes are plain names.
  */
 (function () {
 'use strict';

@@ -24,6 +24,7 @@
  *     A kind the renderer does not know draws a flagged unknown mark and the raw body, never nothing.
  *
  * @id        pattern.report-cards
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -31,12 +32,17 @@
  * @summary   Nine fixed-shape reports (done, blocked, decision, handoff, ask, question, feedback, fault, status): a kind pill, the subject, who and when, then only that kind's fields in a fixed order.
  * @tags      report, status report, done, blocked, decision, handoff, fault, feedback, tests, divergence, unverified
  * @requires  kit.tokens, kit.vocab
+ * @files     kit/patterns/report-cards.css, kit/samples/patterns.json
  * @provides  Kit.reportCards.render, Kit.reportCards.mount, Kit.reportCards.kinds
  * @config    Kit.reportCards.render(report, {labels, timeZone}) | report {kind, subject, by, at, ref, ref2, body}; body fields by kind are listed in the file header
  * @config    Kit.reportCards.mount(box, {reports, labels, timeZone}) | returns {update, destroy}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --ok --danger --accent-ink? --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --ok --danger --rim? --pool? --glz-r-l? --glz-sh-1?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a component family's nine report cards | the done card's tests, divergence table and unverified list, and the blocked, decision, handoff, ask, question, feedback, fault and status shapes
+ * @preview   {"render": "pattern.report-cards", "samples": ["kit/samples/patterns.json#report-cards"]}
+ * @samples   report-cards
+ * @changed   One renderer with a field spec per kind replaces nine components that each repeated the head and frame.
  */
 (function () {
 'use strict';

@@ -5,7 +5,7 @@
  *
  * API:
  *   Kit.fileBrowser.mount(root, opts) -> {select(path), update(data), setSince(version), destroy()}
- *     manifest   {schema, page_hash, parts: {id: hash}, files: {path: hash}, parents: {id: parent}, part_file: {id: path}}   manifest/current (or adp.py manifest DIR)
+ *     manifest   {page_hash, parts: {id: hash}, files: {path: hash}, parents: {id: parent}, part_file: {id: path}}   manifest/current (or adp.py manifest DIR)
  *     sizes      {path: bytes}                         parts     the parts/<id> docs as {id: doc} or [{id, ...}]: title, summary, version, at, by, holder, hold_until
  *     changes    the changes/ docs [{version, at, by, summary, parts: [{id, from, to}]}]; data-only ones (version "") are skipped
  *     manifests  optional {version: {files, parts}}: a file's own hash per version, so files without parts get a history too
@@ -19,8 +19,10 @@
  *
  * It reads nothing from the db and writes nothing: a board reads manifest/current, parts, changes, threads and content, passes them in, and calls update() when they change.
  * Copy uses navigator.clipboard when present, with a select-the-text fallback.
+ * Also provides (not globals): the methods of the handle mount returns, select(path), update(data) and setSince(version).
  *
  * @id        layout.file-browser
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.2.0
@@ -28,13 +30,20 @@
  * @summary   The published files of an ADP artifact as a tree you can walk, and a sheet per file: its hash, the versions that touched it, its parts with who holds them and their comments, and its history with a Compare for each step.
  * @tags      files, manifest, tree, parts, hash, holds, history, adp/2, browser, explorer, versions
  * @requires  kit.tokens, kit.dom
+ * @files     kit/layout/file-browser.css, kit/samples/layout.json
  * @provides  Kit.fileBrowser.mount
- * @config    Kit.fileBrowser.mount(root, opts) | manifest {schema, page_hash, parts, files, parents, part_file}, sizes {path: bytes}, parts {id: parts doc}, changes [changes docs], manifests {version: {files, parts}} (optional), threads {id: threads doc}, content {id: content doc} or [ids], since, selected, now, views [{id, label}], timeZone, label; returns {select, update, setSince, destroy}
+ * @related   pattern.file-map
+ * @config    Kit.fileBrowser.mount(root, opts) | manifest {page_hash, parts, files, parents, part_file}, sizes {path: bytes}, parts {id: parts doc}, changes [changes docs], manifests {version: {files, parts}} (optional), threads {id: threads doc}, content {id: content doc} or [ids], since, selected, now, views [{id, label}], timeZone, label; returns {select, update, setSince, destroy}
  * @config    callbacks | onSelect(path), onSince(version), onOpen(path), onCompare({path, from, to}), onPart(id, path), onView(id, {path}); a button appears only when its callback is given, and select() and setSince() never call back
  * @config    update(data) | any of the options; the selection, the open folders and the tab are kept when they still exist
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono --f-display? --seam? --radius? --shadow?
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono --f-display? --seam? --radius? --shadow?
  * @globals   none
- * @db        reads manifest/current; parts; changes; threads; content / The layout does not read the db itself: the page reads these docs and passes them in.
+ * @db        reads manifest/current; parts; changes; threads; content / note The layout does not read the db itself: the page reads these docs and passes them in.
+ * @source    Catalog batch 15, 2026-10-26 | kit/layout/file-browser.js 0.1.0 | folders, an extension badge and the parts of each file
+ * @source    Catalog batch 15, 2026-10-26 | skills/artifact-dataplane/scripts/adp.py manifest() and diff() | the adp/2 manifest the tree is drawn from, and added, changed, removed
+ * @preview   {"render": "layout.file-browser", "samples": ["kit/samples/layout.json#file-browser"], "uses": ["pattern.file-map", "pattern.record-shelf"]}
+ * @samples   file-browser
+ * @changed   A tree with folders that open and close, walked with the arrow keys, instead of flat groups of buttons.
  */
 (function () {
 'use strict';

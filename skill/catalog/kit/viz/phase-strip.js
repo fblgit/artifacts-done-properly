@@ -15,8 +15,10 @@
  *     unitEnum  the Kit.vocab enum of a unit's state (default "state")
  *     onSelect  (id) after a tab or a stop is chosen (id "all" for the leading tab)
  *   Kit.phaseStrip.FORMS -> the five form names;  Kit.phaseStrip.phaseEnum -> "phase"
+ * --vo-c is not in @tokens: kit/vocab.css (kit.vocab, required) sets it through [data-vo-tone].
  *
  * @id        viz.phase-strip
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -24,12 +26,21 @@
  * @summary   One phase list in five forms: segmented gauge, flow boxes, itinerary, contents lines and divider tabs.
  * @tags      phases, progress, gauge, flow, itinerary, contents, tabs, stepper, roadmap
  * @requires  kit.tokens, kit.vocab
+ * @files     kit/viz/phase-strip.css, kit/samples/viz.json
  * @provides  Kit.phaseStrip.mount, Kit.phaseStrip.FORMS, Kit.phaseStrip.phaseEnum
  * @config    Kit.phaseStrip.mount(box, {phases, form, current, selected, allLabel, label, unitEnum, onSelect}) | phases [{id, name, state, what, exit, after, units: [{title, state}], done, total, waiting}]; returns {setForm(f), update(opts), select(id), destroy()}
  * @config    Kit.vocab | the file adds a 'phase' enum to Kit.vocab when none is defined; unit states use the 'state' enum
- * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-soft --accent-ink --ok --warn --f-ui --f-mono --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-soft --accent-ink --ok --warn --f-ui --f-mono --seam? --f-display? --warn-soft?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's console skin | segmented phase gauges
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's blueprint skin | the process flow of phases
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's journal skin | the itinerary of phases
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's manuscript skin | contents lines with leaders
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's notebook skin | divider tabs with counts and a waiting dot
+ * @preview   {"render": "viz.phase-strip", "samples": ["kit/samples/viz.json#viz-phase-strip"], "uses": ["kit.vocab"]}
+ * @samples   viz-phase-strip
+ * @changed   Five skins' phase strips became one component with five forms; the data is one list, so a page can offer a choice of form.
  */
 (function () {
 'use strict';

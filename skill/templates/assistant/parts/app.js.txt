@@ -126,7 +126,7 @@ function mountSettings(){
     mounted.push(Kit.settings.mount(sw, {}));
     if (Kit.inbox && ADP.db) mounted.push(Kit.inbox.mount(ib, {})); else ib.hidden = true;     // an agent's proposal is applied or declined here
     mounted.push(Kit.namespaces.mount(ns, {parts: Object.keys(TITLES), titles: TITLES})); };
-  ADP.config.ready.then(done);
+  Promise.all([ADP.config.ready, themesReady]).then(done);      // the Theme switch lists the installed themes, so they are read first
 }
 function mountRequests(){
   const box = $('[data-part="requests.list"]'), Kit = window.Kit || {};
@@ -141,7 +141,7 @@ function mountRequests(){
     rows.forEach((r, i) => {
       let c = cards.get(r.id);
       if (!c) { const el = document.createElement('div'); el.className = 'req-item';
-        c = {el, m: Kit.requestCard.mount(el, {engine, rid: r.id, me: engine.me(), titles: TITLES, onReveal: reveal})}; cards.set(r.id, c); }
+        c = {el, m: Kit.requestCard.mount(el, {engine, rid: r.id, me: engine.me(), titles: TITLES, onReveal: reveal, fold: true, open: i === 0})}; cards.set(r.id, c); }      // a done request folds to one line; the newest stays open
       if (box.children[i] !== c.el) box.insertBefore(c.el, box.children[i] || null);
     });
     empty.hidden = rows.length > 0; if (!empty.parentNode) box.append(empty);
@@ -154,7 +154,7 @@ function mountRequests(){
    (INSTALLED_AT: entry id -> part ids) and offers two buttons on that part: Show it (the page goes to it and rings it) and Work on it (Work with Claude
    opens with that part picked, so the request is about that block). The page is the render; nothing is previewed twice. */
 const INSTALLED_AT = {'pattern.settings': ['settings.switches'], 'pattern.inbox': ['settings.inbox'], 'pattern.namespaces': ['settings.namespaces'],
-  'pattern.assist-panel': ['page.assist'], 'pattern.presence': ['page.header'], 'pattern.request-card': ['requests.list'],
+  'pattern.assist-panel': ['page.assist'], 'pattern.presence': ['page.header'], 'kit.skins': ['page.header'], 'pattern.request-card': ['requests.list'],
   'kit.canvas': ['canvas.board'], 'pattern.mindmap': ['canvas.board']};
 function mountMyCatalog(){
   const box = $('[data-part="mycatalog.list"]');
@@ -263,6 +263,7 @@ function mountExamples(){
   if (!box) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
   const TR = {id: 'translate', cat: 'page', title: 'Translate this page', blurb: 'Into your language', icon: 'translate', rec: true};
+  const NEW = {id: 'new', title: 'New request', icon: 'adopt', text: ''};      // + New: a blank composer for a request of your own
   const foreign = BROWSER.code !== 'en';
   const IDEAS = foreign ? [TR].concat(EXAMPLES) : EXAMPLES.concat([TR]);
   const LANGS = LANGUAGES.some(l => l[2].toLowerCase() === BROWSER.code) || !BROWSER.name || !foreign ? LANGUAGES : [['\u{1F310}', BROWSER.name, BROWSER.code.toUpperCase()]].concat(LANGUAGES);
@@ -270,7 +271,7 @@ function mountExamples(){
   let cat = 'rec';
   const inCat = x => cat === 'rec' ? !!x.rec : x.cat === cat;
   box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
-    + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '</div>'
+    + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '<button type="button" class="ex-new" data-new aria-pressed="false"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New</span></button></div>'
     + '<div class="ex-split"><ul class="ex-ideas">'
     + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
     + '</div><div class="ex-langs" role="group" aria-label="Language" hidden>' + LANGS.map(l => `<button type="button" class="ex-lang" data-lang="${esc(l[1])}" title="${esc(l[1])}" aria-pressed="${l[1] === lang}"><span class="ex-flag" aria-hidden="true">${l[0]}</span><b>${esc(l[2])}</b></button>`).join('') + '</div>'
@@ -287,8 +288,10 @@ function mountExamples(){
   const count = () => { cnt.textContent = ta.value.length + ' / 1500'; submit.disabled = !ok || !ta.value.trim(); };
   const textFor = () => cur.id === 'translate' ? translateText(lang) : cur.text;
   const choose = id => {
-    cur = IDEAS.find(x => x.id === id); if (!cur) return;
+    cur = id === 'new' ? NEW : IDEAS.find(x => x.id === id); if (!cur) return;
     box.querySelectorAll('.ex-idea').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
+    box.querySelector('[data-new]').setAttribute('aria-pressed', String(id === 'new'));
+    ta.placeholder = id === 'new' ? 'Say what you want Claude to do: a new view, a change to a block, a fix or a question.' : '';
     ico.innerHTML = icon(cur.icon); ttl.textContent = cur.title; sel.hidden = id !== 'translate';
     original = textFor(); ta.value = original; grow(); count();
     ta.style.animation = 'none'; void ta.offsetWidth; ta.style.animation = '';
@@ -300,6 +303,7 @@ function mountExamples(){
   box.addEventListener('click', e => {
     const c = e.target.closest('.ex-cat');
     if (c) { cat = c.dataset.cat; const first = IDEAS.find(inCat); cur = IDEAS.find(x => inCat(x) && cur && x.id === cur.id) || first; draw(); choose(cur.id); return; }
+    if (e.target.closest('[data-new]')) { choose('new'); ta.focus(); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); return; }
     const b = e.target.closest('.ex-idea');
     if (b) { choose(b.dataset.ex); if (window.matchMedia('(max-width: 719px)').matches) form.scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
     else if (e.target.closest('[data-lang]')) { lang = e.target.closest('[data-lang]').dataset.lang; sel.querySelectorAll('.ex-lang').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.lang === lang))); original = textFor(); ta.value = original; grow(); count(); }
@@ -446,6 +450,47 @@ if (themeBtn) {
 /* The runtime rewrites data-theme from look.mode each time the settings arrive or change; put the rule back at once, with no flash between. */
 new MutationObserver(applyTheme).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
 if (window.ADP && ADP.config) ADP.config.on('look.mode', v => { const seen = ls(MODE_KEY); if (seen !== null && seen !== v) ls(THEME_KEY, null); ls(MODE_KEY, v); applyTheme(); paintTheme(); });
+/* The theme, by the colour's rule. The page's choice is the Settings value look.theme: its default is the theme index.html links (what adp.py new wrote; the runtime reads it as BUILT)
+   and its options are the themes this page has installed (installed.json), Default first. The viewer's own pick from the header is kept in this browser and wins; changing look.theme
+   in Settings drops that pick. Kit.skins (catalog) wears the choice. The built-in theme is the linked stylesheet, switched off under any other theme; every other theme is its json,
+   fetched when first chosen, and the kit is started again with that one theme's tokens. So a theme replaces the one before: no token of the last one is left, whichever sets more.
+   The theme last worn is kept in the browser with its tokens, so the next visit wears it before the settings or any file arrive. Light, dark or system stays with the button above
+   (modes: []: the kit leaves data-theme alone). */
+const SKIN_KEY = 'adp-skin', LOOK_KEY = 'adp-look-theme', WORN_KEY = 'adp-skin-worn', skinPick = $('#skinPick'), skinSel = $('#skinSel');
+const lookDef = window.ADP && ADP.config ? ADP.config.all().look.theme : null, BUILT = lookDef ? lookDef.default : 'default';
+const builtCss = [...document.querySelectorAll('link[rel="stylesheet"][href^="kit/themes/"]')];
+const kept = (() => { try { return JSON.parse(ls(WORN_KEY)) || {}; } catch (e) { return {}; } })();
+const tok = kept.name && kept.name !== BUILT ? {[kept.name]: kept} : {}, asked = {};      // theme name -> its json {light, dark, fonts}, and the fetch that brings it
+let themes = [{name: BUILT, label: BUILT}].concat(Object.keys(tok).map(n => ({name: n, label: kept.label || n}))), skins = null;
+const wanted = () => { const v = ls(SKIN_KEY) || ls(LOOK_KEY); return themes.some(t => t.name === v) ? v : BUILT; };
+function wear(){
+  if (!Kit0.skins) return;
+  const n = wanted(), t = tok[n], me = themes.find(x => x.name === n);
+  if (n !== BUILT && !t) {      // its tokens first; until they arrive the page keeps what it wears
+    (asked[n] = asked[n] || fetch('kit/themes/' + n + '.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }))
+      .then(j => { tok[n] = j; if (wanted() === n) wear(); }, () => { delete asked[n]; if (skinSel && skins) skinSel.value = skins.skin(); });
+    return;
+  }
+  if (skins) skins.destroy();
+  skins = Kit0.skins.init({skins: themes.map(x => (x === me && t ? Object.assign({tokens: t, fonts: t.fonts}, x) : x)), skin: n, modes: [], persist: false});      // only the worn theme's tokens are written
+  builtCss.forEach(l => { l.disabled = n !== BUILT; });
+  ls(WORN_KEY, t ? JSON.stringify({name: n, label: me.label, light: t.light, dark: t.dark, fonts: t.fonts}) : null);
+  if (skinSel) { skinSel.value = n; skinPick.title = 'Theme: ' + me.label; }
+}
+function paintSkins(){
+  if (!skinSel) return;
+  skinSel.replaceChildren(...themes.map(t => new Option(t.label, t.name)));
+  skinPick.hidden = !Kit0.skins || themes.length < 2;
+}
+const themesReady = fetch('installed.json').then(r => (r.ok ? r.json() : null)).then(j => {
+  const list = ((j && j.entries) || []).filter(e => /^theme\.[a-z0-9-]+$/.test(e.id)).map(e => ({name: e.id.slice(6), label: e.name || e.id.slice(6)}));
+  if (!list.some(t => t.name === BUILT)) list.unshift({name: BUILT, label: BUILT});
+  themes = list.sort((a, b) => (b.name === 'default') - (a.name === 'default'));
+  if (lookDef) ADP.config.define('look', {theme: {type: lookDef.type, default: BUILT, label: lookDef.label, help: lookDef.help, options: themes.map(t => t.name)}});
+}).catch(() => { themes = [{name: BUILT, label: BUILT}]; }).then(() => { paintSkins(); wear(); });
+if (skinSel) skinSel.addEventListener('change', () => { ls(SKIN_KEY, skinSel.value); wear(); });
+if (window.ADP && ADP.config) ADP.config.on('look.theme', v => { const seen = ls(LOOK_KEY); if (seen !== null && seen !== v) ls(SKIN_KEY, null); ls(LOOK_KEY, v); wear(); });
+paintSkins(); wear();
 /* The header's pop-overs fold back: a press outside What changed or the how-to-start note closes it, and so does Escape. */
 const foldPopovers = e => {
   const wc = $('#wc'), pr = $('#presence');

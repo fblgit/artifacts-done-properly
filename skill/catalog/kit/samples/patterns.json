@@ -1,0 +1,6922 @@
+{
+ "answer-queue": {
+  "note": "Invented: five questions the lead repairer has to decide before the first night.",
+  "items": [
+   {
+    "id": "Q-1",
+    "title": "Which hall for the winter nights?",
+    "state": "waiting",
+    "phase": "Prepare",
+    "note": "The church hall has the better benches but closes at nine. The school hall stays open later and is colder.",
+    "choices": [
+     {
+      "id": "church",
+      "label": "Church hall, closing at nine"
+     },
+     {
+      "id": "school",
+      "label": "School hall, open later"
+     }
+    ],
+    "fields": [
+     [
+      "Asked by",
+      "Marcus"
+     ],
+     [
+      "Needed by",
+      "Friday"
+     ],
+     [
+      "Cost",
+      "40 per night at either hall"
+     ]
+    ],
+    "history": [
+     {
+      "at": "12 Oct",
+      "text": "Both halls visited."
+     },
+     {
+      "at": "14 Oct",
+      "text": "School hall quote received."
+     }
+    ]
+   },
+   {
+    "id": "Q-2",
+    "title": "Do we accept gas heaters?",
+    "state": "waiting",
+    "phase": "Rules",
+    "note": "Ravi can service the electrical part but not the pilot light.",
+    "choices": [
+     {
+      "id": "no",
+      "label": "No, turn them away kindly"
+     },
+     {
+      "id": "elec",
+      "label": "Only the electrical part"
+     }
+    ],
+    "fields": [
+     [
+      "Asked by",
+      "Ravi"
+     ],
+     [
+      "Needed by",
+      "Next meeting"
+     ]
+    ]
+   },
+   {
+    "id": "Q-3",
+    "title": "Print or write the repair log?",
+    "state": "waiting",
+    "phase": "Night",
+    "note": "Printed sheets cost about 6 a night. Hand-written pages in a book cost nothing but are harder to count.",
+    "choices": [
+     {
+      "id": "print",
+      "label": "Printed sheets"
+     },
+     {
+      "id": "book",
+      "label": "A book on the desk"
+     }
+    ],
+    "fields": [
+     [
+      "Asked by",
+      "Lena"
+     ]
+    ]
+   },
+   {
+    "id": "Q-4",
+    "title": "Charge for tea?",
+    "state": "waiting",
+    "phase": "Night",
+    "note": "A jar with a suggested price, or free with the jar only for the parts fund.",
+    "choices": [
+     {
+      "id": "free",
+      "label": "Free, jar for parts"
+     },
+     {
+      "id": "price",
+      "label": "One coin a cup"
+     }
+    ],
+    "fields": [
+     [
+      "Asked by",
+      "Odile"
+     ]
+    ]
+   },
+   {
+    "id": "Q-5",
+    "title": "Who holds the hall key?",
+    "state": "waiting",
+    "phase": "Prepare",
+    "note": "One person opens, one person locks. They cannot both be Priya.",
+    "choices": [
+     {
+      "id": "priya-tomasz",
+      "label": "Priya opens, Tomasz locks"
+     },
+     {
+      "id": "tomasz-priya",
+      "label": "Tomasz opens, Priya locks"
+     }
+    ],
+    "fields": [
+     [
+      "Asked by",
+      "Tomasz"
+     ],
+     [
+      "Needed by",
+      "Friday"
+     ]
+    ]
+   },
+   {
+    "id": "Q-6",
+    "title": "Rename the repair log sheet",
+    "state": "review",
+    "phase": "Night",
+    "note": "Already answered; shown to prove that only waiting items are in the run.",
+    "fields": [
+     [
+      "Asked by",
+      "Lena"
+     ]
+    ],
+    "choice": "print",
+    "reply": "Call it the repair sheet."
+   }
+  ]
+ },
+ "assist": {
+  "note": "An invented snapshot of the assist collections on a made-up river survey page: four requests (done with two turns, working, ack, and a queued one past three minutes, so stuck), one Ask now conversation and two presence docs, one fresh and one stale. Times are UTC; the preview reads them against now.",
+  "now": "2026-10-26T10:30:00Z",
+  "project": "",
+  "requests": [
+   {
+    "id": "r-1793007600000-k3d9",
+    "lane": "task",
+    "scope": {
+     "kind": "part",
+     "id": "home.welcome",
+     "label": "Welcome",
+     "hash": "3f2a9c1d0e4b"
+    },
+    "project": "",
+    "text": "Shorten the welcome to two sentences and keep the link to the guide.",
+    "quote": "Welcome to the field notes of the river survey. This page collects the readings, the open questions and the next walks along the east bank.",
+    "by": "local-admin",
+    "at": "2026-10-26T09:40:00Z",
+    "status": "done",
+    "state": "working",
+    "ackBy": "desk-session",
+    "ackAt": "2026-10-26T09:40:40Z",
+    "progress": [
+     {
+      "at": "2026-10-26T09:41:10Z",
+      "text": "Reading the block home.welcome."
+     },
+     {
+      "at": "2026-10-26T09:43:00Z",
+      "text": "Published version 7 with the shorter welcome."
+     }
+    ],
+    "response": "Done in version 7: the welcome is two sentences now and still links to the guide.",
+    "doneAt": "2026-10-26T09:52:00Z",
+    "changed": [
+     "home.welcome"
+    ],
+    "version": "8",
+    "estimate": null,
+    "actual": null,
+    "turns": [
+     {
+      "id": "0001",
+      "by": "local-admin",
+      "at": "2026-10-26T09:50:00Z",
+      "text": "Thanks. Can the second sentence name the east bank?"
+     },
+     {
+      "id": "0002",
+      "by": "claude",
+      "at": "2026-10-26T09:52:00Z",
+      "text": "It does now, in version 8."
+     }
+    ]
+   },
+   {
+    "id": "r-1793009700000-p7qa",
+    "lane": "fix",
+    "scope": {
+     "kind": "part",
+     "id": "readings.table",
+     "label": "Readings",
+     "hash": "9b1e44c07a2d"
+    },
+    "project": "",
+    "text": "The units column says mm where the readings are in cm.",
+    "quote": "Station · Depth (mm) · Flow · Taken",
+    "by": "local-admin",
+    "at": "2026-10-26T10:15:00Z",
+    "status": "open",
+    "state": "working",
+    "ackBy": "desk-session",
+    "ackAt": "2026-10-26T10:15:30Z",
+    "progress": [
+     {
+      "at": "2026-10-26T10:16:00Z",
+      "text": "Checking the readings docs for their unit."
+     },
+     {
+      "at": "2026-10-26T10:22:00Z",
+      "text": "The data is in cm; changing the heading and the help text."
+     }
+    ],
+    "response": "",
+    "doneAt": "",
+    "changed": [],
+    "version": "",
+    "estimate": null,
+    "actual": null,
+    "turns": []
+   },
+   {
+    "id": "r-1793010420000-x2m8",
+    "lane": "design",
+    "scope": {
+     "kind": "part",
+     "id": "walks.next",
+     "label": "Next walks",
+     "hash": "51c0d8e2f913"
+    },
+    "project": "",
+    "text": "The walk cards crowd each other on a phone; give them more air.",
+    "quote": "Next walks: Saturday, the weir to the footbridge. Sunday, the old mill reach.",
+    "by": "local-admin",
+    "at": "2026-10-26T10:27:00Z",
+    "status": "open",
+    "state": "ack",
+    "ackBy": "desk-session",
+    "ackAt": "2026-10-26T10:27:50Z",
+    "progress": [],
+    "response": "",
+    "doneAt": "",
+    "changed": [],
+    "version": "",
+    "estimate": null,
+    "actual": null,
+    "turns": []
+   },
+   {
+    "id": "r-1793010240000-b5tw",
+    "lane": "ask",
+    "scope": {
+     "kind": "page",
+     "id": "",
+     "label": "",
+     "hash": ""
+    },
+    "project": "",
+    "text": "Which station has the oldest reading?",
+    "quote": "",
+    "by": "local-admin",
+    "at": "2026-10-26T10:24:00Z",
+    "status": "open",
+    "state": null,
+    "ackBy": "",
+    "ackAt": "",
+    "progress": [],
+    "response": "",
+    "doneAt": "",
+    "changed": [],
+    "version": "",
+    "estimate": null,
+    "actual": null,
+    "turns": []
+   }
+  ],
+  "conversations": [
+   {
+    "id": "c-1793009100000-m4er",
+    "title": "What does the flow column measure?",
+    "by": "local-admin",
+    "at": "2026-10-26T10:05:00Z",
+    "scope": {
+     "kind": "part",
+     "id": "readings.table",
+     "label": "Readings",
+     "hash": "9b1e44c07a2d"
+    },
+    "project": "",
+    "messages": [
+     {
+      "id": "0001",
+      "role": "user",
+      "by": "local-admin",
+      "at": "2026-10-26T10:05:00Z",
+      "text": "What does the flow column measure?",
+      "quote": "Station · Depth (mm) · Flow · Taken"
+     },
+     {
+      "id": "0002",
+      "role": "assistant",
+      "by": "claude",
+      "at": "2026-10-26T10:05:08Z",
+      "text": "Flow is the surface speed at the station, in metres per second, as the column's help text says."
+     }
+    ]
+   }
+  ],
+  "presence": [
+   {
+    "id": "desk-session",
+    "at": "2026-10-26T10:29:20Z",
+    "doing": "r-1793009700000-p7qa (fix)",
+    "session": "desk-session"
+   },
+   {
+    "id": "night-session",
+    "at": "2026-10-26T06:12:00Z",
+    "doing": "",
+    "session": "night-session"
+   }
+  ]
+ },
+ "assist-panel": {
+  "note": "Invented data for the assist panel preview: an allotment planting plan, two requests and one conversation, seeded into the engine's in-memory store. Nothing leaves the page.",
+  "now": "2026-10-26T09:30:00Z",
+  "me": "u-ines",
+  "titles": {
+   "home.welcome": "Welcome",
+   "beds.north": "North beds",
+   "calendar.sowing": "Sowing calendar"
+  },
+  "artifactUrl": "https://claude.example/artifact/allotment-plan",
+  "seed": {
+   "requests/r-1793001000000-k2p9": {
+    "lane": "task",
+    "scope": {
+     "kind": "part",
+     "id": "calendar.sowing",
+     "label": "Sowing calendar",
+     "hash": "3f2a9c1d0e4b"
+    },
+    "project": "",
+    "text": "Add a row for broad beans: sow in late October, harvest from May.",
+    "quote": "Garlic: October to November. Onion sets: March.",
+    "by": "u-ines",
+    "at": "2026-10-26T09:12:00Z",
+    "status": "done",
+    "state": "working",
+    "ackBy": "dev-session",
+    "ackAt": "2026-10-26T09:12:40Z",
+    "progress": [
+     {
+      "at": "2026-10-26T09:13:10Z",
+      "text": "Read the sowing calendar."
+     },
+     {
+      "at": "2026-10-26T09:15:30Z",
+      "text": "Published version 1793001330-ab12."
+     }
+    ],
+    "response": "Added **broad beans** to the sowing calendar, after garlic.",
+    "doneAt": "2026-10-26T09:15:40Z",
+    "changed": [
+     "calendar.sowing"
+    ],
+    "version": "1793001330-ab12",
+    "estimate": null,
+    "actual": null
+   },
+   "requests/r-1793002000000-x7q1": {
+    "lane": "fix",
+    "scope": {
+     "kind": "part",
+     "id": "beds.north",
+     "label": "North beds",
+     "hash": "91be04c2aa10"
+    },
+    "project": "",
+    "text": "Bed 3 says 2.4 m but it is 2.1 m long.",
+    "quote": "",
+    "by": "u-ines",
+    "at": "2026-10-26T09:26:00Z",
+    "status": "open",
+    "state": "ack",
+    "ackBy": "dev-session",
+    "ackAt": "2026-10-26T09:26:30Z",
+    "progress": [],
+    "response": "",
+    "doneAt": "",
+    "changed": [],
+    "version": "",
+    "estimate": null,
+    "actual": null
+   },
+   "presence/dev-session": {
+    "at": "2026-10-26T09:29:00Z",
+    "doing": "",
+    "session": "dev-session"
+   },
+   "conversations/c-1793000000000-a1b2": {
+    "title": "Which beds get the most sun?",
+    "by": "u-ines",
+    "at": "2026-10-26T09:05:00Z",
+    "scope": {
+     "kind": "part",
+     "id": "home.welcome",
+     "label": "Welcome",
+     "hash": "07c1d9e3b5f2"
+    },
+    "project": ""
+   },
+   "conversations/c-1793000000000-a1b2/messages/0001": {
+    "role": "user",
+    "by": "u-ines",
+    "at": "2026-10-26T09:05:00Z",
+    "text": "Which beds get the most sun?"
+   },
+   "conversations/c-1793000000000-a1b2/messages/0002": {
+    "role": "assistant",
+    "by": "claude",
+    "at": "2026-10-26T09:05:04Z",
+    "text": "From the plan, the south beds: nothing shades them and the welcome block says the north row sits by the hedge."
+   }
+  },
+  "answer": "From the plan: bed 6 is fallow under cardboard until spring, so it is free for a winter sowing of broad beans."
+ },
+ "attention-list": {
+  "note": "Invented things in an invented studio.",
+  "items": [
+   {
+    "id": "a1",
+    "tone": "warn",
+    "title": "The clay supplier contract ends in 21 days",
+    "sub": "Renewal terms are in the shared folder.",
+    "action": {
+     "label": "Open the contract"
+    }
+   },
+   {
+    "id": "a2",
+    "tone": "wait",
+    "title": "Kiln 2 is waiting for its key",
+    "sub": "The firing starts the moment the key is turned.",
+    "action": {
+     "label": "Open the job",
+     "primary": true
+    }
+   },
+   {
+    "id": "a3",
+    "tone": "bad",
+    "title": "The weekend class booking failed",
+    "sub": "The payment page did not answer twice.",
+    "action": {
+     "label": "Try again"
+    }
+   }
+  ]
+ },
+ "block-picker": {
+  "note": "An invented page of five blocks (an allotment planting plan) for the picker to walk. Ids are part ids as a page would carry them; one block repeats with a key.",
+  "titles": {
+   "home.welcome": "Welcome",
+   "beds.north": "North beds",
+   "beds.south": "South beds",
+   "calendar.sowing": "Sowing calendar",
+   "notes.item": "Note"
+  },
+  "blocks": [
+   {
+    "part": "home.welcome",
+    "hash": "07c1d9e3b5f2",
+    "heading": "Plot 14 planting plan",
+    "text": "Two rows of raised beds, a compost bay and a water butt. This plan says what grows where this year."
+   },
+   {
+    "part": "beds.north",
+    "hash": "91be04c2aa10",
+    "heading": "North beds",
+    "text": "Bed 1 onions, bed 2 garlic, bed 3 leeks (2.4 m)."
+   },
+   {
+    "part": "beds.south",
+    "hash": "5d2e7a9c0b31",
+    "heading": "South beds",
+    "text": "Bed 4 beans on a frame, bed 5 squash, bed 6 left fallow under cardboard."
+   },
+   {
+    "part": "calendar.sowing",
+    "hash": "3f2a9c1d0e4b",
+    "heading": "Sowing calendar",
+    "text": "Garlic: October to November. Onion sets: March. Peas: March to June."
+   },
+   {
+    "part": "notes.item",
+    "key": "n2",
+    "hash": "",
+    "heading": "Note",
+    "text": "The tap by the gate freezes first; use the water butt in a cold spell."
+   }
+  ]
+ },
+ "blueprint": {
+  "note": "Invented.",
+  "caption": "Service blueprint: a first firing, from booking to unloading",
+  "steps": [
+   "Book",
+   "Load",
+   "Start",
+   "Fire",
+   "Unload"
+  ],
+  "lanes": [
+   {
+    "name": "Touchpoints",
+    "cells": [
+     {
+      "text": "The booking sheet."
+     },
+     {
+      "mot": "moment of truth",
+      "text": "The kiln room door and the shelves."
+     },
+     {
+      "text": "The controller screen."
+     },
+     {
+      "text": "Nothing, if it goes well."
+     },
+     {
+      "mot": "moment of truth",
+      "text": "The lid, and the first glimpse of the pots."
+     }
+    ]
+   },
+   {
+    "name": "Maker does",
+    "cells": [
+     {
+      "text": "Picks a slot and writes their name."
+     },
+     {
+      "text": "Wads, stacks and places the test tile."
+     },
+     {
+      "text": "Checks the schedule and presses Start."
+     },
+     {
+      "text": "Goes home."
+     },
+     {
+      "text": "Waits for 100 °C, unloads, logs the cones."
+     }
+    ]
+   },
+   {
+    "name": "Maker feels",
+    "cells": [
+     {
+      "feel": "mid",
+      "text": "Hopeful"
+     },
+     {
+      "feel": "mid",
+      "text": "Careful"
+     },
+     {
+      "feel": "mid",
+      "text": "Nervous"
+     },
+     {
+      "feel": "lo",
+      "text": "Anxious"
+     },
+     {
+      "feel": "hi",
+      "text": "Delighted"
+     }
+    ]
+   },
+   {
+    "line": "line of interaction"
+   },
+   {
+    "name": "Frontstage",
+    "cells": [
+     {
+      "text": "The sheet shows free slots."
+     },
+     {
+      "text": "Shelves are numbered."
+     },
+     {
+      "text": "The screen names the schedule and the peak."
+     },
+     {
+      "text": "A light on the door says Firing.",
+      "pain": "No sound or message if it stalls."
+     },
+     {
+      "text": "The door light turns off at 100 °C.",
+      "opp": "Send the maker a message when it is safe."
+     }
+    ]
+   },
+   {
+    "line": "line of visibility"
+   },
+   {
+    "name": "Backstage",
+    "cells": [
+     {
+      "text": "The steward reviews the sheet each Monday."
+     },
+     {
+      "text": "The steward checks the vent breaker."
+     },
+     {
+      "text": "The controller logs the start time."
+     },
+     {
+      "text": "The controller holds cone 6 for ten minutes."
+     },
+     {
+      "text": "The steward restocks cones."
+     }
+    ]
+   },
+   {
+    "name": "Support",
+    "cells": [
+     {
+      "has": "Shared calendar"
+     },
+     {
+      "has": "Wadding, shelf rota"
+     },
+     {
+      "has": "Controller firmware 4.2"
+     },
+     {
+      "has": "Element 2, vent interlock"
+     },
+     {
+      "has": "Cone chart, log book"
+     }
+    ]
+   }
+  ]
+ },
+ "capability-picker": {
+  "note": "Seven invented capabilities of an invented studio, in two groups that cannot be mixed in one run.",
+  "groups": {
+   "site": "Studio website",
+   "kiln": "Kiln room"
+  },
+  "capabilities": {
+   "build": {
+    "title": "Build the pages",
+    "group": "site",
+    "needs": []
+   },
+   "links": {
+    "title": "Check the links",
+    "group": "site",
+    "needs": [
+     "build"
+    ]
+   },
+   "publish": {
+    "title": "Publish the site",
+    "group": "site",
+    "needs": [
+     "build",
+     "links"
+    ]
+   },
+   "announce": {
+    "title": "Announce on the mailing list",
+    "group": "site",
+    "needs": [
+     "publish"
+    ]
+   },
+   "calibrate": {
+    "title": "Calibrate the kiln",
+    "group": "kiln",
+    "needs": []
+   },
+   "load": {
+    "title": "Load the shelves",
+    "group": "kiln",
+    "needs": []
+   },
+   "fire": {
+    "title": "Fire to cone 6",
+    "group": "kiln",
+    "needs": [
+     "calibrate",
+     "load"
+    ]
+   }
+  },
+  "presets": {
+   "ship": {
+    "label": "Ship the site",
+    "keys": [
+     "publish"
+    ]
+   },
+   "bake": {
+    "label": "A full firing",
+    "keys": [
+     "fire"
+    ]
+   },
+   "both": {
+    "label": "Site and kiln together",
+    "keys": [
+     "announce",
+     "fire"
+    ]
+   }
+  },
+  "targets": [
+   {
+    "name": "Kiln 1",
+    "keys": [
+     "calibrate",
+     "load",
+     "fire"
+    ],
+    "done": [
+     "calibrate",
+     "load"
+    ]
+   },
+   {
+    "name": "Kiln 2",
+    "keys": [
+     "calibrate",
+     "load",
+     "fire"
+    ],
+    "done": [
+     "calibrate",
+     "load",
+     "fire"
+    ]
+   },
+   {
+    "name": "Glaze room",
+    "keys": [
+     "calibrate",
+     "load",
+     "fire"
+    ],
+    "done": [],
+    "na": [
+     "fire"
+    ]
+   }
+  ]
+ },
+ "card-history": {
+  "note": "One invented record, the offline mode name. Times are UTC.",
+  "me": "Tobias",
+  "title": "Pick a name for the offline mode",
+  "moves": [
+   {
+    "at": "2026-10-21T08:10:00Z",
+    "by": "Priya",
+    "what": "filed the card",
+    "state": "queued"
+   },
+   {
+    "at": "2026-10-21T08:42:00Z",
+    "by": "Mara",
+    "what": "started on three candidate names",
+    "state": "running"
+   },
+   {
+    "at": "2026-10-21T09:15:00Z",
+    "by": "Mara",
+    "what": "asked which name suits the harbour theme",
+    "state": "waiting"
+   },
+   {
+    "at": "2026-10-21T09:30:00Z",
+    "by": "Tobias",
+    "what": "answered: Harbour Offline",
+    "state": "running"
+   },
+   {
+    "at": "2026-10-21T11:05:00Z",
+    "by": "Mara",
+    "what": "updated the copy deck with the new name",
+    "state": "running"
+   },
+   {
+    "at": "2026-10-21T13:20:00Z",
+    "by": "Ines",
+    "what": "asked for a plainer subtitle",
+    "state": "review"
+   },
+   {
+    "at": "2026-10-21T13:55:00Z",
+    "by": "Mara",
+    "what": "proposed Works without signal",
+    "state": "waiting"
+   },
+   {
+    "at": "2026-10-22T08:35:00Z",
+    "by": "Tobias",
+    "what": "approved the subtitle",
+    "state": "running"
+   },
+   {
+    "at": "2026-10-22T09:02:00Z",
+    "by": "Mara",
+    "what": "shipped the strings to the preview build",
+    "state": "review"
+   },
+   {
+    "at": "2026-10-22T10:02:00Z",
+    "by": "Mara",
+    "what": "asked where the offline icon goes",
+    "state": "waiting"
+   },
+   {
+    "at": "2026-10-22T10:26:00Z",
+    "by": "Ines",
+    "what": "approved the preview build",
+    "state": "done"
+   }
+  ],
+  "turns": [
+   {
+    "n": 1,
+    "ask": {
+     "by": "Mara",
+     "text": "Three names fit the harbour theme: Harbour Offline, Slack Water, Dry Dock. Which one should I use?"
+    },
+    "answer": {
+     "by": "Tobias",
+     "choice": "Harbour Offline",
+     "reply": "Slack Water is lovely but nobody will guess what it does.",
+     "at": "2026-10-21T09:30:00Z"
+    },
+    "reply": {
+     "by": "Mara",
+     "text": "Harbour Offline it is. I will update the copy deck."
+    }
+   },
+   {
+    "n": 2,
+    "ask": {
+     "by": "Mara",
+     "text": "Ines wants a plainer subtitle. Works without signal, or Saved on this device?"
+    },
+    "answer": {
+     "by": "Tobias",
+     "choice": "Works without signal",
+     "approval": "approved",
+     "at": "2026-10-22T08:35:00Z"
+    },
+    "reply": {
+     "by": "Mara",
+     "text": "Done. Both strings are in the preview build."
+    }
+   },
+   {
+    "n": 3,
+    "ask": {
+     "by": "Mara",
+     "text": "Where should the offline icon sit on the tide chart header?"
+    },
+    "answer": null
+   }
+  ]
+ },
+ "confirm-sheet": {
+  "note": "Invented changes in an invented ceramics studio. Nothing here is a real kiln, key or person.",
+  "trayTitle": "Cone 6 firing",
+  "specs": {
+   "routine": {
+    "kind": "routine",
+    "title": "Move the cone 6 glazes to the dry shelf",
+    "lede": "Nine jars leave the mixing bench and go on shelf C. Nothing is in use.",
+    "confirmLabel": "Move them",
+    "steps": [
+     {
+      "label": "Label the jars with today’s date",
+      "why": "So the oldest is used first."
+     },
+     {
+      "label": "Move nine jars",
+      "from": "Mixing bench",
+      "to": "Shelf C"
+     }
+    ],
+    "undo": "Move them back; the labels stay on.",
+    "last": "Last moved on 14 September.",
+    "toast": false
+   },
+   "consequential": {
+    "kind": "consequential",
+    "title": "Fire kiln 2 to cone 6",
+    "lede": "It heats for about nine hours. The studio door must stay unlocked for the check at the peak.",
+    "confirmLabel": "Start the firing",
+    "trayTitle": "Cone 6 firing",
+    "plan": {
+     "ms": 1400
+    },
+    "steps": [
+     {
+      "label": "Check the vent and the shelves",
+      "why": "The vent must be open."
+     },
+     {
+      "label": "Set the ramp",
+      "from": "60 °C per hour",
+      "to": "110 °C per hour, then 40 near the peak",
+      "mono": true
+     },
+     {
+      "label": "Heat to the peak",
+      "from": "Cold",
+      "to": "1,222 °C",
+      "mono": true
+     }
+    ],
+    "needs": [
+     {
+      "kind": "key",
+      "label": "Kiln key",
+      "detail": "turn once"
+     },
+     {
+      "kind": "pin",
+      "label": "Studio code"
+     },
+     {
+      "kind": "lock",
+      "label": "Gas valve open",
+      "missing": false
+     }
+    ],
+    "holds": [
+     "kiln 2",
+     "the gas line"
+    ],
+    "undo": {
+     "text": "Stop the firing from the tray; the load stays in the kiln until it is cool."
+    },
+    "hands": {
+     "pin": true,
+     "touch": true,
+     "serial": "0042",
+     "title": "Waiting for you",
+     "lede": "The kiln needs your key before it lights.",
+     "pinLabel": "Enter the studio code",
+     "demo": "This is a demonstration: it accepts any six digits, reads nothing and sends nothing."
+    }
+   },
+   "destructive": {
+    "kind": "destructive",
+    "title": "Empty the slip tank",
+    "lede": "About 140 litres of reclaimed slip go to the drain. It cannot be mixed again.",
+    "confirmLabel": "Empty the tank",
+    "word": "empty",
+    "wordLabel": "Type empty to seal it",
+    "steps": [
+     {
+      "label": "Close the supply valve"
+     },
+     {
+      "label": "Open the drain",
+      "from": "Closed",
+      "to": "Open"
+     },
+     {
+      "label": "Rinse with clean water",
+      "why": "Twice, until it runs clear."
+     }
+    ],
+    "holds": [
+     "the slip tank"
+    ],
+    "undo": {
+     "none": true,
+     "text": "The slip cannot be recovered once it has drained."
+    }
+   },
+   "bulk": {
+    "kind": "bulk",
+    "title": "Retire 12 old glaze recipes",
+    "lede": "They stop showing in the recipe list. Their test tiles stay.",
+    "confirmLabel": "Retire all 12",
+    "bulk": {
+     "label": "recipes retire",
+     "items": [
+      {
+       "name": "Celadon 2019",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Tenmoku, thick",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Shino test 4",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Ash glaze A",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Ash glaze B",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Copper red 7",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Matte white",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Iron wash",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Blue slip",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Crackle clear",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Salt glaze base",
+       "from": "In use",
+       "to": "Retired"
+      },
+      {
+       "name": "Oatmeal 3",
+       "from": "In use",
+       "to": "Retired"
+      }
+     ]
+    },
+    "undo": "Restore them from the Retired tab."
+   },
+   "failed": {
+    "view": "failed",
+    "title": "The firing stopped at 740 °C",
+    "lede": "The kiln cut the power by itself. The load is safe.",
+    "what": {
+     "title": "The vent fan did not answer",
+     "detail": "The kiln checks the fan every minute and stopped after three misses.",
+     "code": "vent-fan: no signal (3 of 3)"
+    },
+    "todo": [
+     "Wait until the kiln is below 100 °C before opening it.",
+     "Check the fan plug behind the kiln.",
+     "Start the firing again; it resumes from the shelf check."
+    ],
+    "undo": {
+     "text": "Nothing was fired fully, so there is nothing to undo."
+    },
+    "holds": [
+     "kiln 2"
+    ],
+    "retryLabel": "Try again"
+   },
+   "success": {
+    "view": "success",
+    "title": "The firing finished",
+    "lede": "Kiln 2 reached cone 6 and has begun to cool.",
+    "steps": [
+     {
+      "label": "Heated to the peak",
+      "from": "Cold",
+      "to": "1,222 °C",
+      "mono": true
+     },
+     {
+      "label": "Held for 15 minutes"
+     },
+     {
+      "label": "Started the slow cool"
+     }
+    ],
+    "undo": "Nothing to undo. Open the kiln when it is below 100 °C.",
+    "last": "Finished at 22:40.",
+    "undoLabel": "Undo"
+   }
+  }
+ },
+ "count-filters": {
+  "note": "Invented work cards.",
+  "tiles": [
+   {
+    "id": "all",
+    "label": "All"
+   },
+   {
+    "id": "drawn",
+    "label": "Drawn"
+   },
+   {
+    "id": "thrown",
+    "label": "Thrown"
+   },
+   {
+    "id": "glazed",
+    "label": "Glazed"
+   },
+   {
+    "id": "fired",
+    "label": "Fired"
+   },
+   {
+    "id": "blocked",
+    "label": "Blocked",
+    "tone": "danger"
+   }
+  ],
+  "groups": [
+   {
+    "id": "kiln",
+    "label": "Kiln",
+    "options": [
+     {
+      "value": "A",
+      "label": "Kiln A"
+     },
+     {
+      "value": "B",
+      "label": "Kiln B"
+     }
+    ]
+   },
+   {
+    "id": "clay",
+    "label": "Clay",
+    "options": [
+     {
+      "value": "porcelain",
+      "label": "Porcelain"
+     },
+     {
+      "value": "stoneware",
+      "label": "Stoneware"
+     }
+    ]
+   }
+  ],
+  "cards": [
+   {
+    "id": 1,
+    "title": "Tea set, six cups",
+    "stage": "fired",
+    "kiln": "A",
+    "clay": "porcelain",
+    "note": "Glaze fired, waiting for the pack-out"
+   },
+   {
+    "id": 2,
+    "title": "Serving bowls, large",
+    "stage": "glazed",
+    "kiln": "B",
+    "clay": "stoneware",
+    "note": "Two coats of tenmoku, dry"
+   },
+   {
+    "id": 3,
+    "title": "Planters for the market",
+    "stage": "thrown",
+    "kiln": "B",
+    "clay": "stoneware",
+    "note": "Trimming tomorrow"
+   },
+   {
+    "id": 4,
+    "title": "Wedding order, 24 plates",
+    "stage": "drawn",
+    "kiln": "A",
+    "clay": "porcelain",
+    "note": "Rim profile still to agree"
+   },
+   {
+    "id": 5,
+    "title": "Oil bottles",
+    "stage": "blocked",
+    "kiln": "A",
+    "clay": "porcelain",
+    "note": "Cork supplier is late"
+   },
+   {
+    "id": 6,
+    "title": "Spoon rests",
+    "stage": "fired",
+    "kiln": "B",
+    "clay": "stoneware",
+    "note": "Packed and priced"
+   },
+   {
+    "id": 7,
+    "title": "Lantern shades",
+    "stage": "glazed",
+    "kiln": "A",
+    "clay": "porcelain",
+    "note": "Waiting for kiln space"
+   },
+   {
+    "id": 8,
+    "title": "Test tile board",
+    "stage": "thrown",
+    "kiln": "B",
+    "clay": "stoneware",
+    "note": "Forty tiles, numbered"
+   }
+  ]
+ },
+ "decisions": {
+  "component": "decisions",
+  "file": "kit/patterns/decisions.js",
+  "about": "Three invented decisions for a bakery's ordering page: one open, one sent to Claude, one answered.",
+  "collection": "decisions",
+  "decisions": [
+   {
+    "id": "launch",
+    "order": 1,
+    "question": "Open the ordering page to customers this week?",
+    "why": "The kitchen is ready, and the first rush would be the Saturday market.",
+    "options": [
+     {
+      "key": "go",
+      "label": "Open it Thursday"
+     },
+     {
+      "key": "wait",
+      "label": "Wait until after the market"
+     }
+    ]
+   },
+   {
+    "id": "payment",
+    "order": 2,
+    "question": "Take payment on the page or at the counter?",
+    "why": "Paying on the page needs a payment account; paying at the counter needs nothing new.",
+    "options": [
+     {
+      "key": "page",
+      "label": "On the page"
+     },
+     {
+      "key": "counter",
+      "label": "At the counter"
+     }
+    ]
+   },
+   {
+    "id": "accounts",
+    "order": 3,
+    "question": "Do regular customers get an account?",
+    "why": "Accounts remember a usual order but add a sign-in step.",
+    "options": [
+     {
+      "key": "yes",
+      "label": "Yes, with a sign-in"
+     },
+     {
+      "key": "no",
+      "label": "No, guest orders only"
+     }
+    ]
+   }
+  ],
+  "records": {
+   "payment": {
+    "answer": "counter",
+    "label": "At the counter",
+    "agoMin": 50,
+    "claudeStep": "pending",
+    "claudeText": "Removing the card form from the page."
+   },
+   "accounts": {
+    "answer": "no",
+    "label": "No, guest orders only",
+    "agoMin": 1500,
+    "claudeStep": "done",
+    "claudeText": "The page asks for a name and a phone number only."
+   }
+  }
+ },
+ "decisions-ack": {
+  "note": "Invented: decisions for a pottery studio's autumn plan.",
+  "cards": [
+   {
+    "id": "d1",
+    "question": "Which glaze set should the autumn class use?",
+    "why": "The order has to go in by Friday to arrive before the first lesson.",
+    "answer": "The cone 6 satin set",
+    "answeredBy": "Marta",
+    "answeredAt": "2026-10-21T09:12:00Z",
+    "prompt": "Decision d1: Marta chose the cone 6 satin set. Order it and add it to the supplies list.",
+    "ack": {
+     "by": "Planner",
+     "at": "2026-10-21T09:13:40Z",
+     "text": "Ordered 12 kg of the satin set. It arrives on the 28th and is on the supplies list."
+    }
+   },
+   {
+    "id": "d2",
+    "question": "Open the studio on Sunday mornings?",
+    "why": "Two members asked for it. A volunteer would have to unlock and close.",
+    "answer": "Yes, from November",
+    "answeredBy": "Marta",
+    "answeredAt": "2026-10-22T16:40:00Z",
+    "prompt": "Decision d2: Marta said yes to Sunday mornings from November.",
+    "ack": {
+     "by": "Planner",
+     "at": "2026-10-22T16:41:10Z",
+     "text": "Drafted the rota with two volunteers. Who holds the second key?",
+     "asks": true
+    }
+   },
+   {
+    "id": "d3",
+    "question": "Keep the old wheel or replace it?",
+    "why": "The motor runs hot after an hour. A new wheel is quoted at 640.",
+    "answer": "Replace it next spring",
+    "answeredBy": "Marta",
+    "answeredAt": "2026-10-23T11:05:00Z",
+    "prompt": "Decision d3: Marta wants the wheel replaced next spring.",
+    "ack": null
+   },
+   {
+    "id": "d4",
+    "question": "Print the spring workshop flyers in colour?",
+    "why": "Colour costs three times as much as black and white.",
+    "answer": null
+   }
+  ]
+ },
+ "disclosure": {
+  "note": "Invented studio tasks.",
+  "items": [
+   {
+    "id": "t1",
+    "title": "Check the kiln elements",
+    "when": "weekly",
+    "steps": [
+     "Switch the kiln off at the wall and let it cool below 50 degrees.",
+     "Look at each element for blisters or sagging coils.",
+     "Note any fault in the kiln log and tell the studio lead before the next firing."
+    ],
+    "open": true
+   },
+   {
+    "id": "t2",
+    "title": "Sieve the glaze buckets",
+    "when": "daily",
+    "steps": [
+     "Stir from the bottom until no sediment is left.",
+     "Pour through an 80-mesh sieve into a clean bucket.",
+     "Check the specific gravity: 1.45 for most glazes."
+    ]
+   },
+   {
+    "id": "t3",
+    "title": "Replace the studio filter",
+    "when": "every three months",
+    "steps": [
+     "Order the filter by the 20th of the month before.",
+     "Swap it with the extraction fan off.",
+     "Write the date on the new filter frame."
+    ]
+   },
+   {
+    "id": "t4",
+    "title": "Test the emergency shutoff",
+    "when": "monthly",
+    "steps": [
+     "Run the kiln at low power.",
+     "Press the shutoff and check the power drops.",
+     "Reset and log the test."
+    ]
+   }
+  ],
+  "letters": [
+   {
+    "id": "l1",
+    "title": "From the clay supplier, 12 October",
+    "body": [
+     "Your order of 100 kg porcelain ships on Monday. The batch has a slightly higher iron content than usual, so expect a warmer white.",
+     "If the colour is outside what you need, tell us within seven days."
+    ]
+   },
+   {
+    "id": "l2",
+    "title": "From the market organiser, 15 October",
+    "body": [
+     "Your stall is confirmed for the first Saturday of November. Setup opens at 7:00 and the hall closes at 17:00."
+    ]
+   }
+  ],
+  "clauses": [
+   {
+    "id": "c1",
+    "num": "4.1",
+    "norm": "Every kiln firing is logged before the kiln is switched on.",
+    "title": "Reasoning",
+    "fields": [
+     {
+      "label": "Why",
+      "text": "A missing log hides a problem until a whole load is lost."
+     },
+     {
+      "label": "Prevents",
+      "text": "Repeating a schedule that already failed."
+     },
+     {
+      "label": "In practice",
+      "text": "Fill in clay, glaze, cone and start time on the sheet by the door."
+     }
+    ]
+   },
+   {
+    "id": "c2",
+    "num": "4.2",
+    "norm": "Glaze buckets are labelled with the recipe and the date mixed.",
+    "title": "Reasoning",
+    "fields": [
+     {
+      "label": "Why",
+      "text": "Two white glazes look the same wet and fire very differently."
+     },
+     {
+      "label": "Prevents",
+      "text": "Using the wrong glaze on a finished order."
+     }
+    ]
+   }
+  ]
+ },
+ "disclosure-reader": {
+  "note": "Invented: nine sections of a studio handbook.",
+  "items": [
+   {
+    "id": "h1",
+    "title": "Opening the studio",
+    "when": "daily",
+    "steps": [
+     "Unlock the side door and switch the lights on at the board.",
+     "Open the windows by the kiln room for ten minutes.",
+     "Wipe down the wedging tables."
+    ],
+    "open": true
+   },
+   {
+    "id": "h2",
+    "title": "Loading the electric kiln",
+    "when": "per firing",
+    "steps": [
+     "Check the shelves for drips.",
+     "Place tall pots at the back and test tiles near the peephole.",
+     "Close the lid and write the load in the kiln log."
+    ]
+   },
+   {
+    "id": "h3",
+    "title": "Mixing glazes",
+    "when": "weekly",
+    "steps": [
+     "Weigh the dry batch to the gram.",
+     "Sieve twice through an 80-mesh sieve.",
+     "Check the specific gravity before shelving the bucket."
+    ]
+   },
+   {
+    "id": "h4",
+    "title": "Cleaning the wheels",
+    "when": "daily",
+    "steps": [
+     "Scrape slip from the splash pan into the reclaim bucket.",
+     "Sponge the wheel head and the tray.",
+     "Leave the splash pan off so it dries."
+    ]
+   },
+   {
+    "id": "h5",
+    "title": "Recycling clay",
+    "when": "weekly",
+    "steps": [
+     "Slake the scraps in the reclaim bin for a day.",
+     "Wedge on the plaster slab until it holds a thumbprint.",
+     "Bag it and label the bag with the clay body."
+    ]
+   },
+   {
+    "id": "h6",
+    "title": "Ordering supplies",
+    "when": "monthly",
+    "steps": [
+     "Count the clay bags and write the number on the supplies list.",
+     "Order before the 20th so the delivery arrives before the first class."
+    ]
+   },
+   {
+    "id": "h7",
+    "title": "Firing schedule",
+    "when": "per firing",
+    "steps": [
+     "Bisque goes to cone 04 over nine hours.",
+     "Glaze goes to cone 6 over eleven hours.",
+     "Never open the lid above 100 degrees."
+    ]
+   },
+   {
+    "id": "h8",
+    "title": "Closing the studio",
+    "when": "daily",
+    "steps": [
+     "Check that the kiln is off or running its programme.",
+     "Switch off the wheels at the wall.",
+     "Lock the side door and set the alarm."
+    ]
+   },
+   {
+    "id": "h9",
+    "title": "When something breaks",
+    "when": "as needed",
+    "steps": [
+     "Put a sign on it and tell the studio lead.",
+     "Write the fault in the repairs book with the date.",
+     "Do not mend electrical items yourself."
+    ]
+   }
+  ],
+  "tiles": [
+   {
+    "label": "Daily jobs",
+    "value": 3
+   },
+   {
+    "label": "Per firing",
+    "value": 2
+   }
+  ]
+ },
+ "event-log": {
+  "note": "Forty invented moves over six days. Times are UTC; now is fixed.",
+  "now": "2026-10-22T10:30:00Z",
+  "events": [
+   {
+    "id": "e01",
+    "at": "2026-10-17T09:05:00Z",
+    "by": "Priya",
+    "what": "opened the harbour guide",
+    "subject": "T-30",
+    "status": "created"
+   },
+   {
+    "id": "e02",
+    "at": "2026-10-17T09:40:00Z",
+    "by": "Priya",
+    "what": "asked which chapters ship first",
+    "subject": "T-30",
+    "status": "asked"
+   },
+   {
+    "id": "e03",
+    "at": "2026-10-17T11:12:00Z",
+    "by": "Mara",
+    "what": "started rounding tide heights",
+    "subject": "T-41",
+    "status": "started"
+   },
+   {
+    "id": "e04",
+    "at": "2026-10-17T15:30:00Z",
+    "by": "Ines",
+    "what": "answered: chapters 1 to 3 first",
+    "subject": "T-30",
+    "status": "answered"
+   },
+   {
+    "id": "e05",
+    "at": "2026-10-18T08:50:00Z",
+    "by": "Mara",
+    "what": "pushed a first rounding pass",
+    "subject": "T-41",
+    "status": "changed"
+   },
+   {
+    "id": "e06",
+    "at": "2026-10-18T10:20:00Z",
+    "by": "Wen",
+    "what": "started the weather sync test",
+    "subject": "T-42",
+    "status": "started"
+   },
+   {
+    "id": "e07",
+    "at": "2026-10-18T13:05:00Z",
+    "by": "Wen",
+    "what": "retried the weather sync test",
+    "subject": "T-42",
+    "status": "changed"
+   },
+   {
+    "id": "e08",
+    "at": "2026-10-18T13:22:00Z",
+    "by": "Wen",
+    "what": "retried the weather sync test",
+    "subject": "T-42",
+    "status": "changed"
+   },
+   {
+    "id": "e09",
+    "at": "2026-10-18T13:41:00Z",
+    "by": "Wen",
+    "what": "retried the weather sync test",
+    "subject": "T-42",
+    "status": "changed"
+   },
+   {
+    "id": "e10",
+    "at": "2026-10-18T16:10:00Z",
+    "by": "Tobias",
+    "what": "asked for a name for offline mode",
+    "subject": "T-40",
+    "status": "asked"
+   },
+   {
+    "id": "e11",
+    "at": "2026-10-19T09:15:00Z",
+    "by": "Ines",
+    "what": "started the colour token review",
+    "subject": "T-38",
+    "status": "started"
+   },
+   {
+    "id": "e12",
+    "at": "2026-10-19T11:48:00Z",
+    "by": "Ines",
+    "what": "asked Mara to split the token file",
+    "subject": "T-38",
+    "status": "asked"
+   },
+   {
+    "id": "e13",
+    "at": "2026-10-19T14:02:00Z",
+    "by": "Mara",
+    "what": "answered: split into two files",
+    "subject": "T-38",
+    "status": "answered"
+   },
+   {
+    "id": "e14",
+    "at": "2026-10-19T17:30:00Z",
+    "by": "Priya",
+    "what": "finished chapter 2",
+    "subject": "T-37",
+    "status": "finished"
+   },
+   {
+    "id": "e15",
+    "at": "2026-10-20T08:30:00Z",
+    "by": "Sol",
+    "what": "scouted three tide station photos",
+    "subject": "T-36",
+    "status": "changed"
+   },
+   {
+    "id": "e16",
+    "at": "2026-10-20T09:12:00Z",
+    "by": "Sol",
+    "what": "scouted three tide station photos",
+    "subject": "T-36",
+    "status": "changed"
+   },
+   {
+    "id": "e17",
+    "at": "2026-10-20T10:45:00Z",
+    "by": "Wen",
+    "what": "blocked: the sync test fails on a slow network",
+    "subject": "T-42",
+    "status": "blocked"
+   },
+   {
+    "id": "e18",
+    "at": "2026-10-20T12:00:00Z",
+    "by": "Priya",
+    "what": "finished the photo collection",
+    "subject": "T-36",
+    "status": "finished"
+   },
+   {
+    "id": "e19",
+    "at": "2026-10-20T15:20:00Z",
+    "by": "Mara",
+    "what": "finished rounding tide heights",
+    "subject": "T-41",
+    "status": "finished"
+   },
+   {
+    "id": "e20",
+    "at": "2026-10-20T16:05:00Z",
+    "by": "Ines",
+    "what": "answered: tokens look right",
+    "subject": "T-38",
+    "status": "answered"
+   },
+   {
+    "id": "e21",
+    "at": "2026-10-21T08:40:00Z",
+    "by": "Mara",
+    "what": "started the unit toggle",
+    "subject": "T-44",
+    "status": "started"
+   },
+   {
+    "id": "e22",
+    "at": "2026-10-21T09:30:00Z",
+    "by": "Tobias",
+    "what": "answered: call it Harbour Offline",
+    "subject": "T-40",
+    "status": "answered"
+   },
+   {
+    "id": "e23",
+    "at": "2026-10-21T10:10:00Z",
+    "by": "Priya",
+    "what": "started chapter 3",
+    "subject": "T-37",
+    "status": "started"
+   },
+   {
+    "id": "e24",
+    "at": "2026-10-21T11:55:00Z",
+    "by": "Mara",
+    "what": "pushed the toggle markup",
+    "subject": "T-44",
+    "status": "changed"
+   },
+   {
+    "id": "e25",
+    "at": "2026-10-21T12:15:00Z",
+    "by": "Mara",
+    "what": "pushed the toggle markup",
+    "subject": "T-44",
+    "status": "changed"
+   },
+   {
+    "id": "e26",
+    "at": "2026-10-21T14:40:00Z",
+    "by": "Wen",
+    "what": "asked for a longer timeout",
+    "subject": "T-42",
+    "status": "asked"
+   },
+   {
+    "id": "e27",
+    "at": "2026-10-21T16:25:00Z",
+    "by": "Ines",
+    "what": "finished the colour token review",
+    "subject": "T-38",
+    "status": "finished"
+   },
+   {
+    "id": "e28",
+    "at": "2026-10-22T07:55:00Z",
+    "by": "Sol",
+    "what": "went away for the night shift",
+    "subject": "T-00",
+    "status": "changed"
+   },
+   {
+    "id": "e29",
+    "at": "2026-10-22T08:35:00Z",
+    "by": "Tobias",
+    "what": "started the offline mode name change",
+    "subject": "T-40",
+    "status": "started"
+   },
+   {
+    "id": "e30",
+    "at": "2026-10-22T08:50:00Z",
+    "by": "Mara",
+    "what": "claimed the chart-rounding branch",
+    "subject": "T-41",
+    "status": "changed"
+   },
+   {
+    "id": "e31",
+    "at": "2026-10-22T09:05:00Z",
+    "by": "Priya",
+    "what": "pushed chapter 3 draft",
+    "subject": "T-37",
+    "status": "changed"
+   },
+   {
+    "id": "e32",
+    "at": "2026-10-22T09:20:00Z",
+    "by": "Priya",
+    "what": "pushed chapter 3 draft",
+    "subject": "T-37",
+    "status": "changed"
+   },
+   {
+    "id": "e33",
+    "at": "2026-10-22T09:34:00Z",
+    "by": "Priya",
+    "what": "pushed chapter 3 draft",
+    "subject": "T-37",
+    "status": "changed"
+   },
+   {
+    "id": "e34",
+    "at": "2026-10-22T09:41:00Z",
+    "by": "Sol",
+    "what": "was refused the release-notes document",
+    "subject": "T-45",
+    "status": "blocked"
+   },
+   {
+    "id": "e35",
+    "at": "2026-10-22T09:52:00Z",
+    "by": "Wen",
+    "what": "answered: timeout raised to 30 s",
+    "subject": "T-42",
+    "status": "answered"
+   },
+   {
+    "id": "e36",
+    "at": "2026-10-22T10:02:00Z",
+    "by": "Tobias",
+    "what": "asked where the offline icon goes",
+    "subject": "T-40",
+    "status": "asked"
+   },
+   {
+    "id": "e37",
+    "at": "2026-10-22T10:12:00Z",
+    "by": "Ines",
+    "what": "started the release-notes review",
+    "subject": "T-45",
+    "status": "started"
+   },
+   {
+    "id": "e38",
+    "at": "2026-10-22T10:18:00Z",
+    "by": "Tobias",
+    "what": "was refused the preview-2 environment",
+    "subject": "T-40",
+    "status": "blocked"
+   },
+   {
+    "id": "e39",
+    "at": "2026-10-22T10:24:00Z",
+    "by": "Ines",
+    "what": "was refused the preview-2 environment",
+    "subject": "T-38",
+    "status": "blocked"
+   },
+   {
+    "id": "e40",
+    "at": "2026-10-22T10:26:00Z",
+    "by": "Ines",
+    "what": "went idle",
+    "subject": "T-38",
+    "status": "changed"
+   }
+  ]
+ },
+ "expand-card": {
+  "note": "Invented workstreams.",
+  "dims": [
+   {
+    "key": "D",
+    "label": "Drawn"
+   },
+   {
+    "key": "T",
+    "label": "Thrown"
+   },
+   {
+    "key": "G",
+    "label": "Glazed"
+   },
+   {
+    "key": "F",
+    "label": "Fired"
+   }
+  ],
+  "cards": [
+   {
+    "id": 1,
+    "no": 1,
+    "title": "Tea set, six cups",
+    "outcome": "Fired and checked; waiting for the pack-out.",
+    "cells": {
+     "D": {
+      "state": "yes",
+      "note": "Sketch signed off 3 Oct"
+     },
+     "T": {
+      "state": "yes",
+      "note": "Six cups, one spare"
+     },
+     "G": {
+      "state": "yes",
+      "note": "Celadon, thin dip"
+     },
+     "F": {
+      "state": "yes",
+      "note": "Cone 6, Kiln A, firing 41"
+     }
+    },
+    "pills": [
+     {
+      "label": "1 open",
+      "tone": "accent"
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Details",
+      "list": [
+       "Handles pulled on the wheel, attached at leather hard.",
+       "Spare cup kept for the test shelf."
+      ]
+     },
+     {
+      "heading": "Caveats",
+      "tone": "warn",
+      "list": [
+       "One cup has a pinhole near the foot."
+      ]
+     },
+     {
+      "heading": "Open items",
+      "list": [
+       "Pack six in the tea tray box."
+      ]
+     },
+     {
+      "heading": "Where",
+      "tags": [
+       {
+        "label": "Kiln",
+        "items": [
+         "A"
+        ]
+       },
+       {
+        "label": "Clay",
+        "items": [
+         "porcelain"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 2,
+    "no": 2,
+    "title": "Serving bowls, large",
+    "outcome": "Glazed and dry; needs a kiln slot.",
+    "cells": {
+     "D": {
+      "state": "yes"
+     },
+     "T": {
+      "state": "yes"
+     },
+     "G": {
+      "state": "part",
+      "note": "Inside done, outside waxed only"
+     },
+     "F": {
+      "state": "no",
+      "note": "No slot before Tuesday"
+     }
+    },
+    "pills": [
+     {
+      "label": "1 open",
+      "tone": "accent"
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Details",
+      "list": [
+       "Tenmoku, two coats outside.",
+       "Wax resist on the foot ring."
+      ]
+     },
+     {
+      "heading": "Open items",
+      "list": [
+       "Book Kiln B for Tuesday."
+      ]
+     },
+     {
+      "heading": "Where",
+      "tags": [
+       {
+        "label": "Kiln",
+        "items": [
+         "B"
+        ]
+       },
+       {
+        "label": "Clay",
+        "items": [
+         "stoneware"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 3,
+    "no": 3,
+    "title": "Oil bottles",
+    "outcome": "Held: the cork supplier is late.",
+    "cells": {
+     "D": {
+      "state": "yes"
+     },
+     "T": {
+      "state": "nv",
+      "note": "Necks not measured against the corks"
+     },
+     "G": {
+      "state": "na"
+     },
+     "F": {
+      "state": "rev",
+      "note": "Bisque fired once, two bottles cracked"
+     }
+    },
+    "pills": [
+     {
+      "label": "reverted",
+      "tone": "muted"
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Details",
+      "list": [
+       "Neck width must be 18 mm to take the cork."
+      ]
+     },
+     {
+      "heading": "Caveats",
+      "tone": "warn",
+      "list": [
+       "Two bottles cracked at the join in the bisque."
+      ]
+     },
+     {
+      "heading": "Where",
+      "tags": [
+       {
+        "label": "Kiln",
+        "items": []
+       },
+       {
+        "label": "Clay",
+        "items": [
+         "porcelain"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "facet-batch": {
+  "note": "Forty invented records of an invented studio. The state is the life enum that kit/viz/seal.js defines: urgent is 14 days or less, soon is 60 days or less.",
+  "stateEnum": "life",
+  "records": [
+   {
+    "id": "r01",
+    "title": "Kiln exhaust permit",
+    "kind": "permit",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 412,
+    "total": 365,
+    "sub": "Ends in 412 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r02",
+    "title": "Fire safety certificate",
+    "kind": "permit",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 9,
+    "total": 365,
+    "sub": "Ends in 9 days, shop, Dev",
+    "state": "urgent"
+   },
+   {
+    "id": "r03",
+    "title": "Street sign licence",
+    "kind": "permit",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 190,
+    "total": 365,
+    "sub": "Ends in 190 days, warehouse, Ines",
+    "state": "ok"
+   },
+   {
+    "id": "r04",
+    "title": "Waste carrier registration",
+    "kind": "permit",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 28,
+    "total": 365,
+    "sub": "Ends in 28 days, online, Teo",
+    "state": "soon"
+   },
+   {
+    "id": "r05",
+    "title": "Food stall permit",
+    "kind": "permit",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 640,
+    "total": 365,
+    "sub": "Ends in 640 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r06",
+    "title": "Class hire licence",
+    "kind": "permit",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 75,
+    "total": 365,
+    "sub": "Ends in 75 days, shop, Dev",
+    "state": "ok"
+   },
+   {
+    "id": "r07",
+    "title": "Noise exemption",
+    "kind": "permit",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 3,
+    "total": 365,
+    "sub": "Ends in 3 days, warehouse, Ines",
+    "state": "urgent"
+   },
+   {
+    "id": "r08",
+    "title": "Gas installation check",
+    "kind": "permit",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 1040,
+    "total": 365,
+    "sub": "Ends in 1040 days, online, Teo",
+    "state": "ok"
+   },
+   {
+    "id": "r09",
+    "title": "Clay supplier agreement",
+    "kind": "contract",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 365,
+    "total": 730,
+    "sub": "Ends in 365 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r10",
+    "title": "Courier account",
+    "kind": "contract",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 14,
+    "total": 730,
+    "sub": "Ends in 14 days, shop, Dev",
+    "state": "urgent"
+   },
+   {
+    "id": "r11",
+    "title": "Cleaning service",
+    "kind": "contract",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 88,
+    "total": 730,
+    "sub": "Ends in 88 days, warehouse, Ines",
+    "state": "ok"
+   },
+   {
+    "id": "r12",
+    "title": "Card reader lease",
+    "kind": "contract",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 520,
+    "total": 730,
+    "sub": "Ends in 520 days, online, Teo",
+    "state": "ok"
+   },
+   {
+    "id": "r13",
+    "title": "Accountant retainer",
+    "kind": "contract",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 200,
+    "total": 730,
+    "sub": "Ends in 200 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r14",
+    "title": "Packaging supply",
+    "kind": "contract",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 47,
+    "total": 730,
+    "sub": "Ends in 47 days, shop, Dev",
+    "state": "soon"
+   },
+   {
+    "id": "r15",
+    "title": "Pottery wheel service plan",
+    "kind": "contract",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 700,
+    "total": 730,
+    "sub": "Ends in 700 days, warehouse, Ines",
+    "state": "ok"
+   },
+   {
+    "id": "r16",
+    "title": "Waste pickup",
+    "kind": "contract",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 22,
+    "total": 730,
+    "sub": "Ends in 22 days, online, Teo",
+    "state": "soon"
+   },
+   {
+    "id": "r17",
+    "title": "Building cover",
+    "kind": "insurance",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 300,
+    "total": 365,
+    "sub": "Ends in 300 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r18",
+    "title": "Public liability",
+    "kind": "insurance",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 12,
+    "total": 365,
+    "sub": "Ends in 12 days, shop, Dev",
+    "state": "urgent"
+   },
+   {
+    "id": "r19",
+    "title": "Stock in transit",
+    "kind": "insurance",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 160,
+    "total": 365,
+    "sub": "Ends in 160 days, warehouse, Ines",
+    "state": "ok"
+   },
+   {
+    "id": "r20",
+    "title": "Kiln breakdown cover",
+    "kind": "insurance",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 33,
+    "total": 365,
+    "sub": "Ends in 33 days, online, Teo",
+    "state": "soon"
+   },
+   {
+    "id": "r21",
+    "title": "Tools and equipment",
+    "kind": "insurance",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 480,
+    "total": 365,
+    "sub": "Ends in 480 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r22",
+    "title": "Class participants",
+    "kind": "insurance",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 61,
+    "total": 365,
+    "sub": "Ends in 61 days, shop, Dev",
+    "state": "ok"
+   },
+   {
+    "id": "r23",
+    "title": "studio-shop domain",
+    "kind": "domain",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 940,
+    "total": 730,
+    "sub": "Ends in 940 days, warehouse, Ines",
+    "state": "ok"
+   },
+   {
+    "id": "r24",
+    "title": "classes domain",
+    "kind": "domain",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 5,
+    "total": 730,
+    "sub": "Ends in 5 days, online, Teo",
+    "state": "urgent"
+   },
+   {
+    "id": "r25",
+    "title": "mail domain",
+    "kind": "domain",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 250,
+    "total": 730,
+    "sub": "Ends in 250 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r26",
+    "title": "old brand domain",
+    "kind": "domain",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 0,
+    "total": 730,
+    "sub": "Ended today, shop, Dev",
+    "state": "expired"
+   },
+   {
+    "id": "r27",
+    "title": "gift card domain",
+    "kind": "domain",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 120,
+    "total": 730,
+    "sub": "Ends in 120 days, warehouse, Ines",
+    "state": "ok"
+   },
+   {
+    "id": "r28",
+    "title": "blog domain",
+    "kind": "domain",
+    "site": "Online",
+    "owner": "Teo",
+    "left": -12,
+    "total": 730,
+    "sub": "Ended 12 days ago, online, Teo",
+    "state": "expired"
+   },
+   {
+    "id": "r29",
+    "title": "Kiln 1 warranty",
+    "kind": "warranty",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 800,
+    "total": 1095,
+    "sub": "Ends in 800 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r30",
+    "title": "Kiln 2 warranty",
+    "kind": "warranty",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 18,
+    "total": 1095,
+    "sub": "Ends in 18 days, shop, Dev",
+    "state": "soon"
+   },
+   {
+    "id": "r31",
+    "title": "Slab roller warranty",
+    "kind": "warranty",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 410,
+    "total": 1095,
+    "sub": "Ends in 410 days, warehouse, Ines",
+    "state": "ok"
+   },
+   {
+    "id": "r32",
+    "title": "Extruder warranty",
+    "kind": "warranty",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 66,
+    "total": 1095,
+    "sub": "Ends in 66 days, online, Teo",
+    "state": "ok"
+   },
+   {
+    "id": "r33",
+    "title": "Air filter warranty",
+    "kind": "warranty",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 95,
+    "total": 1095,
+    "sub": "Ends in 95 days, studio, Mara",
+    "state": "ok"
+   },
+   {
+    "id": "r34",
+    "title": "Pug mill warranty",
+    "kind": "warranty",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 330,
+    "total": 1095,
+    "sub": "Ends in 330 days, shop, Dev",
+    "state": "ok"
+   },
+   {
+    "id": "r35",
+    "title": "Shelf racking warranty",
+    "kind": "warranty",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": -40,
+    "total": 1095,
+    "sub": "Ended 40 days ago, warehouse, Ines",
+    "state": "expired"
+   },
+   {
+    "id": "r36",
+    "title": "Till warranty",
+    "kind": "warranty",
+    "site": "Online",
+    "owner": "Teo",
+    "left": 150,
+    "total": 1095,
+    "sub": "Ends in 150 days, online, Teo",
+    "state": "ok"
+   },
+   {
+    "id": "r37",
+    "title": "Label printer warranty",
+    "kind": "warranty",
+    "site": "Studio",
+    "owner": "Mara",
+    "left": 26,
+    "total": 1095,
+    "sub": "Ends in 26 days, studio, Mara",
+    "state": "soon"
+   },
+   {
+    "id": "r38",
+    "title": "Scale warranty",
+    "kind": "warranty",
+    "site": "Shop",
+    "owner": "Dev",
+    "left": 580,
+    "total": 1095,
+    "sub": "Ends in 580 days, shop, Dev",
+    "state": "ok"
+   },
+   {
+    "id": "r39",
+    "title": "Dehumidifier warranty",
+    "kind": "warranty",
+    "site": "Warehouse",
+    "owner": "Ines",
+    "left": 11,
+    "total": 1095,
+    "sub": "Ends in 11 days, warehouse, Ines",
+    "state": "urgent"
+   },
+   {
+    "id": "r40",
+    "title": "Tablet warranty",
+    "kind": "warranty",
+    "site": "Online",
+    "owner": "Teo",
+    "left": null,
+    "total": 1095,
+    "sub": "No end date on record, online, Teo",
+    "state": "unknown"
+   }
+  ],
+  "facets": [
+   {
+    "key": "state",
+    "label": "State",
+    "field": "state",
+    "tiles": true,
+    "allLabel": "All",
+    "options": [
+     {
+      "value": "ok",
+      "label": "Fine"
+     },
+     {
+      "value": "soon",
+      "label": "Ends soon",
+      "tone": "warn"
+     },
+     {
+      "value": "urgent",
+      "label": "Urgent",
+      "tone": "danger"
+     },
+     {
+      "value": "expired",
+      "label": "Expired"
+     }
+    ]
+   },
+   {
+    "key": "kind",
+    "label": "Kind",
+    "field": "kind",
+    "options": [
+     {
+      "value": "permit",
+      "label": "Permit"
+     },
+     {
+      "value": "contract",
+      "label": "Contract"
+     },
+     {
+      "value": "insurance",
+      "label": "Insurance"
+     },
+     {
+      "value": "domain",
+      "label": "Domain"
+     },
+     {
+      "value": "warranty",
+      "label": "Warranty"
+     }
+    ]
+   },
+   {
+    "key": "days",
+    "label": "Days left",
+    "field": "left",
+    "options": [
+     {
+      "value": "30",
+      "label": "30 days or less",
+      "gte": 1,
+      "lte": 30
+     },
+     {
+      "value": "90",
+      "label": "90 days or less",
+      "gte": 1,
+      "lte": 90
+     },
+     {
+      "value": "365",
+      "label": "Within a year",
+      "gte": 1,
+      "lte": 365
+     },
+     {
+      "value": "far",
+      "label": "More than a year",
+      "gte": 366
+     }
+    ]
+   },
+   {
+    "key": "site",
+    "label": "Site",
+    "field": "site",
+    "options": [
+     {
+      "value": "Studio",
+      "label": "Studio"
+     },
+     {
+      "value": "Shop",
+      "label": "Shop"
+     },
+     {
+      "value": "Warehouse",
+      "label": "Warehouse"
+     },
+     {
+      "value": "Online",
+      "label": "Online"
+     }
+    ]
+   },
+   {
+    "key": "owner",
+    "label": "Owner",
+    "field": "owner",
+    "options": [
+     {
+      "value": "Mara",
+      "label": "Mara"
+     },
+     {
+      "value": "Teo",
+      "label": "Teo"
+     },
+     {
+      "value": "Ines",
+      "label": "Ines"
+     },
+     {
+      "value": "Dev",
+      "label": "Dev"
+     }
+    ]
+   }
+  ],
+  "groups": [
+   {
+    "key": "kind",
+    "label": "Kind",
+    "field": "kind",
+    "order": [
+     "permit",
+     "contract",
+     "insurance",
+     "domain",
+     "warranty"
+    ]
+   },
+   {
+    "key": "site",
+    "label": "Site",
+    "field": "site"
+   },
+   {
+    "key": "owner",
+    "label": "Owner",
+    "field": "owner"
+   },
+   {
+    "key": "expiry",
+    "label": "Expiry",
+    "field": "left",
+    "none": "No end date",
+    "bands": [
+     {
+      "label": "Ended",
+      "lte": 0
+     },
+     {
+      "label": "Within 30 days",
+      "lte": 30
+     },
+     {
+      "label": "1 to 3 months",
+      "lte": 90
+     },
+     {
+      "label": "3 to 12 months",
+      "lte": 365
+     },
+     {
+      "label": "More than a year"
+     }
+    ]
+   }
+  ],
+  "sorts": [
+   {
+    "key": "left",
+    "label": "Days left",
+    "field": "left",
+    "dir": "asc"
+   },
+   {
+    "key": "title",
+    "label": "Name",
+    "field": "title",
+    "dir": "asc"
+   },
+   {
+    "key": "kind",
+    "label": "Kind",
+    "field": "kind",
+    "dir": "asc"
+   }
+  ],
+  "actions": [
+   {
+    "key": "renew",
+    "label": "Renew"
+   },
+   {
+    "key": "remind",
+    "label": "Remind the owner"
+   },
+   {
+    "key": "retire",
+    "label": "Retire",
+    "danger": true
+   }
+  ],
+  "runway": [
+   {
+    "label": "Show the 6 that end within 30 days",
+    "ids": [
+     "r02",
+     "r04",
+     "r07",
+     "r10",
+     "r16",
+     "r18",
+     "r24",
+     "r30",
+     "r37",
+     "r39"
+    ]
+   }
+  ]
+ },
+ "figures": {
+  "note": "Invented.",
+  "hero": {
+   "stamp": "Draft for review",
+   "title": "The spring firings ran inside plan",
+   "lede": "Twelve firings between March and May. Nine reached cone 6 on the first run; three needed a second firing for a glaze fault.",
+   "chips": [
+    {
+     "value": "12",
+     "label": "firings"
+    },
+    {
+     "value": "3",
+     "label": "re-fired"
+    },
+    {
+     "value": "0",
+     "label": "cracked shelves"
+    }
+   ],
+   "items": [
+    {
+     "value": 12,
+     "label": "Firings",
+     "count": true
+    },
+    {
+     "value": 9,
+     "label": "Reached cone 6 first time",
+     "count": true,
+     "hot": true
+    },
+    {
+     "value": 3,
+     "label": "Second firing needed",
+     "count": true
+    },
+    {
+     "value": 11.2,
+     "label": "Average firing time",
+     "unit": "hours"
+    }
+   ]
+  },
+  "grid": [
+   {
+    "value": 184,
+    "label": "Pots fired",
+    "count": true
+   },
+   {
+    "value": 171,
+    "label": "Passed inspection",
+    "count": true,
+    "hot": true
+   },
+   {
+    "value": 13,
+    "label": "Seconds",
+    "count": true
+   },
+   {
+    "value": 92.9,
+    "label": "Pass rate",
+    "unit": "%"
+   }
+  ],
+  "tiles": [
+   {
+    "label": "Kiln A",
+    "value": "Ready",
+    "note": "Cooled to 40 °C at 06:10",
+    "tone": "ok"
+   },
+   {
+    "label": "Kiln B",
+    "value": "Firing",
+    "note": "Ramp 3 of 5, 940 °C",
+    "tone": "info"
+   },
+   {
+    "label": "Vent fan",
+    "value": "Slow",
+    "note": "Airflow card barely lifts",
+    "tone": "warn"
+   },
+   {
+    "label": "Shelf stock",
+    "value": "Short",
+    "note": "2 of 8 shelves left",
+    "tone": "danger"
+   }
+  ],
+  "strip": [
+   {
+    "label": "Where we are",
+    "value": "Nine of twelve first time",
+    "note": "Three loads needed a second firing."
+   },
+   {
+    "label": "What went wrong",
+    "value": "One glaze, three times",
+    "note": "The celadon ran at the foot on every re-fire."
+   },
+   {
+    "label": "What next",
+    "value": "Test tiles first",
+    "note": "Fire a tile of every new glaze before it goes near a load."
+   }
+  ],
+  "facts": [
+   {
+    "label": "Longest firing",
+    "value": "13.5 hours",
+    "note": "Slow schedule, full load"
+   },
+   {
+    "label": "Shortest firing",
+    "value": "8.0 hours",
+    "note": "Fast bisque, half load"
+   },
+   {
+    "label": "Cones used",
+    "value": "36",
+    "note": "Three per firing"
+   },
+   {
+    "label": "Power",
+    "value": "412 kWh",
+    "note": "Metered, all firings"
+   }
+  ]
+ },
+ "filter-table": {
+  "note": "Invented glaze test tiles.",
+  "caption": "Glaze test tiles",
+  "rows": [
+   {
+    "name": "Celadon on porcelain, thin dip",
+    "cone": "cone 6",
+    "result": "pass",
+    "absorption": 0.4,
+    "grams": 182,
+    "note": "Even green, no crazing after three cycles"
+   },
+   {
+    "name": "Celadon on porcelain, thick dip",
+    "cone": "cone 6",
+    "result": "warn",
+    "absorption": 0.4,
+    "grams": 196,
+    "note": "Pools in the foot ring"
+   },
+   {
+    "name": "Tenmoku on stoneware",
+    "cone": "cone 10",
+    "result": "pass",
+    "absorption": 0.8,
+    "grams": 241,
+    "note": "Breaks to rust on the rim"
+   },
+   {
+    "name": "Tenmoku, double dip",
+    "cone": "cone 10",
+    "result": "fail",
+    "absorption": 0.8,
+    "grams": 252,
+    "note": "Ran onto the shelf"
+   },
+   {
+    "name": "Shino over iron slip",
+    "cone": "cone 10",
+    "result": "warn",
+    "absorption": 1.2,
+    "grams": 230,
+    "note": "Carbon trap is uneven"
+   },
+   {
+    "name": "Clear over white slip",
+    "cone": "cone 6",
+    "result": "pass",
+    "absorption": 0.3,
+    "grams": 175,
+    "note": "Clean and glossy"
+   },
+   {
+    "name": "Clear over red clay",
+    "cone": "cone 04",
+    "result": "pass",
+    "absorption": 5.1,
+    "grams": 160,
+    "note": "Low fire, holds water"
+   },
+   {
+    "name": "Matte white, brush on",
+    "cone": "cone 6",
+    "result": "warn",
+    "absorption": 1.9,
+    "grams": 168,
+    "note": "Streaks where the brush paused"
+   },
+   {
+    "name": "Matte white, spray",
+    "cone": "cone 6",
+    "result": "pass",
+    "absorption": 1.1,
+    "grams": 171,
+    "note": "Smooth, even coat"
+   },
+   {
+    "name": "Copper red, reduction",
+    "cone": "cone 10",
+    "result": "fail",
+    "absorption": 0.6,
+    "grams": 222,
+    "note": "Went brown, kiln was not in reduction"
+   },
+   {
+    "name": "Copper red, light reduction",
+    "cone": "cone 10",
+    "result": "warn",
+    "absorption": 0.6,
+    "grams": 219,
+    "note": "Pink blush only"
+   },
+   {
+    "name": "Ash glaze, birch",
+    "cone": "cone 10",
+    "result": "pass",
+    "absorption": 0.9,
+    "grams": 236,
+    "note": "Runny green pools, good on vertical walls"
+   },
+   {
+    "name": "Ash glaze, birch, thin",
+    "cone": "cone 10",
+    "result": "warn",
+    "absorption": 0.9,
+    "grams": 233,
+    "note": "Dry in places"
+   },
+   {
+    "name": "Blue celadon over stoneware",
+    "cone": "cone 6",
+    "result": "pass",
+    "absorption": 0.5,
+    "grams": 205,
+    "note": "Deep, no crawling"
+   },
+   {
+    "name": "Blue celadon over speckled clay",
+    "cone": "cone 6",
+    "result": "warn",
+    "absorption": 0.5,
+    "grams": 208,
+    "note": "Speckles show through the glaze"
+   },
+   {
+    "name": "Satin black, two coats",
+    "cone": "cone 6",
+    "result": "pass",
+    "absorption": 0.7,
+    "grams": 190,
+    "note": "Food safe on the leach test"
+   },
+   {
+    "name": "Satin black, three coats",
+    "cone": "cone 6",
+    "result": "fail",
+    "absorption": 0.7,
+    "grams": 201,
+    "note": "Blistered"
+   },
+   {
+    "name": "Honey crystalline",
+    "cone": "cone 9",
+    "result": "warn",
+    "absorption": 1.4,
+    "grams": 244,
+    "note": "Crystals small, long cool needed"
+   },
+   {
+    "name": "Oatmeal wash",
+    "cone": "cone 6",
+    "result": "pass",
+    "absorption": 1.6,
+    "grams": 166,
+    "note": "Neutral, good under slip"
+   },
+   {
+    "name": "Chun blue, thin",
+    "cone": "cone 9",
+    "result": "pass",
+    "absorption": 0.8,
+    "grams": 226,
+    "note": "Soft opalescent blue"
+   }
+  ],
+  "options": [
+   {
+    "value": "pass",
+    "label": "Pass",
+    "tone": "ok"
+   },
+   {
+    "value": "warn",
+    "label": "Watch",
+    "tone": "warn"
+   },
+   {
+    "value": "fail",
+    "label": "Fail",
+    "tone": "danger"
+   }
+  ]
+ },
+ "findings": {
+  "note": "Invented.",
+  "items": [
+   {
+    "severity": "med",
+    "tag": "Unclear",
+    "title": "The cooling curve is described twice, in two ways",
+    "body": "The handbook says the kiln cools freely, and the controller sheet lists a three-stage controlled cool. Both are in use.",
+    "evidence": [
+     [
+      "Handbook",
+      "page 14"
+     ],
+     [
+      "Controller",
+      "sheet 2, step 9"
+     ]
+    ],
+    "fix": "Pick the controlled cool and delete the free-cool paragraph."
+   },
+   {
+    "severity": "crit",
+    "tag": "Conflict",
+    "title": "Two documents give different top temperatures for the same glaze",
+    "body": "The glaze card says cone 6 (1222 °C). The firing schedule peaks at 1260 °C, which is cone 8. A load fired to the schedule overfires the glaze.",
+    "evidence": [
+     [
+      "Card",
+      "celadon-3"
+     ],
+     [
+      "Schedule",
+      "slow-glaze, ramp 4"
+     ],
+     [
+      "Check",
+      "cone pack from the last firing"
+     ]
+    ],
+    "fix": "Cap ramp 4 at 1222 °C and re-fire one test tile."
+   },
+   {
+    "severity": "high",
+    "tag": "Gap",
+    "title": "No one is named for the weekend cool-down",
+    "body": "A firing started on Friday evening finishes cooling on Sunday morning. The rota ends on Friday at 17:00.",
+    "evidence": [
+     [
+      "Rota",
+      "week view"
+     ]
+    ],
+    "fix": "Add a Sunday 09:00 unload slot with a named person."
+   },
+   {
+    "severity": "low",
+    "tag": "Noise",
+    "title": "The log template has two columns that nobody fills in",
+    "body": "Humidity and kiln-room temperature have been blank for six months.",
+    "fix": "Drop both columns."
+   },
+   {
+    "severity": "ok",
+    "tag": "Checked",
+    "title": "The vent interlock works",
+    "body": "The controller refused to start with the fan off, three times out of three.",
+    "evidence": [
+     [
+      "Test",
+      "bench, 12 March"
+     ]
+    ]
+   }
+  ]
+ },
+ "gate": {
+  "note": "Four invented gates. Times are UTC; the preview stamps a verdict with a fixed clock.",
+  "now": "2026-10-22T10:30:00Z",
+  "me": "Tobias",
+  "gates": [
+   {
+    "id": "g1",
+    "by": "Mara",
+    "action": "rename the offline mode strings",
+    "tool": "edit-file",
+    "risk": "low",
+    "reversible": true,
+    "preview": "@@ strings/en.json\n-  \"offline.title\": \"Offline mode\",\n+  \"offline.title\": \"Harbour Offline\",\n-  \"offline.sub\": \"Saved on this device\",\n+  \"offline.sub\": \"Works without signal\"",
+    "verdict": null,
+    "locked": false
+   },
+   {
+    "id": "g2",
+    "by": "Wen",
+    "action": "raise the weather sync timeout to 30 seconds",
+    "tool": "edit-file",
+    "risk": "medium",
+    "reversible": true,
+    "preview": "@@ sync/config.json\n   \"retries\": 3,\n-  \"timeoutSeconds\": 5,\n+  \"timeoutSeconds\": 30,\n   \"backoff\": \"linear\"",
+    "verdict": null,
+    "locked": false
+   },
+   {
+    "id": "g3",
+    "by": "Mara",
+    "action": "publish the preview build to the review channel",
+    "tool": "publish",
+    "risk": "high",
+    "reversible": false,
+    "preview": "publish preview-2\n  channel: review\n  build:   2026.10.22-3\n  notify:  4 people",
+    "verdict": {
+     "state": "approved",
+     "by": "Ines",
+     "at": "2026-10-22T09:50:00Z"
+    },
+    "locked": "The publish started at 09:52, so the verdict can no longer change."
+   },
+   {
+    "id": "g4",
+    "by": "Sol",
+    "action": "delete the old tide station photos",
+    "tool": "delete-files",
+    "risk": "high",
+    "reversible": false,
+    "preview": "@@ photos/stations/\n-  north-pier-2019.jpg\n-  north-pier-2020.jpg\n-  south-jetty-2019.jpg",
+    "verdict": {
+     "state": "rejected",
+     "by": "Tobias",
+     "at": "2026-10-22T08:20:00Z",
+     "reason": "Priya still uses the 2020 photos in chapter 3. Keep them until it ships."
+    },
+    "locked": false,
+    "refusal": {
+     "code": "path-in-use",
+     "word": "A file in the list is still in use",
+     "field": "paths",
+     "allowed": [
+      "north-pier-2019.jpg",
+      "south-jetty-2019.jpg"
+     ],
+     "message": "The delete was refused after the rejection because chapter 3 still points at north-pier-2020.jpg."
+    }
+   }
+  ]
+ },
+ "inbox": {
+  "note": "An invented incoming/<pid> document per docs/assist.md contract 3: one part changed on a base still current, one held because the live copy moved too. Dates are UTC.",
+  "user": {
+   "canEdit": true,
+   "id": "mara"
+  },
+  "manifest": {
+   "version": "v7",
+   "seq": 7,
+   "parts": {
+    "home.welcome": "aaaaaaaaaaa1",
+    "home.news": "bbbbbbbbbbb2"
+   },
+   "files": {}
+  },
+  "incoming": {
+   "p-1761590000000-k3x9": {
+    "by": "adp-worker",
+    "at": "2026-10-27T19:40:00Z",
+    "summary": "Shorter welcome, and the news list gains October",
+    "threads": [],
+    "base": {
+     "version": "v6",
+     "page_hash": "c0ffee000001",
+     "docs": {
+      "manifest/current": 6,
+      "parts/home.news": 1
+     }
+    },
+    "parts": [
+     {
+      "id": "home.welcome",
+      "from": "aaaaaaaaaaa1",
+      "to": "aaaaaaaaaaa9",
+      "html": "<h1>Welcome</h1>\n<p>Start here.</p>",
+      "retired": false,
+      "reason": ""
+     },
+     {
+      "id": "home.news",
+      "from": "bbbbbbbbbbb1",
+      "to": "bbbbbbbbbbb9",
+      "html": "<ul>\n<li>October</li>\n<li>September</li>\n</ul>",
+      "retired": false,
+      "reason": ""
+     }
+    ],
+    "files": [],
+    "classified": {
+     "new": [],
+     "ours": [
+      "home.welcome"
+     ],
+     "theirs": [],
+     "applied": [],
+     "held": [
+      {
+       "id": "home.news",
+       "base": "bbbbbbbbbbb1",
+       "live": "bbbbbbbbbbb2",
+       "incoming": "bbbbbbbbbbb9"
+      }
+     ],
+     "retired": []
+    },
+    "status": "held",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    }
+   }
+  }
+ },
+ "integrity": {
+  "note": "A made-up artifact with six recorded files and twelve parts. One file was edited after the last record, one is gone, one part is missing from the self-check and one hold has expired. 'live' is what Run fetches in this preview (null = not found); a board passes fetchFile instead.",
+  "now": "2026-10-26T09:00:00Z",
+  "manifest": {
+   "schema": "adp/2",
+   "version": "6",
+   "page_hash": "3fa9c01d77be",
+   "at": "2026-10-26T08:12:00Z",
+   "by": "writer-a",
+   "parts": {
+    "page.header": "4bbb85400435",
+    "page.tabs": "51bdb5c60376",
+    "page.changes": "babac2a604a5",
+    "page.style": "954299d803fd",
+    "page.script.app": "2ebff2e405d0",
+    "home": "71d60cd001aa",
+    "home.welcome": "e2113be504c4",
+    "home.about": "7e70051703f3",
+    "home.next": "e1bb688c0397",
+    "shelf": "a5475be30213",
+    "shelf.list": "0882a73903fd",
+    "shelf.filters": "ead2a203053a"
+   },
+   "files": {
+    "index.html": "3eea918b3f13",
+    "adp.js": "3f5bee82e305",
+    "content.js": "f13bfc8a36f7",
+    "parts/app.js": "e1bc95bfce02",
+    "styles/page.css": "7980b0e3420e",
+    "parts/tabs.js": "7be0d1c94a02"
+   }
+  },
+  "parts": [
+   {
+    "id": "page.header",
+    "title": "Header",
+    "parent": "page",
+    "hash": "4bbb85400435",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "page.tabs",
+    "title": "Tabs",
+    "parent": "page",
+    "hash": "51bdb5c60376",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "page.changes",
+    "title": "Changes",
+    "parent": "page",
+    "hash": "babac2a604a5",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "page.style",
+    "title": "Style",
+    "parent": "page",
+    "hash": "954299d803fd",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "page.script.app",
+    "title": "App",
+    "parent": "page.script",
+    "hash": "2ebff2e405d0",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "home",
+    "title": "Home",
+    "parent": "",
+    "hash": "71d60cd001aa",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "home.welcome",
+    "title": "Welcome",
+    "parent": "home",
+    "hash": "e2113be504c4",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "home.about",
+    "title": "About",
+    "parent": "home",
+    "hash": "7e70051703f3",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "home.next",
+    "title": "Next",
+    "parent": "home",
+    "hash": "e1bb688c0397",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "writer-c",
+    "hold_until": "2026-10-26T07:45:00Z"
+   },
+   {
+    "id": "shelf",
+    "title": "Shelf",
+    "parent": "",
+    "hash": "a5475be30213",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   },
+   {
+    "id": "shelf.list",
+    "title": "List",
+    "parent": "shelf",
+    "hash": "0882a73903fd",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "writer-b",
+    "hold_until": "2026-10-26T11:30:00Z"
+   },
+   {
+    "id": "shelf.filters",
+    "title": "Filters",
+    "parent": "shelf",
+    "hash": "ead2a203053a",
+    "version": "6",
+    "at": "2026-10-26T08:10:00Z",
+    "by": "writer-a",
+    "summary": "",
+    "holder": "",
+    "hold_until": ""
+   }
+  ],
+  "changes": [
+   {
+    "id": "000005",
+    "version": "5",
+    "at": "2026-10-25T16:00:00Z",
+    "by": "writer-a",
+    "summary": "Add the shelf filters",
+    "parts": [
+     {
+      "id": "shelf.filters",
+      "from": "",
+      "to": "ead2a203053a"
+     }
+    ],
+    "threads": [],
+    "data": []
+   },
+   {
+    "id": "000006",
+    "version": "6",
+    "at": "2026-10-26T08:12:00Z",
+    "by": "writer-a",
+    "summary": "Reword the welcome text",
+    "parts": [
+     {
+      "id": "home.welcome",
+      "from": "a1",
+      "to": "e2113be504c4"
+     }
+    ],
+    "threads": [],
+    "data": []
+   },
+   {
+    "id": "d-1793000000000",
+    "version": "",
+    "at": "2026-10-26T08:40:00Z",
+    "by": "reader",
+    "summary": "Added a note to the shelf",
+    "parts": [],
+    "threads": [],
+    "data": [
+     {
+      "doc": "notes/n1",
+      "from": 0,
+      "to": 1
+     }
+    ]
+   }
+  ],
+  "checks": {
+   "build": "r14",
+   "view": "home",
+   "ok": false,
+   "missing": [
+    "shelf.filters"
+   ],
+   "unmarked": [],
+   "overflow_x": 0,
+   "width": 390,
+   "errors": [],
+   "locked": false,
+   "config_at": "2026-10-25T10:00:00Z",
+   "at": "2026-10-26T08:50:00Z"
+  },
+  "config": {
+   "schema": "adp-config/1",
+   "at": "2026-10-25T10:00:00Z",
+   "by": "owner",
+   "values": {},
+   "changed": {}
+  },
+  "live": {
+   "index.html": "<!doctype html>\n<title>Reading room</title>\n<main data-part=\"page.header\"></main>\n",
+   "adp.js": "/* runtime */\n(function(){ 'use strict'; })();\n",
+   "content.js": "window.CONTENT = {title: 'Reading room'};\n",
+   "parts/app.js": "/* part:page.script.app */\nconsole.log('app');\n// tweaked after the record\n",
+   "styles/page.css": "/* part:page.style */\nbody { margin: 0; }\n",
+   "parts/tabs.js": null
+  }
+ },
+ "job-tray": {
+  "note": "Three scripted jobs of an invented studio. The preview plays them from memory; no server is called.",
+  "jobs": {
+   "fire": {
+    "title": "Fire kiln 2 to cone 6",
+    "leases": [
+     "kiln 2",
+     "gas line"
+    ],
+    "end": {
+     "t": 13,
+     "status": "done"
+    },
+    "events": [
+     {
+      "t": 0,
+      "log": [
+       "Checking the vent"
+      ]
+     },
+     {
+      "t": 2,
+      "log": [
+       {
+        "text": "Vent open",
+        "tone": "ok"
+       },
+       "Lighting the burners"
+      ]
+     },
+     {
+      "t": 4,
+      "log": [
+       "Ramp 110 per hour"
+      ]
+     },
+     {
+      "t": 6,
+      "log": [
+       "600 degrees"
+      ]
+     },
+     {
+      "t": 8,
+      "log": [
+       "900 degrees"
+      ]
+     },
+     {
+      "t": 10,
+      "log": [
+       {
+        "text": "Near the peak, slowing the ramp",
+        "tone": "dim"
+       }
+      ]
+     },
+     {
+      "t": 12,
+      "log": [
+       {
+        "text": "Peak reached: 1,222",
+        "tone": "ok"
+       }
+      ]
+     }
+    ]
+   },
+   "rinse": {
+    "title": "Rinse the glaze tank",
+    "leases": [
+     "glaze tank"
+    ],
+    "end": {
+     "t": 9,
+     "status": "paused",
+     "waiting": "Open the tank lid so the hose reaches the bottom, then press Continue."
+    },
+    "events": [
+     {
+      "t": 0,
+      "log": [
+       "Draining to the sump"
+      ]
+     },
+     {
+      "t": 2,
+      "log": [
+       "First rinse"
+      ]
+     },
+     {
+      "t": 3,
+      "banner": "The lid is closed. Open it so the hose can reach the bottom.",
+      "log": [
+       {
+        "text": "Waiting for the lid",
+        "tone": "wait"
+       }
+      ]
+     }
+    ],
+    "resume": {
+     "title": "Rinse the glaze tank",
+     "end": {
+      "t": 5,
+      "status": "done"
+     },
+     "events": [
+      {
+       "t": 0,
+       "log": [
+        "Hose in place"
+       ]
+      },
+      {
+       "t": 2,
+       "log": [
+        "Second rinse"
+       ]
+      },
+      {
+       "t": 4,
+       "log": [
+        {
+         "text": "Water runs clear",
+         "tone": "ok"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "dry": {
+    "title": "Dry the test tile shelf",
+    "leases": [
+     "shelf C"
+    ],
+    "end": {
+     "t": 7,
+     "status": "failed"
+    },
+    "events": [
+     {
+      "t": 0,
+      "log": [
+       "Warming the shelf"
+      ]
+     },
+     {
+      "t": 3,
+      "log": [
+       "40 degrees"
+      ]
+     },
+     {
+      "t": 5,
+      "log": [
+       {
+        "text": "Humidity sensor out of range",
+        "tone": "bad"
+       }
+      ]
+     },
+     {
+      "t": 6,
+      "log": [
+       {
+        "text": "Heater switched off for safety",
+        "tone": "bad"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "ledger": {
+  "note": "Invented decisions.",
+  "groups": [
+   {
+    "id": "g1",
+    "title": "Firing and kiln",
+    "range": "1 to 4",
+    "rows": [
+     {
+      "id": "d1",
+      "n": 1,
+      "tag": {
+       "label": "Agreed",
+       "tone": "ok"
+      },
+      "title": "Fire both kilns on Sunday night",
+      "when": "2026-10-04",
+      "mark": "approved 5 Oct",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "Both kilns fire from Sunday 22:00, with Kiln A first."
+       },
+       {
+        "label": "The call",
+        "body": "Night rates start at 22:00 and the studio is empty, so nothing waits on a person."
+       },
+       {
+        "label": "Checked against",
+        "body": "The tariff sheet and the kiln logs from September."
+       }
+      ]
+     },
+     {
+      "id": "d2",
+      "n": 2,
+      "tag": {
+       "label": "Agreed",
+       "tone": "ok"
+      },
+      "title": "Cone 6 for all porcelain",
+      "when": "2026-10-06",
+      "mark": "approved 7 Oct",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "Porcelain fires to cone 6 only; cone 10 is stoneware."
+       },
+       {
+        "label": "The call",
+        "body": "One firing schedule per clay body keeps the logs short."
+       },
+       {
+        "label": "Checked against",
+        "body": "Eleven test tiles, all clean."
+       }
+      ]
+     },
+     {
+      "id": "d3",
+      "n": 3,
+      "tag": {
+       "label": "Open",
+       "tone": "warn"
+      },
+      "title": "Buy a second set of shelves",
+      "when": "2026-10-09",
+      "mark": "needs you",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "Not settled: a second shelf set doubles a firing but costs about 400 euros."
+       },
+       {
+        "label": "The call",
+        "body": "Waiting for the next order book before spending."
+       },
+       {
+        "label": "Your answer",
+        "body": "Buy now, or wait for the November orders?",
+        "tone": "warn"
+       }
+      ]
+     },
+     {
+      "id": "d4",
+      "n": 4,
+      "tag": {
+       "label": "Agreed",
+       "tone": "ok"
+      },
+      "title": "Label tiles with a stamp, not a pen",
+      "when": "2026-10-11",
+      "mark": "approved 12 Oct",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "Stamps survive the glaze fire; pen marks burn off."
+       },
+       {
+        "label": "The call",
+        "body": "Stamp the number into the wet tile."
+       },
+       {
+        "label": "Checked against",
+        "body": "Three tiles lost their pen numbers in October."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "g2",
+    "title": "Studio routine",
+    "range": "5 to 8",
+    "rows": [
+     {
+      "id": "d5",
+      "n": 5,
+      "tag": {
+       "label": "Dropped",
+       "tone": "muted"
+      },
+      "title": "Switch to a gas kiln",
+      "when": "2026-10-13",
+      "mark": "closed 14 Oct",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "Dropped for now: the electric kilns cover the order book."
+       },
+       {
+        "label": "The call",
+        "body": "Revisit when the wood-fired work grows past one firing a month."
+       }
+      ]
+     },
+     {
+      "id": "d6",
+      "n": 6,
+      "tag": {
+       "label": "Agreed",
+       "tone": "ok"
+      },
+      "title": "Keep slip in lidded buckets",
+      "when": "2026-10-15",
+      "mark": "approved 16 Oct",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "Lidded buckets, labelled with the date mixed."
+       },
+       {
+        "label": "The call",
+        "body": "Open buckets skin over in a week and add lumps."
+       },
+       {
+        "label": "Checked against",
+        "body": "The two skinned buckets from the last batch."
+       }
+      ]
+     },
+     {
+      "id": "d7",
+      "n": 7,
+      "tag": {
+       "label": "Open",
+       "tone": "warn"
+      },
+      "title": "Stop selling second-quality bowls",
+      "when": "2026-10-17",
+      "mark": "needs you",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "Not settled: seconds sell well at markets but lower the price of firsts."
+       },
+       {
+        "label": "The call",
+        "body": "Two options are costed on the sheet."
+       },
+       {
+        "label": "Your answer",
+        "body": "Sell seconds only at the studio door?",
+        "tone": "warn"
+       }
+      ]
+     },
+     {
+      "id": "d8",
+      "n": 8,
+      "tag": {
+       "label": "Agreed",
+       "tone": "ok"
+      },
+      "title": "Wedge clay on the new bench",
+      "when": "2026-10-19",
+      "mark": "approved 20 Oct",
+      "detail": [
+       {
+        "label": "Outcome",
+        "body": "The new bench is at wedging height and stays."
+       },
+       {
+        "label": "The call",
+        "body": "Fewer air bubbles in the first throw."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "master-detail": {
+  "note": "Invented services.",
+  "groups": [
+   "Public",
+   "Internal",
+   "Batch"
+  ],
+  "items": [
+   {
+    "id": "web",
+    "name": "web-frontend",
+    "group": "Public",
+    "sub": "Serves the shop pages",
+    "chips": [
+     {
+      "label": "live",
+      "tone": "ok"
+     },
+     {
+      "label": "3 replicas"
+     }
+    ],
+    "owner": "shop team",
+    "tier": "critical",
+    "uptime": "99.95%",
+    "deploy": "Tuesday 14:10",
+    "notes": [
+     "Static pages come from the edge cache.",
+     "Rolls back in under two minutes."
+    ],
+    "flags": [
+     "live"
+    ]
+   },
+   {
+    "id": "api",
+    "name": "orders-api",
+    "group": "Public",
+    "sub": "Takes and confirms orders",
+    "chips": [
+     {
+      "label": "live",
+      "tone": "ok"
+     },
+     {
+      "label": "4 replicas"
+     }
+    ],
+    "owner": "shop team",
+    "tier": "critical",
+    "uptime": "99.91%",
+    "deploy": "Monday 09:40",
+    "notes": [
+     "Writes to the orders database.",
+     "Rate limit is 20 requests a second per client."
+    ],
+    "flags": [
+     "live"
+    ]
+   },
+   {
+    "id": "pay",
+    "name": "payments-bridge",
+    "group": "Public",
+    "sub": "Hands payments to the processor",
+    "chips": [
+     {
+      "label": "degraded",
+      "tone": "warn"
+     }
+    ],
+    "owner": "finance tools",
+    "tier": "critical",
+    "uptime": "99.40%",
+    "deploy": "Friday 16:05",
+    "notes": [
+     "Retries once, then queues the payment.",
+     "Two timeouts this week from the processor."
+    ],
+    "flags": [
+     "degraded"
+    ]
+   },
+   {
+    "id": "inv",
+    "name": "inventory",
+    "group": "Internal",
+    "sub": "Counts stock by shelf",
+    "chips": [
+     {
+      "label": "live",
+      "tone": "ok"
+     }
+    ],
+    "owner": "studio ops",
+    "tier": "standard",
+    "uptime": "99.80%",
+    "deploy": "Wednesday 11:20",
+    "notes": [
+     "Reads the kiln log for finished pieces."
+    ],
+    "flags": [
+     "live"
+    ]
+   },
+   {
+    "id": "mail",
+    "name": "mailer",
+    "group": "Internal",
+    "sub": "Sends order mail",
+    "chips": [
+     {
+      "label": "live",
+      "tone": "ok"
+     }
+    ],
+    "owner": "shop team",
+    "tier": "standard",
+    "uptime": "99.70%",
+    "deploy": "Thursday 08:55",
+    "notes": [
+     "Templates live in the repo."
+    ],
+    "flags": [
+     "live"
+    ]
+   },
+   {
+    "id": "search",
+    "name": "catalog-search",
+    "group": "Internal",
+    "sub": "Searches the product catalog",
+    "chips": [
+     {
+      "label": "paused",
+      "tone": "muted"
+     }
+    ],
+    "owner": "shop team",
+    "tier": "low",
+    "uptime": "not running",
+    "deploy": "Not scheduled",
+    "notes": [
+     "Paused while the catalog is reshot."
+    ],
+    "flags": [
+     "paused"
+    ]
+   },
+   {
+    "id": "nightly",
+    "name": "nightly-backup",
+    "group": "Batch",
+    "sub": "Copies the databases at 02:00",
+    "chips": [
+     {
+      "label": "live",
+      "tone": "ok"
+     }
+    ],
+    "owner": "studio ops",
+    "tier": "critical",
+    "uptime": "runs nightly",
+    "deploy": "Last month",
+    "notes": [
+     "Keeps 14 daily copies.",
+     "A restore test runs on the first of each month."
+    ],
+    "flags": [
+     "live"
+    ]
+   },
+   {
+    "id": "report",
+    "name": "weekly-report",
+    "group": "Batch",
+    "sub": "Builds the Monday sales sheet",
+    "chips": [
+     {
+      "label": "failing",
+      "tone": "danger"
+     }
+    ],
+    "owner": "finance tools",
+    "tier": "standard",
+    "uptime": "3 of 4 runs",
+    "deploy": "Two weeks ago",
+    "notes": [
+     "Last run failed on a missing currency rate."
+    ],
+    "flags": [
+     "failing"
+    ]
+   }
+  ],
+  "filters": [
+   {
+    "id": "crit",
+    "label": "Critical",
+    "tier": [
+     "critical"
+    ]
+   },
+   {
+    "id": "attn",
+    "label": "Needs a look",
+    "flags": [
+     "degraded",
+     "failing"
+    ]
+   }
+  ]
+ },
+ "mindmap": {
+  "note": "Fifteen invented nodes over three levels: the plan for a product launch, in four branches.",
+  "label": "Plan a product launch",
+  "data": {
+   "nodes": [
+    {
+     "id": "launch",
+     "text": "Plan a product launch",
+     "parent": null,
+     "order": 0
+    },
+    {
+     "id": "product",
+     "text": "Product",
+     "parent": "launch",
+     "order": 0
+    },
+    {
+     "id": "freeze",
+     "text": "Freeze the feature list",
+     "parent": "product",
+     "order": 0
+    },
+    {
+     "id": "beta",
+     "text": "Triage the beta feedback",
+     "parent": "product",
+     "order": 1
+    },
+    {
+     "id": "pricing",
+     "text": "Settle the pricing tiers",
+     "parent": "product",
+     "order": 2
+    },
+    {
+     "id": "marketing",
+     "text": "Marketing",
+     "parent": "launch",
+     "order": 1
+    },
+    {
+     "id": "post",
+     "text": "Write the announcement post",
+     "parent": "marketing",
+     "order": 0
+    },
+    {
+     "id": "emails",
+     "text": "Draft the three-email sequence",
+     "parent": "marketing",
+     "order": 1
+    },
+    {
+     "id": "press",
+     "text": "Brief the press and partners",
+     "parent": "marketing",
+     "order": 2
+    },
+    {
+     "id": "support",
+     "text": "Support",
+     "parent": "launch",
+     "order": 2
+    },
+    {
+     "id": "articles",
+     "text": "Publish the help-centre articles",
+     "parent": "support",
+     "order": 0
+    },
+    {
+     "id": "macros",
+     "text": "Write the support macros",
+     "parent": "support",
+     "order": 1
+    },
+    {
+     "id": "ops",
+     "text": "Operations",
+     "parent": "launch",
+     "order": 3
+    },
+    {
+     "id": "golive",
+     "text": "Run the go-live checklist",
+     "parent": "ops",
+     "order": 0
+    },
+    {
+     "id": "rollback",
+     "text": "Agree the rollback plan",
+     "parent": "ops",
+     "order": 1
+    }
+   ]
+  }
+ },
+ "namespaces": {
+  "note": "Invented. The kit's three rules (root, ns/shared and each viewer's own ns/users/{self}), two locked prefixes, twelve part ids with titles, and a user who can edit.",
+  "rules": [
+   {
+    "path": "",
+    "read": "view",
+    "write": "admin"
+   },
+   {
+    "path": "ns/shared",
+    "read": "view",
+    "write": "interact"
+   },
+   {
+    "path": "ns/users/{self}",
+    "read": "view",
+    "write": "interact"
+   }
+  ],
+  "locks": [
+   "core",
+   "page.header"
+  ],
+  "user": {
+   "canEdit": true
+  },
+  "parts": [
+   "core.nav",
+   "core.footer",
+   "page.header",
+   "page.header.title",
+   "page.header.search",
+   "page.intro",
+   "page.script.main",
+   "page.style.main",
+   "page.table.rooms",
+   "page.table.bookings",
+   "page.notes",
+   "page.contact"
+  ],
+  "titles": {
+   "core.nav": "Site navigation",
+   "core.footer": "Footer links",
+   "page.header": "Page header",
+   "page.header.title": "Header title",
+   "page.header.search": "Header search",
+   "page.intro": "Introduction",
+   "page.script.main": "Page script",
+   "page.style.main": "Page style",
+   "page.table.rooms": "Rooms table",
+   "page.table.bookings": "Bookings table",
+   "page.notes": "Notes",
+   "page.contact": "Contact form"
+  }
+ },
+ "next-steps": {
+  "component": "next-steps",
+  "file": "kit/patterns/next-steps.js",
+  "about": "Five invented next steps for a bakery's ordering page, and four folders for the command variant.",
+  "items": [
+   {
+    "id": "menu",
+    "title": "Enter this week's menu",
+    "sub": "Eleven loaves and three pastries.",
+    "ref": "menu"
+   },
+   {
+    "id": "slots",
+    "title": "Set the pickup windows",
+    "sub": "Weekdays 6 to 10, Saturdays 7 to 12.",
+    "ref": "slots"
+   },
+   {
+    "id": "sold",
+    "title": "Show sold-out loaves",
+    "sub": "Greyed, with the next bake day.",
+    "ref": "sold-out"
+   },
+   {
+    "id": "text",
+    "title": "Send a confirmation text",
+    "sub": "Needs the sender number from the owner.",
+    "ref": "text"
+   },
+   {
+    "id": "print",
+    "title": "Print the bake sheet each night",
+    "sub": "One page, sorted by pickup time."
+   }
+  ],
+  "state": {
+   "done": {
+    "menu": true
+   },
+   "picked": {
+    "slots": true,
+    "text": true
+   },
+   "notes": {
+    "text": "Use the shop's number, not a personal one."
+   },
+   "order": [],
+   "extras": []
+  },
+  "folders": [
+   {
+    "id": "drafts",
+    "title": "drafts",
+    "sub": "Unfinished menu copy."
+   },
+   {
+    "id": "menu",
+    "title": "menu",
+    "sub": "This week's loaves and prices."
+   },
+   {
+    "id": "invoices",
+    "title": "invoices",
+    "sub": "Supplier invoices, personal to the owner."
+   },
+   {
+    "id": "photos",
+    "title": "photos",
+    "sub": "Product photos for the page."
+   }
+  ],
+  "foldersState": {
+   "done": {},
+   "picked": {
+    "menu": true,
+    "photos": true
+   },
+   "notes": {},
+   "order": [],
+   "extras": []
+  }
+ },
+ "options": {
+  "note": "Invented.",
+  "cards": [
+   {
+    "k": "Option A",
+    "name": "Keep the old kiln",
+    "body": "Repair the lid and keep firing as now.",
+    "pc": [
+     [
+      "pro",
+      "No outlay"
+     ],
+     [
+      "con",
+      "Eleven-hour firings"
+     ],
+     [
+      "con",
+      "Uneven top shelf"
+     ]
+    ]
+   },
+   {
+    "k": "Option B",
+    "name": "Buy a second small kiln",
+    "body": "A 60 litre front-loader beside the old one.",
+    "pc": [
+     [
+      "pro",
+      "Test tiles any day"
+     ],
+     [
+      "pro",
+      "Two loads in parallel"
+     ],
+     [
+      "con",
+      "Needs a second circuit"
+     ]
+    ],
+    "pick": true
+   },
+   {
+    "k": "Option C",
+    "name": "Outsource the glaze firings",
+    "body": "Pay a neighbour studio per shelf.",
+    "pc": [
+     [
+      "pro",
+      "No kiln work"
+     ],
+     [
+      "con",
+      "Fixed days, no control"
+     ]
+    ]
+   }
+  ],
+  "tiers": [
+   {
+    "tier": "1",
+    "label": "Strongest",
+    "name": "Cone pack in the load",
+    "body": "Cones bend where the glaze matures, whatever the display says."
+   },
+   {
+    "tier": "2",
+    "label": "Strong",
+    "name": "Controller log",
+    "body": "Shows what the controller aimed for, not what the kiln did."
+   },
+   {
+    "tier": "3",
+    "label": "Partial",
+    "name": "Test tile by eye",
+    "body": "Good for colour, weak for temperature."
+   }
+  ],
+  "table": {
+   "caption": "Three ways to run the glaze firings",
+   "note": "Euros. The picked row is the recommendation.",
+   "rows": [
+    {
+     "o": "Keep the old kiln",
+     "setup": 120,
+     "year": 640,
+     "time": "11 h",
+     "v": "Slow",
+     "tone": "warn"
+    },
+    {
+     "o": "Second small kiln",
+     "setup": 1850,
+     "year": 410,
+     "time": "6 h",
+     "v": "Best fit",
+     "tone": "ok",
+     "picked": true
+    },
+    {
+     "o": "Outsource",
+     "setup": 0,
+     "year": 1320,
+     "time": "2 days",
+     "v": "Costly",
+     "tone": "danger"
+    }
+   ]
+  }
+ },
+ "playbook": {
+  "note": "Invented.",
+  "label": "Studio playbooks",
+  "playbooks": [
+   {
+    "id": "load",
+    "title": "Load a bisque",
+    "count": 3,
+    "steps": [
+     {
+      "title": "Check the schedule",
+      "body": "The controller keeps the last schedule. Confirm it is the slow bisque.",
+      "cmd": "kiln schedule show\nkiln schedule load bisque-slow"
+     },
+     {
+      "title": "Arm the vent",
+      "body": "Run the vent for two minutes before the first ramp.",
+      "cmd": "kiln vent on --minutes 2"
+     },
+     {
+      "title": "Start the firing",
+      "body": "Start, then write the time in the log.",
+      "cmd": "kiln start --note \"bisque, shelf B\""
+     }
+    ]
+   },
+   {
+    "id": "abort",
+    "title": "Halt a firing",
+    "count": 2,
+    "steps": [
+     {
+      "title": "Cut the elements",
+      "body": "This ends heating and leaves the vent on.",
+      "cmd": "kiln halt --keep-vent"
+     },
+     {
+      "title": "Wait for 100 °C",
+      "body": "Do not open the lid before the display reads 100 °C or less.",
+      "cmd": "kiln watch --until 100"
+     }
+    ]
+   },
+   {
+    "id": "cones",
+    "title": "Read the cones",
+    "count": 2,
+    "steps": [
+     {
+      "title": "Photograph the pack",
+      "body": "Take the picture through the peep hole with the flash off."
+     },
+     {
+      "title": "Log what bent",
+      "body": "Cone 6 should be bent to the shelf; cone 7 should be upright.",
+      "cmd": "kiln log cones --bent 6 --upright 7"
+     }
+    ]
+   }
+  ],
+  "pipeline": {
+   "label": "Firing stages",
+   "steps": [
+    {
+     "id": "load",
+     "title": "Load",
+     "sub": "kiln room",
+     "heading": "Load the kiln",
+     "body": "Pots on the shelves, test tiles on the top shelf, cones in the pack.",
+     "bullets": [
+      "Keep 2 cm between pots and the elements.",
+      "Wad anything that sits on glaze."
+     ]
+    },
+    {
+     "id": "check",
+     "title": "Check",
+     "sub": "vent and lid",
+     "kind": "gate",
+     "heading": "Check the vent and the lid",
+     "body": "The vent fan must run and the lid must seal before the schedule starts.",
+     "bullets": [
+      "The controller refuses to start with the vent off.",
+      "A lit seam means a bad seal."
+     ]
+    },
+    {
+     "id": "fire",
+     "title": "Fire",
+     "sub": "11 hours",
+     "kind": "risk",
+     "heading": "Run the schedule",
+     "body": "The kiln climbs to cone 6 and holds. A power cut here ruins the load.",
+     "bullets": [
+      "Peek at the first ramp after 30 minutes.",
+      "Never open the lid above 200 °C."
+     ]
+    },
+    {
+     "id": "cool",
+     "title": "Cool",
+     "sub": "to 100 °C",
+     "heading": "Let it cool",
+     "body": "The cooling takes about as long as the firing. Opening early cracks glaze.",
+     "bullets": [
+      "The controller shows 100 °C when it is safe."
+     ]
+    },
+    {
+     "id": "unload",
+     "title": "Unload",
+     "sub": "and log",
+     "heading": "Unload and write it up",
+     "body": "Photograph the cones, note the results in the log and label each shelf.",
+     "bullets": [
+      "One line per shelf is enough."
+     ]
+    }
+   ]
+  }
+ },
+ "playground": {
+  "note": "The catalog itself is passed by the page; this holds the rest of the options. Three stage themes (the first is selected at the start) and the entry to open first.",
+  "base": "",
+  "entry": "pattern.gate",
+  "themes": [
+   {
+    "id": "glaze",
+    "name": "Glaze",
+    "css": "kit/themes/glaze.css"
+   },
+   {
+    "id": "adr-drafting-table",
+    "name": "Drafting table",
+    "css": "kit/themes/adr-drafting-table.css"
+   },
+   {
+    "id": "journey-whiteboard",
+    "name": "Whiteboard",
+    "css": "kit/themes/journey-whiteboard.css"
+   }
+  ]
+ },
+ "presence": {
+  "note": "Invented presence docs for an invented artifact; the link uses the .example host. Three states: a session watching, one busy, and nobody.",
+  "now": "2026-10-26T09:30:00Z",
+  "artifactUrl": "https://claude.example/artifact/allotment-plan",
+  "states": {
+   "watching": {
+    "watching": true,
+    "busy": false,
+    "sessions": [
+     {
+      "session": "dev-session",
+      "at": "2026-10-26T09:29:10Z",
+      "doing": ""
+     }
+    ]
+   },
+   "busy": {
+    "watching": true,
+    "busy": true,
+    "sessions": [
+     {
+      "session": "dev-session",
+      "at": "2026-10-26T09:29:40Z",
+      "doing": "Fixing the length of bed 3"
+     },
+     {
+      "session": "laptop-2",
+      "at": "2026-10-26T09:27:00Z",
+      "doing": ""
+     }
+    ]
+   },
+   "away": {
+    "watching": false,
+    "busy": false,
+    "sessions": [
+     {
+      "session": "dev-session",
+      "at": "2026-10-26T07:41:00Z",
+      "doing": ""
+     }
+    ]
+   }
+  }
+ },
+ "prototype": {
+  "note": "Invented: a kiln-room log, shown at 1280 by 800.",
+  "width": 1280,
+  "height": 800,
+  "rows": [
+   {
+    "name": "Bisque, tea bowls",
+    "cone": "04",
+    "hours": "9 h 20",
+    "state": "Done"
+   },
+   {
+    "name": "Glaze, celadon set",
+    "cone": "6",
+    "hours": "11 h 05",
+    "state": "Done"
+   },
+   {
+    "name": "Test tiles, iron red",
+    "cone": "6",
+    "hours": "3 h 40",
+    "state": "Queued"
+   },
+   {
+    "name": "Glaze, ash vases",
+    "cone": "10",
+    "hours": "14 h 30",
+    "state": "Queued"
+   },
+   {
+    "name": "Bisque, planters",
+    "cone": "04",
+    "hours": "9 h 05",
+    "state": "Queued"
+   },
+   {
+    "name": "Raku, small cups",
+    "cone": "06",
+    "hours": "1 h 10",
+    "state": "Queued"
+   },
+   {
+    "name": "Glaze, white cups",
+    "cone": "6",
+    "hours": "10 h 40",
+    "state": "Queued"
+   }
+  ],
+  "tags": [
+   "Bisque",
+   "Glaze",
+   "Test"
+  ],
+  "legend": [
+   [
+    "1",
+    "Move down and up"
+   ],
+   [
+    "2",
+    "Open or close the detail"
+   ],
+   [
+    "3",
+    "Tag the firing"
+   ],
+   [
+    "4",
+    "Star the firing"
+   ],
+   [
+    "5",
+    "Change the row height"
+   ]
+  ],
+  "keys": {
+   "groups": [
+    {
+     "name": "The list",
+     "source": "firing-list",
+     "keys": [
+      {
+       "n": "1",
+       "chords": [
+        [
+         "j"
+        ],
+        [
+         "ArrowDown"
+        ]
+       ],
+       "when": "A firing is focused",
+       "does": "Focus the next firing",
+       "shows": "Row highlight and the detail panel"
+      },
+      {
+       "n": "1",
+       "chords": [
+        [
+         "k"
+        ],
+        [
+         "ArrowUp"
+        ]
+       ],
+       "when": "A firing is focused",
+       "does": "Focus the firing above",
+       "shows": "Row highlight and the detail panel"
+      },
+      {
+       "n": "2",
+       "chords": [
+        [
+         "Enter"
+        ]
+       ],
+       "when": "A firing is focused",
+       "does": "Open or close its detail",
+       "shows": "The right panel"
+      }
+     ]
+    },
+    {
+     "name": "Tags and stars",
+     "source": "tag-bar",
+     "keys": [
+      {
+       "n": "3",
+       "chords": [
+        [
+         "1"
+        ],
+        [
+         "2"
+        ],
+        [
+         "3"
+        ]
+       ],
+       "when": "A firing is focused",
+       "does": "File it under tag 1, 2 or 3",
+       "shows": "The pad lights and a chip joins the row"
+      },
+      {
+       "n": "4",
+       "chords": [
+        [
+         "Shift",
+         "S"
+        ]
+       ],
+       "when": "A firing is focused",
+       "does": "Star or unstar it",
+       "shows": "The star in the row",
+       "added": true
+      }
+     ]
+    },
+    {
+     "name": "Page",
+     "source": "firing-page",
+     "keys": [
+      {
+       "n": "5",
+       "chords": [
+        [
+         "v"
+        ]
+       ],
+       "when": "Anywhere on the stage",
+       "does": "Switch between compact and roomy rows",
+       "shows": "Row height",
+       "added": true
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "questions": {
+  "component": "questions",
+  "file": "kit/patterns/questions.js",
+  "about": "Four invented questions about a bakery's ordering page; the first two are already answered.",
+  "collection": "answers",
+  "questions": [
+   {
+    "id": "confirm",
+    "title": "How should an order be confirmed?",
+    "why": "Customers ask whether the order went through. The answer decides what we build first.",
+    "facts": [
+     "Most orders come in between 6 and 8 in the morning.",
+     "Text messages cost a small amount per order."
+    ],
+    "options": [
+     {
+      "id": "email",
+      "label": "Email only",
+      "detail": "Free, but some people never open it before pickup."
+     },
+     {
+      "id": "both",
+      "label": "Email and a text",
+      "detail": "The text arrives within a minute."
+     },
+     {
+      "id": "screen",
+      "label": "On the screen only",
+      "detail": "Nothing to send, and nothing to look back at."
+     }
+    ],
+    "recommended": "both",
+    "reason": "The text is what people check at 7 am, and the cost is small next to a missed pickup."
+   },
+   {
+    "id": "slots",
+    "title": "How long is a pickup window?",
+    "why": "Shorter windows spread the queue but make the day's grid longer to fill.",
+    "facts": [
+     "The counter handles about 12 pickups an hour."
+    ],
+    "options": [
+     {
+      "id": "30",
+      "label": "30 minutes",
+      "detail": "Six slots over the busy morning."
+     },
+     {
+      "id": "15",
+      "label": "15 minutes",
+      "detail": "Twelve slots over the busy morning."
+     }
+    ],
+    "recommended": "15",
+    "reason": "It matches the counter's real pace."
+   },
+   {
+    "id": "soldout",
+    "title": "What does a sold-out loaf look like?",
+    "why": "A hidden loaf leaves people wondering; a visible one invites a second choice.",
+    "facts": [
+     "Rye and seeded sell out most Saturdays.",
+     "A waiting list needs a way to tell people when more is baked."
+    ],
+    "options": [
+     {
+      "id": "hide",
+      "label": "Hide it"
+     },
+     {
+      "id": "show",
+      "label": "Show it as sold out",
+      "detail": "Greyed, with the next bake day."
+     },
+     {
+      "id": "wait",
+      "label": "Offer a waiting list",
+      "detail": "Asks for an email address."
+     }
+    ],
+    "recommended": "show",
+    "reason": "It is the least work and keeps the menu honest.",
+    "allowOther": true
+   },
+   {
+    "id": "editors",
+    "title": "Who may change the weekly menu?",
+    "why": "Edits go live at once, so a wrong price shows up for every customer.",
+    "options": [
+     {
+      "id": "owner",
+      "label": "The owner only"
+     },
+     {
+      "id": "staff",
+      "label": "Any staff member",
+      "detail": "With the owner told after each change."
+     }
+    ],
+    "recommended": "owner",
+    "reason": "Two people have asked to help; they can ask the owner for now."
+   }
+  ],
+  "answers": {
+   "confirm": {
+    "q": "confirm",
+    "choice": "both",
+    "label": "Email and a text",
+    "note": "",
+    "agoMin": 180
+   },
+   "slots": {
+    "q": "slots",
+    "choice": "30",
+    "label": "30 minutes",
+    "note": "Start with 30 and look at the first month.",
+    "agoMin": 95,
+    "claude": "Built with 30 minute windows; the length is one setting, so changing it later is a one-line edit.",
+    "claudeAgoMin": 40,
+    "log": [
+     {
+      "agoMin": 95,
+      "by": "you",
+      "what": "chose 30 minutes"
+     },
+     {
+      "agoMin": 40,
+      "by": "claude",
+      "what": "applied it to the order page"
+     }
+    ]
+   }
+  }
+ },
+ "region-frame": {
+  "note": "Invented regions of a community garden page.",
+  "regions": [
+   {
+    "num": 1,
+    "eyebrow": "This week",
+    "title": "Watering rota",
+    "lede": "Who waters which bed, and when the hose is free.",
+    "icon": "clock",
+    "panel": {
+     "label": "Beds",
+     "count": 4,
+     "items": [
+      [
+       "North bed",
+       "Odile, Mon and Thu"
+      ],
+      [
+       "Herb spiral",
+       "Ravi, Tue"
+      ],
+      [
+       "Bean wall",
+       "Tomasz, Wed and Sat"
+      ],
+      [
+       "Pond edge",
+       "Maria, Fri"
+      ]
+     ]
+    }
+   },
+   {
+    "num": 2,
+    "eyebrow": "Tools",
+    "title": "Shed log",
+    "lede": "What came out of the shed and has not come back.",
+    "icon": "list",
+    "empty": {
+     "icon": "check",
+     "title": "Everything is back in the shed.",
+     "text": "When someone borrows a tool, add it here so the next person knows where it went.",
+     "action": "Log a borrowed tool"
+    }
+   },
+   {
+    "eyebrow": "Seeds",
+    "title": "Swap table",
+    "lede": "Bring labelled packets; take what you will plant.",
+    "icon": "heart",
+    "panel": {
+     "label": "Wanted",
+     "count": 0,
+     "items": []
+    }
+   }
+  ]
+ },
+ "report-cards": {
+  "note": "Nine invented reports from one small build, one of each kind. Times are UTC.",
+  "labels": {
+   "done": {
+    "ref": "Commit",
+    "ref2": "Branch"
+   },
+   "handoff": {
+    "ref": "Branch",
+    "ref2": "Commit"
+   }
+  },
+  "reports": [
+   {
+    "kind": "done",
+    "subject": "T-41",
+    "by": "Mara",
+    "at": "2026-10-22T09:58:00Z",
+    "ref": "a41c9e2",
+    "ref2": "chart-rounding",
+    "body": {
+     "tests": [
+      {
+       "command": "npm test -- chart",
+       "passed": 38,
+       "failed": 0,
+       "skipped": 2
+      },
+      {
+       "command": "npm run lint",
+       "passed": 12,
+       "failed": 1,
+       "skipped": 0
+      }
+     ],
+     "diverged": [
+      {
+       "asked": "Round every height to the nearest centimetre",
+       "did": "Rounded to the nearest centimetre; heights under 10 cm keep one decimal so small tides stay readable"
+      },
+      {
+       "asked": "Update the chart legend",
+       "did": "Left the legend as it is; it already reads in metres"
+      }
+     ],
+     "unverified": [
+      "The chart on a 320 px screen",
+      "Negative tide heights in the southern stations"
+     ],
+     "summary": "Heights now round on the way in, so the chart and the table agree.\n\nOne lint rule still fails on an old file I did not touch."
+    }
+   },
+   {
+    "kind": "blocked",
+    "subject": "T-37",
+    "by": "Priya",
+    "at": "2026-10-22T10:20:00Z",
+    "body": {
+     "reason": "resource-held",
+     "on": {
+      "kind": "cache",
+      "name": "lint-cache"
+     },
+     "detail": "The glossary build needs the lint cache, which Wen holds until 11:20. I stopped rather than clear it."
+    }
+   },
+   {
+    "kind": "decision",
+    "subject": "T-40",
+    "by": "Tobias",
+    "at": "2026-10-21T09:30:00Z",
+    "body": {
+     "decision": "The offline mode is called Harbour Offline.",
+     "alternatives": [
+      "Slack Water: lovely, but nobody would guess what it does",
+      "Dry Dock: reads as a repair state"
+     ],
+     "consequences": [
+      "The copy deck and the store listing change today",
+      "The icon is a lantern with a small cross"
+     ]
+    }
+   },
+   {
+    "kind": "handoff",
+    "subject": "T-44",
+    "by": "Mara",
+    "at": "2026-10-21T15:40:00Z",
+    "ref": "unit-toggle",
+    "ref2": "9d03f17",
+    "body": {
+     "to": "Ines",
+     "nextStep": "Check the toggle with a screen reader.\n\nThe feet and metres labels are still placeholders."
+    }
+   },
+   {
+    "kind": "ask",
+    "subject": "T-45",
+    "by": "Ines",
+    "at": "2026-10-22T10:12:00Z",
+    "body": {
+     "question": "May I publish the release notes before Sol has finished the photo credits?"
+    }
+   },
+   {
+    "kind": "question",
+    "subject": "T-40",
+    "by": "Mara",
+    "at": "2026-10-22T10:02:00Z",
+    "body": {
+     "to": "Tobias",
+     "question": "Where should the offline icon sit on the tide chart header?",
+     "options": [
+      "Left of the station name",
+      "Right of the date",
+      "In a floating badge over the chart"
+     ]
+    }
+   },
+   {
+    "kind": "feedback",
+    "subject": "T-38",
+    "by": "Ines",
+    "at": "2026-10-19T11:48:00Z",
+    "body": {
+     "items": [
+      {
+       "kind": "fix",
+       "where": "tokens/lantern.css",
+       "line": 14,
+       "note": "The muted text colour is under 4.5 to 1 on the panel"
+      },
+      {
+       "kind": "nit",
+       "where": "tokens/lantern.css",
+       "line": 31,
+       "note": "One token name has a typo"
+      },
+      {
+       "kind": "question",
+       "where": "tokens/index.json",
+       "note": "Is the dark set meant to ship with this release?"
+      },
+      {
+       "kind": "praise",
+       "note": "The spacing scale reads very clearly"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "fault",
+    "subject": "T-42",
+    "by": "Wen",
+    "at": "2026-10-18T13:41:00Z",
+    "body": {
+     "severity": "medium",
+     "component": "weather-sync",
+     "expected": "The sync finishes in under 5 seconds on a slow network.",
+     "observed": "It times out at 5 seconds on three of ten runs.",
+     "evidence": [
+      "run 2026-10-18-1305",
+      "run 2026-10-18-1322",
+      "run 2026-10-18-1341"
+     ]
+    }
+   },
+   {
+    "kind": "status",
+    "subject": "T-37",
+    "by": "Priya",
+    "at": "2026-10-22T09:34:00Z",
+    "body": {
+     "progress": "nearly",
+     "summary": "Chapter 3 is drafted and the photos are placed. The glossary and the final read-through are left."
+    }
+   }
+  ]
+ },
+ "request-card": {
+  "note": "Invented requests on an invented allotment planting plan. Uids are made up; times are relative to now in the preview. No real people, places or products.",
+  "now": "2026-10-26T09:30:00Z",
+  "me": "u-ines",
+  "names": {
+   "u-ines": "Ines",
+   "u-tomas": "Tomas"
+  },
+  "titles": {
+   "beds.north": "North beds",
+   "calendar.sowing": "Sowing calendar",
+   "home.welcome": "Welcome"
+  },
+  "requests": [
+   {
+    "id": "r-1793001000000-k2p9",
+    "lane": "task",
+    "scope": {
+     "kind": "part",
+     "id": "calendar.sowing",
+     "label": "Sowing calendar",
+     "hash": "3f2a9c1d0e4b"
+    },
+    "text": "Add a row for broad beans: sow in late October, harvest from May.",
+    "quote": "Sowing calendar. Garlic: October to November. Onion sets: March. Peas: March to June.",
+    "by": "u-ines",
+    "at": "2026-10-26T09:12:00Z",
+    "status": "done",
+    "state": "working",
+    "ackBy": "dev-session",
+    "ackAt": "2026-10-26T09:12:40Z",
+    "progress": [
+     {
+      "at": "2026-10-26T09:13:10Z",
+      "text": "Read the sowing calendar and its rows."
+     },
+     {
+      "at": "2026-10-26T09:14:05Z",
+      "text": "Added broad beans between garlic and onion sets."
+     },
+     {
+      "at": "2026-10-26T09:15:30Z",
+      "text": "Published version 1793001330-ab12."
+     }
+    ],
+    "response": "Added **broad beans** to the sowing calendar: sow late October to November, harvest from May. The row sits after garlic so the autumn sowings read together.",
+    "doneAt": "2026-10-26T09:15:40Z",
+    "changed": [
+     "calendar.sowing"
+    ],
+    "version": "1793001330-ab12",
+    "turns": [
+     {
+      "id": "0001",
+      "by": "u-ines",
+      "at": "2026-10-26T09:20:00Z",
+      "text": "Thanks. Can the row say they need a cloche in a cold spell?"
+     },
+     {
+      "id": "0002",
+      "by": "claude",
+      "at": "2026-10-26T09:22:30Z",
+      "text": "Done: the broad beans row now ends with *cover with a cloche below −5 °C*."
+     }
+    ]
+   },
+   {
+    "id": "r-1793002000000-x7q1",
+    "lane": "fix",
+    "scope": {
+     "kind": "part",
+     "id": "beds.north",
+     "label": "North beds",
+     "hash": "91be04c2aa10"
+    },
+    "text": "Bed 3 says 2.4 m but it is 2.1 m long.",
+    "by": "u-tomas",
+    "at": "2026-10-26T09:26:00Z",
+    "status": "open",
+    "state": "working",
+    "ackBy": "dev-session",
+    "progress": [
+     {
+      "at": "2026-10-26T09:27:00Z",
+      "text": "Found bed 3 in the north beds table."
+     },
+     {
+      "at": "2026-10-26T09:28:20Z",
+      "text": "Changing the length and the area it feeds."
+     }
+    ],
+    "response": "",
+    "changed": []
+   },
+   {
+    "id": "r-1793003000000-m4d8",
+    "lane": "design",
+    "scope": {
+     "kind": "part",
+     "id": "home.welcome",
+     "label": "Welcome",
+     "hash": "07c1d9e3b5f2"
+    },
+    "text": "The welcome block is hard to read on a phone; the plot map pushes the text off the screen.",
+    "by": "u-ines",
+    "at": "2026-10-26T09:22:00Z",
+    "status": "open",
+    "state": null,
+    "progress": [],
+    "response": "",
+    "changed": []
+   }
+  ]
+ },
+ "roster-wall": {
+  "note": "Invented crew of a small studio. Times are UTC; now is fixed so the Live and Stale words do not drift.",
+  "now": "2026-10-22T10:30:00Z",
+  "actors": [
+   {
+    "name": "Mara",
+    "role": "builder",
+    "state": "working",
+    "activity": "building",
+    "queued": 0,
+    "lastSeen": "2026-10-22T10:29:10Z",
+    "holds": [
+     {
+      "kind": "branch",
+      "name": "chart-rounding"
+     },
+     {
+      "kind": "env",
+      "name": "preview-2"
+     }
+    ],
+    "items": [
+     {
+      "id": "T-41",
+      "title": "Round tide heights to the nearest centimetre",
+      "state": "running"
+     },
+     {
+      "id": "T-44",
+      "title": "Add a unit toggle to the tide chart",
+      "state": "queued"
+     }
+    ]
+   },
+   {
+    "name": "Ines",
+    "role": "reviewer",
+    "state": "idle",
+    "activity": "none",
+    "queued": 2,
+    "lastSeen": "2026-10-22T10:26:00Z",
+    "holds": [],
+    "items": [
+     {
+      "id": "T-38",
+      "title": "Review the lantern colour tokens",
+      "state": "review"
+     }
+    ]
+   },
+   {
+    "name": "Tobias",
+    "role": "builder",
+    "state": "waiting",
+    "activity": "building",
+    "queued": 1,
+    "lastSeen": "2026-10-22T10:21:30Z",
+    "holds": [
+     {
+      "kind": "doc",
+      "name": "release-notes"
+     }
+    ],
+    "items": [
+     {
+      "id": "T-40",
+      "title": "Pick a name for the offline mode",
+      "state": "waiting"
+     }
+    ]
+   },
+   {
+    "name": "Priya",
+    "role": "scribe",
+    "state": "working",
+    "activity": "writing",
+    "queued": 0,
+    "lastSeen": "2026-10-22T10:28:40Z",
+    "holds": [
+     {
+      "kind": "doc",
+      "name": "harbour-guide"
+     }
+    ],
+    "items": [
+     {
+      "id": "T-37",
+      "title": "Write the harbour guide, chapter 3",
+      "state": "running"
+     },
+     {
+      "id": "T-36",
+      "title": "Collect tide station photos",
+      "state": "done"
+     }
+    ]
+   },
+   {
+    "name": "Sol",
+    "role": "scout",
+    "state": "away",
+    "activity": "none",
+    "queued": 4,
+    "lastSeen": "2026-10-22T06:55:00Z",
+    "holds": [],
+    "items": []
+   },
+   {
+    "name": "Wen",
+    "role": "builder",
+    "state": "failing",
+    "activity": "reading",
+    "queued": 0,
+    "lastSeen": "2026-10-22T10:12:00Z",
+    "holds": [
+     {
+      "kind": "cache",
+      "name": "lint-cache"
+     }
+    ],
+    "items": [
+     {
+      "id": "T-42",
+      "title": "Fix the flaky weather sync test",
+      "state": "blocked"
+     }
+    ]
+   }
+  ],
+  "claims": [
+   {
+    "resource": "branch chart-rounding",
+    "holder": "Mara",
+    "until": "2026-10-22T11:45:00Z",
+    "state": "held"
+   },
+   {
+    "resource": "env preview-2",
+    "holder": "Mara",
+    "until": "2026-10-22T10:55:00Z",
+    "state": "held"
+   },
+   {
+    "resource": "doc release-notes",
+    "holder": "Tobias",
+    "until": "2026-10-22T10:20:00Z",
+    "state": "held"
+   },
+   {
+    "resource": "doc harbour-guide",
+    "holder": "Priya",
+    "until": "2026-10-22T13:00:00Z",
+    "state": "held"
+   },
+   {
+    "resource": "cache lint-cache",
+    "holder": "Wen",
+    "until": "2026-10-22T10:05:00Z",
+    "state": "held"
+   },
+   {
+    "resource": "branch tide-units",
+    "holder": "Ines",
+    "until": "2026-10-22T09:40:00Z",
+    "state": "released"
+   }
+  ]
+ },
+ "row-actions": {
+  "note": "Invented studio passes.",
+  "rows": [
+   {
+    "id": "p1",
+    "title": "Marta, weekday pass",
+    "sub": "Paused at the front desk",
+    "state": "blocked",
+    "chips": [
+     {
+      "text": "locker 14"
+     }
+    ]
+   },
+   {
+    "id": "p2",
+    "title": "Ibrahim, evening pass",
+    "sub": "Ends in 6 days",
+    "state": "review",
+    "chips": [
+     {
+      "text": "locker 3"
+     }
+    ]
+   },
+   {
+    "id": "p3",
+    "title": "Joon, weekend pass",
+    "sub": "Welcome kit ready",
+    "state": "done",
+    "chips": [
+     {
+      "text": "locker 22"
+     }
+    ]
+   },
+   {
+    "id": "p4",
+    "title": "Lena, trial class",
+    "sub": "Booked for Saturday",
+    "state": "queued",
+    "chips": []
+   },
+   {
+    "id": "p5",
+    "title": "Tomas, studio pass",
+    "sub": "In the studio now",
+    "state": "running",
+    "chips": [
+     {
+      "text": "locker 9"
+     }
+    ]
+   }
+  ],
+  "mains": {
+   "blocked": {
+    "key": "recover",
+    "label": "Recover",
+    "primary": true
+   },
+   "review": {
+    "key": "renew",
+    "label": "Renew"
+   },
+   "done": {
+    "key": "open-kit",
+    "label": "Open kit"
+   },
+   "queued": {
+    "key": "details",
+    "label": "Details"
+   },
+   "running": {
+    "key": "details",
+    "label": "Details"
+   }
+  },
+  "menu": [
+   {
+    "key": "details",
+    "label": "Details",
+    "icon": "eye"
+   },
+   {
+    "key": "pin",
+    "label": "Assign a locker",
+    "icon": "link"
+   },
+   {
+    "key": "open-kit",
+    "label": "Open kit",
+    "icon": "download"
+   },
+   {
+    "key": "renew",
+    "label": "Renew",
+    "icon": "refresh"
+   },
+   {
+    "key": "lost",
+    "label": "Lost or stolen",
+    "icon": "alert",
+    "danger": true
+   },
+   {
+    "key": "remove",
+    "label": "Remove",
+    "icon": "trash",
+    "danger": true
+   }
+  ],
+  "card": {
+   "title": "Glaze batch 31",
+   "sub": "Celadon, 4 kg",
+   "pills": [
+    {
+     "key": "renew",
+     "label": "Remix",
+     "icon": "refresh",
+     "primary": true
+    },
+    {
+     "key": "copy",
+     "label": "Copy recipe",
+     "icon": "copy"
+    },
+    {
+     "key": "edit",
+     "label": "Edit",
+     "icon": "edit"
+    },
+    {
+     "key": "trash",
+     "label": "Discard",
+     "icon": "trash",
+     "danger": true
+    }
+   ]
+  }
+ },
+ "sandbox": {
+  "component": "sandbox",
+  "file": "kit/patterns/sandbox.js",
+  "about": "Invented detectors over invented text, and six simulated probes with a timeout.",
+  "label": "Text to test",
+  "note": "These are approximations of real rules. Edge cases can differ.",
+  "text": "Pickup for ORD-48213, contact anna.sample@mail.invalid, card ending 4242 4242 4242 4242",
+  "detectors": [
+   {
+    "id": "private-key",
+    "label": "Private key block",
+    "pattern": "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+   },
+   {
+    "id": "access-key",
+    "label": "Access key id",
+    "pattern": "\\b(?:AKIA|ASIA)[0-9A-Z]{16}\\b"
+   },
+   {
+    "id": "token-prefix",
+    "label": "Token with a known prefix",
+    "pattern": "\\b(?:tok|key|sec)_[A-Za-z0-9]{16,}\\b"
+   },
+   {
+    "id": "basic-auth",
+    "label": "Password inside a URL",
+    "pattern": "[a-z]+://[^/:@\\s]+:[^/@\\s]+@[^/\\s]+",
+    "flags": "i"
+   },
+   {
+    "id": "assignment",
+    "label": "Secret assigned in text",
+    "pattern": "(?:password|secret|api[_-]?key|token)[\"']?\\s*[:=]\\s*[\"']?([^\\s\"',}{]{6,})",
+    "flags": "i",
+    "group": 1
+   },
+   {
+    "id": "card",
+    "label": "Card number",
+    "pattern": "\\b(?:\\d{4}[ -]?){3}\\d{4}\\b"
+   },
+   {
+    "id": "email",
+    "label": "Email address",
+    "pattern": "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+   },
+   {
+    "id": "order",
+    "label": "Order number",
+    "pattern": "\\bORD-\\d{5}\\b"
+   },
+   {
+    "id": "random",
+    "label": "Long random string (by entropy)",
+    "pattern": "[A-Za-z0-9_+/=-]{20,64}",
+    "minEntropy": 3.8,
+    "needDigit": true
+   }
+  ],
+  "examples": [
+   {
+    "id": "order",
+    "label": "An order line",
+    "text": "Pickup for ORD-48213, contact anna.sample@mail.invalid, card ending 4242 4242 4242 4242"
+   },
+   {
+    "id": "key",
+    "label": "A key in a config",
+    "text": "api_key = tok_Zk3p9QwXr7LmN2vB5cD8\nregion = north"
+   },
+   {
+    "id": "url",
+    "label": "A URL with a password",
+    "text": "mirror: https://deploy:hunter22pass@files.example.invalid/builds"
+   },
+   {
+    "id": "plain",
+    "label": "Plain words",
+    "text": "Two seeded loaves for Saturday, please."
+   }
+  ],
+  "probes": [
+   {
+    "id": "page",
+    "what": "Fetch a page from the same site",
+    "target": "./menu.json",
+    "ms": 140,
+    "outcome": "pass",
+    "detail": "HTTP 200, 3.1 KB"
+   },
+   {
+    "id": "cdn",
+    "what": "Fetch a file from an allowed CDN",
+    "target": "cdn.example.invalid/lib.json",
+    "ms": 320,
+    "outcome": "pass",
+    "detail": "HTTP 200, lib 2.4.1"
+   },
+   {
+    "id": "other",
+    "what": "Fetch from another server",
+    "target": "api.example.invalid/status",
+    "ms": 60,
+    "outcome": "fail",
+    "detail": "Blocked by the page's security policy"
+   },
+   {
+    "id": "stream",
+    "what": "Open a live stream",
+    "target": "stream.example.invalid/events",
+    "ms": 480,
+    "outcome": "pass",
+    "detail": "received an event"
+   },
+   {
+    "id": "socket",
+    "what": "Open a WebSocket",
+    "target": "wss://echo.example.invalid",
+    "ms": 90,
+    "outcome": "fail",
+    "detail": "connection failed"
+   },
+   {
+    "id": "local",
+    "what": "Reach a service on this computer",
+    "target": "http://127.0.0.1:8090/health",
+    "ms": 99999,
+    "outcome": "hang",
+    "detail": ""
+   }
+  ]
+ },
+ "scenarios": {
+  "note": "Invented.",
+  "matrix": {
+   "caption": "What breaks, and what keeps working",
+   "note": "Under each kiln setup.",
+   "columns": [
+    {
+     "id": "one",
+     "label": "One kiln"
+    },
+    {
+     "id": "two",
+     "label": "Two kilns"
+    }
+   ],
+   "rows": [
+    {
+     "name": "Element burns out mid-firing",
+     "cells": {
+      "one": {
+       "verdict": "stopped",
+       "tone": "danger",
+       "text": "The load is lost; the kiln is down until a new element arrives."
+      },
+      "two": {
+       "verdict": "serves",
+       "tone": "ok",
+       "text": "The second kiln carries the week's work."
+      }
+     },
+     "response": "Order spare elements in pairs and keep one on the shelf."
+    },
+    {
+     "name": "Planned maintenance",
+     "cells": {
+      "one": {
+       "verdict": "no margin",
+       "tone": "warn",
+       "text": "A day of cleaning is a day without firing."
+      },
+      "two": {
+       "verdict": "margin 1",
+       "tone": "ok",
+       "text": "Clean one while the other fires."
+      }
+     },
+     "response": "Clean the cooler kiln the day after it fires."
+    },
+    {
+     "name": "Power cut overnight",
+     "pick": "worst case",
+     "cells": {
+      "one": {
+       "verdict": "stopped",
+       "tone": "danger",
+       "text": "A firing past 900 °C is spoiled."
+      },
+      "two": {
+       "verdict": "stopped",
+       "tone": "danger",
+       "text": "Both go down; a shared circuit changes nothing."
+      }
+     },
+     "response": "Put both kilns on the same alarm and the same phone number."
+    },
+    {
+     "name": "Vent fan fails",
+     "flag": "unconfirmed",
+     "cells": {
+      "one": {
+       "verdict": "degrades",
+       "tone": "warn",
+       "text": "Fumes build; the interlock should refuse the next start."
+      },
+      "two": {
+       "verdict": "degrades",
+       "tone": "warn",
+       "text": "Same, per kiln."
+      }
+     },
+     "response": "Test the interlock once a month."
+    }
+   ],
+   "legend": [
+    {
+     "verdict": "serves",
+     "tone": "ok",
+     "means": "work continues"
+    },
+    {
+     "verdict": "degrades",
+     "tone": "warn",
+     "means": "works, with a loss"
+    },
+    {
+     "verdict": "stopped",
+     "tone": "danger",
+     "means": "no firing until fixed"
+    }
+   ]
+  },
+  "ledger": {
+   "caption": "Checks before the first firing of the season",
+   "note": "Happy path and error path for each control.",
+   "columns": [
+    {
+     "id": "happy",
+     "label": "Happy path"
+    },
+    {
+     "id": "error",
+     "label": "Error path"
+    }
+   ],
+   "responseLabel": null,
+   "rows": [
+    {
+     "name": "Start button",
+     "cells": {
+      "happy": {
+       "verdict": "done",
+       "tone": "ok",
+       "text": "Starts the loaded schedule."
+      },
+      "error": {
+       "verdict": "done",
+       "tone": "ok",
+       "text": "Refuses with the vent off and says why."
+      }
+     }
+    },
+    {
+     "name": "Halt button",
+     "cells": {
+      "happy": {
+       "verdict": "done",
+       "tone": "ok",
+       "text": "Cuts the elements, keeps the vent."
+      },
+      "error": {
+       "verdict": "to test",
+       "tone": "muted",
+       "text": ""
+      }
+     }
+    },
+    {
+     "name": "Schedule edit",
+     "cells": {
+      "happy": {
+       "verdict": "partial",
+       "tone": "warn",
+       "text": "Saved, but the display shows the old peak until a restart."
+      },
+      "error": {
+       "verdict": "to test",
+       "tone": "muted",
+       "text": ""
+      }
+     }
+    }
+   ]
+  }
+ },
+ "secret-input": {
+  "note": "Invented names. The preview stores nothing and sends nothing; it only clears the field the way a real send does.",
+  "names": [
+   {
+    "name": "studio/booking-api-token",
+    "note": "in use"
+   },
+   {
+    "name": "studio/kiln-controller-key",
+    "note": "in use"
+   },
+   {
+    "name": "studio/session-salt",
+    "note": "generated only"
+   },
+   {
+    "name": "studio/mail-relay-password",
+    "note": "missing"
+   }
+  ],
+  "shapes": [
+   {
+    "endsWith": "-token",
+    "hex": 48,
+    "what": "48 hex characters"
+   },
+   {
+    "endsWith": "-key",
+    "multiline": true,
+    "what": "a key block, lines and all"
+   }
+  ],
+  "existing": {
+   "studio/booking-api-token": "Set 3 months ago.",
+   "studio/kiln-controller-key": "Set last year."
+  },
+  "generateOnly": [
+   "studio/session-salt"
+  ],
+  "confirmWord": "replace"
+ },
+ "settings": {
+  "note": "An invented registry snapshot in the shape of ADP.config.all(): the core groups plus a board group, and an editor. Dates are UTC.",
+  "user": {
+   "canEdit": true,
+   "id": "mara"
+  },
+  "all": {
+   "edit": {
+    "locked": {
+     "type": "bool",
+     "default": false,
+     "label": "Pause editing",
+     "help": "Freezes every control marked data-adp-edit and shows a banner.",
+     "level": "db",
+     "value": false,
+     "changed": {
+      "by": "tobias",
+      "at": "2026-10-20T09:12:00Z"
+     }
+    },
+    "until": {
+     "type": "datetime",
+     "default": "",
+     "label": "Paused until",
+     "help": "Shown in the banner; nothing lifts the freeze by itself.",
+     "level": "page",
+     "value": "",
+     "changed": null
+    },
+    "reason": {
+     "type": "text",
+     "default": "",
+     "label": "Reason",
+     "level": "page",
+     "value": "",
+     "changed": null
+    },
+    "require-hold": {
+     "type": "bool",
+     "default": false,
+     "label": "Require a hold",
+     "help": "A publish touching a part nobody holds is refused by adp.py record.",
+     "level": "page",
+     "value": true,
+     "changed": {
+      "by": "mara",
+      "at": "2026-10-21T15:40:00Z"
+     }
+    }
+   },
+   "parts": {
+    "locked": {
+     "type": "list",
+     "default": [],
+     "label": "Locked parts",
+     "help": "Part-id prefixes that are frozen, one per line.",
+     "level": "page",
+     "value": [
+      "core",
+      "page.header"
+     ],
+     "changed": {
+      "by": "mara",
+      "at": "2026-10-21T15:41:00Z"
+     }
+    }
+   },
+   "comments": {
+    "enabled": {
+     "type": "bool",
+     "default": true,
+     "label": "Comment mode",
+     "help": "Old threads still resolve when this is off.",
+     "level": "page",
+     "value": true,
+     "changed": null
+    }
+   },
+   "panel": {
+    "changes": {
+     "type": "enum",
+     "options": [
+      "everyone",
+      "editors",
+      "off"
+     ],
+     "default": "everyone",
+     "label": "What changed panel",
+     "help": "Who sees the list of changes.",
+     "level": "page",
+     "value": "everyone",
+     "changed": null
+    },
+    "checks": {
+     "type": "enum",
+     "options": [
+      "everyone",
+      "editors",
+      "off"
+     ],
+     "default": "editors",
+     "label": "Integrity badge",
+     "level": "page",
+     "value": "editors",
+     "changed": null
+    }
+   },
+   "look": {
+    "theme": {
+     "type": "text",
+     "default": "",
+     "label": "Theme id",
+     "help": "The kit's token css reacts to it.",
+     "level": "page",
+     "value": "harbour",
+     "changed": {
+      "by": "tobias",
+      "at": "2026-10-19T08:00:00Z"
+     }
+    },
+    "mode": {
+     "type": "enum",
+     "options": [
+      "auto",
+      "light",
+      "dark"
+     ],
+     "default": "auto",
+     "label": "Colour mode",
+     "level": "page",
+     "value": "auto",
+     "changed": null
+    },
+    "density": {
+     "type": "enum",
+     "options": [
+      "comfortable",
+      "compact"
+     ],
+     "default": "comfortable",
+     "label": "Density",
+     "level": "page",
+     "value": "comfortable",
+     "changed": null
+    }
+   },
+   "links": {
+    "catalog": {
+     "type": "url",
+     "default": "",
+     "label": "Catalog",
+     "help": "The artifact names its own catalog. An https:// address or empty.",
+     "level": "page",
+     "value": "https://catalog.example/kit",
+     "changed": null
+    },
+    "repo": {
+     "type": "url",
+     "default": "",
+     "label": "Repository",
+     "level": "page",
+     "value": "",
+     "changed": null
+    }
+   },
+   "board": {
+    "read-only": {
+     "type": "bool",
+     "default": false,
+     "label": "Board is read-only",
+     "help": "Cards can be opened but not moved or edited.",
+     "level": "db",
+     "value": false,
+     "changed": null
+    },
+    "default-project": {
+     "type": "text",
+     "default": "",
+     "label": "Default project",
+     "help": "New cards land here.",
+     "level": "page",
+     "value": "Harbour",
+     "changed": null
+    }
+   }
+  }
+ },
+ "specimens": {
+  "note": "Invented: one button and its toasts, in two skins named after glazes.",
+  "title": "Firing button",
+  "skins": [
+   {
+    "id": "celadon",
+    "label": "Celadon",
+    "vars": {
+     "--s-bg": "#e9f0ed",
+     "--s-panel": "#f8fbf9",
+     "--s-ink": "#14231d",
+     "--s-ink-2": "#41544c",
+     "--s-line": "#b7c9c1",
+     "--s-accent": "#1d634c",
+     "--s-accent-ink": "#f8fbf9",
+     "--s-ok": "#1d6a3a",
+     "--s-bad": "#a42f1e",
+     "--s-radius": "10px"
+    }
+   },
+   {
+    "id": "raku",
+    "label": "Raku",
+    "vars": {
+     "--s-bg": "#1d1512",
+     "--s-panel": "#2a1e19",
+     "--s-ink": "#f4e8dc",
+     "--s-ink-2": "#cdb8a6",
+     "--s-line": "#54403a",
+     "--s-accent": "#e7a24a",
+     "--s-accent-ink": "#231508",
+     "--s-ok": "#9bd3a3",
+     "--s-bad": "#ff9484",
+     "--s-radius": "3px"
+    }
+   }
+  ],
+  "states": [
+   {
+    "label": "Default",
+    "state": "default",
+    "text": "Start firing"
+   },
+   {
+    "label": "Hover",
+    "state": "hover",
+    "text": "Start firing"
+   },
+   {
+    "label": "Focused with Tab",
+    "state": "focus",
+    "text": "Start firing"
+   },
+   {
+    "label": "Busy",
+    "state": "busy",
+    "text": "Firing"
+   },
+   {
+    "label": "Disabled",
+    "state": "disabled",
+    "text": "Start firing"
+   },
+   {
+    "label": "Done, 2 s",
+    "state": "done",
+    "text": "Fired"
+   }
+  ],
+  "toasts": [
+   {
+    "caption": "A tag key: filed",
+    "tone": "ok",
+    "text": "Filed under Bisque"
+   },
+   {
+    "caption": "Same key again",
+    "tone": "warn",
+    "text": "Already filed under Bisque"
+   },
+   {
+    "caption": "A key with no tag",
+    "tone": "bad",
+    "text": "No tag on key 6"
+   }
+  ],
+  "cells": {
+   "empty": {
+    "title": "No firings yet",
+    "text": "Load the kiln and start a firing. It appears here."
+   },
+   "missing": {
+    "title": "No log for this firing",
+    "text": "The controller did not send one. Import it by hand."
+   }
+  }
+ },
+ "status-columns": {
+  "note": "Twelve invented cards in six lanes. The lane table is the vocabulary's: word, glyph and tone per state.",
+  "vocab": {
+   "lane": {
+    "queued": {
+     "word": "Queued",
+     "short": "queued",
+     "glyph": "ring",
+     "tone": "neutral",
+     "motion": "none"
+    },
+    "running": {
+     "word": "Running",
+     "short": "run",
+     "glyph": "pulse",
+     "tone": "active",
+     "motion": "breathe"
+    },
+    "waiting": {
+     "word": "Waiting for you",
+     "short": "wait",
+     "glyph": "hand",
+     "tone": "attention",
+     "motion": "turn"
+    },
+    "review": {
+     "word": "In review",
+     "short": "review",
+     "glyph": "eye",
+     "tone": "review",
+     "motion": "none"
+    },
+    "blocked": {
+     "word": "Blocked",
+     "short": "blocked",
+     "glyph": "stop",
+     "tone": "danger",
+     "motion": "none"
+    },
+    "done": {
+     "word": "Done",
+     "short": "done",
+     "glyph": "check",
+     "tone": "success",
+     "motion": "none"
+    }
+   }
+  },
+  "groups": [
+   {
+    "key": "state",
+    "label": "State",
+    "field": "state",
+    "enum": "lane"
+   },
+   {
+    "key": "owner",
+    "label": "Owner",
+    "field": "owner",
+    "none": "Unassigned"
+   }
+  ],
+  "limits": {
+   "running": 3
+  },
+  "cards": [
+   {
+    "id": "T-41",
+    "title": "Round tide heights to the nearest centimetre",
+    "state": "done",
+    "owner": "Mara",
+    "note": "Heights round on the way in, so the chart and the table agree.",
+    "extras": [
+     [
+      "Commit",
+      "a41c9e2"
+     ],
+     [
+      "Tests",
+      "38 passed"
+     ]
+    ]
+   },
+   {
+    "id": "T-44",
+    "title": "Add a unit toggle to the tide chart",
+    "state": "running",
+    "owner": "Mara",
+    "note": "Markup is in; the labels are placeholders.",
+    "extras": [
+     [
+      "Branch",
+      "unit-toggle"
+     ]
+    ]
+   },
+   {
+    "id": "T-37",
+    "title": "Write the harbour guide, chapter 3",
+    "state": "running",
+    "owner": "Priya",
+    "note": "Draft pushed; glossary and read-through left.",
+    "extras": [
+     [
+      "Words",
+      "2,400"
+     ]
+    ]
+   },
+   {
+    "id": "T-46",
+    "title": "Draw the lantern icon set",
+    "state": "running",
+    "owner": "Sol",
+    "note": "Eight of twelve icons drawn."
+   },
+   {
+    "id": "T-47",
+    "title": "Check the chart with a screen reader",
+    "state": "running",
+    "owner": "Ines",
+    "note": "Reading order is right; the tide labels are read twice."
+   },
+   {
+    "id": "T-40",
+    "title": "Pick a name for the offline mode",
+    "state": "waiting",
+    "owner": "Tobias",
+    "note": "Mara asked where the offline icon goes on the chart header.",
+    "extras": [
+     [
+      "Asked",
+      "Thu 10:02"
+     ]
+    ]
+   },
+   {
+    "id": "T-48",
+    "title": "Approve the store listing text",
+    "state": "waiting",
+    "owner": "Tobias",
+    "note": "Three paragraphs, 480 characters.",
+    "extras": [
+     [
+      "Due",
+      "Fri"
+     ]
+    ]
+   },
+   {
+    "id": "T-38",
+    "title": "Review the lantern colour tokens",
+    "state": "review",
+    "owner": "Ines",
+    "note": "Muted text is under 4.5 to 1 on the panel.",
+    "extras": [
+     [
+      "Findings",
+      "1 fix, 1 nit"
+     ]
+    ]
+   },
+   {
+    "id": "T-45",
+    "title": "Publish the release notes",
+    "state": "review",
+    "owner": "Priya",
+    "note": "Waiting for the photo credits."
+   },
+   {
+    "id": "T-42",
+    "title": "Fix the flaky weather sync test",
+    "state": "blocked",
+    "owner": "Wen",
+    "note": "Fails on a slow network; the longer timeout waits for approval.",
+    "extras": [
+     [
+      "Waiting on",
+      "Tobias"
+     ]
+    ]
+   },
+   {
+    "id": "T-49",
+    "title": "Collect tide station photos",
+    "state": "done",
+    "owner": "Sol",
+    "note": "Three photos placed."
+   },
+   {
+    "id": "T-50",
+    "title": "Plan the winter tide tables",
+    "state": "queued",
+    "owner": null,
+    "note": "Not started; nobody owns it yet."
+   }
+  ]
+ },
+ "steps": {
+  "note": "Invented.",
+  "key": "catalog-preview-steps",
+  "phases": [
+   {
+    "id": "prep",
+    "title": "Before the firing",
+    "note": "Do these in order; the load is the last one.",
+    "steps": [
+     {
+      "id": "shelves",
+      "title": "Wash and check the shelves",
+      "body": "Scrape old glaze drips with the flat stone, then wipe with a damp sponge. Look for hairline cracks along the edges.",
+      "done": "every shelf rings clear when tapped.",
+      "ids": [
+       "K-11"
+      ]
+     },
+     {
+      "id": "wadding",
+      "title": "Wad the pots that touch",
+      "body": "Press a pea of wadding under each foot that sits on a glazed shelf.",
+      "details": [
+       "Use alumina wadding above cone 6.",
+       "Never wad the rim of a lid."
+      ],
+      "ids": [
+       "K-12",
+       "K-13"
+      ]
+     },
+     {
+      "id": "vent",
+      "title": "Switch the vent fan on",
+      "body": "The fan runs from its own breaker in the kiln room. Check that it spins before the first element switches on.",
+      "done": "the fan is audible and the airflow card lifts at the vent.",
+      "gate": true,
+      "ids": [
+       "K-14"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "fire",
+    "title": "The firing",
+    "note": "About eleven hours to cone 6.",
+    "steps": [
+     {
+      "id": "load",
+      "title": "Load, then close the lid",
+      "body": "Tall pots at the back, test tiles on the top shelf where the peep hole shows them.",
+      "done": "the lid seals with no light at the seam.",
+      "ids": [
+       "K-21"
+      ]
+     },
+     {
+      "id": "start",
+      "title": "Start the slow schedule",
+      "body": "Press Start on the controller and note the time in the log. Check the first ramp after thirty minutes.",
+      "ids": [
+       "K-22"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "steps-owners": {
+  "note": "Invented: mixing a shared glaze bucket, from the glaze table to the kiln.",
+  "intro": "Mixing a new glaze bucket takes three people. The seat changes hands once, at the signed-off batch sheet.",
+  "label": "Mixing a glaze bucket",
+  "actors": [
+   {
+    "id": "mixer",
+    "label": "Mixer"
+   },
+   {
+    "id": "lead",
+    "label": "Studio lead"
+   },
+   {
+    "id": "tech",
+    "label": "Kiln technician"
+   }
+  ],
+  "steps": [
+   {
+    "id": "G1",
+    "name": "Weigh the dry batch",
+    "who": [
+     "mixer"
+    ],
+    "done": "every material is on the batch sheet to the gram.",
+    "fact": "batch-sheet.weighed",
+    "fail": "A material runs short: stop, write the shortfall on the sheet and tell the lead."
+   },
+   {
+    "id": "G2",
+    "name": "Sieve and mix",
+    "who": [
+     "mixer"
+    ],
+    "done": "the slop passes an 80-mesh sieve twice with no grit.",
+    "fact": "bucket.mixed",
+    "fail": "Grit stays in the sieve: re-mix for ten minutes, then sieve again."
+   },
+   {
+    "id": "G3",
+    "name": "Check the specific gravity",
+    "who": [
+     "mixer",
+     "lead"
+    ],
+    "done": "the reading is between 1.42 and 1.48.",
+    "fact": "bucket.gravity_ok"
+   },
+   {
+    "id": "G4",
+    "name": "Sign off the batch sheet",
+    "who": [
+     "lead"
+    ],
+    "done": "the lead has initialled the sheet and shelved the bucket.",
+    "fact": "batch-sheet.signed",
+    "fail": "A reading is outside its range: the bucket goes back to G2, not on the shelf."
+   },
+   {
+    "id": "G5",
+    "name": "Fire a test tile",
+    "who": [
+     "tech"
+    ],
+    "done": "the tile is back from cone 6 and photographed.",
+    "fact": "tile.photographed",
+    "fail": "The tile crawls or runs: label the bucket Hold and tell the lead."
+   }
+  ],
+  "seam": {
+   "after": "G4",
+   "label": "The kiln technician takes the bucket"
+  },
+  "current": "G3"
+ },
+ "timed-reveal": {
+  "note": "Every value here is made up and fixed in this file; the preview’s fetch returns it from memory. A real board supplies its own fetch.",
+  "title": "Studio logins",
+  "duration": 60,
+  "valueSeconds": 12,
+  "items": [
+   {
+    "id": "wifi",
+    "label": "front-desk-wifi",
+    "sub": "Guest network at the front desk",
+    "slots": [
+     {
+      "key": "password",
+      "label": "Password"
+     }
+    ]
+   },
+   {
+    "id": "booking",
+    "label": "booking-site",
+    "sub": "Class bookings",
+    "slots": [
+     {
+      "key": "password",
+      "label": "Password"
+     },
+     {
+      "key": "backup",
+      "label": "Backup code"
+     }
+    ]
+   },
+   {
+    "id": "alarm",
+    "label": "door-alarm",
+    "sub": "Keypad at the back door",
+    "slots": [
+     {
+      "key": "password",
+      "label": "Code"
+     },
+     {
+      "key": "backup",
+      "label": "Backup code",
+      "none": true
+     }
+    ]
+   }
+  ],
+  "values": {
+   "wifi/password": "clay-bird-4281-moss",
+   "booking/password": "tile-lantern-7730",
+   "booking/backup": "5516-0023",
+   "alarm/password": "48271"
+  }
+ },
+ "verdict": {
+  "note": "Invented.",
+  "verdicts": [
+   {
+    "tone": "ok",
+    "k": "Verdict",
+    "word": "Safe to fire",
+    "list": [
+     "The vent interlock passed three of three tests.",
+     "The shelves rang clear.",
+     "The cone pack is in the peep-hole line."
+    ]
+   },
+   {
+    "tone": "warn",
+    "k": "Verdict",
+    "word": "Fire after one fix",
+    "list": [
+     "The lid seal shows light on the left side.",
+     "Replace the gasket, then fire."
+    ]
+   },
+   {
+    "tone": "danger",
+    "k": "Verdict",
+    "word": "Do not fire",
+    "list": [
+     "Element 2 reads open circuit."
+    ]
+   }
+  ],
+  "statuses": [
+   {
+    "tone": "ok",
+    "badge": "Ready",
+    "text": "Kiln A is cooled and can be unloaded.",
+    "meta": [
+     "Checked 06:10",
+     "Cones read",
+     "3 of 3 gates"
+    ]
+   },
+   {
+    "tone": "warn",
+    "badge": "At risk",
+    "text": "Kiln B is firing with the vent running slow.",
+    "meta": [
+     "Ramp 3 of 5",
+     "Vent at 60 %"
+    ]
+   },
+   {
+    "tone": "danger",
+    "badge": "Blocked",
+    "text": "The loading shelf is short two shelves.",
+    "meta": [
+     "Order sent",
+     "Back Thursday"
+    ]
+   },
+   {
+    "tone": "info",
+    "badge": "Waiting",
+    "text": "The cone chart is with the supplier.",
+    "meta": [
+     "Asked Monday"
+    ]
+   }
+  ],
+  "mast": {
+   "stamp": "Draft for review",
+   "title": "Is the new kiln worth it?",
+   "dek": "A one-page answer from the spring firing log, written for the studio committee.",
+   "verdicts": [
+    "Yes, if the second circuit costs under 600 euros.",
+    "Yes, and it pays back inside two years.",
+    "Not yet: the old kiln is fine until the lid fails."
+   ],
+   "meta": [
+    "Studio committee",
+    "Spring log",
+    "Revised 25 May"
+   ]
+  }
+ },
+ "work-card": {
+  "note": "Four invented work items. Times are UTC.",
+  "items": [
+   {
+    "id": "T-40",
+    "title": "Pick a name for the offline mode",
+    "rawTitle": "need name for offline thing",
+    "state": "running",
+    "verdict": "none",
+    "owner": "Mara",
+    "expects": "reply",
+    "openAsks": 1,
+    "holds": {
+     "kind": "doc",
+     "name": "release-notes"
+    },
+    "version": 6,
+    "authored": {
+     "by": "Priya",
+     "kind": "polished",
+     "at": "2026-10-22T09:10:00Z",
+     "version": 6
+    }
+   },
+   {
+    "id": "T-38",
+    "title": "Review the lantern colour tokens",
+    "state": "review",
+    "verdict": "changes",
+    "owner": "Ines",
+    "expects": "review",
+    "openAsks": 0,
+    "version": 9,
+    "authored": {
+     "by": "Mara",
+     "kind": "agent",
+     "at": "2026-10-21T16:25:00Z",
+     "version": 9
+    }
+   },
+   {
+    "id": "T-41",
+    "title": "Round tide heights to the nearest centimetre",
+    "state": "done",
+    "verdict": "approved",
+    "owner": "Mara",
+    "expects": "nothing",
+    "openAsks": 0,
+    "version": 12,
+    "outcome": {
+     "kind": "landed",
+     "ref": {
+      "type": "commit",
+      "value": "a41c9e2"
+     }
+    },
+    "answered": {
+     "answer": "Looks right, ship it",
+     "state": "read",
+     "by": "Mara",
+     "at": "2026-10-20T16:08:00Z"
+    },
+    "authored": {
+     "by": "Mara",
+     "kind": "agent",
+     "at": "2026-10-20T15:40:00Z",
+     "version": 12
+    }
+   },
+   {
+    "id": "T-45",
+    "title": "Publish the release notes",
+    "rawTitle": "release notes pls",
+    "state": "blocked",
+    "verdict": "none",
+    "owner": "Priya",
+    "expects": "reply",
+    "openAsks": 2,
+    "holds": {
+     "kind": "doc",
+     "name": "release-notes"
+    },
+    "version": 8,
+    "authored": {
+     "by": "Priya",
+     "kind": "polished",
+     "at": "2026-10-21T08:30:00Z",
+     "version": 5
+    }
+   }
+  ]
+ }
+}

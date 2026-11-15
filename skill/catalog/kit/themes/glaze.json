@@ -52,7 +52,14 @@
   "--f-display": "\"Newsreader\", \"New York\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
   "--f-ui": "\"Nunito\", ui-rounded, \"SF Pro Rounded\", \"Avenir Next\", system-ui, sans-serif",
   "--f-mono": "\"JetBrains Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
-  "--f-hand": "\"Kalam\", \"Segoe Print\", \"Comic Sans MS\", cursive"
+  "--f-hand": "\"Kalam\", \"Segoe Print\", \"Comic Sans MS\", cursive",
+  "--outline": "#c3cfd3",
+  "--edge-w": "1px",
+  "--text-size": "15px",
+  "--leading": "1.55",
+  "--head-case": "none",
+  "--bg-image": "none",
+  "--bg-size": "auto"
  },
  "dark": {
   "--bg": "#130e0c",
@@ -98,7 +105,8 @@
   "--sticky-ink": "#1a120f",
   "--canvas": "#1a1311",
   "--dot": "rgba(243, 234, 223, .09)",
-  "--shadow": "0 1px 2px rgba(0, 0, 0, .55), 0 12px 28px -14px rgba(0, 0, 0, .7)"
+  "--shadow": "0 1px 2px rgba(0, 0, 0, .55), 0 12px 28px -14px rgba(0, 0, 0, .7)",
+  "--outline": "#4a3830"
  },
  "aliases": {},
  "scale": {}

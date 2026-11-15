@@ -20,6 +20,7 @@
  *   Kit.blockPicker.isOpen() -> bool;   Kit.blockPicker.close() leaves with null
  *
  * @id        pattern.block-picker
+ * @kind      component
  * @group     Patterns
  * @status    new
  * @version   0.1.0
@@ -27,12 +28,18 @@
  * @summary   Point at one block of the page before saying what you want about it: the page dims around one [data-part] block at a time, a bar names it, and Enter, a click or Pick this block returns its id, title, hash and text.
  * @tags      block, picker, select, quote, shortcut, keyboard, assist, claude, data-part, scope
  * @requires  kit.tokens, kit.dom
+ * @files     kit/patterns/block-picker.css, kit/samples/patterns.json
  * @provides  Kit.blockPicker.open, Kit.blockPicker.bind, Kit.blockPicker.isOpen, Kit.blockPicker.close, Kit.blockPicker.keyLabel, Kit.blockPicker.matches
  * @config    Kit.blockPicker.open(opts) | titles {part id: title}, hashOf(el) -> hash, root (default document), skip (selector never offered), quoteMax (default 600), start (element or part id), words {title, of, prev, next, pick, cancel, none, keys}; resolves {id, label, hash, quote, el} or null
  * @config    Kit.blockPicker.bind(opts) | shortcut (default Mod+Shift+K), onPick(pick), open (the options for open); returns {unbind}. Not on a page that runs the assist engine, which binds the key itself
- * @tokens    --panel --ink --ink-2 --rule --accent --accent-ink --f-ui --f-mono --seam? --shadow?
+ * @tokens    --panel --ink --ink-2 --rule --accent --accent-ink? --f-ui --f-mono --seam? --shadow?
  * @globals   none
  * @db        none
+ * @source    Catalog batch 16, 2026-10-26 | the runtime's comment mode | the crosshair over [data-part], titles from the page, the part:key anchor
+ * @source    Catalog batch 16, 2026-10-26 | a drafting board's request lane | what it lacked: a block quote and a shortcut to point at a block
+ * @preview   {"render": "pattern.block-picker", "samples": ["kit/samples/patterns.json#block-picker"]}
+ * @samples   block-picker
+ * @changed   One block at a time with a ring and a dimmed page, instead of a crosshair over every block.
  */
 (function () {
 'use strict';

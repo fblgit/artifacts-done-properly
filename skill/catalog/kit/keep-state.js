@@ -19,6 +19,7 @@
  *   data-keep-shown="key"         a block whose hidden attribute is kept (an open reply box); use the key you toggle with
  *
  * @id        kit.keep-state
+ * @kind      component
  * @group     Board kit
  * @status    new
  * @version   0.1.0
@@ -26,11 +27,18 @@
  * @summary   Save drafts, focus, selection and open sections before a live page redraws, and put them back after.
  * @tags      redraw, re-render, draft, focus, caret, state, live
  * @requires  none
+ * @files     kit/samples/kit.json
  * @provides  Kit.keepState.capture, Kit.keepState.restore, Kit.keepState.wrap
  * @config    Kit.keepState.wrap(root, render, {storageKey}) | redraw(...args) calls render(...args) between a capture and a restore; redraw.snap() and redraw.clear(key) manage the drafts
  * @config    markup | data-keep='key' on fields, details and scroll panes (with data-keep-scroll); data-keep-shown='key' on blocks whose hidden state is kept
+ * @tokens    none
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's render | restoring its open history, reply and reject boxes
+ * @source    Catalog harvest, 2026-10-25 | a task page's list | putting back half-typed drafts after every refresh
+ * @preview   {"render": "kit.keep-state", "samples": ["kit/samples/kit.json#keep-state"]}
+ * @samples   keep-state
+ * @changed   Rebuilt as a generic helper keyed by data-keep rather than the source's per-board sets; it needs no store.
  */
 (function () {
 'use strict';

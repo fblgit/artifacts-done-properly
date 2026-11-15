@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """ADP parts tool, adp/2 layout (artifact-dataplane skill; it still reads adp/1 pages): part markers -> per-part hashes -> manifest -> diff.
 
-  adp.py setup [--scope user|project|local] [--dry-run] [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
+  adp.py setup --scope user|project|local [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
+  adp.py setup [--scope ...] --dry-run              what setup would do (scope user when not given); writes nothing. Without --scope or --dry-run, setup prints its usage and writes nothing
   adp.py init [DIR]                                 DIR/.adp/config.json for project onboarding; also registers the project (name, path) in ~/.adp/projects/
   adp.py projects                                   the registered projects: name, scope, path
   --project NAME|PATH                               optional, never a default: the project root instead of cwd (a directory, or the name of a registered project; unknown: exit 1);
@@ -14,10 +15,12 @@
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
-  adp.py new (TEMPLATE | --tier minimal|default|full) DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]
+  adp.py new (TEMPLATE | --tier minimal|default|full) DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme NAME] [--layout ID] [--catalog URL|-|catalog.json]
                                                     --tier instead of TEMPLATE: minimal = starter, default = default, full = not available yet (the published catalog, later)
                                                     a ready adp/2 artifact in DIR (seed.json and seed/ included; --data as in seed), plus ONE publish object: with a fetched catalog index
-                                                    (saved, or --catalog) its `files` already carry the taken kit entries, --theme and --layout.
+                                                    (saved, or --catalog) its `files` already carry the taken kit entries, the theme and --layout.
+                                                    --theme: the theme the page wears, by short name (`default`, `glaze`) or entry id (`theme.glaze`); without it the page wears
+                                                    theme.default when the catalog index has it. An unknown name exits with the themes the index has.
                                                     --content: views from a content file (`## Lead` text; `## View: <label> (id: <id>)`;
                                                     under it `### Section <id> - <title>` + one ```html block each, used verbatim); the
                                                     starter's welcome view goes; prints built {views, sections, parts, bytes}
@@ -29,7 +32,8 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
   adp.py pins publish-1.json=VERSION_ID ... [--out vermap.json]
                                                     {path: version id} for CAT_VERMAP from the batches and the id each publish returned
   adp.py catalog [URL]                              the user's catalog: URL saves it (~/.adp/config.json); prints the Artifact read that
-                                                    fetches its catalog.json into ~/.adp/catalogs/<id>/, or the fetched index's ver and built
+                                                    fetches its catalog.json into ~/.adp/catalog/ (My Own Kit), then the reads (256 paths at most
+                                                    each) for every file the index lists; `complete` says the whole kit is local. Or ver and built
   adp.py take CATALOG ID ... [--url URL] [--config C.json]
                                                     a files map taking catalog entries by reference, requires first. CATALOG is the catalog
                                                     url (its fetched index is the live one), `-` for the saved catalog, or a local catalog.json
@@ -46,7 +50,7 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
                                                     catalog entries ranked by overlap with tags, name, summary, id, provides and about, grouped by kind prefix (no model call)
   adp.py kit list [CATALOG] [--kind K] [--tag T]    one JSON line per entry; CATALOG defaults to - (the saved catalog)
   adp.py kit show ID [CATALOG]                      name, summary, about, tags, files, requires, provides
-  adp.py kit describe ID [CATALOG]                  the mount signature: needs, provides, requires, file paths, the sample path
+  adp.py kit describe ID [CATALOG]                  the mount signature: needs, provides, requires, file paths, the sample path (a bundle, and sample_key in it)
 The loop (docs/architecture.md "The loop"; each reads what the model fetched, from files):
   adp.py export DIR --url URL [--files-listing F.json] [--docs D.json] [--version V]
                                                     remote-to-local incoming: without the listing or the docs it prints the reads (exit 2);
@@ -71,7 +75,10 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
                 --done RID --response FILE [--changed a,b] [--version V] [--turns TURNS.json] [--by NAME]] [--pins P.json] [--out DIR]
                                                     the open requests/ of a page that asks (docs/assist.md; ping-lane requests are listed on purpose, a session needs them to answer a ping); with an option, the pinned
                                                     write that moves one forward, plus presence/<NAME>. --turns: answer a reply in the next turn
-Batches are written to files (--out, default DIR.adp/) and printed as `writes` lists whose entries carry file_path.
+Local emulator (try a page offline: its db and Claude requests stood in by files under DIR/.adp-dev; `adp.py dev help`):
+  adp.py dev serve DIR [--port 8787] [--user ID]
+  adp.py dev watch DIR  |  dev send DIR OUT.json   (the session side: messages in, as JSON lines; batches out, pushed to the page)
+Batches are written to files (--out, default DIR.adp/; config and requests name no DIR: config/ and requests/ in the .adp/ the log uses) and printed as `writes` lists whose entries carry file_path.
 P.json maps "collection/doc" to the version you read, e.g. {"manifest/current": 4, "parts/home": 2}.
 C.json is config/current as read ({schema, at, by, values, changed}, or wrapped in data). With --config, hold and record exit 2
 when edit.locked is true ({error: "locked", by, at, reason}) and when a changed part falls under a parts.locked prefix
@@ -87,6 +94,7 @@ Markers (HTML or JS/CSS comments): <!-- part:ID --> ... <!-- /part:ID -->  |  /*
 ID: dot-separated lowercase kebab, e.g. triage.keys-table. Hash: sha256 of the text between the markers with
 whitespace runs collapsed, first 12 hex; a parent's text includes its children. Stdlib only; run with python3 -I."""
 import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys
+from html import escape as html_escape
 
 ID = r'[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*'
 TAG = re.compile(r'<[A-Za-z][A-Za-z0-9-]*')   # an opening tag (also inside JS template strings)
@@ -250,12 +258,39 @@ CAT_URL = re.compile(r'https://claude\.ai/(?:code/)?artifact/[A-Za-z0-9-]+/?$')
 
 
 def cat_dir(url):
-    return os.path.join(ADP_HOME, 'catalogs', url.rstrip('/').rsplit('/', 1)[-1])
+    """Where the user's own kit sits on disk: ~/.adp/catalog (My Own Kit). A copy an older adp.py fetched into ~/.adp/catalogs/<id>/ is still
+    used while the new folder has no index yet, so nothing already fetched is lost."""
+    new, old = os.path.join(ADP_HOME, 'catalog'), os.path.join(ADP_HOME, 'catalogs', url.rstrip('/').rsplit('/', 1)[-1])
+    return old if os.path.isfile(os.path.join(old, 'catalog.json')) and not os.path.isfile(os.path.join(new, 'catalog.json')) else new
 
 
 def fetch_call(url):
-    """The one Artifact read that brings a catalog's live index to disk, where `take` and `catalog` find it."""
-    return {'tool': 'Artifact', 'action': 'read', 'url': url, 'path': 'catalog.json', 'out_dir': cat_dir(url), 'then': 'run the command again'}
+    """The Artifact read that brings a catalog's live index to disk, where `take` and `catalog` find it; `adp.py catalog` then lists the reads for the rest of the kit."""
+    return {'tool': 'Artifact', 'action': 'read', 'url': url, 'path': 'catalog.json', 'out_dir': cat_dir(url), 'then': 'run `adp.py catalog` again: it lists the reads for the whole kit (My Own Kit)'}
+
+
+def kit_missing(root, cat):
+    """(paths the index lists, those not on disk under root or whose sha256 differs): the files of every entry, each main file too."""
+    want = {}
+    for e in cat.get('entries', []):
+        for f in e.get('files', []):
+            if isinstance(f, dict) and f.get('path'): want.setdefault(f['path'], f.get('sha256'))
+        if e.get('main'): want.setdefault(e['main'], None)
+    want = {p: h for p, h in want.items() if not p.startswith('/') and '..' not in p.split('/')}
+    bad = [p for p, h in sorted(want.items()) if not os.path.isfile(os.path.join(root, p)) or (h and adp_lib.sha256(os.path.join(root, p)) != h)]
+    return sorted(want), bad
+
+
+def kit_reads(url, root, paths):
+    """The `read` calls that fetch paths: folders in order, a folder is never split while the call has room, at most adp_lib.READ_MAX paths each."""
+    n, calls, cur, folders = adp_lib.READ_MAX, [], [], {}
+    for p in sorted(paths): folders.setdefault(p.rsplit('/', 1)[0] if '/' in p else '', []).append(p)
+    for group in folders.values():
+        if cur and len(cur) + len(group) > n: calls.append(cur); cur = []
+        while len(group) > n: calls.append(group[:n]); group = group[n:]
+        cur += group
+    if cur: calls.append(cur)
+    return [{'tool': 'Artifact', 'action': 'read', 'url': url, 'paths': c, 'out_dir': root, 'then': 'run `adp.py catalog` again: complete is true when every file is here'} for c in calls]
 
 
 def saved_catalog():
@@ -277,6 +312,11 @@ def catalog_cmd(a):
     if out['fetched']:
         c = json.load(open(idx)); out.update(ver=c.get('ver') or None, built=c.get('built'), entries=len(c.get('entries', [])))
         out['refresh'] = fetch_call(url)      # the same read, when the catalog has published since
+        root = cat_dir(url); every, bad = kit_missing(root, c)
+        out.update(kit=root, files=len(every), missing=len(bad), complete=not bad)
+        if bad:
+            reads = kit_reads(url, root, bad); out['reads'] = reads; out['calls'] = len(reads); out['per_call'] = [len(r['paths']) for r in reads]
+            out['next'] = 'My Own Kit is not complete: make the reads, then run adp.py catalog again'
     else: out['fetch'] = fetch_call(url)
     return emit(out)
 
@@ -463,12 +503,35 @@ TIERS = {'minimal': 'starter', 'default': 'default', 'full': None}
 INSTALLED = ('id', 'name', 'kind', 'group', 'summary', 'version', 'requires')
 
 
-def installed_index(src, take):
+def catalog_on_disk(src):
+    """The catalog.json a CATALOG argument has on disk: a local file, or the copy `catalog` fetched into ~/.adp for a url. {} when there is none."""
+    p = src if src and os.path.isfile(src) else os.path.join(cat_dir(src), 'catalog.json') if src and CAT_URL.match(src) else None
+    return read_json(p, 'catalog') if p and os.path.isfile(p) else {}
+
+
+def expand(take, ids):
+    """`kind.*` in a template's take list is every entry of that kind the catalog index has, in its order (none without an index):
+    the assistant says `theme.*`, so a theme added to the catalog needs no template edit."""
+    out = []
+    for i in take: out += [x for x in ids if x.startswith(i[:-1])] if i.endswith('.*') else [i]
+    return out
+
+
+DEFAULT_THEME = 'theme.default'      # what a page wears when --theme names no other
+
+
+def theme_id(name, ids):
+    """--theme takes a short name (`default`) or the entry id (`theme.default`). With a catalog index an unknown one exits with the names it has."""
+    i = name if name.startswith('theme.') else 'theme.' + name
+    have = [x[6:] for x in ids if x.startswith('theme.')]
+    if have and i[6:] not in have: sys.exit(f'--theme {name}: the catalog has no such theme. It has: ' + ', '.join(have))
+    return i
+
+
+def installed_index(c, src, take):
     """What a page has installed: the entries it takes and everything they require (the files it loads), in load order, cut to
-    INSTALLED from the owner's catalog.json (a local file, or the copy `catalog` fetched into ~/.adp). With no catalog on disk an entry is
-    just its id: the list is still true, only its words are missing."""
-    p = src if src and src != '-' and os.path.isfile(src) else os.path.join(cat_dir(src), 'catalog.json') if src and CAT_URL.match(src) else None
-    c = read_json(p, 'catalog') if p and os.path.isfile(p) else {}
+    INSTALLED from the owner's catalog.json (c: `catalog_on_disk`). With no catalog on disk an entry is just its id: the list is
+    still true, only its words are missing."""
     by = {e['id']: e for e in c.get('entries', [])}
     order, seen = [], set()
 
@@ -482,7 +545,7 @@ def installed_index(src, take):
             'entries': [{k: by[i][k] for k in INSTALLED if k in by[i]} if i in by else {'id': i} for i in order]}
 
 
-STARTER_FONTS = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap'    # the templates' placeholder fonts (index.html.txt)
+STARTER_FONTS = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Atkinson+Hyperlegible+Next:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap'    # the templates' placeholder fonts (index.html.txt)
 
 
 def add_kit_tags(d, files, fonts=()):
@@ -506,6 +569,24 @@ def add_kit_tags(d, files, fonts=()):
     return True
 
 
+def fill_info(d, ix, index, cat):
+    """Fill the info panel of DIR/index.html (the green dot, top left; tabs About, Help, Status): the skill's version, the sha256 of the page's adp.js,
+    the catalog it was built from, and the components table as built: one row for each entry the page takes (id, version, hash from the catalog's index)."""
+    p = os.path.join(d, 'index.html')
+    try:
+        with open(p, encoding='utf-8') as f: text = f.read()
+        with open(os.path.join(d, 'adp.js'), 'rb') as f: sha = hashlib.sha256(f.read()).hexdigest()
+    except OSError: return
+    if '{{adp_' not in text: return
+    by = {e['id']: e for e in index.get('entries', [])}
+    cell = lambda v: '<td>' + html_escape(str(v or '')) + '</td>'
+    rows = ''.join('<tr>' + cell(e['id']) + cell(e.get('version')) + cell((by.get(e['id']) or {}).get('hash')) + '</tr>' for e in ix['entries'])
+    for key, val in (('adp_version', html_escape(ref_version(os.path.join(HERE, 'SKILL.md')) or 'unknown')), ('adp_sha12', sha[:12]), ('adp_sha', sha),
+                     ('adp_catalog', html_escape(cat)), ('adp_components', rows or '<tr><td colspan="3">none taken</td></tr>')):
+        text = text.replace('{{' + key + '}}', val)
+    with open(p, 'w', encoding='utf-8') as f: f.write(text)
+
+
 def new(a):
     pos = bare(a[1:]); tier = opt(a, '--tier')
     if '--tier' in a:
@@ -513,7 +594,7 @@ def new(a):
         if tier == 'full': sys.exit('tier full is not available yet')
         if not os.path.isfile(os.path.join(TPL, TIERS[tier], 'template.json')): sys.exit(f"tier {tier}: template '{TIERS[tier]}' not found")
         pos = [TIERS[tier]] + pos
-    if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE|--tier T DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme ID] [--layout ID] [--catalog URL|-|catalog.json]')
+    if len(pos) != 2: sys.exit('usage: adp.py new TEMPLATE|--tier T DIR [--title T] [--slug S] [--by NAME] [--content FILE] [--data FILE|DIR] [--theme NAME] [--layout ID] [--catalog URL|-|catalog.json]')
     name, d = pos
     if os.path.exists(d) and os.listdir(d): sys.exit(f'{d} exists and is not empty')
     meta = tmeta(name); title = opt(a, '--title', 'Untitled artifact'); slug = opt(a, '--slug') or slugify(title)
@@ -523,6 +604,10 @@ def new(a):
         if not os.path.isfile(content): sys.exit(f'--content: no file {content}')
         if name != 'starter': sys.exit('--content builds the starter\'s views: use it with the starter (--tier minimal). The assistant and default templates carry their own Home view wired into parts/app.js: change it there')
         read_content(content)       # a malformed file fails before anything is written
+    csrc = opt(a, '--catalog'); csrc = saved_catalog() if csrc in (None, '-') else csrc
+    index = catalog_on_disk(csrc); ids = [e['id'] for e in index.get('entries', [])]
+    themes = [theme_id(t, ids) for t in optall(a, '--theme')]       # an unknown theme fails here, before anything is written
+    if not themes and DEFAULT_THEME in ids: themes = [DEFAULT_THEME]
     layers = base_chain(name)
     files = {}
     for layer in layers:
@@ -540,9 +625,10 @@ def new(a):
         if p == 'adp.js': shutil.copyfile(src, dst); continue
         with open(src, encoding='utf-8') as f, open(dst, 'w', encoding='utf-8') as g: g.write(sub(f.read()))
     built = build_content(d, content) if content else None
-    tk = list(dict.fromkeys(meta.get('take', []) + optall(a, '--theme') + optall(a, '--layout')))
+    tk = list(dict.fromkeys(expand(meta.get('take', []), ids) + themes + optall(a, '--layout')))
+    ix = installed_index(index, csrc, tk)
+    fill_info(d, ix, index, cat)
     if any(tmeta(l).get('installed') for l in layers):     # the My catalog tab lists this file
-        ix = installed_index(opt(a, '--catalog') or saved_catalog(), tk)
         given = opt(a, '--url') or (cat if CAT_URL.match(cat) else '')
         ix['take'] = tk       # what this page asked for: `files` takes the same entries again
         if given: ix['url'] = given       # the link the owner gave (or the catalog url this run used) wins over the one inside the file
@@ -561,9 +647,9 @@ def new(a):
         t, code = taken(src, tk, a)
         if code: emit(t); sys.exit(2)
         out['publish']['files'].update(t['files']); out['catalog'] = t['catalog']; out['entries'] = t['entries']
-        asked = optall(a, '--theme') + optall(a, '--layout')
+        asked = themes + optall(a, '--layout')
         ta = taken(src, asked, a)[0] if asked else {}
-        if asked and add_kit_tags(d, ta['files'], ta.get('fonts', {}).values()):       # a theme or layout asked for is served and also loaded: its tags go into index.html
+        if asked and add_kit_tags(d, ta['files'], ta.get('fonts', {}).values()):       # the theme the page wears and a layout asked for are served and also loaded: their tags go into index.html
             seed_file(d, opt(a, '--by') or 'adp', data=data_docs(optall(a, '--data')), summary=opt(a, '--summary'), role=opt(a, '--role', ''))
     out['next'] = ['adp.py check ' + d,
                    'Design it: read `design` above, take a theme and the layouts the content needs from the catalog, then write page.css and the views for this content (a script that emits them beats typing)' if design and not built else '',
@@ -582,7 +668,7 @@ def take(a):
     live = bool(CAT_URL.match(src))
     if live:
         url, idx = src.rstrip('/'), os.path.join(cat_dir(src), 'catalog.json')
-        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': url, 'fetch': fetch_call(url)}); sys.exit(2)
+        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': url, 'fetch': fetch_call(url), 'next': 'adp.py catalog fetches your whole kit (My Own Kit)'}); sys.exit(2)
     else:
         idx = src
         if not os.path.isfile(idx): sys.exit(f'take: {src} is neither a catalog url nor a catalog.json')
@@ -598,14 +684,24 @@ def take(a):
         for r in by[i].get('requires', []): visit(r)
         order.append(i)
     for i in pos[1:]: visit(i)
+    named = [by[i] for i in pos[1:] if any(f.get('role') == 'sample' for f in by[i]['files'])]
+    heads, want, calls = read_headers(src, named) if named else ({}, [], [])
+    idle = {}       # a bundle an entry only borrows for its preview (it owns no key in it, as a theme with viz samples) is not taken with it
+    for e in named:
+        h = heads.get(e['id'], {}); refs = [adp_lib.split_ref(s) for s in sample_refs(h)]
+        idle[e['id']] = {b for b, _ in refs} - {b for b, k in refs if k in (h.get('samples') or [])}
     m = {}
     for i in order:
         for f in by[i]['files']:
-            if f.get('role') == 'sample' and i not in pos[1:]: continue
+            if f.get('role') == 'sample' and (i not in pos[1:] or f['path'] in idle.get(i, ())): continue
             m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))
     info = {'url': url, 'index': os.path.abspath(idx), 'live': live, 'ver': cat.get('ver') or None, 'built': cat.get('built')}
     if not live: info['warning'] = 'a local index is a build, not the live catalog: a file it lists may be missing there. adp.py take <catalog url> ... reads the fetched live index'
     out = {'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}}
+    own = {e['id']: [s for s in sample_refs(heads[e['id']]) if adp_lib.split_ref(s)[1] in (heads[e['id']].get('samples') or [])] for e in named if e['id'] in heads}
+    own = {i: v for i, v in own.items() if v}
+    if own: out['samples'] = own        # the keys an entry asked for owns in its bundle (@samples), as path#key: the bundle file is in the map, the output names only these
+    if want and live: out['fetch_headers'] = calls
     fonts = {i: by[i]['fonts'] for i in order if by[i].get('fonts')}
     if fonts: out['fonts'] = fonts      # a theme's web fonts: the page links each url in its head, or the theme's families fall back to system fonts
     return emit(out)
@@ -616,10 +712,37 @@ def index_of(src, a):
     if src == '-': src = saved_catalog() or sys.exit('no saved catalog; adp.py catalog <url> saves one')
     if CAT_URL.match(src):
         idx = os.path.join(cat_dir(src), 'catalog.json')
-        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': src.rstrip('/'), 'fetch': fetch_call(src.rstrip('/'))}); sys.exit(2)
+        if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': src.rstrip('/'), 'fetch': fetch_call(src.rstrip('/')), 'next': 'adp.py catalog fetches your whole kit (My Own Kit)'}); sys.exit(2)
         return json.load(open(idx)), None
     if not os.path.isfile(src): sys.exit(f'{src} is neither a catalog url nor a catalog.json')
     return json.load(open(src)), 'a local index is a build, not the live catalog: a file it lists may be missing there'
+
+
+def read_headers(src, entries):
+    """({id: header}, missing paths, calls): the header of each entry's main file, read from where the catalog's files sit (the folder of a local
+    catalog.json, or ~/.adp/catalog/ for a url: My Own Kit; an older ~/.adp/catalogs/<id>/ copy still counts). adp.py stays offline: for a url catalog the main files not on disk come back as
+    Artifact `read` calls (paths, at most adp_lib.READ_MAX each, out_dir the catalog's folder), so the next run finds them. `calls` is
+    [] when every header was read; a local catalog with a file missing has no call to offer (the caller says so)."""
+    if src == '-': src = saved_catalog()
+    url = src.rstrip('/') if CAT_URL.match(src) else None
+    root = cat_dir(url) if url else os.path.dirname(os.path.abspath(src))
+    heads, want = {}, []
+    for e in entries:
+        m = adp_lib.main_files(e)
+        if not m or m.startswith('/') or '..' in m.split('/'): continue
+        p = os.path.join(root, m)
+        if os.path.isfile(p):
+            with open(p, encoding='utf-8', errors='replace') as f: heads[e['id']] = adp_lib.parse_header(f.read(), m)
+        else: want.append(m)
+    n = adp_lib.READ_MAX
+    calls = [{'tool': 'Artifact', 'action': 'read', 'url': url, 'paths': want[i:i + n], 'out_dir': root, 'then': 'run the command again'} for i in range(0, len(want), n)] if url else []
+    return heads, want, calls
+
+
+def sample_refs(head):
+    """The path#key samples of a header's @preview: each names one sample inside a bundle file."""
+    pv = head.get('preview') if isinstance(head, dict) else None
+    return [s for s in (pv.get('samples') if isinstance(pv, dict) else None) or [] if isinstance(s, str) and adp_lib.split_ref(s)[1] is not None]
 
 
 WORD = re.compile(r'[a-z0-9]+')
@@ -631,24 +754,30 @@ def suggest(a):
     if len(pos) != 1 or not words: sys.exit('usage: adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]')
     cat, warn = index_of(pos[0], a); want = set(WORD.findall(words.lower())); want |= {w[:-1] for w in want if len(w) > 3 and w.endswith('s')}; want -= STOP
     groups = {}
-    for e in cat['entries']:
+    pool = [e for e in cat['entries'] if not opt(a, '--kind') or e['id'].split('.')[0] == opt(a, '--kind')]
+    heads, missing, calls = read_headers(pos[0], pool)      # the about text lives in each entry's main-file header
+    for e in pool:
         kind = e['id'].split('.')[0]
-        if opt(a, '--kind') and kind != opt(a, '--kind'): continue
         hit = [t for t in e.get('tags', []) if want & set(WORD.findall(t.lower()))]
-        fields = {'name/summary': e.get('name', '') + ' ' + e.get('summary', ''), 'id': e['id'], 'provides': ' '.join(e.get('provides', [])), 'about': e.get('about') or e.get('details') or ''}
+        fields = {'name/summary': e.get('name', '') + ' ' + e.get('summary', ''), 'id': e['id'], 'provides': ' '.join(e.get('provides', [])),
+                  'about': heads.get(e['id'], {}).get('about') or e.get('about') or e.get('details') or ''}
         seen = {f: want & set(WORD.findall(v.lower())) for f, v in fields.items()}
         score = 3 * len(hit) + len(seen['name/summary']) + len(seen['id']) + 2 * len(seen['provides']) + len(seen['about'])
         if score: groups.setdefault(kind, []).append((score, e['id'], {'id': e['id'], 'kind': kind, 'why': '; '.join(([f"tags: {', '.join(hit)}"] if hit else []) + [f"{f}: {', '.join(sorted(w))}" for f, w in seen.items() if w]),
                   'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') != 'sample'])}))
     out = [x[2] for k in sorted(groups) for x in sorted(groups[k], key=lambda t: (-t[0], t[1]))[:n]]
     if warn: sys.stderr.write('warning: ' + warn + '\n')
+    if missing:
+        sys.stderr.write(f'note: {len(missing)} main-file headers are not on disk, so their about text was not searched (tags, name, summary, id and provides were)'
+                         + ('; read them, then run the command again:\n' + ''.join(json.dumps(c) + '\n' for c in calls) if calls else '\n'))
     return emit(out)
 
 
 def kit(a):
     pos = bare(a[1:]); sub = pos[0] if pos else ''
     if sub not in ('list', 'show', 'describe') or (sub != 'list' and len(pos) < 2): sys.exit('usage: adp.py kit list [CATALOG] [--kind K] [--tag T] | show ID [CATALOG] | describe ID [CATALOG]')
-    cat, warn = index_of((pos[1] if sub == 'list' else pos[2] if len(pos) > 2 else '-') if len(pos) > (1 if sub == 'list' else 2) else '-', a)
+    src = (pos[1] if sub == 'list' else pos[2] if len(pos) > 2 else '-') if len(pos) > (1 if sub == 'list' else 2) else '-'
+    cat, warn = index_of(src, a)
     if warn: sys.stderr.write('warning: ' + warn + '\n')
     if sub == 'list':
         for e in cat['entries']:
@@ -658,11 +787,16 @@ def kit(a):
         return 0
     e = next((x for x in cat['entries'] if x['id'] == pos[1]), None) or sys.exit(f'no entry {pos[1]} in the catalog')
     paths = [f['path'] for f in e['files'] if f.get('role') != 'sample']; sample = [f['path'] for f in e['files'] if f.get('role') == 'sample']
+    heads, missing, calls = read_headers(src, [e]); h = heads.get(e['id'], {})      # about, db, config, source and changes live in the main-file header
+    if missing and not calls: sys.stderr.write('note: the main-file header is not on disk, so about and the header fields are missing\n')      # a local catalog: no call to offer
+    note = {'note': 'the main-file header is not on disk, so about and the header fields are missing; read it, then run the command again', 'fetch': calls} if calls else {}
+    keys = [adp_lib.split_ref(s)[1] for s in sample_refs(h) if sample and adp_lib.split_ref(s)[0] == sample[0]]      # the sample is this key of the bundle file
     if sub == 'show':
-        return emit({'id': e['id'], 'name': e.get('name'), 'summary': e.get('summary'), 'about': e.get('details') or e.get('about') or '', 'tags': e.get('tags', []),
-                     'files': [f['path'] for f in e['files']], 'requires': e.get('requires', []), 'provides': e.get('provides', [])})
-    return emit({'id': e['id'], 'needs': e.get('globals', []), 'optional': e.get('optional', []), 'provides': e.get('provides', []),
-                 'requires': e.get('requires', []), 'files': paths, 'sample': sample[0] if sample else None})
+        extra = {k: h[k] for k in ('status', 'version', 'config', 'db', 'source', 'changed') if h.get(k)}
+        return emit({'id': e['id'], 'name': e.get('name'), 'summary': e.get('summary'), 'about': h.get('about') or e.get('details') or e.get('about') or '', 'tags': e.get('tags', []),
+                     'files': [f['path'] for f in e['files']], 'requires': e.get('requires', []), 'provides': e.get('provides', []), **extra, **note})
+    return emit({'id': e['id'], 'needs': e.get('globals', []), 'optional': e.get('optional') or h.get('optional', []), 'provides': e.get('provides', []),
+                 'requires': e.get('requires', []), 'files': paths, 'sample': sample[0] if sample else None, **({'sample_key': keys[0]} if keys else {}), **({'db': h['db']} if h.get('db') else {}), **note})
 
 
 def content_of(d):
@@ -839,15 +973,21 @@ def seed(a):
 
 
 # The core switches: key -> (type, default, enum options). assets/adp.js is the source of truth; the two must agree.
+# look.theme has options None: only the page knows them (the themes it has installed), and its default there is the theme the page was built with.
 CORE = {
     'edit.locked': ('bool', False, None), 'edit.until': ('datetime', '', None), 'edit.reason': ('text', '', None),
     'edit.require-hold': ('bool', False, None), 'parts.locked': ('list', [], None), 'comments.enabled': ('bool', True, None),
     'panel.changes': ('enum', 'everyone', ['everyone', 'editors', 'off']), 'panel.checks': ('enum', 'editors', ['everyone', 'editors', 'off']),
-    'playground.enabled': ('bool', True, None), 'look.theme': ('text', '', None), 'look.mode': ('enum', 'auto', ['auto', 'light', 'dark']),
+    'playground.enabled': ('bool', True, None), 'look.theme': ('enum', 'default', None), 'look.mode': ('enum', 'auto', ['auto', 'light', 'dark']),
     'look.density': ('enum', 'comfortable', ['comfortable', 'compact']), 'links.catalog': ('url', '', None),
     'links.board': ('url', '', None), 'links.repo': ('url', '', None), 'log.data-changes': ('bool', True, None),
 }
 KEY = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z0-9]+(?:-[a-z0-9]+)*')
+
+
+def page_decides(key):
+    """An enum whose options and default are the page's own (look.theme): any name is accepted here, and its value is always written, never dropped as "the default"."""
+    return CORE[key][0] == 'enum' and CORE[key][2] is None
 
 
 def read_doc(path):
@@ -870,7 +1010,7 @@ def real_date(v):
 def check_value(key, v):
     if key not in CORE: return
     t, _, opts = CORE[key]
-    ok = {'bool': isinstance(v, bool), 'text': isinstance(v, str) and len(v) <= 2000, 'enum': v in (opts or []) if isinstance(v, str) else False,
+    ok = {'bool': isinstance(v, bool), 'text': isinstance(v, str) and len(v) <= 2000, 'enum': isinstance(v, str) and (re.fullmatch(r'[a-z0-9-]+', v) is not None if page_decides(key) else v in (opts or [])),
           'list': isinstance(v, list) and all(isinstance(x, str) for x in v),
           'url': isinstance(v, str) and (v == '' or re.match(r'https://\S+$', v) is not None),
           'datetime': isinstance(v, str) and (v == '' or real_date(v))}[t]
@@ -911,11 +1051,11 @@ def config_cmd(a):
         check_value(key, val)
         doc = read_doc(opt(a, '--doc')); by, at = opt(a, '--by', 'agent'), now()
         vals, chg = dict(doc.get('values') or {}), dict(doc.get('changed') or {})
-        if key in CORE and val == CORE[key][1]: vals.pop(key, None)       # at its default: no value kept, but changed[key] stays, as in adp.js
+        if key in CORE and val == CORE[key][1] and not page_decides(key): vals.pop(key, None)       # at its default: no value kept, but changed[key] stays, as in adp.js
         else: vals[key] = val
         chg[key] = {'by': by, 'at': at}
         pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
-        b = Batch(opt(a, '--out', 'config.adp'), pins)
+        b = Batch(opt(a, '--out') or os.path.join(adp_dir(), 'config'), pins)
         b.put('set', 'config', 'current', {'schema': 'adp-config/1', 'at': at, 'by': by, 'values': vals, 'changed': chg}, exists=True)
         if cvalues(doc)['log.data-changes'] is not False:
             b.put('set', 'changes', 'd-' + str(int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)),
@@ -1013,7 +1153,7 @@ def requests_cmd(a):
     d, ver = docs[rid]
     pins = read_json(opt(a, '--pins'), '--pins') if opt(a, '--pins') else {}
     if ver is not None: pins.setdefault(f'requests/{rid}', ver)
-    b = Batch(opt(a, '--out', 'requests.adp'), pins)
+    b = Batch(opt(a, '--out') or os.path.join(adp_dir(), 'requests'), pins)
     doing = f"{rid} ({d.get('lane', '')})"
     if act == '--ack':
         patch = {'state': 'ack', 'ackBy': by, 'ackAt': at}
@@ -1065,19 +1205,23 @@ def resolve_project(x):
     sys.exit(f'project not found: {x} (adp.py projects lists them)')
 
 
-def log_path():
-    """log.jsonl in the .adp/ of --project when it has one, else the nearest .adp/ from cwd upward, else ADP_HOME."""
-    if PROJECT and os.path.isdir(os.path.join(PROJECT, '.adp')): return os.path.join(PROJECT, '.adp', 'log.jsonl')
+def adp_dir():
+    """The .adp/ of --project when it has one, else the nearest .adp/ from cwd upward, else ADP_HOME."""
+    if PROJECT and os.path.isdir(os.path.join(PROJECT, '.adp')): return os.path.join(PROJECT, '.adp')
     d = os.path.abspath(os.getcwd())
     while True:
-        if os.path.isdir(os.path.join(d, '.adp')): return os.path.join(d, '.adp', 'log.jsonl')
-        if os.path.dirname(d) == d: return os.path.join(ADP_HOME, 'log.jsonl')
+        if os.path.isdir(os.path.join(d, '.adp')): return os.path.join(d, '.adp')
+        if os.path.dirname(d) == d: return ADP_HOME
         d = os.path.dirname(d)
+
+
+def log_path():
+    return os.path.join(adp_dir(), 'log.jsonl')
 
 
 def log_line(a, code, ms):
     """One JSON line per subcommand: ts, cmd, args (secrets redacted), exit, duration_ms, cwd. Never raises, never logs file contents."""
-    if a[:1] == ['setup'] and '--dry-run' in a: return      # a dry run writes nothing at all
+    if a[:1] == ['setup'] and {'--dry-run', '--help', '-h'} & set(a): return      # a dry run or a help request writes nothing at all
     try:
         p = log_path(); os.makedirs(os.path.dirname(p), exist_ok=True)
         rec = {'ts': now(), 'cmd': a[0] if a else '', 'args': redact(a[1:]), 'exit': code, 'duration_ms': ms, 'cwd': os.getcwd()}
@@ -1135,6 +1279,13 @@ def init_cmd(a):
     print(f'created {p}; registered in {reg}'); return 0
 
 
+def road_tree(d):
+    """{relative path: bytes} of a road skill folder under refs/. A skill zip may hold only one SKILL.md, so the zip's roads are refs/<road>/road.md: it comes back as SKILL.md."""
+    t = tree_files(d)
+    if 'road.md' in t and 'SKILL.md' not in t: t['SKILL.md'] = t.pop('road.md')
+    return t
+
+
 def ref_version(skill_md):
     """metadata.version from a SKILL.md frontmatter, or None."""
     try: lines = open(skill_md).read().split('\n')
@@ -1155,8 +1306,49 @@ def tree_files(d):
             for r, ds, fs in os.walk(d) if not ds.__setitem__(slice(None), [x for x in ds if x != '__pycache__']) for f in fs}
 
 
+def plugin_name():
+    """The name of the Claude Code plugin this skill folder ships in (a .claude-plugin/plugin.json beside it), or None for a plain skill install."""
+    try: return json.load(open(os.path.join(os.path.dirname(HERE), '.claude-plugin', 'plugin.json'), encoding='utf-8')).get('name') or None
+    except (OSError, ValueError, AttributeError): return None
+
+
+def shipped_catalog():
+    """{relative path: bytes} of the catalog this skill folder ships: its catalog/ folder (a plugin, a clone) or the catalog-pack-NN.json files a skill zip carries (a zip may not hold a zip); {} when it has neither."""
+    d = os.path.join(HERE, 'catalog')
+    if os.path.isfile(os.path.join(d, 'catalog.json')):
+        return {k.replace(os.sep, '/'): v for k, v in tree_files(d).items() if not k.endswith('.pyc')}
+    out = {}
+    for n in sorted(x for x in os.listdir(HERE) if re.fullmatch(r'catalog-pack-\d+\.json', x)):
+        try: pack = json.load(open(os.path.join(HERE, n), encoding='utf-8'))
+        except (OSError, ValueError): continue
+        if not isinstance(pack, dict) or pack.get('schema') != 'adp-catalog-pack/1' or not isinstance(pack.get('files'), dict): continue
+        out.update({k: v.encode('utf-8') for k, v in pack['files'].items() if isinstance(v, str) and not os.path.isabs(k) and '..' not in k.split('/')})
+    return out
+
+
+def unpack_catalog(dry):
+    """Put the shipped kit in ~/.adp/catalog (My Own Kit): every file that is not there yet. A file already there is left as it is (it may be newer, fetched from the live catalog). -> (files shipped, files new)"""
+    files = shipped_catalog()
+    dest = os.path.join(ADP_HOME, 'catalog')
+    new = [k for k in files if not os.path.isfile(os.path.join(dest, k))]
+    if not dry:
+        for k in new:
+            p = os.path.join(dest, k); os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'wb') as f: f.write(files[k])
+    return len(files), len(new)
+
+
+SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills (not in a plugin: it serves them itself), write the config, add the shipped catalog's missing files to ~/.adp/catalog, print (--yes: write) the CLAUDE.md pointer
+       adp.py setup [--scope user|project|local] --dry-run   show what it would do (scope user when not given); writes nothing'''
+
+
 def setup_cmd(a):
-    scope = opt(a, '--scope', 'user'); dry, yes = '--dry-run' in a, '--yes' in a
+    if '--help' in a or '-h' in a: print(SETUP_USAGE); return 0
+    extra = [x for i, x in enumerate(a) if i and x not in ('--scope', '--dry-run', '--yes') and a[i - 1] != '--scope']
+    if extra: sys.exit(f'setup: unknown argument {extra[0]}; nothing was set up\n{SETUP_USAGE}')
+    dry, yes = '--dry-run' in a, '--yes' in a
+    scope = opt(a, '--scope', 'user' if dry else None)      # only a dry run may guess the scope: a real run writes into the home or the project
+    if scope is None: sys.exit(f'setup: --scope is needed (or --dry-run to look first); nothing was set up\n{SETUP_USAGE}')
     if scope not in ('user', 'project', 'local'): sys.exit('setup: --scope user|project|local')
     cwd, home = PROJECT if PROJECT and scope != 'user' else os.getcwd(), os.path.expanduser('~')
     refs = os.path.join(HERE, 'refs'); names = sorted(n for n in os.listdir(refs) if os.path.isdir(os.path.join(refs, n))) if os.path.isdir(refs) else []
@@ -1164,23 +1356,30 @@ def setup_cmd(a):
     cfg = os.path.join(ADP_HOME if scope == 'user' else os.path.join(cwd, '.adp'), 'config.json')
     ptr = {'user': os.path.join(home, '.claude', 'CLAUDE.md'), 'project': os.path.join(cwd, 'CLAUDE.md'), 'local': os.path.join(cwd, 'CLAUDE.local.md')}[scope]
     gi = os.path.join(cwd, '.gitignore') if scope != 'user' else None
-    block = '\n'.join([BEGIN, 'For artifacts, ADP or the catalog, load the `adp` skill and run `python3 -I ' + os.path.abspath(__file__) + ' ...` for its commands.', END])
-    print(f'setup {scope}{" (dry run)" if dry else ""}: {len(names)} skills ({", ".join(names)}) -> {skills}; skill_root {HERE}')
+    plug = plugin_name(); copy = [] if plug else names     # a plugin serves the road skills itself (<plugin>:<road>) and its updates reach them: a copy in the skills folder would only go stale
+    # in a plugin the script's path holds the installed version, so the pointer names the skill and not the path
+    line = f'For artifacts, ADP or the catalog, load the `{plug}:adp` skill: it says how to run adp.py.' if plug else 'For artifacts, ADP or the catalog, load the `adp` skill and run `python3 -I ' + os.path.abspath(__file__) + ' ...` for its commands.'
+    block = '\n'.join([BEGIN, line, END])
+    print(f'setup {scope}{" (dry run)" if dry else ""}: ' + (f'the {len(names)} road skills ({", ".join(names)}) come with the plugin {plug} and are not copied' if plug else f'{len(names)} skills ({", ".join(names)}) -> {skills}') + f'; skill_root {HERE}')
     print(f'config: {cfg}' + ('' if scope == 'user' else f'; registry {os.path.join(ADP_HOME, "projects")}/<name>/config.json (path {cwd})')); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
-    modified = [os.path.join(skills, n) for n in names if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
-    for m in modified: print(f'modified {m}: differs from the packaged skill, left untouched')
+    total, fresh = unpack_catalog(dry)
+    print(f'catalog (My Own Kit) {os.path.join(ADP_HOME, "catalog")}: ' + (f'{total} shipped files, {fresh} {"would be " if dry else ""}added, the others were already there and are left as they are' if total else 'this skill folder ships none; adp.py catalog URL fetches it'))
+    modified = [os.path.join(skills, n) for n in copy if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != road_tree(os.path.join(refs, n))]
+    for m in modified: print(f'{"would replace" if dry else "replaced"} {m}: it differs from the packaged skill (an older copy or local edits); setup installs the packaged one')
     if dry: return 0
-    for n in names:
+    for n in copy:        # an update is an update: every road skill folder becomes the packaged one, whatever was there
         t = os.path.join(skills, n)
-        if t in modified: continue
         shutil.rmtree(t, ignore_errors=True)
-        shutil.copytree(os.path.join(refs, n), t, ignore=shutil.ignore_patterns('__pycache__'))
+        for rel, data in road_tree(os.path.join(refs, n)).items():
+            p = os.path.join(t, rel); os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'wb') as f: f.write(data)
     os.makedirs(os.path.dirname(cfg), exist_ok=True)
     c = json.load(open(cfg)) if os.path.isfile(cfg) else {}
-    c.update({'schema': 'adp-setup/1', 'scope': scope, 'skill_root': HERE, 'skills': names,
-              'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md')))}, 'at': now()})
-    json.dump(c, open(cfg, 'w'), indent=1)
+    mine = {'schema': 'adp-setup/1', 'scope': scope, **({'plugin': plug} if plug else {'skill_root': HERE}), 'skills': names,     # a plugin's folder changes with every version: record its name, not its path
+            'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md' if os.path.isfile(os.path.join(refs, n, 'SKILL.md')) else 'road.md')))}, 'at': now()}
+    add = {k: v for k, v in mine.items() if k not in c}     # a config that is already there is used as it is: setup only adds the keys it lacks
+    if add: c.update(add); json.dump(c, open(cfg, 'w'), indent=1)
     if scope != 'user': register_project(cwd, scope)
     if not yes: return 0
     os.makedirs(os.path.dirname(ptr), exist_ok=True)
@@ -1195,12 +1394,12 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop
-adp_loop.A = sys.modules[__name__]
+import adp_loop, adp_dev, adp_lib
+adp_loop.A = adp_dev.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd}
+    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):

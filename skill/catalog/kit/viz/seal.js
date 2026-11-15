@@ -29,6 +29,7 @@
  * Also load kit/vocab.css.
  *
  * @id        viz.seal
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -36,12 +37,18 @@
  * @summary   A medallion whose ring is the time left, with the number in serif and a crackle that spreads over the glaze as the end nears; round action buttons fan out on hover or focus.
  * @tags      seal, ring, countdown, lifetime, expiry, medallion, crackle, actions, porcelain
  * @requires  kit.vocab, theme.glaze-depth
+ * @files     kit/viz/seal.css, kit/samples/viz.json
  * @provides  Kit.seal.make, Kit.seal.mini, Kit.seal.parts, Kit.seal.text, Kit.seal.stateOf, Kit.seal.states, Kit.seal.icons
  * @config    Kit.seal.make(item, {size, soonDays, urgentDays, unitOf, actions, onAction, onOpen}) | item {id, label, left (days), life (0 to 1) or total, state, actions}; actions [{key, label, icon, danger}]; a ring needs life or total, with neither no arc is drawn
  * @config    Kit.seal.parts(item) -> {state, frac, big, unit, text, row} | the pure part, for a board that draws its own
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --f-display --shadow? --pebble-hi? --rim? --pool? --glz-sh-1?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --f-display? --pebble-hi? --rim? --pool? --glz-sh-1? --danger --danger-ink? --danger-soft? --edge? --edge-gold? --glz-sh-2? --seam? --shade? --sunk-2?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | sealParts, sealSVG, miniSeal, arcAngles and the ring arithmetic (r 44, circumference 276.46)
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the .seal medallion, the crackle path and the quick-action arc
+ * @preview   {"render": "viz.seal", "samples": ["kit/samples/viz.json#seal"]}
+ * @samples   seal
+ * @changed   The unit is a callback (days, hours, years); the states are the vocab's table; the item's text, label and actions are config.
  */
 (function () {
 'use strict';

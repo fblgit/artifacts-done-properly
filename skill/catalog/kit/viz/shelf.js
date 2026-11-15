@@ -11,6 +11,7 @@
  *   legend      false hides the key (default true)
  *
  * @id        viz.shelf
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -18,12 +19,17 @@
  * @summary   Tracks drawn on one scale, each cut into segments: used, allocated but unused, unallocated, and flagged.
  * @tags      shelf, capacity, disk, storage, quota, segments, scale, used, free, status
  * @requires  kit.tooltip
+ * @files     kit/viz/shelf.css, kit/samples/viz.json
  * @provides  Kit.shelf.mount
  * @config    Kit.shelf.mount(box, opts) | units [{id, name, sub, capacity, segments [{id, label, size, used, kind, tone, flag, note}], chips [{text, tone}]}], unit, labelAbove, legend, label, caption, host
  * @config    requires | kit.tooltip
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --ok --warn --danger --accent --c-blue --c-amber --c-violet --c-green --c-red --seam?
+ * @tokens    --panel --ink --ink-2 --rule --f-ui --f-mono --ok --warn --danger --accent --c-blue --c-amber --c-violet --c-green --c-red --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a disk-usage report, index.html | drawDrives: tracks to scale, hatched allocations with a solid used fill, dashed unallocated space, a ringed segment, status chips
+ * @preview   {"render": "viz.shelf", "samples": ["kit/samples/viz.json#shelf"]}
+ * @samples   shelf
+ * @changed   Names, devices and sizes are config; the chips carry a mark (check, bang, cross) as well as a tone.
  */
 (function () {
 'use strict';

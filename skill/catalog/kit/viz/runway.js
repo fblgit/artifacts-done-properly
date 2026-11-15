@@ -21,6 +21,7 @@
  * Also load kit/vocab.css.
  *
  * @id        viz.runway
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -28,12 +29,18 @@
  * @summary   Twelve months along a gold seam, one lane per kind, bubbles sized by how many end that month and coloured by the worst state among them; a Later slot closes the row.
  * @tags      runway, expiry, months, lanes, bubbles, calendar, forecast, bins
  * @requires  viz.seal, kit.vocab, kit.tooltip
+ * @files     kit/viz/runway.css, kit/samples/viz.json
  * @provides  Kit.runway.mount, Kit.runway.bins
  * @config    Kit.runway.mount(box, {items, lanes, months, laneHeight, laterAfter, now, locale, enum, skip, severity, selected, onPick}) | items [{id, lane, daysLeft, state, label}], lanes [{key, label}]; onPick(ids, {lane, bin, count, state})
  * @config    states | values of the Kit.vocab enum named by opts.enum (default 'life', defined by viz.seal)
- * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --ink-3 --seam? --seam-0? --seam-1? --seam-2? --seam-3? --seam-4?
+ * @tokens    --panel --sunk --ink --ink-2 --rule --accent --f-ui --seam? --seam-<n>? --glz-r-l? --on-state? --pool? --rim?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's certificate page | runway(): twelve months, lanes, bubbles binned by days left, the Later slot
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the month labels, the gold axis and the now bead
+ * @preview   {"render": "viz.runway", "samples": ["kit/samples/viz.json#runway"]}
+ * @samples   runway
+ * @changed   Months, lane height, lanes and the Later cut are options; the states and their words are the vocab's.
  */
 (function () {
 'use strict';

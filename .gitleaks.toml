@@ -1,11 +1,10 @@
-# Extends the default gitleaks rules. The two files below are catalog sample fixtures
-# (demo inputs for the sandbox redaction and timed-reveal components): fake values, byte-exact copies.
+# Extends the default gitleaks rules. The file below is the catalog's bundle of pattern samples; two of its samples
+# (sandbox and timed-reveal: demo inputs for the redaction and timed-reveal components) hold fake values.
 [extend]
 useDefault = true
 
 [allowlist]
-description = "fake demo values in catalog sample fixtures"
+description = "fake demo values in the catalog's pattern samples"
 paths = [
-  '''skill/catalog/kit/samples/sandbox\.json''',
-  '''skill/catalog/kit/samples/timed-reveal\.json''',
+  '''skill/catalog/kit/samples/patterns\.json''',
 ]

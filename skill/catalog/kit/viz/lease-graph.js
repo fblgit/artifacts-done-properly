@@ -7,13 +7,14 @@
  *   Kit.leaseGraph.mount(box, opts) -> {update(data), destroy()}
  *     holds    [{resource: {kind, name}, holder, until (ISO), state: "held" | "released"}]
  *     waits    [{actor, resource: {kind, name}, origin}]        the waiters on a resource's release; the holder's own wait is left out
- *     denials  [{id, asker, resource: {kind, name}, because: {holder, until}, at}]
+ *     denials  [{asker, resource: {kind, name}, because: {holder, until}, at}]
  *     now      ISO string or Date taken as now (default: the clock)      timeZone  for the clock text (default: the viewer's)
  *     stateEnum "lease-state"   kindEnum "lease-kind"   originEnum "wait-origin"
  *
  * The board hands over its claims, subscriptions and denials as three lists.
  *
  * @id        viz.lease-graph
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -21,11 +22,16 @@
  * @summary   Who holds each exclusive resource, who waits for its release, and, nested under it, each request that was turned away because of it.
  * @tags      lease, lock, claim, waiters, denied, resource, holder, expiry, graph
  * @requires  kit.tokens, kit.vocab
+ * @files     kit/viz/lease-graph.css, kit/samples/viz.json
  * @provides  Kit.leaseGraph.mount
- * @config    Kit.leaseGraph.mount(box, opts) | holds [{resource {kind, name}, holder, until, state}], waits [{actor, resource, origin}], denials [{id, asker, resource, because {holder, until}, at}], now, timeZone, stateEnum, kindEnum, originEnum; returns {update, destroy}
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --f-ui --f-mono --danger --rim? --pool? --glz-r-l? --glz-sh-1? --seam?
+ * @config    Kit.leaseGraph.mount(box, opts) | holds [{resource {kind, name}, holder, until, state}], waits [{actor, resource, origin}], denials [{asker, resource, because {holder, until}, at}], now, timeZone, stateEnum, kindEnum, originEnum; returns {update, destroy}
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --rim? --pool? --glz-r-l? --glz-sh-1? --warn
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a component family's claim graph and claim row | a held claim, the members subscribed to its release and the denials of the same key nested under it
+ * @preview   {"render": "viz.lease-graph", "samples": ["kit/samples/viz.json#lease-graph"]}
+ * @samples   lease-graph
+ * @changed   Resources are {kind, name} pairs the page supplies, not the source's typed keys.
  */
 (function () {
 'use strict';

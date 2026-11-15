@@ -325,7 +325,7 @@ class RequestsTests(Cmd):
         self.assertEqual((r2['state'], r2['last_progress'], r2['lane']), ('working', 'half', 'ask'))
         self.assertEqual((r1['state'], r1['scope'], r1['by'], r1['text']), ('queue', {'part': 'home'}, 'u', 'fix'))
         self.assertIn('trailer', out)
-        self.assertFalse(os.path.exists(self.p('requests.adp')))      # listing writes nothing
+        self.assertFalse(os.path.exists(os.path.join(self.home, '.adp', 'requests')))      # listing writes nothing
 
     def test_dump_shapes(self):
         as_map = self.write_json('map.json', {'r1': {'lane': 'edit', 'at': 'a'}, 'r2': {'lane': 'ask', 'at': 'b', 'status': 'done'}})
@@ -342,6 +342,9 @@ class RequestsTests(Cmd):
         docs = self.docs_of(out)
         self.assertEqual((docs['requests/r1']['state'], docs['requests/r1']['ackBy']), ('ack', 'bob'))
         self.assertEqual((docs['presence/bob']['doing'], docs['presence/bob']['session']), ('r1 (edit)', 'bob'))
+        w = self.writes_of(self.ok('requests', self.dump, '--ack', 'r1'))[0]      # no --out: the .adp/ the log uses, never the folder it runs in
+        self.assertEqual(os.path.dirname(w['file_path']), os.path.join(self.home, '.adp', 'requests'))
+        self.assertEqual(sorted(os.listdir(self.cwd)), sorted(['dump.json', 'resp.md', 'req']))
 
     def test_progress_appends(self):
         out = self.ok('requests', self.dump, '--progress', 'r2', '--text', 'going', '--out', self.out)

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>About ADP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;--ground:#121317;--sheet:#1a1b20;--sunk:#23242b;--ink:#e9e9ee;--ink-2:#b4b5bf;--ink-3:#90929c;--rule:#343640;--accent:#f2869f;--ok:#74c9a0;
+  --f-display:"Bricolage Grotesque","Avenir Next Condensed","Arial Narrow",sans-serif;--f-body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{background:var(--ground)}
+body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:900px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px))}
+header{padding:72px 0 48px;border-bottom:1px solid var(--rule);background:radial-gradient(ellipse 70% 120% at 12% -20%,rgba(242,134,159,.14),transparent 60%)}
+.kicker{display:flex;align-items:center;gap:10px;font:500 12px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 22px}
+.kicker::before{content:"";width:22px;height:1px;background:var(--accent)}
+h1{font:700 clamp(40px,8vw,76px)/.98 var(--f-display);letter-spacing:-.02em;margin:0 0 24px;text-wrap:balance}
+.lead{font-size:clamp(18px,2.4vw,21px);color:var(--ink-2);max-width:60ch;margin:0 0 32px}
+.sub{display:grid;gap:2px;font-size:clamp(18px,2.4vw,21px);color:var(--ink-2);margin:0 0 32px}
+.sub b{color:var(--ink);font-weight:500}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-block;padding:11px 18px;border-radius:10px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);text-decoration:none;font-weight:500}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#2a0811}
+.btn:hover{border-color:var(--ink-3)}
+.btn.go:hover{filter:brightness(1.08)}
+section{padding:44px 0;border-bottom:1px solid var(--rule)}
+h2{font:700 13px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 20px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;padding:20px 22px}
+.card .n{display:block;font:500 12px var(--f-mono);letter-spacing:.1em;color:var(--accent);margin:0 0 14px}
+.card h3{font:700 21px/1.2 var(--f-display);margin:0 0 10px}
+.card p{margin:0;color:var(--ink-2);font-size:15px}
+.stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:0 0 26px;padding:0;list-style:none}
+.stats li{display:flex;flex-direction:column;background:var(--sheet);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.stats b{font:700 34px/1 var(--f-display)}
+.stats span{font:500 12px var(--f-mono);color:var(--ink-3);margin-top:6px}
+.about{margin:0;color:var(--ink-2);max-width:62ch}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:18px;counter-reset:s}
+.steps li{position:relative;padding-left:44px;color:var(--ink-2);counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:30px;height:30px;border-radius:50%;border:1px solid var(--rule);background:var(--sheet);color:var(--accent);font:600 13px/28px var(--f-mono);text-align:center}
+.steps b{color:var(--ink);font-weight:500}
+.cmd{display:block;margin-top:10px;padding:13px 16px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;font:14px/1.5 var(--f-mono);color:var(--ink);overflow-wrap:anywhere}
+.cmd::before{content:"$ ";color:var(--accent)}
+ul.inc{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+ul.inc li{padding-left:22px;position:relative;color:var(--ink-2)}
+ul.inc li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+ul.inc b{color:var(--ink);font-weight:500}
+code{font:13px var(--f-mono);background:var(--sunk);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+main section:last-child{border-bottom:0}
+footer{padding:0 0 56px;color:var(--ink-3);font:12.5px/1.8 var(--f-mono);overflow-wrap:anywhere}
+footer .wrap{border-top:1px solid var(--rule);padding-top:30px}
+footer b{color:var(--ink-2);font-weight:500}
+footer .ok{color:var(--ok)}
+@media (prefers-reduced-motion:no-preference){.btn{transition:border-color .15s,filter .15s}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <p class="kicker">Artifacts Done Properly</p>
+  <h1>Great work deserves a second life.</h1>
+  <p class="sub"><b>The iteration ends. The value stays.</b><span>Your next project starts further ahead.</span></p>
+  <div class="cta"><a class="btn go" href="index.html">Open the catalog</a><a class="btn" href="{{REPO}}">The repository</a></div>
+</div></header>
+
+<main class="wrap">
+<section>
+  <h2>Start</h2>
+  <ol class="steps">
+    <li><b>Install ADP.</b> The steps are in the README of <a href="{{REPO}}">{{REPO_SHORT}}</a>.</li>
+    <li><b>Point your ADP at this catalog.</b><span class="cmd">adp.py catalog {{URL}}</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>What it is for</h2>
+  <div class="grid">
+    <div class="card"><span class="n">01</span><h3>Bring it in</h3><p>Give good work a home. Bring interfaces, records and artifacts into a project with your agents. Make the useful parts discoverable instead of burying them in a chat.</p></div>
+    <div class="card"><span class="n">02</span><h3>Make it reusable</h3><p>Keep the mechanics. A kit carries more than pixels: an interface, declared dependencies and examples another agent can inspect and compose.</p></div>
+    <div class="card"><span class="n">03</span><h3>Keep the gain</h3><p>Build on your best version. A growing catalog gives you more to start from; refinement becomes an investment you carry across pages and projects.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>The catalog</h2>
+  <ul class="stats">
+    <li><b>{{ENTRIES}}</b><span>entries</span></li>
+    <li><b>{{COMPONENTS}}</b><span>components</span></li>
+    <li><b>{{THEMES}}</b><span>themes</span></li>
+    <li><b>{{TEMPLATES}}</b><span>templates</span></li>
+    <li><b>{{GUIDES}}</b><span>guides</span></li>
+  </ul>
+  <p class="about">Take a part instead of rebuilding it: a taken part costs a few tokens, a written one costs thousands. Charts, layouts, patterns and a canvas, each with a preview, what it needs, its files and the exact line to take it.</p>
+</section>
+
+<section>
+  <h2>What is included</h2>
+  <ul class="inc">
+    <li><b>The adp skill and four road skills</b>: new, catalog, edit and adopt, which say how to design, build and edit a page.</li>
+    <li><b>Three page templates</b>: starter, assistant and default.</li>
+    <li><b>The runtime</b> <code>adp.js</code>: What changed, content as data, comment anchors, page integrity and first-open seeding.</li>
+    <li><b>The scripts</b> <code>adp.py</code>, which prints the Artifact calls for the agent to make (it publishes nothing itself), and a local emulator, <code>adp.py dev</code>.</li>
+    <li><b>This catalog</b>, free and open source under Apache-2.0.</li>
+  </ul>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <b>catalog</b> built {{BUILT}} · schema {{SCHEMA}} · {{FILES}} files, {{BYTES}}<br>
+  <b>source</b> commit {{COMMIT}} · planned {{PLANNED}}<br>
+  <b>artifact</b> {{URL}}
+</div></footer>
+</body>
+</html>

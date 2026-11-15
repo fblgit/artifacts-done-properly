@@ -1,0 +1,8 @@
+{
+ "note": "Invented: three small text files for template.tester to unpack. Pass this file to adp.py seed/new with --data: the docs land in the kitfiles collection, the loader expands them on the first open, and the tester's steps write them out as files under unpacked/.",
+ "docs": [
+  {"collection": "kitfiles", "id": "samples~hello.txt", "data": {"path": "samples/hello.txt", "text": "Hello from the pack.\nThis file was a db doc, then a published file.\n"}},
+  {"collection": "kitfiles", "id": "samples~numbers.json", "data": {"path": "samples/numbers.json", "text": "{\n \"primes\": [2, 3, 5, 7, 11, 13],\n \"note\": \"invented\"\n}\n"}},
+  {"collection": "kitfiles", "id": "samples~style.css", "data": {"path": "samples/style.css", "text": ".sample { color: #444; padding: 4px 8px; }\n"}}
+ ]
+}

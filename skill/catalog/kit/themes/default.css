@@ -1,0 +1,194 @@
+/* part:page.style.kit.theme.default */
+/**
+ * Default
+ * The look every ADP page starts with, stated in full: cool proofing-paper greys, one carmine accent, Bricolage Grotesque headings over Atkinson Hyperlegible Next, IBM Plex Mono for ids, the canvas's pens and stickies, and the page's own text size, leading, edges and heading case. Every value is one the templates carry or fall back to, so a page that wears this theme looks as a template does with no theme; a test keeps the theme and the templates equal. It is also the reference for the shared convention: every other theme sets each name this one sets.
+ *
+ * Character: a specimen book. Greys with a little blue in them, near-white panels, near-black ink, and carmine for everything that acts; at night a cool blue-black ground and a soft rose accent.
+ * From the templates: the colours, --shadow and the three font tokens of styles/page.css; the pens, stickies, --canvas, --dot and --f-hand of the assistant's styles/canvas.css (--f-hand is a system handwriting stack, no web font).
+ * From their fallbacks: --seam, --gold-leaf and --focus are the accent; --outline is --rule; --edge-w, --text-size, --leading, --head-case and no ground texture are what page.css uses when a theme sets none.
+ * From the catalog page, which wears this look: --warn (its --cat-warn). Derived, in the same character: --info and --wait (the blue and violet pens), a -soft tint per meaning, and the six --k-* kinds from the meanings.
+ * Not set, on purpose: --radius and --radius-lg. The templates and the kit fall back to different corners in different places (4 to 20px), so no single value keeps today's look.
+ * Text pairs (--ink, --ink-2, --accent, --danger, --ok, --warn, --info, --wait on --panel, --sunk and --bg, each meaning on its -soft tint) are 4.5:1 or more in both themes; --ink-3 on --sunk is 4.4:1 by day, as page.css has it.
+ * Fonts: https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Atkinson+Hyperlegible+Next:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ * Provides (no global): :root tokens (light, dark, toggle).
+ *
+ * @id        theme.default
+ * @kind      theme
+ * @group     Themes
+ * @status    new
+ * @version   0.2.0
+ * @updated   2026-11-14
+ * @summary   The look every ADP page starts with, stated in full: cool greys, a carmine accent, Bricolage Grotesque over Atkinson Hyperlegible Next, the canvas pens, and the templates' own text size and edges.
+ * @tags      palette, tokens, colours, dark mode, default, starting look, carmine, grey, bricolage, convention
+ * @requires  none
+ * @files     kit/themes/default.json, kit/samples/viz.json
+ * @provides  none
+ * @config    fonts | Bricolage Grotesque, Atkinson Hyperlegible Next and IBM Plex Mono from Google Fonts (the URL is in the json and the css header; the preview loads it itself)
+ * @config    json | {light, dark} maps for Kit.tokens.themeCss
+ * @tokens    none
+ * @globals   none
+ * @fonts     https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Atkinson+Hyperlegible+Next:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap
+ * @db        none
+ * @source    ADP starter template | styles/page.css | the :root, prefers-color-scheme and [data-theme] blocks
+ * @source    ADP assistant template | styles/canvas.css | the pens, stickies, --canvas, --dot and --f-hand of the Canvas view
+ * @preview   {"render": "theme", "samples": ["kit/themes/default.json", "kit/samples/viz.json#viz-chips", "kit/samples/viz.json#viz-stepper", "kit/samples/viz.json#viz-matrix"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
+ * @changed   Stated in full, from the templates' own code: the canvas pens and stickies, --canvas, --dot and --f-hand, the meanings (--warn, --info, --wait) with a -soft tint each, --seam, --gold-leaf, --focus, the six --k-* kinds, and the feel page.css falls back to (--outline, --edge-w, --text-size, --leading, --head-case, no ground texture). It is the reference for the shared convention: every theme sets each name it sets.
+ */
+/* Layout: none; a palette, type and a feel for any page. */
+:root {
+  color-scheme: light;
+  --bg: #e7e8ec;
+  --panel: #f9f9fb;
+  --sunk: #dedfe5;
+  --ink: #19191e;
+  --ink-2: #474852;
+  --ink-3: #62646e;
+  --rule: #c9cbd3;
+  --rule-2: #dcdde3;
+  --accent: #a3163f;
+  --accent-ink: #fff;
+  --accent-soft: #f5dce4;
+  --seam: #a3163f;
+  --gold-leaf: #a3163f;
+  --focus: #a3163f;
+  --danger-soft: #f5dce4;
+  --danger: #a3163f;
+  --ok-soft: #e2ece7;
+  --ok: #1f6b4a;
+  --warn-soft: #f0e9de;
+  --warn: #8a5200;
+  --info-soft: #e2e8f7;
+  --info: #2350c2;
+  --wait-soft: #ece7f7;
+  --wait: #6a48c0;
+  --k-problem: #a3163f;
+  --k-solution: #1f6b4a;
+  --k-idea: #8a5200;
+  --k-question: #2350c2;
+  --k-decision: #6a48c0;
+  --k-task: #474852;
+  --c-ink: var(--ink);
+  --c-blue: #2350c2;
+  --c-red: #b8392a;
+  --c-green: #1f7a52;
+  --c-amber: #a86a00;
+  --c-violet: #6a48c0;
+  --st-yellow: #f7e58b;
+  --st-blue: #bcd9f5;
+  --st-pink: #f6c4c8;
+  --st-green: #bfe5c9;
+  --sticky-ink: #22252b;
+  --canvas: color-mix(in srgb,var(--panel) 55%,var(--sunk));
+  --dot: color-mix(in srgb,var(--ink) 18%,transparent);
+  --shadow: 0 1px 0 rgba(25,25,30,.05),0 14px 34px -18px rgba(25,25,30,.38);
+  --f-display: "Bricolage Grotesque","Avenir Next Condensed","Arial Narrow",sans-serif;
+  --f-ui: "Atkinson Hyperlegible Next","Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono: "IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --f-hand: "Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+  --outline: #c9cbd3;
+  --bg-image: none;
+  --edge-w: 1px;
+  --text-size: 15px;
+  --leading: 1.55;
+  --head-case: none;
+  --bg-size: auto;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121317;
+    --panel: #1a1b20;
+    --sunk: #23242b;
+    --ink: #e9e9ee;
+    --ink-2: #b4b5bf;
+    --ink-3: #90929c;
+    --rule: #343640;
+    --rule-2: #292a31;
+    --accent: #f2869f;
+    --accent-ink: #2a0811;
+    --accent-soft: #3b1a25;
+    --seam: #f2869f;
+    --gold-leaf: #f2869f;
+    --focus: #f2869f;
+    --danger-soft: #3b1a25;
+    --danger: #f2869f;
+    --ok-soft: #22302d;
+    --ok: #74c9a0;
+    --warn-soft: #342c22;
+    --warn: #e9b25e;
+    --info-soft: #252b3c;
+    --info: #86a6ff;
+    --wait-soft: #2d2a3c;
+    --wait: #b8a1ff;
+    --k-problem: #f2869f;
+    --k-solution: #74c9a0;
+    --k-idea: #e9b25e;
+    --k-question: #86a6ff;
+    --k-decision: #b8a1ff;
+    --k-task: #b4b5bf;
+    --c-ink: var(--ink);
+    --c-blue: #86a6ff;
+    --c-red: #ff8c79;
+    --c-green: #6fd3a0;
+    --c-amber: #f0b54a;
+    --c-violet: #b8a1ff;
+    --st-yellow: #e6d26a;
+    --st-blue: #9fc5ec;
+    --st-pink: #eaaab1;
+    --st-green: #a1d8b2;
+    --sticky-ink: #1d1f24;
+    --canvas: color-mix(in srgb,var(--panel) 55%,var(--sunk));
+    --dot: color-mix(in srgb,var(--ink) 18%,transparent);
+    --shadow: 0 1px 0 rgba(0,0,0,.4),0 16px 36px -18px rgba(0,0,0,.8);
+    --outline: #343640;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121317;
+  --panel: #1a1b20;
+  --sunk: #23242b;
+  --ink: #e9e9ee;
+  --ink-2: #b4b5bf;
+  --ink-3: #90929c;
+  --rule: #343640;
+  --rule-2: #292a31;
+  --accent: #f2869f;
+  --accent-ink: #2a0811;
+  --accent-soft: #3b1a25;
+  --seam: #f2869f;
+  --gold-leaf: #f2869f;
+  --focus: #f2869f;
+  --danger-soft: #3b1a25;
+  --danger: #f2869f;
+  --ok-soft: #22302d;
+  --ok: #74c9a0;
+  --warn-soft: #342c22;
+  --warn: #e9b25e;
+  --info-soft: #252b3c;
+  --info: #86a6ff;
+  --wait-soft: #2d2a3c;
+  --wait: #b8a1ff;
+  --k-problem: #f2869f;
+  --k-solution: #74c9a0;
+  --k-idea: #e9b25e;
+  --k-question: #86a6ff;
+  --k-decision: #b8a1ff;
+  --k-task: #b4b5bf;
+  --c-ink: var(--ink);
+  --c-blue: #86a6ff;
+  --c-red: #ff8c79;
+  --c-green: #6fd3a0;
+  --c-amber: #f0b54a;
+  --c-violet: #b8a1ff;
+  --st-yellow: #e6d26a;
+  --st-blue: #9fc5ec;
+  --st-pink: #eaaab1;
+  --st-green: #a1d8b2;
+  --sticky-ink: #1d1f24;
+  --canvas: color-mix(in srgb,var(--panel) 55%,var(--sunk));
+  --dot: color-mix(in srgb,var(--ink) 18%,transparent);
+  --shadow: 0 1px 0 rgba(0,0,0,.4),0 16px 36px -18px rgba(0,0,0,.8);
+  --outline: #343640;
+}
+/* /part:page.style.kit.theme.default */

@@ -10,8 +10,10 @@
  * MiniCard({n, kinds, note, onClick})
  *
  * Tone colours: --c-<pen> for each pen tone used.
+ * Tokens: no file of this entry reads a custom property. Its rules are the "focus" section of kit/viz/viz.css (entry viz.core, which it requires); they read --accent --f-display --f-mono --f-ui --ink --ink-2 --panel --rule; and with a fallback --kv-c.
  *
  * @id        viz.focus
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -19,14 +21,19 @@
  * @summary   The side pane for one node of a tree: what it hangs under, the record itself, and what hangs under it, grouped by kind.
  * @tags      inspector, detail, side pane, preview, focus, record card
  * @requires  viz.core
+ * @files     kit/samples/viz.json
  * @provides  Kit.viz.Focus, Kit.viz.MiniCard
  * @config    id | the focused node id
  * @config    nodes | the same list the Tree takes
  * @config    onPick | (id): refocus
  * @config    extra | a vnode under the record for the board's own actions
  * @config    words | {under, below, nothing, paths, chosen, notTaken, open, top}
+ * @tokens    none
  * @globals   htm-preact
  * @db        none
+ * @source    Journey Whiteboard | app.js | MovePreview, MiniCard
+ * @preview   {"render": "viz.focus", "samples": ["kit/samples/viz.json#viz-tree"]}
+ * @changed   Board actions (open panel, propose a move, alternatives) moved out; the board passes them in as extra.
  */
 (function () {
 'use strict';

@@ -10,6 +10,7 @@
  *   chart     {unit, yLabel, max, ticks, height, decimals, valueLabels, table}   passed to Kit.bars.columns; give max when the scale should not change as the slider moves
  *
  * @id        viz.slider-chart
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -17,12 +18,17 @@
  * @summary   Sliders that redraw a column chart, readout tiles and a sentence from a model you write.
  * @tags      slider, what-if, calculator, scenario, readout, chart, model, interactive
  * @requires  viz.bars, kit.tooltip
+ * @files     kit/viz/slider-chart.css, kit/samples/viz.json
  * @provides  Kit.sliderChart.mount
  * @config    Kit.sliderChart.mount(box, opts) | inputs [{id, label, min, max, step, value, unit, format}], model(values) => {categories, series, readouts [{label, value, note}], note, highlight}, chart {unit, yLabel, max, ticks, height, decimals, valueLabels, table}, title, label, host
  * @config    requires | viz.bars (Kit.bars.columns and bars.css), kit.tooltip
- * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --seam? --c-blue --c-amber --c-violet --c-green --c-red
+ * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --f-ui --f-mono --accent --seam? --f-display?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a cluster-sizing page, index.html | the quorum slider with its bar chart, the endurance calculator with two scenarios, and the readout tiles
+ * @preview   {"render": "viz.slider-chart", "samples": ["kit/samples/viz.json#slider-chart"]}
+ * @samples   slider-chart
+ * @changed   The model is a callback so the shell serves any what-if.
  */
 (function () {
 'use strict';

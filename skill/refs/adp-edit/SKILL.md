@@ -7,7 +7,7 @@ metadata:
 
 # Edit an ADP artifact (read, hold, publish, record)
 
-Why: several agents change the page over many versions. The only lock is the `if_version` pin on a db write; a refused write means someone wrote first. Full text: `catalog/kit/guides/artifact-dataplane.md` in the adp skill's folder, read only if this road leaves a question open.
+Why: several agents change the page over many versions. The only lock is the `if_version` pin on a db write; a refused write means someone wrote first. Full text: `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there), read only if this road leaves a question open.
 
 `ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. DIR is the artifact laid out at its published paths and must hold EVERY published file. Batches are written to files (`--out`, default `DIR.adp/`) and printed as `writes` lists whose entries carry `file_path`. P.json maps `"collection/doc"` to the version you read, e.g. `{"manifest/current": 4, "parts/home": 2}`.
 
@@ -36,7 +36,7 @@ Copy lives in `content/<part id>`. Change it with an ArtifactData update with `i
 1. When a thread is sent to you, note the part its anchor sits in (anchors are part ids). Do not promise work in the thread.
 2. The holder of that part makes the change and publishes.
 3. Reply after the publish naming the version and the part ids.
-4. A page with the Work with Claude pane keeps `requests/`: `ADP requests DUMP.json` lists the open ones; `--ack RID --by NAME`, `--progress RID --text T`, `--done RID --response FILE` write the pinned update, and `presence/NAME` with it (the page reads watching while that is recent, five minutes by default). Each write raises the request's version, so for every step read the request again (ArtifactData `get`), save it as the dump and rerun the command: a pin taken from an earlier dump is refused. The page shows a request as done when `status` is `done`, whatever `state` still says. The presence `doing` the command writes is its own: overwrite it with how requests reach you (`polling` when you only read `requests/` each time the owner says go). A request a reply reopened is answered with `--done RID --response FILE --turns TURNS.json`: it adds a turn and leaves `response` as it was.
+4. A page with the Work with Claude pane keeps `requests/`: `ADP requests DUMP.json` lists the open ones. Answer one with a single ArtifactData `update` of `requests/RID`, `{status: "done", response}` (Markdown). A new request is version 1 and each write returns the next version, so the pin needs no read. On long work, first write `{state: "working", progress: [{text}]}`; after a page change, add `changed` (part ids) and `version`. Write no timestamps. A request a reply reopened is answered in the next `requests/RID/turns/NNNN`, `{by: "claude", text}`, with `{status: "done"}` on the request, pinned with its version as read; `response` stays as it was.
 
 ## Other
 

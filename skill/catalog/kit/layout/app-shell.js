@@ -20,8 +20,10 @@
  *   Kit.shell.icons -> {home, list, layers, grid, gear, look}: svg strings you can pass as icon.
  * In an artifact the address bar does not follow the hash (the viewer only reads a plain #anchor when the page loads), so a shell inside an artifact keeps its own page in memory and gives each page a
  * link of the artifact's address plus #token; pass hash:false when the artifact's address belongs to something else.
+ * Also provides (not globals): add, show and popover, methods of the shell mount returns.
  *
  * @id        layout.app-shell
+ * @kind      component
  * @group     Layouts
  * @status    new
  * @version   0.1.0
@@ -29,12 +31,17 @@
  * @summary   A floating nav pill whose icon tabs open their label on the current page; pages register themselves with show and hide hooks; hash routing; a link to something inside a page opens that page.
  * @tags      shell, navigation, pages, routing, hash, tabs, pill, lifecycle, onshow, app
  * @requires  kit.tokens
- * @provides  Kit.shell.mount, Kit.shell.icons, shell.add, shell.show, shell.popover
+ * @files     kit/layout/app-shell.css, kit/samples/layout.json
+ * @provides  Kit.shell.mount, Kit.shell.icons
  * @config    Kit.shell.mount(root, {brand, label, storageKey, defaultPage, hash, height, actions}) | returns a shell with add(page), show(id, anchorId), current(), pages(), popover(button, panel), destroy()
  * @config    shell.add({id, title, icon, el, onShow, onHide}) | id is a bare token; icon is a name from Kit.shell.icons or an svg string; el is the page's root element
- * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink --accent-soft --f-ui --f-display --shadow? --seam?
+ * @tokens    --bg --panel --sunk --ink --ink-2 --rule --rule-2? --accent --accent-ink --f-ui --f-display? --shadow? --seam? --radius-lg?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | a network-ops console's app shell | the floating nav pill, the page registry with show and hide hooks, hash routing, links into a page, the look popover
+ * @preview   {"render": "layout.app-shell", "samples": ["kit/samples/layout.json#app-shell"]}
+ * @samples   app-shell
+ * @changed   The console's sprite icons became inline svg strings, and its skin switcher became a generic popover you fill yourself.
  */
 (function () {
 'use strict';

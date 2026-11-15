@@ -88,14 +88,19 @@ P['viz.version-compare'] = ({ samples }) => {
 };
 
 // ---------------------------------------------------------------- pattern.playground
-P['pattern.playground'] = ({ samples }) => {
+P['pattern.playground'] = ({ samples, entries }) => {
   const d = first(samples, 'playground');
-  const [cat, setCat] = useState(window.CatalogData && window.CatalogData.entries || null);
-  const [err, setErr] = useState('');
-  useEffect(() => { if (cat) return; fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))).then(j => setCat(j.entries), e => setErr(e.message)); }, []);
+  const [cat, setCat] = useState(null);
+  // the index no longer carries an entry's preview block (its samples and what it uses): each comes from the header of the entry's main file
+  useEffect(() => {
+    let off = false; const F = window.CatalogFiles;
+    Promise.all(entries.map(e => F.main(e) ? F.header(F.main(e)).then(h => Object.assign({}, e, { preview: h.preview || null }), () => e) : e))
+      .then(list => { if (!off) setCat(list); });        // an entry whose header cannot be read stays as the index has it
+    return () => { off = true; };
+  }, []);
   const ref = useMount(el => cat ? K().playground.mount(el, { catalog: cat, base: d.base, themes: d.themes, entry: d.entry }) : null, [!!cat]);
   return html`<div class="pv14-frame">
-    ${err ? html`<p class="pv14-log">The catalog could not be read (${err}).</p>` : null}
+    ${!cat ? html`<p class="pv14-log">Reading what each entry loads first.</p>` : null}
     <div class="pv14-mount" ref=${ref}></div>
     <${Note}>The whole catalog is the picker. Theme, mode and width change the inner stage only; the sample is yours to edit, and Apply re-renders it.<//>
   </div>`;

@@ -16,10 +16,14 @@ First public release of Artifacts Done Properly (ADP): a Claude skill for claude
 
 ## Install
 
+Claude Code: install the plugin, and its marketplace brings the updates. Run `/plugin marketplace add fblgit/fblgit-claude-marketplace`, then `/plugin install artifacts-done-properly@fblgit-claude-marketplace`, then follow "First run" in the README. In the plugin, `setup` copies no road skill, because the plugin serves them. UNVERIFIED end to end until the marketplace listing is published.
+
+The Claude desktop app's skill library, or a manual install:
+
 1. Download `adp.skill` and `adp.skill.sha256` from this release.
 2. Verify: `sha256sum -c adp.skill.sha256` (macOS: `shasum -a 256 -c adp.skill.sha256`).
 3. Install `adp.skill` as a skill (unzip it so the `adp/` folder sits in your skills folder).
-4. Run `python3 -I adp/scripts/adp.py setup --dry-run`, then `setup --scope user|project|local`. Setup copies the four road skills into `.claude/skills` and writes a config; it only prints the CLAUDE.md lines unless you pass `--yes`.
+4. Run `python3 -I adp/scripts/adp.py setup --dry-run`, then `setup --scope user|project|local`. Setup copies the four road skills into `.claude/skills` (replacing an older or edited copy) and writes a config; it only prints the CLAUDE.md lines unless you pass `--yes`.
 
 ## Commands
 
@@ -31,7 +35,7 @@ First public release of Artifacts Done Properly (ADP): a Claude skill for claude
 ## Known gaps
 
 - `--tier full` is not available yet (`adp.py new --tier full` says so); the full tier is meant to be the published catalog, later.
-- No catalog entry-add command: adding an entry means editing files under `catalog/kit/` and `catalog.json` by hand (stated in `adp-catalog`).
-- All 138 catalog entries carry a header in the format of `docs/catalog-header.md`. `catalog.json` is still the full index, not yet generated from the headers.
+- No catalog entry-add command: adding an entry means writing its files under `catalog/kit/` with a header, then running `adp_catalog.py build`, which writes `catalog.json` (stated in `adp-catalog`).
+- All 141 catalog entries carry a header in the format of `docs/catalog-header.md`, and `catalog.json` (`kit-catalog/2`) is generated from those headers by `adp_catalog.py build`.
 - The catalog page loads marked, DOMPurify and htm/preact from public CDNs, and fonts from Google Fonts.
 - No license file in this draft: the owner must add one before publishing.

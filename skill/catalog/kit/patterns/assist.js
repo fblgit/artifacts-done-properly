@@ -1,7 +1,7 @@
 /* part:page.script.kit.assist */
 /**
  * Assist engine
- * Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session moves the request through ack, working (with progress lines) and done (response, changed parts, version), and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.
+ * Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session answers the request with done (response, changed parts, version), after working (progress lines) if long, and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.
  *
  * The engine behind a page that works with Claude out of the box (docs/assist.md is the contract, word for word). People pick a block, say what they want, and
  * either send it to a Claude Code session watching the artifact (a request doc plus a comment that wakes the session) or ask Claude at once through `sample` (a stored
@@ -23,7 +23,7 @@
  *   engine.ping()                 Promise<'pong' | 'timeout'> (90 s)
  *   engine.requests({project, open}) / engine.conversations({project}) / engine.messages(cid) / engine.presence() / engine.thread(rid): live {on(fn) -> off, get()}
  *     requests: [{id, ...doc, state (derived), stuck}] newest first, ping excluded; thread: {id, req, state, stuck, text, response, turns [{id, by, at, text}]} or null
- *     presence: {watching, busy, sessions [{session, at, doing, fresh}]}; messages: [{id, role, by, at, text, quote?}]
+ *     presence: {watching, native, busy, sessions [{session, at, doing, fresh}]} (watching: a fresh presence doc, or native: canSendToClaude answers available); messages: [{id, role, by, at, text, quote?}]
  *   engine.me()                   the viewer's uid ('' when unknown), so a view can say You
  *   engine.state(req)             'queue' | 'ack' | 'working' | 'done';  engine.lanes() the offered lanes;  engine.word(lane);  engine.destroy()
  *   Kit.assist.memory(seed) -> a db-shaped in-memory handle;  Kit.assist.parseShortcut('Mod+Shift+K');  Kit.assist.state(req)
@@ -34,14 +34,17 @@
  * The picker: the page dims, the [data-part] under the pointer is ringed with its title, arrows move between blocks, Enter or a click picks, Esc leaves; announced through role=status.
  *
  * @id        pattern.assist
+ * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.0
- * @updated   2026-11-13
+ * @version   0.1.2
+ * @updated   2026-11-14
  * @summary   The engine of a page that works with Claude: pick a block, send it as a request a watching Claude Code session does and reports on, or ask Claude at once; requests, turns, conversations and presence live in the db.
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
  * @requires  kit.tokens, kit.dom
- * @provides  Kit.assist.start, Kit.assist.memory, Kit.assist.parseShortcut
+ * @files     kit/samples/patterns.json
+ * @provides  Kit.assist.start, Kit.assist.memory, Kit.assist.parseShortcut, Kit.assist.matches, Kit.assist.state
+ * @related   pattern.assist-panel, pattern.request-card, pattern.answer-queue, pattern.questions
  * @config    Kit.assist.start(opts) | db, user, comments, sample, config (handles or the promises claude.use returns), page (window.ADP), project, now, titles {part id: title}, manifest (for hashes), words {lane: word}, frame (the Ask now framing), onPick(pick) after the shortcut, shortcut false, pingTimeout, seed (the memory store); returns the engine
  * @config    assist.enabled | switch, bool, default true: the lane exists on the page (button, shortcut, panel)
  * @config    assist.lanes | switch, list, default ask, task, fix, design: the lanes the composer offers
@@ -49,8 +52,14 @@
  * @config    assist.presence-minutes | switch, enum 2 | 5 | 15, default 5: how fresh a presence doc must be to read watching
  * @config    assist.shortcut | switch, text, default Mod+Shift+K: the picker's key combination
  * @config    capabilities | db with requests/, conversations/ and presence/ writable at edit, user, comments {customAnchors: true}, sample (docs/assist.md)
+ * @tokens    --ink --panel --rule --accent --accent-ink --f-ui --seam? --radius? --shadow?
  * @globals   none
- * @db        reads requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; presence; config/current / writes requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; changes / presence/<session> is written by the watching sessions, never by the page. The page creates a request and reopens it on a reply; only a session moves it forward. Each send and reply also appends changes/d-<ms> unless log.data-changes is off.
+ * @db        reads requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; presence; config/current / writes requests; requests/<rid>/turns; conversations; conversations/<cid>/messages; changes / note presence/<session> is never written by the page, nor asked of a session. The page creates a request and reopens it on a reply; only a session moves it forward. Each send and reply also appends changes/d-<ms> unless log.data-changes is off.
+ * @source    Catalog batch 16, 2026-10-26 | kit/patterns/assist.js 0.1.0 | requests with a scope and a quote, turns, Ask now, presence, ping, the block picker and the shortcut
+ * @source    Catalog batch 16, 2026-10-26 | a drafting-table board's request engine | the request doc and its trailer comment, the queue, ack, working and done states, stuck after three minutes, ping with its 90 s nudge
+ * @preview   {"render": "pattern.assist", "samples": ["kit/samples/patterns.json#assist"]}
+ * @samples   assist
+ * @changed   presence() also reads watching from the platform's own answer (canSendToClaude available), so a session that watches and has not acted lately is not shown as gone.
  */
 (function () {
 'use strict';
@@ -183,7 +192,7 @@ function start(o) {
     const c = H.comments; let v = 'none';
     if (c && typeof c.canSendToClaude === 'function') { try { v = await c.canSendToClaude(); } catch (e) { v = 'off'; } if (CAN.indexOf(v) < 0) v = 'off'; }
     if (!enabled()) v = 'off';
-    if (v !== canSend) { canSend = v; notify(); }
+    if (v !== canSend) { canSend = v; notify(); if (cache.p) cache.p.emit(); }      // presence() reads canSend too
     return v;
   }
   const can = () => ({ send: canSend, ask: !!H.sample && !askDead && enabled() && cfg('assist.ask-now', true) !== false });
@@ -220,8 +229,10 @@ function start(o) {
     return cache.p || (cache.p = live(() => {
       const win = (Number(cfg('assist.presence-minutes', '5')) || 5) * 60000;
       const s = pres.map(p => ({ session: p.session || p.id, at: p.at || '', doing: p.doing || '', fresh: clock() - new Date(p.at).getTime() < win })).sort(byAt);
-      const f = s.filter(x => x.fresh);
-      return { watching: f.length > 0, busy: f.some(x => !!x.doing), sessions: s };
+      // native: the platform itself says a watching session would be woken (comments.canSendToClaude), though no fresh presence doc names it.
+      // A session that watches and has not acted for a while is still watching: its presence doc is written only when it acts.
+      const f = s.filter(x => x.fresh), native = !f.length && canSend === 'available';
+      return { watching: f.length > 0 || native, native, busy: f.some(x => !!x.doing), sessions: s };
     }));
   }
   function thread(rid) {
@@ -253,8 +264,8 @@ function start(o) {
   const scopeOf = s => { s = s || {}; const id = squash(s.id, 200); return { kind: s.kind || (id ? 'part' : 'page'), id, label: squash(s.label, 120), hash: String(s.hash || '') }; };
   const isPart = s => s && s.kind === 'part' && s.id;
   function instruction(rid, lane, s, project) {
-    if (lane === 'ping') return 'Request requests/' + rid + ' on this artifact is a ping: write state "ack" with ackBy, then status "done" with response "pong", and write presence/<your-name> {at, doing, session}. Nothing else is asked.';
-    return 'A person on this artifact asked for request requests/' + rid + ' (scope ' + (isPart(s) ? 'part ' + s.id : 'page') + ', project ' + JSON.stringify(project || '') + '). The text above may be cut, so read requests/' + rid + ' for the whole ask. Do the work as the adp skill describes, if it is installed (read the latest version, publish, record). Move the request in this order, so the page shows where it is: state "ack" with ackBy and ackAt at once; state "working" with progress [{at, text}] as you go; then status "done" with doneAt, response, changed [part ids] and version if you published. Write the response in Markdown for the person who asked: what you did, or what you could not do and why; if you need their choice, ask it there and stop. A reply arrives as requests/' + rid + '/turns/<n> and reopens the request: move it through the same states again, but write your answer as a new turn {by "claude", at, text} and leave response as it was. Write presence/<your-name> {at, doing, session} each time you act.';
+    if (lane === 'ping') return 'Request requests/' + rid + ' on this artifact is a ping: update it with status "done" and if_version 1. Nothing else is asked.';
+    return 'A person on this artifact asked for request requests/' + rid + ' (scope ' + (isPart(s) ? 'part ' + s.id : 'page') + ', project ' + JSON.stringify(project || '') + '). If the text above ends in …, it was cut: read requests/' + rid + '. Do the work as the adp skill describes, if it is installed. Answer with one ArtifactData update of requests/' + rid + ', which the page shows at once: status "done" and response, if_version 1 (the document is new; a refusal names the right one). Write the response in Markdown for the person who asked: what you did, or what you could not do and why; if you need their choice, ask it there and stop. On long work, first write state "working" with progress [{text}]; after a page change, add changed [part ids] and version. A comment that starts "Reply n" reopened the request: read it for its version, write your answer as requests/' + rid + '/turns/<n+1, four digits> {by "claude", text}, set status "done" and leave response as it was. Write no timestamps.';
   }
   const trailer = (rid, lane, s) => '· adp request {' + rid + '} · lane ' + lane + ' · scope ' + (isPart(s) ? 'part:' + s.id : 'page');
   function commentText(head, quote, rid, lane, s, project) {

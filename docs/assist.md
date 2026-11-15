@@ -41,7 +41,7 @@ The engine is `Kit.assist.start({db, user, comments, sample, config, page, proje
 
 ### Session side
 
-A Claude Code session is told to `watch the artifact <url>` (the text `presence.js` offers with a Copy button). The comment that wakes it carries the instruction `instruction()` in `assist.js` builds: read `requests/<rid>` for the whole ask (the comment text may be cut); do the work as the adp skill describes if it is installed; write `state` `"ack"` with `ackBy` and `ackAt` at once, then `"working"` with `progress` `[{at, text}]`, then `status` `"done"` with `doneAt`, `response` (Markdown, for the person who asked; a question needing their choice goes there and the session stops), `changed` (part ids) and `version` if it published; a reply reopens the request and is answered as a new `requests/<rid>/turns/<n>` `{by: "claude", at, text}` with `response` left as it was; write `presence/<your-name>` `{at, doing, session}` each time it acts. `adp.py requests` writes exactly those documents (section 6). The code that edits and publishes the page is the loop of `docs/architecture.md`; the assist only defines the request documents.
+A Claude Code session is told to `watch the artifact <url>` (the text `presence.js` offers with a Copy button). The comment that wakes it carries the instruction `instruction()` in `assist.js` builds: read `requests/<rid>` only if the comment text was cut; do the work as the adp skill describes if it is installed; answer with one update, `status` `"done"` and `response` (Markdown, for the person who asked; a question needing their choice goes there and the session stops), with `if_version` 1 on a new request; on long work first write `state` `"working"` with `progress` `[{text}]`, and after a page change add `changed` (part ids) and `version`; a reply reopens the request and is answered as a new `requests/<rid>/turns/<n>` `{by: "claude", text}` with `response` left as it was; write no timestamps. `adp.py requests` writes them too, with times and `presence/<name>` (section 6). The code that edits and publishes the page is the loop of `docs/architecture.md`; the assist only defines the request documents.
 
 The comment is only the wake-up. The record is `requests/<rid>`.
 
@@ -55,7 +55,7 @@ Written by the page (`engine.send`) with exactly these fields:
 
 | Field | Value at creation | Moved by |
 | --- | --- | --- |
-| `lane` | `ask`, `task`, `fix`, `design` or `ping` (section 3) | never |
+| `lane` | `task`, `fix`, `design` or `ping` (section 3) | never |
 | `scope` | `{kind, id, label, hash}`; `kind` is `part` or `page`; `id` capped at 200 characters, `label` at 120; `hash` is the block's content hash when the page knows it, else `''` | never |
 | `project` | the `project` option, else `''` | never |
 | `text` | the person's words, trimmed | never |
@@ -79,7 +79,7 @@ Stuck: a request in state `queue` older than 180000 ms (three minutes) by `at` i
 
 ### `requests/<rid>/turns/<n>`
 
-`{by, at, text}`. The page writes one per reply (`engine.reply`): `by` is the viewer's id, `at` the time, `text` the reply. A session answers in the next turn with `{by: 'claude', at, text}` (section 6, `--turns`).
+`{by, at, text}`. The page writes one per reply (`engine.reply`): `by` is the viewer's id, `at` the time, `text` the reply. A session answers in the next turn with `{by: 'claude', text}` (section 6, `--turns`).
 
 ### `conversations/<cid>` and `conversations/<cid>/messages/<n>`
 
@@ -87,11 +87,11 @@ Written only by Ask now (`engine.ask`). The conversation: `{title, by, at, scope
 
 ### `presence/<name>`
 
-Written by the sessions, never by the page (`assist.js` header, `@db`). `adp.py requests` writes `{at, doing, session}` under the name given by `--by` (default `agent`) with every request write: `doing` is `'<rid> (<lane>)'` on `--ack` and `--progress` and `''` on `--done`. The engine reads `at`, `doing` and `session` (the doc id when `session` is missing).
+Written by the sessions, never by the page (`assist.js` header, `@db`). `adp.py requests` writes `{at, doing, session}` under the name given by `--by` (default `agent`) with every request write: `doing` is `'<rid> (<lane>)'` on `--ack` and `--progress` and `''` on `--done`. The engine reads `at`, `doing` and `session` (the doc id when `session` is missing). `kit.claude-lane` reads `presence/<presenceKey>` (default `claude-code`), else the freshest presence doc, and takes `at` in ISO or ms.
 
-Fresh means `now - at` is less than the watching window, which is the switch `assist.presence-minutes`: an enum of `2`, `5` or `15`, default `5`. So with the default, five minutes without a write reads as nobody watching. The list `engine.presence()` yields `{watching, busy, sessions: [{session, at, doing, fresh}]}`; `watching` is true when any session is fresh, `busy` when a fresh session has a non-empty `doing`.
+Fresh means `now - at` is less than the watching window, which is the switch `assist.presence-minutes`: an enum of `2`, `5` or `15`, default `5`. So with the default, a doc five minutes old no longer counts. The list `engine.presence()` yields `{watching, native, busy, sessions: [{session, at, doing, fresh}]}`. `watching` is true when any session is fresh, or when none is fresh but the platform itself says a watching session would be woken (`comments.canSendToClaude()` answers `available`, re-checked every 30 s); `native` is true in that second case. A session that watches and has not acted for a while is still watching, and its presence doc is written only when it acts, so the doc alone would read it as gone. `busy` is true when a fresh session has a non-empty `doing`. A viewer who cannot send gets `writers_only` from the platform, so for them only a fresh doc reads as watching.
 
-What writes `presence/<name>` on a schedule is not in this repo: `adp.py` writes it only as part of a `requests` write. The template copy (`content.js.txt`, `home.about`) says the session writes it "every minute while it watches"; that is a statement of what a session is asked to do, and no code here does it.
+No session is asked to write `presence/<name>`: `adp.py` writes it only as part of a `requests` write.
 
 ### Written next to them
 
@@ -110,7 +110,7 @@ What writes `presence/<name>` on a schedule is not in this repo: `adp.py` writes
 | `task` | Task | a session, as `requests/<rid>` | "A Claude Code session does it, publishes and says what changed." |
 | `fix` | Fix | a session | "Say what is wrong here. A session fixes it and tells you what it did." |
 | `design` | Design note | a session | "Say how this should look or read. A session changes the design." |
-| `ping` | Ping | a session | not offered. `engine.ping()` sends a `ping` request (scope `page`, text `Are you there?`); the instruction asks the session to write `state` `"ack"`, then `status` `"done"` with `response` `"pong"`, and its presence. `ping()` resolves `'pong'` when `status` is `done` and `'timeout'` after 90000 ms (`pingTimeout` overrides). |
+| `ping` | Ping | a session | not offered. `engine.ping()` sends a `ping` request (scope `page`, text `Are you there?`); the instruction asks the session to write `status` `"done"` with `if_version` 1. `ping()` resolves `'pong'` when `status` is `done` and `'timeout'` after 90000 ms (`pingTimeout` overrides). |
 
 A `ping` request is hidden from `engine.requests()`. `adp.py requests` does not filter it out (section 6).
 
@@ -164,7 +164,7 @@ The line at the top of the page (`#presence` in the template, `Kit.presence` in 
 | State | Word | Sentence |
 | --- | --- | --- |
 | busy | "A session is working" | `<session>: <doing>`, `(+N more)` when several |
-| watching | "A session is watching" | `<session>, seen <time ago>` |
+| watching | "A session is watching" | `<session>, seen <time ago>`, or "It is woken when you send a request." when the platform says so and no presence doc is fresh (`native`) |
 | away | "No session is watching" | `Last seen <time ago> (<session>)`, or "None has been seen on this artifact yet." |
 
 Busy wins over watching. When the state is away, or after a ping times out, the compact line offers "How to start one": the sentence "Open Claude Code on your computer and tell it:" and the line `watch the artifact <link>` with a Copy button (the template passes no `artifactUrl`, so the link reads `<this artifact's link>`). It adds "Requests you send now wait in the queue and are picked up when a session starts watching." only while sending is `available`, and "Ask now still answers straight away; it needs no session." when Ask now is possible. The template mounts the header line with `canPing: false`; the panel's own presence line has a Ping button.
@@ -196,7 +196,7 @@ adp.py requests DUMP.json [--ack RID --by NAME | --progress RID --text T [--by N
 
 Only one of `--ack`, `--progress`, `--done` per call; a missing id or a `RID` not in the dump exits with an error. `--by` defaults to `agent`.
 
-Every write action prints a `batches` list of ArtifactData writes (each doc is also saved as a file under `--out`, default `requests.adp`) and `{request, state}`. Each batch is the request update, then `set` of `presence/<NAME>` with `{at, doing, session: NAME}`.
+Every write action prints a `batches` list of ArtifactData writes (each doc is also saved as a file under `--out`, default `requests/` in the `.adp/` the log uses: the project's, else `~/.adp/`) and `{request, state}`. Each batch is the request update, then `set` of `presence/<NAME>` with `{at, doing, session: NAME}`.
 
 Pinning: the request update carries `if_version` when the dump gave that doc a version, or when `--pins P.json` names `requests/<rid>` (a pin passed in `--pins` is used; the dump's version is only a default). If neither supplies a version, the write has no `if_version` and the output carries `needs_pin: ['requests/<rid>']`: read the doc's version and pass `--pins`. The `presence` write is a `set` and is not pinned.
 
@@ -204,11 +204,21 @@ The gate (contract 7, `adp.py gate`) refuses other writes while a request awaits
 
 ### What a watching session does, in order
 
-1. Export or read `requests` (`ArtifactData` list) into a dump; `adp.py requests DUMP.json`.
-2. `--ack RID --by NAME`, apply the pins.
-3. Do the work; `--progress RID --text ...` as it goes; edit, publish and record as `docs/architecture.md` describes.
-4. `--done RID --response FILE --changed a,b --version V`. For a reply, put the reply doc's dump in `--turns`.
-5. Replies come as comments naming `requests/<rid>` and as new `turns/`.
+1. Read the ask in the comment; read `requests/<rid>` only if it was cut.
+2. Do the work; on long work write `state` `"working"` with `progress` first; edit, publish and record as `docs/architecture.md` describes.
+3. One update: `status` `"done"`, `response`, and `changed`, `version` after a page change; `if_version` 1 if new.
+4. Replies come as comments naming `requests/<rid>` and as new `turns/`; the answer is the next turn.
+
+### Local emulator: `adp.py dev`
+
+To try a page and this loop without claude.ai, `adp.py dev serve DIR [--port 8787] [--user ID]` serves `DIR` on 127.0.0.1 (paths missing from `DIR`, such as `kit/` or `adp.js`, come from the skill's `catalog/`) and injects `/__adp/shim.js` first in `<head>`. The shim stands in for `window.claude.use`: `db` (doc and collection refs, get, set, update, delete, add, onSnapshot, where, orderBy, limit; `update` of a missing doc rejects `invalid_argument`), `user` (`id`, `canEdit`, `can('data.write')`, all granted) and `comments` (`canSendToClaude`, `sendToClaude`); every other name resolves `null`. The server pushes each change over an event stream and the page re-reads the db. State lives in `DIR/.adp-dev/`: `db/<collection>.json`, `inbox/`, `watch.beat`, `server.json`.
+
+The session side:
+
+1. Run `adp.py dev watch DIR` in the background and read its output. It keeps `watch.beat` fresh, so `canSendToClaude` reads `available` while it runs (15 seconds) and `no_session` otherwise. Each `sendToClaude` lands as one file in `inbox/`; a second after it appears, `watch` prints it as one JSON line `{threadId, by, anchor, text, doc}` and moves it to `inbox/done/`. `doc` is `{collection, id, data, version}` of the doc the text names (by path, else by id), and `[doc]` saved as a file is a dump `adp.py requests` reads.
+2. Answer with `adp.py requests ... --out DIR > OUT.json`, then `adp.py dev send DIR OUT.json`: the server applies the printed `batches` as ArtifactData does (each batch all or nothing, a stale `if_version` refused, exit 3) and pushes them to the page. It prints each doc written as `{collection, id, data, version}`, so the request's entry, in a list, is the dump for the next step (`--progress`, `--done`).
+
+Not emulated: access rules and roles, sampling, `artifact.publish`, the comment UI and threads, and the platform's CDN rules.
 
 ## 7. Capabilities and rules the assist needs
 
@@ -292,7 +302,7 @@ Chunked files (text over 200 KiB in bytes): `incoming/<pid>/chunks/<i>` with `{p
 
 ## 11. Contract 5: what the page does with a proposal
 
-`Kit.inbox.mount(root, {db, user, artifact, config, url, comments, classify, debounce})`, in the template's Settings view under "Incoming" (`settings.inbox`).
+`Kit.inbox.mount(root, {db, user, artifact, config, url, comments, classify, debounce, autoApply, onAutoApplied})`, in the template's Settings view under "Incoming" (`settings.inbox`). `autoApply: true` (default false) makes the page apply every proposal that classifies as merged itself, one at a time, and `onAutoApplied(n)` is called once when none is left open: the packed catalog ships its kit folders as proposals and reloads there.
 
 ### Statuses
 
@@ -328,13 +338,13 @@ An editor presses Decline, types a reason, and the inbox writes `status: 'declin
 
 ### The wake-up
 
-After Apply, a publish conflict, a hold on open, and Decline, the inbox sends a comment with `comments.sendToClaude` when `canSendToClaude()` answers `available` (no wake-up on `merged`, none otherwise). It is only the wake-up; the proposal doc is the record. The text is the event line, then "Proposal incoming/<pid> on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal <pid>; reply here with the version your record shows and resolve the thread.", then the trailer `· adp proposal {<pid>} · <status>`, where `<status>` is `applied <version>` (`applied records` when no version), `held` or `declined`. The thread id is stored on the proposal as `wake: {thread, at}` and later events reply into that thread. Without a listening session the data change stands and the next `adp.py export` finds the status.
+After a publish conflict, a hold on open, and Decline, the inbox sends a comment with `comments.sendToClaude` when `canSendToClaude()` answers `available` (no wake-up on a successful Apply, none on `merged`, none otherwise). It is only the wake-up; the proposal doc is the record. The text is the event line, then "Proposal incoming/<pid> on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal <pid>; reply here with the version your record shows and resolve the thread.", then the trailer `· adp proposal {<pid>} · <status>`, where `<status>` is `held` or `declined`. The thread id is stored on the proposal as `wake: {thread, at}` and later events reply into that thread. Without a listening session the data change stands and the next `adp.py export` finds the status.
 
 `adp.py ack DIR --proposal <pid>` is refused unless the last export shows the proposal `applied` or `declined`; for `applied` it moves the project's base to the proposed work (see `docs/architecture.md`).
 
 ### The handoff
 
-When no `presence/*` doc is fresh and `canSendToClaude()` is not `available`, the inbox says "Nobody is watching. Paste this into any session:" and shows `watch the artifact <url>` (`(this artifact's link)` when no `url` is given), followed by ` — open requests: <ids>` when requests are open (status not `done` or `closed`), with a Copy button. When a presence doc is fresh it says `<name> is watching`; when `canSendToClaude()` is `available` it says a session is listening and will be woken when a proposal is decided. Freshness uses `last_seen` or `at`, and the name is `name` or the doc id, within `assist.presence-minutes`, or 5 minutes when that switch cannot be read (the same default as the engine's).
+When no `presence/*` doc is fresh and `canSendToClaude()` is not `available`, the inbox says "Nobody is watching. Paste this into any session:" and shows `watch the artifact <url>` (`(this artifact's link)` when no `url` is given), followed by ` — open requests: <ids>` when requests are open (status not `done` or `closed`), with a Copy button. When a presence doc is fresh it says `<name> is watching`; when `canSendToClaude()` is `available` it says a session is listening and will be woken when a proposal is held or declined. Freshness uses `last_seen` or `at`, and the name is `name` or the doc id, within `assist.presence-minutes`, or 5 minutes when that switch cannot be read (the same default as the engine's).
 
 ### Who can do what
 

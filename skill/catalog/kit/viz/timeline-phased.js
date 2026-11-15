@@ -17,6 +17,7 @@
  * Kit.vocab is used when it is present. Root CSS class: .kit-tp.
  *
  * @id        viz.timeline-phased
+ * @kind      component
  * @group     Visualizations
  * @status    new
  * @version   0.1.0
@@ -24,12 +25,18 @@
  * @summary   An upgrade of viz.timeline: events grouped by numbered phase with a UTC clock and day column, a ping on events that need a person, and a time-first table drawn as a log.
  * @tags      timeline, phases, clock, utc, zulu, ping, needs you, log, event log, rail, incident
  * @requires  kit.vocab
+ * @files     kit/viz/timeline-phased.css, kit/samples/viz.json
  * @provides  Kit.timelinePhased.mount, Kit.timelinePhased.log, Kit.timelinePhased.clock
+ * @extends   viz.timeline
  * @config    Kit.timelinePhased.mount(box, opts) | phases [{id, name, state done | now | next | later, events [{id, at, title, text, by, state, needsYou}]}], timeZone, label, words, stateEnum, onPick; returns {update, destroy}
  * @config    Kit.timelinePhased.log(box, opts) | rows [[time, cell, ...]], columns, label; returns {destroy}
- * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --warn --seam?
+ * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --f-ui --f-mono --f-display --warn --seam?
  * @globals   none
  * @db        none
+ * @source    Catalog harvest, 2026-10-25 | an earlier board's war-room skin | a vertical rail of tasks by phase with a zulu clock and day column, a siren on what awaits you, a time-first reference table drawn as an event log
+ * @preview   {"render": "viz.timeline-phased", "samples": ["kit/samples/viz.json#timeline-phased"], "uses": ["kit.vocab"]}
+ * @samples   timeline-phased
+ * @changed   Extends viz.timeline as new files; timeline.js and timeline.css are unchanged.
  */
 (function () {
 'use strict';

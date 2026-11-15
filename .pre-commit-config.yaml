@@ -21,12 +21,19 @@ repos:
         files: ^(skill/.*SKILL\.md|tools/package\.py)$
       - id: catalog-check
         name: catalog sizes, sha256 and hashes
-        entry: python3 tools/check_catalog.py
+        entry: python3 skill/scripts/adp_catalog.py
         language: system
         pass_filenames: false
-        files: ^(skill/catalog/|tools/check_catalog\.py)
+        files: ^(skill/catalog/|skill/scripts/adp_(catalog|lib)\.py)
+      - id: catalog-roundtrip
+        name: catalog roundtrip (headers, index, files, take, seed, previews)
+        entry: python3 -I tools/roundtrip.py
+        language: system
+        pass_filenames: false
+        stages: [pre-push]          # about 9 s: on push, not on every commit
+        files: ^(skill/|tools/roundtrip\.py)
       - id: catalog-headers
         name: catalog entry headers (docs/catalog-header.md)
-        entry: python3 tools/check_headers.py
+        entry: python3 skill/scripts/adp_catalog.py headers
         language: system
         files: ^skill/catalog/.*\.(js|css|md|txt)$      # a main file without a valid header blocks the commit

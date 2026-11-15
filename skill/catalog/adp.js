@@ -1,24 +1,30 @@
 /**
  * ADP runtime
- * The adp/2 page runtime. Load it before the page's own scripts, then call ADP.page({view, expected, titles, legacy, all, reveal}) once the views exist.
+ * The adp/2 page runtime. Load it before the page's own scripts, then call ADP.page({view, expected, titles, legacy, all, reveal}) once the views exist. It paints content/<part id> docs live, lists changes/ and active decisions/ in the What changed panel, shows proposals in incoming/, anchors comments to [data-part] elements, hashes the page's parts at open and compares them with manifest/current (integrity), and writes checks/latest when the viewer can edit. It also carries ADP.config (switches in the db doc config/current), ADP.user, ADP.db and ADP.ns(name), and expands the seed packs published beside the page on first open.
  *
- * It paints content/<part id> docs live, lists changes/ and active decisions/ in the What changed panel, shows proposals in incoming/, anchors comments to [data-part] elements, hashes the page's parts at open and compares them with manifest/current (integrity), and writes checks/latest when the viewer can edit. It also carries ADP.config (switches in the db doc config/current), ADP.user, ADP.db and ADP.ns(name), and expands the seed packs published beside the page on first open.
+ * --accent is the comment highlight.
  *
  * @id        runtime.adp
+ * @kind      component
  * @group     Runtime
  * @status    stable
- * @version   2.0.0
- * @updated   2026-11-12
+ * @version   2.0.1
+ * @updated   2026-11-14
  * @summary   The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.
  * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
  * @requires  none
- * @provides  window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP_CHECK, window.ADP_SEED
+ * @files     none
+ * @provides  window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
  * @config    <meta name="adp:build"> | the build number, before the script
  * @config    window.ADP_CONTENT | content.js: the baseline copy of the parts
- * @config    ADP.page(cfg) | {view(), expected(view), titles, legacy, all, reveal(id, key)}
  * @config    page.header, page.tabs, page.changes | parts the page must render; #wc, #wcN, #wcChanges, #wcDecisions for the panel
+ * @config    ADP.page(cfg) | {view(), expected(view), titles, legacy, all, reveal(id, key)}
+ * @tokens    --accent? --accent-soft? --f-ui? --ink? --ink-3? --panel? --rule? --sunk? --warn?
  * @globals   none
- * @db        reads content, changes, decisions, incoming, manifest/current, config/current; writes status/integrity (attempted for any viewer with a db; it lands only where the db rules allow) and checks/latest (editors only), config/current and a changes/d-<time> record when a setting is saved, and the seed docs on first open
+ * @db        reads content; changes; decisions; incoming; manifest/current; config/current / writes status/integrity (attempted for any viewer with a db: it lands only where the db rules allow); checks/latest (editors only); config/current and a changes/d-<time> record when a setting is saved; the seed docs on first open
+ * @source    this repository | skill/assets/adp.js | the same bytes
+ * @preview   {"render": "runtime.adp", "samples": []}
+ * @changed   The catalog runs the same runtime as every page the skill makes: adds ADP.config, ADP.user, ADP.ns, ADP.db, integrity and seeding on first open.
  */
 (function(){
 'use strict';
@@ -464,7 +470,10 @@ define('parts', {locked: {type: 'list', label: 'Locked parts', help: 'Part-id pr
 define('comments', {enabled: {type: 'bool', default: true, label: 'Comment mode', help: 'Reserved: stored and shown, nothing reads it yet.'}});
 define('panel', {changes: {type: 'enum', options: ['everyone', 'editors', 'off'], default: 'everyone', label: 'What changed panel'}, checks: {type: 'enum', options: ['everyone', 'editors', 'off'], default: 'editors', label: 'Integrity badge'}});
 define('playground', {enabled: {type: 'bool', default: true, label: 'Playground'}});
-define('look', {theme: {type: 'text', label: 'Theme id', help: 'Sets data-adp-theme on the page for your own CSS; the kit does not read it.'}, mode: {type: 'enum', options: ['auto', 'light', 'dark'], default: 'auto', label: 'Colour mode'}, density: {type: 'enum', options: ['comfortable', 'compact'], default: 'comfortable', label: 'Density', help: 'Sets data-adp-density on the page for your own CSS; the kit does not read it.'}});
+/* look.theme: its default is the theme index.html links (kit/themes/<name>.css, written by adp.py new), else default. Here the only option is that one;
+   a page that carries more themes and a switch (the assistant template) defines look.theme again with the themes it has installed, and wears the chosen one. */
+const BUILT = (() => { const l = [...document.querySelectorAll('link[rel="stylesheet"][href^="kit/themes/"]')].pop(); return l ? l.getAttribute('href').slice(11, -4) : 'default'; })();
+define('look', {theme: {type: 'enum', options: [BUILT], default: BUILT, label: 'Theme', help: 'The theme everyone sees. A page with a theme switch offers the themes it has installed and wears the chosen one; any other page offers only the theme it was built with. Also set as data-adp-theme on the page.'}, mode: {type: 'enum', options: ['auto', 'light', 'dark'], default: 'auto', label: 'Colour mode'}, density: {type: 'enum', options: ['comfortable', 'compact'], default: 'comfortable', label: 'Density', help: 'Sets data-adp-density on the page for your own CSS; the kit does not read it.'}});
 define('links', {catalog: {type: 'url', label: 'Catalog', help: 'Reserved: stored and shown, nothing reads it yet.'}, board: {type: 'url', label: 'Board', help: 'Reserved: stored and shown, nothing reads it yet.'}, repo: {type: 'url', label: 'Repository', help: 'Reserved: stored and shown, nothing reads it yet.'}});
 define('log', {'data-changes': {type: 'bool', default: true, label: 'Log data changes'}});
 
