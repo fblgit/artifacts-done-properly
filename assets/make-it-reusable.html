@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make it reusable · ADP</title>
+<meta name="description" content="A kit carries more than pixels: an interface, declared dependencies, and examples another agent can inspect and compose.">
+<meta property="og:title" content="Make it reusable · ADP">
+<meta property="og:description" content="A kit carries more than pixels: an interface, declared dependencies, and examples another agent can inspect and compose.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+<a class="mark" href="./"><b>ADP</b><span>Artifacts Done Properly</span></a>
+<nav class="nav" aria-label="The pitch">
+<a href="bring-it-in.html"><small>01</small><span>Bring it in</span></a>
+<a href="make-it-reusable.html" aria-current="page"><small>02</small><span>Make it reusable</span></a>
+<a href="keep-the-gain.html"><small>03</small><span>Keep the gain</span></a>
+<a href="journeys.html"><small>J</small><span>Journeys</span></a>
+<a class="gh" href="https://github.com/fblgit/artifacts-done-properly"><span>GitHub</span></a>
+</nav>
+</div></header>
+<main class="wrap">
+<article class="article">
+<header>
+<span class="eyebrow">02 / Make it reusable</span>
+<h1>Keep the mechanics.</h1>
+<p class="lead">A kit carries more than pixels: an interface, declared dependencies, and examples another agent can inspect and compose.</p>
+</header>
+<figure class="media">
+  <!-- MEDIA: replace this caption with <img src="media/make-it-reusable.gif" alt="a catalog component taken into a page and restyled"> -->
+  <figcaption>Media coming: a catalog component taken into a page and restyled<br>media/make-it-reusable.gif</figcaption>
+</figure>
+<h2>More than pixels</h2>
+<p>Copying a component's look is easy. What gets lost is how it works: what you call, what it needs and how it is meant to be used. On ADP, a kit keeps all three.</p>
+<ul>
+<li><b>An interface:</b> the functions it provides and how to configure them.</li>
+<li><b>Declared dependencies:</b> the other entries it requires, plus the design tokens and data it reads.</li>
+<li><b>Examples:</b> sample files that show it in use.</li>
+</ul>
+
+<h2>Every entry describes itself</h2>
+<p>Each catalog entry carries one comment at the top of its main file. The first line is its name, the next paragraph says what it is, and tags give the facts. This is the real header of the data table kit, trimmed:</p>
+<figure class="spec">
+<figcaption>kit/table.js</figcaption>
+<pre><code>/**
+ * Data table
+ * ...
+ * <span class="t">@id</span>        kit.table
+ * <span class="t">@group</span>     Board kit
+ * <span class="t">@version</span>   0.1.0
+ * <span class="t">@summary</span>   A table in its own scroll frame with a sticky head, numeric columns, ...
+ * <span class="t">@requires</span>  none
+ * <span class="t">@provides</span>  Kit.table.render, Kit.table.fmt
+ * <span class="t">@config</span>    Kit.table.render(box, opts) | columns [...], rows, group, ...
+ */</code></pre>
+</figure>
+<p>The entry also lists its files with a role each: here a script, a style and a sample.</p>
+
+<h2>Another agent can inspect it</h2>
+<p>An agent doesn't have to read the source to use a kit. It can ask:</p>
+<pre><code>adp.py kit show kit.table       # name, summary, about, tags, files, requires, provides
+adp.py kit describe kit.table   # the mount signature: needs, provides, requires, files, sample</code></pre>
+
+<h2>And compose it, by reference</h2>
+<p><code>adp.py take</code> resolves the entries you name and everything they require, dependencies first and each once. It prints a <code>files</code> map that goes straight into the Artifact publish call, and the server copies the files across. Nothing is downloaded, retyped or pasted.</p>
+<pre><code>adp.py take CATALOG kit.table</code></pre>
+<p>Components use design tokens only, so a theme changes the look without touching the kit files.</p>
+<h2>See it in the journeys</h2>
+<ul>
+<li><a href="journeys.html#j3">J3 Catalog road</a></li>
+<li><a href="journeys.html#j7">J7 Harvest into the catalog</a></li>
+</ul>
+<nav class="pager" aria-label="More articles">
+<a class="prev" href="bring-it-in.html"><small>← 01 / Bring it in</small><b>Give good work a home.</b></a>
+<a class="next" href="keep-the-gain.html"><small>03 / Keep the gain →</small><b>Build on your best version.</b></a>
+</nav>
+</article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+<span><b>Great work deserves a second life.</b> The iteration ends. The value stays.</span>
+<span>ADP v2.0.0 · Apache License 2.0 · <a href="https://github.com/fblgit/artifacts-done-properly">Source on GitHub</a></span>
+</div></footer>
+</body>
+</html>

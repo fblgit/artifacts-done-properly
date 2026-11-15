@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADP: Artifacts Done Properly</title>
+<meta name="description" content="A framework and shared library for reusable claude.ai Artifacts. Great work deserves a second life.">
+<meta property="og:title" content="ADP: Artifacts Done Properly">
+<meta property="og:description" content="A framework and shared library for reusable claude.ai Artifacts. Great work deserves a second life.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+<a class="mark" href="./"><b>ADP</b><span>Artifacts Done Properly</span></a>
+<nav class="nav" aria-label="The pitch">
+<a href="bring-it-in.html"><small>01</small><span>Bring it in</span></a>
+<a href="make-it-reusable.html"><small>02</small><span>Make it reusable</span></a>
+<a href="keep-the-gain.html"><small>03</small><span>Keep the gain</span></a>
+<a href="journeys.html"><small>J</small><span>Journeys</span></a>
+<a class="gh" href="https://github.com/fblgit/artifacts-done-properly"><span>GitHub</span></a>
+</nav>
+</div></header>
+<main class="wrap">
+<section class="hero">
+<span class="eyebrow">ADP v2.0.0 · Artifacts Done Properly</span>
+<h1>Great work deserves a second life.</h1>
+<p class="lead">The iteration ends. The value stays.</p>
+<p class="sub">Your next project starts further ahead.</p>
+<div class="actions">
+<a class="btn primary" href="https://github.com/fblgit/artifacts-done-properly/releases/tag/v2.0.0">Get v2.0.0</a>
+<a class="btn" href="https://github.com/fblgit/artifacts-done-properly">Source on GitHub</a>
+</div>
+</section>
+<figure class="media">
+  <!-- MEDIA: replace this caption with <img src="media/hero.gif" alt="a page refined with Claude, round by round"> -->
+  <figcaption>Media coming: a page refined with Claude, round by round<br>media/hero.gif</figcaption>
+</figure>
+<ol class="beats">
+<li><a class="beat" href="bring-it-in.html"><span class="eyebrow">01 / Bring it in</span><b>Give good work a home.</b><p>Bring interfaces, records, and artifacts into a project with your agents. Make the useful parts discoverable instead of burying them in a chat.</p><span class="more">Read the article →</span></a></li>
+<li><a class="beat" href="make-it-reusable.html"><span class="eyebrow">02 / Make it reusable</span><b>Keep the mechanics.</b><p>A kit carries more than pixels: an interface, declared dependencies, and examples another agent can inspect and compose.</p><span class="more">Read the article →</span></a></li>
+<li><a class="beat" href="keep-the-gain.html"><span class="eyebrow">03 / Keep the gain</span><b>Build on your best version.</b><p>A growing catalog gives you more to start from. Refinement becomes an investment you can carry across pages and projects.</p><span class="more">Read the article →</span></a></li>
+</ol>
+<section class="band split">
+<div>
+<h2>What ADP is</h2>
+<p>ADP is a framework and shared library for reusable claude.ai Artifacts. It installs as a Claude skill.</p>
+<p>Good work gets a home in a project. Its reusable pieces go into a catalog as kits, each with an interface, declared dependencies and examples. The next page takes them by reference and starts from your best version.</p>
+<p>Underneath, every piece of a page is a part with a stable id and a content hash, and one database layout records every change. <code>adp.py</code> prints the exact Artifact and ArtifactData calls to make, so nothing is retyped by hand.</p>
+<ul class="facts">
+<li><b>4</b><span>road skills: new, edit, adopt, catalog</span></li>
+<li><b>3</b><span>templates: starter, assistant, default</span></li>
+<li><b>139</b><span>entries in the base catalog</span></li>
+</ul>
+</div>
+<div>
+<h2>Install</h2>
+<ol class="steps">
+<li>Download <code>adp.skill</code> and <code>adp.skill.sha256</code> from the <a href="https://github.com/fblgit/artifacts-done-properly/releases/tag/v2.0.0">release</a>.</li>
+<li>Verify it: <code>sha256sum -c adp.skill.sha256</code> (macOS: <code>shasum -a 256 -c adp.skill.sha256</code>).</li>
+<li>Unzip it so the <code>adp/</code> folder sits in your skills folder.</li>
+<li>Run <code>python3 -I adp/scripts/adp.py setup --dry-run</code>, then <code>setup --scope user|project|local</code>.</li>
+</ol>
+<p>The tool is Python 3 with the standard library only.</p>
+</div>
+</section>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+<span><b>Great work deserves a second life.</b> The iteration ends. The value stays.</span>
+<span>ADP v2.0.0 · Apache License 2.0 · <a href="https://github.com/fblgit/artifacts-done-properly">Source on GitHub</a></span>
+</div></footer>
+</body>
+</html>
