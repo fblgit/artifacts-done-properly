@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-15T15:35:02Z",
+ "built": "2026-11-15T15:55:25Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -58,7 +58,7 @@
    "kind": "component",
    "group": "Board kit",
    "name": "Adopt engine",
-   "summary": "The adopt flow without a view: candidate states and moves, a layered graph layout, which candidate owns a DOM element, counts, a .adp pack check and a download.",
+   "summary": "The adopt flow without a view: candidate states and moves, what adopting requires of the rest, a layered graph layout, which candidate owns a DOM element, counts, a .adp pack check and a download.",
    "tags": [
     "adopt",
     "extract",
@@ -70,18 +70,22 @@
     "adp"
    ],
    "status": "new",
-   "version": "0.1.1",
+   "version": "0.2.0",
    "requires": [],
    "globals": [],
    "provides": [
     "Kit.adopt.STATES",
+    "Kit.adopt.ADOPTED",
     "Kit.adopt.MOVES",
     "Kit.adopt.can",
+    "Kit.adopt.adopted",
     "Kit.adopt.label",
     "Kit.adopt.tone",
     "Kit.adopt.merge",
     "Kit.adopt.counts",
     "Kit.adopt.layout",
+    "Kit.adopt.closure",
+    "Kit.adopt.edgeKind",
     "Kit.adopt.index",
     "Kit.adopt.ownerOf",
     "Kit.adopt.verifyPack",
@@ -92,11 +96,11 @@
     {
      "path": "kit/adopt.js",
      "role": "script",
-     "sha256": "3eac469e05da69cf8bc77aa582e44340274ced2a91c9f34e385299823924341c",
-     "bytes": 8128
+     "sha256": "a0b4137a7dcb504e665418be5165dfda1ce73a523982ede3e9793b9607eefb2e",
+     "bytes": 10470
     }
    ],
-   "hash": "431d7b9b5f10"
+   "hash": "5a6add7b8913"
   },
   {
    "id": "kit.callout-refusal",
@@ -1378,7 +1382,7 @@
     "work"
    ],
    "status": "new",
-   "version": "0.1.1",
+   "version": "0.2.0",
    "requires": [
     "kit.adopt"
    ],
@@ -1391,24 +1395,24 @@
     {
      "path": "kit/patterns/adopt-board.js",
      "role": "script",
-     "sha256": "b995ddb5ad1efde6073883a694112a614d6703ede39563937eda96968f042170",
-     "bytes": 11103
+     "sha256": "41e1b080e5ee10db4afc5231e62763a699f4d5ad4e4b6c9519e1800c2b70dec0",
+     "bytes": 13073
     },
     {
      "path": "kit/patterns/adopt-board.css",
      "role": "style",
-     "sha256": "924ec71b005ffd0ecd40e563621a60a61d9436adec8b704d4981c04ff6998471",
-     "bytes": 3682
+     "sha256": "a3763a305aab160ebc07d0700c3cbf52955f258cafbf5f39a775a8f3bfab6abc",
+     "bytes": 6354
     }
    ],
-   "hash": "716890ccabad"
+   "hash": "5e7c633c640c"
   },
   {
    "id": "pattern.adopt-inspector",
    "kind": "component",
    "group": "Patterns",
    "name": "Adopt inspector",
-   "summary": "The artifact running live in a same-origin frame with a dev-tools picker: hover names the owning candidate, a click selects it, and the selected candidate's elements are outlined.",
+   "summary": "The artifact running live in a same-origin frame with a dev-tools picker: hover names the owning candidate, a click selects it, elements are painted by candidate state, and the selected one shows as a still picture.",
    "tags": [
     "adopt",
     "inspector",
@@ -1417,10 +1421,11 @@
     "devtools",
     "preview",
     "select",
-    "highlight"
+    "highlight",
+    "snapshot"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.2.0",
    "requires": [
     "kit.adopt"
    ],
@@ -1433,17 +1438,17 @@
     {
      "path": "kit/patterns/adopt-inspector.js",
      "role": "script",
-     "sha256": "f95a02b41c4bf856fca51e9e51bb93b47b773959e14a46413ea8d6b6669339ce",
-     "bytes": 6419
+     "sha256": "41bc147d20d628fb06bf1f15b3aaf84efd57c9c69e5e2da2873ddfa672f5dbd3",
+     "bytes": 12017
     },
     {
      "path": "kit/patterns/adopt-inspector.css",
      "role": "style",
-     "sha256": "c01db757ab12fa074c97c7c0b97ed04515b5a98213c540985f5b5a38b71c5a98",
-     "bytes": 1137
+     "sha256": "b612e797455c05a5bafc08c7fee1dbac2a5d61967a6645d5dad9e6643b348868",
+     "bytes": 1597
     }
    ],
-   "hash": "05536236cc71"
+   "hash": "7880db7aaf34"
   },
   {
    "id": "pattern.answer-queue",

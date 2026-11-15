@@ -1,27 +1,47 @@
 /* part:page.style.kit.adopt-board */
-/* Adopt board: tokens only. State shows as a word and a left bar as well as a colour. */
+/* Adopt board: tokens only. State shows as a word, a mark and a left bar as well as a colour. Green is adopted, amber is working or needed, red is a conflict, grey is discarded. */
 .kit-ab{display:grid;gap:12px;min-width:0;font:14px var(--f-ui)}
 .kit-ab-bar{display:flex;flex-wrap:wrap;gap:6px}
 .kit-ab-chip{min-height:30px;padding:0 12px;font:600 13px var(--f-ui);color:var(--ink-2);background:var(--panel);border:1px solid var(--rule);border-radius:999px;cursor:pointer}
 .kit-ab-chip[aria-pressed="true"]{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+.kit-ab-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin:0;font-size:12px;color:var(--ink-2)}
+.kit-ab-key::before{content:"";display:inline-block;width:22px;height:0;margin-right:6px;vertical-align:middle;border-top:3px solid var(--rule)}
+.kit-ab-key.on::before{border-top-color:var(--ok)}
+.kit-ab-key.need::before{border-top:3px dashed var(--warn)}
+.kit-ab-key.bad::before{border-top:3px dashed var(--danger)}
+.kit-ab-key.off::before{border-top:2px dotted var(--ink-2)}
+.kit-ab-status{margin-left:auto;font-weight:600}
+.kit-ab-status[data-tone="ok"]{color:var(--ok)}
+.kit-ab-status[data-tone="warn"]{color:var(--warn)}
+.kit-ab-status[data-tone="danger"]{color:var(--danger)}
 .kit-ab-split{display:grid;gap:12px;grid-template-columns:minmax(0,1fr) minmax(320px,380px);align-items:start}
 @media (max-width:900px){.kit-ab-split{grid-template-columns:minmax(0,1fr)}}
 .kit-ab-map{position:relative;overflow:auto;min-height:360px;padding:6px;background:var(--sunk);border:1px solid var(--rule);border-radius:8px}
 .kit-ab-svg{position:absolute;left:6px;top:6px;pointer-events:none;overflow:visible}
 .kit-ab-edge{fill:none;stroke:var(--rule);stroke-width:1.5}
-.kit-ab-edge.on{stroke:var(--accent);stroke-width:2.5}
+.kit-ab-edge.sel{stroke:var(--ink-2);stroke-width:2.5}
+.kit-ab-edge.on{stroke:var(--ok);stroke-width:3}
+.kit-ab-edge.conflict{stroke:var(--danger);stroke-width:3;stroke-dasharray:7 5}
+.kit-ab-edge.off{stroke:var(--ink-2);stroke-width:1.5;stroke-dasharray:2 5;opacity:.6}
 .kit-ab-head{fill:var(--ink-2)}
+.kit-ab-head.on{fill:var(--ok)}
+.kit-ab-head.conflict{fill:var(--danger)}
 .kit-ab-nodes{position:relative}
 .kit-ab-node{position:absolute;display:grid;align-content:center;gap:1px;padding:0 10px;text-align:left;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-left:5px solid var(--rule);border-radius:8px;cursor:pointer;overflow:hidden}
-.kit-ab-node[data-tone="ok"]{border-left-color:var(--ok)}
-.kit-ab-node[data-tone="warn"]{border-left-color:var(--warn)}
-.kit-ab-node[data-tone="accent"]{border-left-color:var(--accent)}
-.kit-ab-node[data-tone="muted"]{opacity:.55}
-.kit-ab-node[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:1px}
+.kit-ab-node[data-state="selected"]{border-color:var(--ok);border-left-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--panel))}
+.kit-ab-node[data-state="working"]{border-color:var(--warn);border-left-color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--panel))}
+.kit-ab-node[data-state="preview"]{border-color:var(--accent);border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel))}
+.kit-ab-node[data-state="ready"]{border:2px solid var(--ok);border-left-width:6px;background:color-mix(in srgb,var(--ok) 18%,var(--panel))}
+.kit-ab-node[data-state="discarded"]{opacity:.5;background:var(--sunk);border-style:dashed;border-left-color:var(--ink-2)}
+.kit-ab-node[data-state="discarded"] .kit-ab-nm{text-decoration:line-through}
+.kit-ab-node[data-need="yes"]{border-color:var(--warn);border-style:dashed;border-left-color:var(--warn)}
+.kit-ab-node[data-need="conflict"]{border-color:var(--danger);border-left-color:var(--danger);opacity:.85}
+.kit-ab-node[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:1px}
 .kit-ab-node:focus-visible,.kit-ab-chip:focus-visible,.kit-ab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .kit-ab-nm{font:600 15px var(--f-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.kit-ab-meta{font:13px var(--f-ui);color:var(--ink-2)}
+.kit-ab-meta{font:13px var(--f-ui);color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kit-ab-sim{position:absolute;right:6px;top:2px;color:var(--warn);font-weight:700}
+.kit-ab-work-dot{position:absolute;right:10px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--warn)}
 .kit-ab-side{display:grid;gap:10px;padding:12px;background:var(--panel);border:1px solid var(--rule);border-radius:8px;min-width:0}
 .kit-ab-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .kit-ab-h h3{margin:0;font:700 16px var(--f-mono)}
@@ -30,6 +50,8 @@
 .kit-ab-state[data-tone="warn"]{color:var(--warn);border-color:var(--warn)}
 .kit-ab-state[data-tone="accent"]{color:var(--accent);border-color:var(--accent)}
 .kit-ab-sum,.kit-ab-say,.kit-ab-empty{margin:0;color:var(--ink-2)}
+.kit-ab-req{margin:0;padding:6px 8px;font-size:13px;color:var(--ink);border:1px dashed var(--warn);border-radius:6px}
+.kit-ab-req.bad{border-color:var(--danger);color:var(--danger)}
 .kit-ab-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;font-size:13px}
 .kit-ab-row span{overflow-wrap:anywhere;font-family:var(--f-mono);font-size:12px}
 .kit-ab-moves{display:flex;flex-wrap:wrap;gap:6px}
@@ -38,5 +60,11 @@
 .kit-ab-btn:disabled{opacity:.5;cursor:default}
 .kit-ab-work,.kit-ab-notes{display:grid;gap:6px;font-size:13px;color:var(--ink-2)}
 .kit-ab textarea{width:100%;box-sizing:border-box;padding:8px;font:13px var(--f-ui);color:var(--ink);background:var(--sunk);border:1px solid var(--rule);border-radius:8px;resize:vertical}
-@media (prefers-reduced-motion:no-preference){.kit-ab-node{transition:outline-color .12s}}
+@media (prefers-reduced-motion:no-preference){
+  .kit-ab-node{transition:outline-color .12s,background .2s}
+  .kit-ab-work-dot{animation:kit-ab-pulse 1.1s ease-in-out infinite}
+  .kit-ab-node[data-state="working"]{background-image:repeating-linear-gradient(135deg,transparent 0 10px,color-mix(in srgb,var(--warn) 14%,transparent) 10px 20px);background-size:200% 200%;animation:kit-ab-stripe 2.4s linear infinite}
+}
+@keyframes kit-ab-pulse{50%{opacity:.25;transform:scale(.7)}}
+@keyframes kit-ab-stripe{to{background-position:56px 0}}
 /* /part:page.style.kit.adopt-board */

@@ -15,6 +15,10 @@
  *   Kit.adopt.layout(candidates, {colW, rowH, nodeW, nodeH, pad, width}) -> {nodes [{id, x, y, w, h, layer}], edges [{from, to}], width, height}
  *                                          layer 0 holds candidates that need nothing; an edge runs from what is needed to what needs it;
  *                                          width (pixels available) spreads the columns across it and widens the nodes
+ *   Kit.adopt.ADOPTED / adopted(state)    the states that count as adopting: selected, working, preview, ready
+ *   Kit.adopt.closure(candidates)         -> {on: {id: true}, required: {id: [adopted ids that need it]}, conflicts: [id]}: what adopting asks for;
+ *                                          a conflict is needed by an adopted candidate and discarded
+ *   Kit.adopt.edgeKind(edge, byId, closure) -> 'on' | 'conflict' | 'off' | '': how an edge of the layout reads
  *   Kit.adopt.index(candidates)           -> {classes: {class: id}, ids: {dom id: id}}
  *   Kit.adopt.ownerOf(el, index)          -> {id, via, value} for the nearest element at or above el whose class or id a candidate owns, else {id: null}
  *   Kit.adopt.verifyPack(pack)            -> Promise<[problem]> ([] when every file's sha256 and size match; needs crypto.subtle)
@@ -24,19 +28,19 @@
  * @kind      component
  * @group     Board kit
  * @status    new
- * @version   0.1.1
+ * @version   0.2.0
  * @updated   2026-11-15
- * @summary   The adopt flow without a view: candidate states and moves, a layered graph layout, which candidate owns a DOM element, counts, a .adp pack check and a download.
+ * @summary   The adopt flow without a view: candidate states and moves, what adopting requires of the rest, a layered graph layout, which candidate owns a DOM element, counts, a .adp pack check and a download.
  * @tags      adopt, extract, candidates, state machine, graph, layout, pack, adp
  * @requires  none
  * @files     none
- * @provides  Kit.adopt.STATES, Kit.adopt.MOVES, Kit.adopt.can, Kit.adopt.label, Kit.adopt.tone, Kit.adopt.merge, Kit.adopt.counts, Kit.adopt.layout, Kit.adopt.index, Kit.adopt.ownerOf, Kit.adopt.verifyPack, Kit.adopt.download
+ * @provides  Kit.adopt.STATES, Kit.adopt.ADOPTED, Kit.adopt.MOVES, Kit.adopt.can, Kit.adopt.adopted, Kit.adopt.label, Kit.adopt.tone, Kit.adopt.merge, Kit.adopt.counts, Kit.adopt.layout, Kit.adopt.closure, Kit.adopt.edgeKind, Kit.adopt.index, Kit.adopt.ownerOf, Kit.adopt.verifyPack, Kit.adopt.download
  * @config    Kit.adopt.layout(candidates, opts) | colW, rowH, nodeW, nodeH, pad, width (pixels; width fills the space given)
  * @tokens    none
  * @globals   none
  * @db        none
  * @source    Adopt workbench, 2026-11-15 | docs/adopt.md | the states and the owner-by-class rule of the adopt flow
- * @changed   layout takes the width available and spreads the columns and widens the nodes to fill it.
+ * @changed   closure and edgeKind say what adopting requires of other candidates (lit paths, needed, conflicts); layout takes the width available.
  */
 (function () {
 'use strict';
@@ -87,8 +91,9 @@ function layout(cands, opts) {
   const layers = [];
   (cands || []).forEach(c => { const l = d(c.id); (layers[l] = layers[l] || []).push(c); });
   if (o.width && layers.length > 1) {      // fill the width given: the columns spread, and the nodes grow with them up to 300 px
-    o.colW = Math.max(o.colW, Math.floor((o.width - 2 * o.pad - o.nodeW) / (layers.length - 1)));
-    o.nodeW = Math.min(300, Math.max(o.nodeW, o.colW - 48));
+    const room = o.width - 2 * o.pad, gaps = layers.length - 1;
+    o.nodeW = Math.min(300, Math.max(o.nodeW, Math.floor(0.78 * (room - o.nodeW) / gaps)));      // the node width first, then the columns that leave the last node inside the width
+    o.colW = Math.max(o.colW, Math.floor((room - o.nodeW) / gaps));
   }
   const nodes = [];
   layers.forEach((col, l) => (col || []).sort((a, b) => (b.bytes || 0) - (a.bytes || 0)).forEach((c, i) => nodes.push({ id: c.id, layer: l, x: o.pad + l * o.colW, y: o.pad + i * o.rowH, w: o.nodeW, h: o.nodeH })));
@@ -96,6 +101,35 @@ function layout(cands, opts) {
   (cands || []).forEach(c => (c.needs || []).forEach(n => { if (by[n]) edges.push({ from: n, to: c.id }); }));
   const rows = Math.max.apply(null, [1].concat(layers.map(l => (l || []).length)));
   return { nodes, edges, width: o.pad * 2 + Math.max(layers.length, 1) * o.colW - (o.colW - o.nodeW), height: o.pad * 2 + rows * o.rowH - (o.rowH - o.nodeH) };
+}
+
+const ADOPTED = ['selected', 'working', 'preview', 'ready'];
+const adopted = s => ADOPTED.indexOf(s) >= 0;
+
+/* What adopting asks for: every candidate an adopted one needs, directly or through others, and is not adopted itself, is required; one that is
+   discarded as well is a conflict (the adopted candidate would be packed without what it needs). {on: ids adopted or required, required: {id: [adopted ids that need it]}, conflicts: [id]} */
+function closure(cands) {
+  const by = {}; (cands || []).forEach(c => { by[c.id] = c; });
+  const req = {}, on = {};
+  (cands || []).forEach(c => {
+    if (!adopted(c.state)) return;
+    on[c.id] = true; const seen = {}, stack = (c.needs || []).slice();
+    while (stack.length) {
+      const n = stack.pop(); if (seen[n] || !by[n]) continue; seen[n] = true; on[n] = true;
+      if (!adopted(by[n].state)) (req[n] = req[n] || []).push(c.id);
+      (by[n].needs || []).forEach(m => stack.push(m));
+    }
+  });
+  const conflicts = Object.keys(req).filter(id => by[id].state === 'discarded');
+  return { on, required: req, conflicts };
+}
+
+/* How an edge (from what is needed to what needs it) reads: 'on' (part of an adopted path), 'conflict' (needed but discarded), 'off' (an end is discarded), or ''. */
+function edgeKind(e, by, cl) {
+  const a = by[e.from], b = by[e.to]; if (!a || !b) return '';
+  if (cl.on[e.to] && cl.on[e.from]) return a.state === 'discarded' ? 'conflict' : 'on';
+  if (a.state === 'discarded' || b.state === 'discarded') return 'off';
+  return '';
 }
 
 function index(cands) {
@@ -135,6 +169,6 @@ function download(name, text, type) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-Kit.adopt = { STATES, MOVES, can, label, tone, merge, counts, layout, index, ownerOf, verifyPack, download };
+Kit.adopt = { STATES, ADOPTED, MOVES, can, adopted, label, tone, merge, counts, layout, closure, edgeKind, index, ownerOf, verifyPack, download };
 })();
 /* /part:page.script.kit.adopt */

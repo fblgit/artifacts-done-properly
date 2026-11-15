@@ -1,11 +1,14 @@
 /* part:page.script.adopt */
 /* The Adopt view (docs/adopt.md). It registers itself with the assistant's app.js through window.ADP_VIEWS.
-   Files beside the page, written by `adp.py extract SUBJECT --into DIR`: subject/candidates.json (what was detected) and the subject's own files under subject/.
-   The person's decisions live in one db doc, ns/shared/adopt/state: {candidate id: {state, notes, by, at}}; a ready candidate's pack is ns/shared/adopt/packs/<id>. */
+   Files beside the page, written by `adp.py extract SUBJECT --into DIR`: subject/candidates.json (the analysis) and the subject's own files under subject/.
+   The server keeps what the person decided, so a refresh forgets nothing:
+     ns/shared/adopt/state   {items: [{id, state, notes, at}]}      ns/shared/adopt/view   {selected, at}: the candidate shown last
+     ns/shared/adopt/packs/<id>   the adp-pack/1 object of a ready candidate */
 (function(){
 'use strict';
-const SRC = 'subject/index.html', STATE = 'adopt/state';
-const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const SRC = 'subject/index.html', STATE = 'adopt/state', VIEW = 'adopt/view';
+const hhmm = () => { try { return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}); } catch (e) { return ''; } };
+const why = e => String((e && (e.code || e.message)) || e || 'unknown error').slice(0, 80);
 
 window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
   /* part:adopt */
@@ -14,7 +17,7 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
     parts: ['adopt', 'adopt.intro', 'adopt.board', 'adopt.inspect'],
     titles: {adopt: 'Adopt', 'adopt.intro': 'Adopt intro', 'adopt.board': 'Candidates', 'adopt.inspect': 'Live preview'},
     html: () => `<section class="view adopt-view" data-part="adopt" data-comment-target aria-label="Adopt">
-      <!-- part:adopt.intro --><div class="card" data-part="adopt.intro" data-comment-target><h2>Adopt</h2><p class="muted">Detect, select, work with Claude, preview, then mark each candidate ready or discard it. Pick an element in the preview or a node in the map; a ready candidate downloads as a <code>.adp.json</code> pack.</p><p class="muted ad-note" role="status"></p></div><!-- /part:adopt.intro -->
+      <!-- part:adopt.intro --><div class="card" data-part="adopt.intro" data-comment-target><h2>Adopt</h2><p class="muted">Analyze, select, work with Claude, preview, then mark each candidate ready or discard it. Pick an element in the preview or a node in the map; a ready candidate downloads as a <code>.adp.json</code> pack. Your decisions are kept on the server.</p><p class="muted ad-note" role="status"></p></div><!-- /part:adopt.intro -->
       <div class="ad-split">
         <!-- part:adopt.board --><div class="card ad-board" data-part="adopt.board" data-comment-target aria-label="Candidates"></div><!-- /part:adopt.board -->
         <!-- part:adopt.inspect --><div class="card ad-inspect" data-part="adopt.inspect" data-comment-target aria-label="Live preview of the artifact"></div><!-- /part:adopt.inspect -->
@@ -23,36 +26,53 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
     mount(ctx){
       const Kit = window.Kit || {}, $ = s => document.querySelector(s), note = $('.ad-note'), boardEl = $('.ad-board'), inspEl = $('.ad-inspect');
       if (!Kit.adopt || !Kit.adoptBoard || !Kit.adoptInspector) { boardEl.innerHTML = '<p class="muted">The adopt kits are not installed.</p>'; return {destroy(){}}; }
-      let dead = false, off = null, board = null, insp = null, base = [], overlay = {}, packs = {}, sel = null, can = true;
-      const ref = window.ADP && ADP.db ? ADP.ns('shared').doc(STATE) : null, packRef = id => ADP.ns('shared').doc('adopt/packs/' + id);
+      let dead = false, offs = [], board = null, insp = null, base = [], overlay = {}, packs = {}, sel = null, can = true, restored = false, chain = Promise.resolve();
+      const db = window.ADP && ADP.db, ref = db ? ADP.ns('shared').doc(STATE) : null, viewRef = db ? ADP.ns('shared').doc(VIEW) : null, packRef = id => ADP.ns('shared').doc('adopt/packs/' + id);
+      const status = (t, tone) => { if (board) board.setStatus(t, tone); };
       const merged = () => Kit.adopt.merge(base, overlay);
       const push = () => { const l = merged(); if (board) board.setCandidates(l); if (insp) insp.setCandidates(l); };
+      /* One write at a time, the whole doc each time. Ids hold dots (c.picker), so the decisions are a list, not a map keyed by id: a db update would read a dotted key as a path. */
+      const write = (ref0, data) => { chain = chain.catch(() => {}).then(() => ref0.set(data)); return chain; };
+      const items = () => Object.keys(overlay).map(id => Object.assign({id}, overlay[id]));
+      const fromItems = d => { const m = {}; ((d && d.items) || []).forEach(x => { if (x && x.id) { const {id, ...rest} = x; m[id] = rest; } }); return m; };
       const save = (id, patch) => {
         overlay = Object.assign({}, overlay, {[id]: Object.assign({}, overlay[id], patch, {at: new Date().toISOString()})}); push();
-        if (!ref) { note.textContent = 'There is no database here, so decisions last until this page closes.'; return Promise.resolve(); }
-        return ref.set(overlay).catch(() => { note.textContent = 'The change could not be saved.'; });
+        if (!ref) { status('Not saved: there is no database here, so this lasts until the page closes.', 'warn'); return Promise.resolve(); }
+        status('Saving…', '');
+        return write(ref, {items: items()}).then(() => status('Saved to the server at ' + hhmm() + '.', 'ok'), e => status('Not saved: ' + why(e) + '. Reload and try again.', 'danger'));
       };
+      const remember = id => { if (viewRef) write(viewRef, {selected: id, at: new Date().toISOString()}).catch(() => {}); };
+      const choose = (id, fromUser) => { sel = id; if (board) board.select(id); if (insp) insp.select(id); loadPack(id); if (fromUser) remember(id); };
       const loadPack = id => { if (!ref || packs[id] !== undefined) return; packs[id] = null; packRef(id).get().then(s => { if (!dead && s && s.exists) { packs[id] = s.data(); if (board) board.setPacks(packs); } }).catch(() => {}); };
       fetch('subject/candidates.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(j => {
         if (dead) return; base = j.candidates || [];
-        note.textContent = (j.subject && j.subject.name ? j.subject.name + ': ' : '') + base.length + ' candidates detected' + (j.namespace ? ' (namespace ' + j.namespace + ')' : '') + '.';
-        Promise.resolve(window.claude && claude.use ? claude.use('user') : null).then(u => { try { can = !(u && u.can) || u.can('data.write') !== false; } catch (e) {} }).catch(() => {}).then(() => {
-          if (dead) return;
+        note.textContent = (j.subject && j.subject.name ? j.subject.name + ': ' : '') + base.length + ' candidates' + (j.namespace ? ' (namespace ' + j.namespace + ')' : '') + '.';
+        /* can() answers with a promise: an editor can write the db; anyone else sees the decisions and cannot change them. */
+        Promise.resolve(window.claude && claude.use ? claude.use('user') : null).then(u => (u && u.can ? u.can('data.write') : null)).catch(() => null).then(w => {
+          if (dead) return; can = w !== false;
           const l = merged();
           board = Kit.adoptBoard.mount(boardEl, {candidates: l, selected: sel, packs, readOnly: !can,
-            onSelect: id => { sel = id; if (insp) insp.select(id); loadPack(id); },
+            onSelect: id => choose(id, true),
             onMove: (id, to) => { const c = merged().find(x => x.id === id); if (c && Kit.adopt.can(c.state, to)) { save(id, {state: to}); if (to === 'ready') loadPack(id); } },
             onNote: (id, text) => save(id, {notes: text}),
             onWork: (id, text) => { const e = ctx.engine(); if (!e) return Promise.reject(new Error('Sending needs the assist kit.')); const c = merged().find(x => x.id === id);
               const quote = c ? c.name + ' · ' + (c.files || []).map(f => f.path).join(', ') + ' · provides ' + (c.provides || []).join(', ') : '';
               return e.send({lane: 'task', scope: {kind: 'part', id: 'adopt.board', label: 'Candidate ' + id, hash: ''}, quote,
-                text: 'Adopt candidate ' + id + ' of this subject (docs/adopt.md). ' + text + ' When you change files, put the result in the db doc ns/shared/adopt/packs/' + id + ' (an adp-pack/1 object from adp.py pack) and move ns/shared/adopt/state ' + id + ' to "preview".'}).then(() => { if (c && c.state !== 'working') save(id, {state: 'working'}); }); }});
+                text: 'Adopt candidate ' + id + ' of this subject (docs/adopt.md; the candidates contract is there too). ' + text + ' When you change files, put the result in the db doc ns/shared/adopt/packs/' + id + ' (an adp-pack/1 object from adp.py pack) and set state "preview" on the item with id ' + id + ' in the list ns/shared/adopt/state.items (write the whole list back).'}).then(() => { if (c && c.state !== 'working') save(id, {state: 'working'}); }); }});
           insp = Kit.adoptInspector.mount(inspEl, {src: SRC, candidates: l, selected: sel,
-            onPick: p => { if (!p.id) { note.textContent = 'No candidate owns <' + p.tag + '>.'; return; } sel = p.id; board.select(p.id); insp.select(p.id); loadPack(p.id); note.textContent = p.id + ' (matched by ' + p.via + ' ' + p.value + ').'; }});
-          if (ref) off = ref.onSnapshot(s => { if (dead) return; overlay = s && s.exists ? s.data() : {}; push(); Object.keys(overlay).forEach(id => { if (overlay[id].state === 'ready' || overlay[id].state === 'preview') loadPack(id); }); });
+            onPick: p => { if (!p.id) { note.textContent = 'No candidate owns <' + p.tag + '>.'; return; } choose(p.id, true); note.textContent = p.id + ' (matched by ' + p.via + ' ' + p.value + ').'; }});
+          if (!can) status('You can look but not change: only editors can save decisions.', 'warn');
+          if (ref) offs.push(ref.onSnapshot(s => {
+            if (dead) return; overlay = s && s.exists ? fromItems(s.data()) : {}; push();
+            const n = Object.keys(overlay).length;
+            if (!restored) { restored = true; const view = can ? '' : ' You can look but not change: only editors can save decisions.';
+              if (can || n) status((n ? 'Restored ' + n + ' decision' + (n === 1 ? '' : 's') + ' from the server.' : 'Nothing saved on the server yet.') + view, can ? (n ? 'ok' : '') : 'warn'); }
+            Object.keys(overlay).forEach(id => { if (overlay[id].state === 'ready' || overlay[id].state === 'preview') loadPack(id); });
+          }, e => status('Could not read the saved decisions: ' + why(e), 'danger')));
+          if (viewRef) offs.push(viewRef.onSnapshot(s => { if (dead || sel || !s || !s.exists) return; const id = (s.data() || {}).selected; if (id && base.some(c => c.id === id)) choose(id, false); }, () => {}));      // the candidate shown last, restored once
         });
       }).catch(() => { boardEl.innerHTML = '<p class="muted">No <code>subject/candidates.json</code> beside this page. Run <code>adp.py extract SUBJECT --into DIR</code> and publish again.</p>'; inspEl.hidden = true; });
-      return {destroy(){ dead = true; if (off) off(); if (board) board.destroy(); if (insp) insp.destroy(); }};
+      return {destroy(){ dead = true; offs.forEach(f => { try { f(); } catch (e) {} }); if (board) board.destroy(); if (insp) insp.destroy(); }};
     },
   },
   /* /part:adopt */

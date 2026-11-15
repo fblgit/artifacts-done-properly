@@ -6,7 +6,8 @@
  * The board holds no storage and talks to no one. The page gives it candidates and takes back what the person did through the callbacks, then writes the db and sends the request.
  *
  * API:
- *   Kit.adoptBoard.mount(root, {candidates, selected, packs, readOnly, onSelect, onMove, onWork, onNote}) -> {setCandidates(list), select(id), setPacks(packs), destroy()}
+ *   Kit.adoptBoard.mount(root, {candidates, selected, packs, readOnly, onSelect, onMove, onWork, onNote}) -> {setCandidates(list), select(id), setPacks(packs), setStatus(text, tone), destroy()}
+ *     setStatus   the line beside the legend, for the page's save status: tone ok, warn or danger
  *     candidates  [{id, name, state, files, provides, needs, needed_by, similar, summary, suggested_id, notes}]
  *     selected    the id shown in the work panel
  *     packs       {candidate id: the adp-pack/1 object, or {name, text}} that can be downloaded
@@ -21,7 +22,7 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.1
+ * @version   0.2.0
  * @updated   2026-11-15
  * @summary   The adoption's candidates as a dependency map coloured by state, with state filters and a work panel: moves, a box to Claude and the .adp download.
  * @tags      adopt, candidates, graph, map, state, kit, extract, claude, work
@@ -33,7 +34,7 @@
  * @globals   none
  * @db        none
  * @source    Adopt workbench, 2026-11-15 | docs/adopt.md | the map and work views
- * @changed   the map fills the width of its box, follows a resize, and draws larger nodes and text; the work panel is a fixed column beside it.
+ * @changed   paths of adopted candidates stay lit green, what they need shows amber (red when discarded), discarded nodes are struck through, working ones pulse; a legend and a status line for the page's save state.
  */
 (function () {
 'use strict';
@@ -50,7 +51,10 @@ function mount(root, opts) {
   root.classList.add('kit-ab'); root.replaceChildren();
   const bar = el('div', 'kit-ab-bar'); bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Filter candidates by state');
   const split = el('div', 'kit-ab-split'), mapBox = el('div', 'kit-ab-map'), side = el('div', 'kit-ab-side');
-  split.append(mapBox, side); root.append(bar, split);
+  const legend = el('p', 'kit-ab-legend'), status = el('span', 'kit-ab-status'); status.setAttribute('role', 'status');
+  [['on', 'green: a path you are adopting'], ['need', 'amber: needed, not adopted yet'], ['bad', 'red: needed, but discarded'], ['off', 'grey: discarded']].forEach(x => { const s = el('span', 'kit-ab-key ' + x[0], x[1]); legend.append(s); });
+  legend.append(status);
+  split.append(mapBox, side); root.append(bar, legend, split);
 
   const byId = id => cands.find(c => c.id === id) || null;
   const shown = () => cands.filter(c => filter === 'all' || c.state === filter);
@@ -68,22 +72,34 @@ function mount(root, opts) {
     const list = shown();
     if (!list.length) { mapBox.append(el('p', 'kit-ab-empty', cands.length ? 'No candidate is in this state.' : 'No candidates yet. Run adp.py extract on the artifact and load candidates.json.')); return; }
     const ids = new Set(list.map(c => c.id)), L = A().layout(list, { width: Math.max(0, mapBox.clientWidth - 14) }), pos = {}; L.nodes.forEach(n => { pos[n.id] = n; });
+    const cl = A().closure(cands), by = {}; cands.forEach(c => { by[c.id] = c; });      // over every candidate, so a filter does not change what is lit
     const svg = sv('svg', { class: 'kit-ab-svg', viewBox: '0 0 ' + L.width + ' ' + L.height, width: L.width, height: L.height, role: 'group', 'aria-label': 'Dependency map: an arrow runs from what is needed to what needs it' });
-    const defs = sv('defs'), mk = sv('marker', { id: 'kit-ab-arrow', viewBox: '0 0 8 8', refX: 7, refY: 4, markerWidth: 7, markerHeight: 7, orient: 'auto' });
-    mk.append(sv('path', { d: 'M0 0L8 4L0 8z', class: 'kit-ab-head' })); defs.append(mk); svg.append(defs);
+    const defs = sv('defs');
+    ['', 'on', 'conflict'].forEach(k => {
+      const mk = sv('marker', { id: 'kit-ab-arrow' + (k ? '-' + k : ''), viewBox: '0 0 8 8', refX: 7, refY: 4, markerWidth: 7, markerHeight: 7, orient: 'auto' });
+      mk.append(sv('path', { d: 'M0 0L8 4L0 8z', class: 'kit-ab-head' + (k ? ' ' + k : '') })); defs.append(mk);
+    });
+    svg.append(defs);
+    const drawn = [];
     L.edges.forEach(e => {
       const a = pos[e.from], b = pos[e.to]; if (!a || !b || !ids.has(e.from) || !ids.has(e.to)) return;
-      const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x, y2 = b.y + b.h / 2, mx = (x1 + x2) / 2;
-      const p = sv('path', { d: 'M' + x1 + ' ' + y1 + 'C' + mx + ' ' + y1 + ' ' + mx + ' ' + y2 + ' ' + x2 + ' ' + y2, class: 'kit-ab-edge', 'marker-end': 'url(#kit-ab-arrow)' });
-      if (sel && (e.from === sel || e.to === sel)) p.classList.add('on'); svg.append(p);
+      const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x, y2 = b.y + b.h / 2, mx = (x1 + x2) / 2, kind = A().edgeKind(e, by, cl);
+      const p = sv('path', { d: 'M' + x1 + ' ' + y1 + 'C' + mx + ' ' + y1 + ' ' + mx + ' ' + y2 + ' ' + x2 + ' ' + y2, class: 'kit-ab-edge' + (kind ? ' ' + kind : ''), 'marker-end': 'url(#kit-ab-arrow' + (kind === 'on' || kind === 'conflict' ? '-' + kind : '') + ')' });
+      if (sel && (e.from === sel || e.to === sel)) p.classList.add('sel');
+      (kind ? drawn.push(p) : svg.append(p));
     });
+    drawn.forEach(p => svg.append(p));      // lit paths on top of the quiet ones
     mapBox.append(svg);
     const layer = el('div', 'kit-ab-nodes'); layer.style.width = L.width + 'px'; layer.style.height = L.height + 'px';
     L.nodes.forEach(n => {
       const c = byId(n.id), b = el('button', 'kit-ab-node'); b.type = 'button'; b.dataset.id = c.id; b.dataset.state = c.state; b.dataset.tone = A().tone(c.state);
+      const need = cl.required[c.id], bad = cl.conflicts.indexOf(c.id) >= 0;
+      if (need && !bad) b.dataset.need = 'yes'; if (bad) b.dataset.need = 'conflict';
       b.style.cssText = 'left:' + n.x + 'px;top:' + n.y + 'px;width:' + n.w + 'px;height:' + n.h + 'px';
-      b.setAttribute('aria-pressed', String(sel === c.id)); b.setAttribute('aria-label', c.name + ', ' + A().label(c.state) + ', ' + kb(c.bytes || 0));
-      const t = el('span', 'kit-ab-nm', c.name), m = el('span', 'kit-ab-meta', A().label(c.state) + ' · ' + kb(c.bytes || 0)); b.append(t, m);
+      const word = A().label(c.state) + (need ? (bad ? ' · needed, but discarded' : ' · needed by ' + need.length) : '');
+      b.setAttribute('aria-pressed', String(sel === c.id)); b.setAttribute('aria-label', c.name + ', ' + word + ', ' + kb(c.bytes || 0));
+      const t = el('span', 'kit-ab-nm', (c.state === 'ready' ? '✓ ' : '') + c.name), m = el('span', 'kit-ab-meta', word + ' · ' + kb(c.bytes || 0)); b.append(t, m);
+      if (c.state === 'working') b.append(el('span', 'kit-ab-work-dot'));
       if ((c.similar || []).length) { const s = el('span', 'kit-ab-sim', '≈'); s.title = 'Looks like ' + c.similar.map(x => x.id).join(', '); b.append(s); }
       b.addEventListener('click', () => choose(c.id)); layer.append(b);
     });
@@ -109,6 +125,8 @@ function mount(root, opts) {
     side.append(row('Becomes', [c.suggested_id || ''].filter(Boolean)), row('Files', (c.files || []).map(f => f.path + ' (' + kb(f.bytes) + ')')), row('Provides', c.provides),
       row('Needs', c.needs), row('Needed by', c.needed_by), row('Catalog overlap', (c.similar || []).map(x => x.id)));
     if (c.coupling != null) side.append(row('Tied to the artifact', [c.standalone ? 'no, stands alone' : c.coupling + ' references']));
+    const cl = A().closure(cands), need = cl.required[c.id];
+    if (need) { const bad = cl.conflicts.indexOf(c.id) >= 0; const p = el('p', 'kit-ab-req' + (bad ? ' bad' : ''), bad ? 'Discarded, but ' + need.join(', ') + ' needs it: restore it or discard those too.' : 'Needed by ' + need.join(', ') + ' (adopted): adopt this one too.'); p.setAttribute('role', 'status'); side.append(p); }
     const moves = el('div', 'kit-ab-moves'); moves.setAttribute('role', 'group'); moves.setAttribute('aria-label', 'Move ' + c.name);
     (A().MOVES[c.state] || []).forEach(m => {
       const b = el('button', 'kit-ab-btn', m.label); b.type = 'button'; b.disabled = o.readOnly; if (m.to === 'ready') b.classList.add('primary');
@@ -141,6 +159,7 @@ function mount(root, opts) {
     setCandidates(l) { cands = (l || []).slice(); paint(); },
     select(id) { sel = id; paint(); },
     setPacks(p) { packs = p || {}; paintSide(); },
+    setStatus(text, tone) { status.textContent = text || ''; status.dataset.tone = tone || ''; },
     destroy() { dead = true; if (ro) ro.disconnect(); cancelAnimationFrame(raf); root.replaceChildren(); root.classList.remove('kit-ab'); },
   };
 }

@@ -86,9 +86,9 @@ Open the adopter on a subject, see every candidate, pick one in the preview or t
     python3 -I $ADP pack kit.picker STAGING --candidates ADOPTER/subject/candidates.json --cid c.picker
     python3 -I $ADP unpack kit.picker.adp.json --apply CATALOG_CHECKOUT
 
-The page keeps the person's decisions in one db doc, `ns/shared/adopt/state` (`{candidate id: {state, notes, at}}`), and a candidate's pack in `ns/shared/adopt/packs/<id>`. A request sent from the board names both, so the session that does the work records where the result went.
+The page keeps the person's decisions on the server, so a refresh forgets nothing: `ns/shared/adopt/state` (`{items: [{id, state, notes, at}]}`, a list because ids hold dots), `ns/shared/adopt/view` (`{selected, at}`, the candidate shown last), and a candidate's pack in `ns/shared/adopt/packs/<id>`. The board's status line says Saved, Restored or Not saved. A request sent from the board names both, so the session that does the work records where the result went.
 
-Not run in a browser when this was written (no Node or browser available): `kit.adopt`, `pattern.adopt-board`, `pattern.adopt-inspector` and the template's `parts/adopt.js`. The Python side and the template's build are covered by `tests/test_adopt.py`.
+Tested under Node: the engine (`tests/adopt_engine.js`), and with jsdom the board, the inspector over a stand-in frame and the template's `parts/adopt.js` against an in-memory database (`tests/adopt_dom.js`, `tests/adopt_glue.js`; run by `tests/test_adopt_js.py`, which needs `ADOPT_JSDOM_DIR` to hold `node_modules/jsdom` and is skipped without it). Not tested in a real browser or against claude.ai's database: the look of the page, the sandbox of the preview frame, and the db handle's exact behaviour.
 
 ## Rules
 
