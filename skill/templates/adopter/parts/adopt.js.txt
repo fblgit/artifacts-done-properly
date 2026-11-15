@@ -45,7 +45,16 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
         return write(ref, {items: items()}).then(() => status('Saved to the server at ' + hhmm() + '.', 'ok'), e => status('Not saved: ' + why(e) + '. Reload and try again.', 'danger'));
       };
       const remember = id => { if (viewRef) write(viewRef, {selected: id, at: new Date().toISOString()}).catch(() => {}); };
-      const choose = (id, fromUser) => { sel = id; if (board) board.select(id); if (insp) insp.select(id); watchPreview(id); loadPack(id); if (fromUser) remember(id); };
+      /* Each step on its own: a failure in one (the outline, the picture) must never stop the stored preview, the pack or the selection from loading. */
+      const choose = (id, fromUser) => {
+        sel = id;
+        const step = (name, f) => { try { f(); } catch (e) { status('Could not ' + name + ': ' + why(e), 'warn'); } };
+        step('load the preview', () => watchPreview(id));
+        step('show the candidate', () => { if (board) board.select(id); });
+        step('open it in the preview', () => { if (insp) insp.select(id); });
+        step('read the pack', () => loadPack(id));
+        if (fromUser) step('remember the selection', () => remember(id));
+      };
       const loadPack = id => { if (!ref || packs[id] !== undefined) return; packs[id] = null; try { packRef(id).get().then(s => { if (!dead && s && s.exists) { packs[id] = s.data(); if (board) board.setPacks(packs); } }).catch(() => {}); } catch (e) { status('Could not read the pack: ' + why(e), 'warn'); } };
       /* The selected candidate's preview page, if Claude has written one, follows the db: it appears here the moment it is saved. */
       const watchPreview = id => {
@@ -77,7 +86,9 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
               return e.send({lane: 'task', scope: {kind: 'part', id: 'adopt.board', label: 'Candidate ' + id, hash: ''}, quote,
                 text: 'Adopt candidate ' + id + ' of this subject (docs/adopt.md; the candidates contract is there too). ' + text + ' When you change files, put the result in the db doc ns/shared/packs/' + id + ' (collection ns/shared/packs, an adp-pack/1 object from adp.py pack) and set state "preview" on the item with id ' + id + ' in the list ns/shared/adopt/state.items (write the whole list back).'}).then(() => { if (c && c.state !== 'working') save(id, {state: 'working'}); }); }});
           insp = Kit.adoptInspector.mount(inspEl, {src: SRC, candidates: l, selected: sel, onBuild: buildPreview, onPreviewState: reportPreview,
-            onPick: p => { if (!p.id) { note.textContent = 'No candidate owns <' + p.tag + '>.'; return; } choose(p.id, true); note.textContent = p.id + ' (matched by ' + p.via + ' ' + p.value + ').'; }});
+            /* A block nobody owns, given to a candidate: its classes and ids join that candidate's, on the server, and the candidate is selected. */
+            onAssign: a => { const had = overlay[a.id] || {}, add = (x, y) => (x || []).concat((y || []).filter(k => (x || []).indexOf(k) < 0)); return save(a.id, {classes: add(had.classes, a.classes), ids: add(had.ids, a.ids)}).then(() => { choose(a.id, true); note.textContent = 'Assigned ' + a.classes.concat(a.ids.map(i => '#' + i)).slice(0, 4).join(' ') + ' to ' + a.id + '. Clicking it now selects that candidate.'; }); },
+            onPick: p => { if (!p.id) { note.textContent = 'Nobody owns ' + (p.label || '<' + p.tag + '>') + '. Assign it to a candidate under the preview.'; return; } choose(p.id, true); note.textContent = p.id + ' (matched by ' + p.via + ' ' + p.value + ').'; }});
           if (!can) status('You can look but not change: only editors can save decisions.', 'warn');
           if (ref) offs.push(ref.onSnapshot(s => {
             if (dead) return; overlay = s && s.exists ? fromItems(s.data()) : {}; push();

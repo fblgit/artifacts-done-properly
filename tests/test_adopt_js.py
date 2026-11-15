@@ -47,6 +47,10 @@ class Engine(unittest.TestCase):
         self.assertEqual((b['id'], b['via'], b['value']), ('dl', 'id', 'mark'))
         self.assertIsNone(c['id']); self.assertIsNone(d['id'])
 
+    def test_assigned_classes_join_the_candidate_and_make_it_pickable(self):
+        a = self.o['assigned']
+        self.assertEqual(a['classes'], ['x', 'y']); self.assertEqual(a['ids'], ['mark']); self.assertEqual(a['owner'], 'A'); self.assertEqual(a['plain'], ['x'])
+
     def test_pack_verification_reports_a_mismatch(self):
         self.assertEqual(self.o['verify'], ['sha256 mismatch b', 'size mismatch b'])
 
@@ -100,9 +104,26 @@ class Dom(unittest.TestCase):
         self.assertIn('No visual: B draws nothing', self.o['snapLogic']); self.assertIn('Not on screen', self.o['snapAbsent'])
         self.assertTrue(self.o['snapAgain']); self.assertTrue(self.o['nowOnScreen']['srcdoc'])    # it follows the frame when the view changes
 
+    def test_an_svg_element_can_be_marked_pictured_and_unmarked(self):
+        n = self.o['nowOnScreen']
+        self.assertTrue(n['isSvg']); self.assertEqual(n['focus'], ['kit-ai-focus']); self.assertTrue(n['srcdoc']); self.assertTrue(n['svgPicture'])
+        self.assertEqual(self.o['svgUnmarked'], [])                                  # selecting another candidate took the marks off the SVG
+        self.assertEqual(self.o['errors'], [])                                        # nothing was thrown anywhere, which is what broke the first release
+
+    def test_a_click_on_a_block_nobody_owns_offers_to_assign_it(self):
+        u = self.o['unowned']
+        self.assertIsNone(u['pick']['id']); self.assertEqual(u['pick']['classes'], ['z']); self.assertEqual(u['pick']['label'], 'div.z')      # still reported, with what it is
+        self.assertEqual(u['off'], 'false')                                                                                                 # the picker turned itself off
+        self.assertEqual(u['head'], 'Nobody owns div.z'); self.assertTrue(u['hasAssign']); self.assertEqual(u['options'], 7)
+        self.assertEqual(self.o['heldAfterDelay'], 'Nobody owns div.z')                                                                     # a redraw does not wipe the panel
+        self.assertEqual(self.o['assigned'], [{'id': 'W', 'classes': ['z'], 'ids': []}]); self.assertIn('Assigned to W', self.o['assignSaid'])
+        self.assertEqual((self.o['afterAssignPick']['id'], self.o['afterAssignPick']['via'], self.o['afterAssignPick']['value']), ('W', 'class', 'z'))
+        b = self.o['bare']; self.assertFalse(b['assign']); self.assertIn('no class or id', b['text']); self.assertIsNone(b['id'])
+
     def test_the_picker_names_the_owner_and_a_click_selects_it(self):
         self.assertEqual(self.o['hover'], '<span> → P (class pk-in)')
-        self.assertEqual(self.o['picks'], [{'tag': 'span', 'id': 'P', 'via': 'class', 'value': 'pk-in'}]); self.assertEqual(self.o['pickerOff'], 'false')
+        p = self.o['picks']; self.assertEqual(len(p), 1)
+        self.assertEqual({k: p[0][k] for k in ('tag', 'id', 'via', 'value', 'label')}, {'tag': 'span', 'id': 'P', 'via': 'class', 'value': 'pk-in', 'label': 'span.pk-in'}); self.assertEqual(self.o['pickerOff'], 'false')
 
 
 @unittest.skipUnless(node() and jsdom_dir(), 'node with jsdom (ADOPT_JSDOM_DIR) is not available')
@@ -151,6 +172,11 @@ class Glue(unittest.TestCase):
         self.assertTrue(p['frame']); self.assertIn('built for c.c', p['srcdoc']); self.assertEqual(p['sandbox'], 'allow-scripts allow-same-origin')
         self.assertEqual(self.o['arrives'], '<p>now there is one</p>')            # written after the candidate was selected, shown without a reload
 
+    def test_the_stored_preview_loads_after_switching_candidates_on_a_page_that_draws_svg(self):
+        o = self.o       # the report from the user: previews only came back after regenerating, because select threw on SVG and never asked for the stored preview
+        self.assertEqual(o['svgGlueErrors'], []); self.assertFalse(o['afterSwitch']);          # c.a has none, so no frame while it is selected
+        self.assertTrue(o['previewShown']['frame']); self.assertIn('built for c.c', o['previewShown']['srcdoc'])      # and c.c's returns by itself
+
     def test_a_blank_or_failing_preview_says_so(self):
         o = self.o
         self.assertEqual(o['capError'], 'The preview reported a problem: boom @picker.js:9')
@@ -169,6 +195,13 @@ class Glue(unittest.TestCase):
         self.assertIn('subject/c.a.js subject/c.b.js', r['text'])                  # what it needs first, then the candidate
         self.assertIn('ns/shared/previews/c.b', r['text']); self.assertLess(len(r['text'].encode()), 3500)      # the comment that wakes a session is limited
         self.assertEqual(o['buttonAfter'], 'Asked. The preview appears here when Claude has written it.')
+
+    def test_a_block_nobody_owns_is_assigned_kept_on_the_server_and_selects_next_time(self):
+        o = self.o
+        self.assertEqual(o['unownedPanel']['head'], 'Nobody owns div.zz'); self.assertTrue(o['unownedPanel']['assign']); self.assertIn('Nobody owns div.zz', o['unownedPanel']['note'])
+        self.assertEqual(o['assignedState']['classes'], ['zz'])                       # on the server, on c.a's entry
+        self.assertEqual(o['afterAssign']['selected'], 'c.a'); self.assertIn('Assigned zz to c.a', o['afterAssign']['said']); self.assertTrue(o['afterAssign']['panelGone'])      # the candidate is selected and its own preview takes the panel
+        self.assertEqual(o['clickNowSelects'], 'c.a'); self.assertEqual(o['noErrorsAfterAssign'], [])
 
     def test_ids_with_dots_are_list_entries_not_keys(self):
         self.assertTrue(self.o['noDotKeys'])

@@ -35,5 +35,9 @@ const el = (cls, id, parent) => ({ nodeType: 1, id: id || '', classList: cls, pa
 const wheel = el(['pk-wheel']), inner = el(['x'], '', el(['y'], '', wheel)), byId = el([], 'mark'), none = el(['z']);
 out.owner = [K.ownerOf(inner, idx), K.ownerOf(byId, idx), K.ownerOf(none, idx), K.ownerOf(null, idx)];
 
+/* a block a person assigned in the preview adds to the candidate's own classes, and the owner lookup then finds it */
+const merged = K.merge([c('A', 'detected', [], ['x'])], { A: { classes: ['y', 'x'], ids: ['mark'] } });
+out.assigned = { classes: merged[0].classes, ids: merged[0].ids, owner: K.ownerOf({ nodeType: 1, id: '', classList: ['y'], parentElement: null }, K.index(merged)).id,
+  plain: K.merge([c('A', 'detected', [], ['x'])], {})[0].classes };
 K.verifyPack({ schema: 'adp-pack/1', files: [{ path: 'a', text: 'hi', sha256: require('crypto').createHash('sha256').update('hi').digest('hex'), bytes: 2 }, { path: 'b', text: 'x', sha256: '00', bytes: 5 }] })
   .then(p => { out.verify = p; console.log(JSON.stringify(out)); });

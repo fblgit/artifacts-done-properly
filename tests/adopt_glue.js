@@ -31,14 +31,14 @@ async function session(db, o) {
   w.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(CANDS) });
   w.ADP = { db: true, ns: () => ({ doc: p => db.doc('ns/shared/' + p) }) };
   w.claude = { use: () => Promise.resolve({ can: () => Promise.resolve(o.canWrite !== false) }) };
-  const sent = []; w.eval(glue);
+  const sent = [], errors = []; w.addEventListener('error', e => errors.push(String(e.message))); w.eval(glue);
   const view = w.ADP_VIEWS.adopt, root = w.document.getElementById('views'); root.innerHTML = view.html();
   const m = view.mount({ root, engine: () => ({ send: a => { sent.push(a); return Promise.resolve('r-1'); } }), titles: {} });
   await sleep(150);
   const q = s => root.querySelector(s), all = s => Array.prototype.slice.call(root.querySelectorAll(s));
   const node = id => q('.kit-ab-node[data-id="' + id + '"]'), btn = t => all('.kit-ab-btn').find(b => b.textContent === t);
   const snapshot = () => ({ states: Object.fromEntries(all('.kit-ab-node').map(n => [n.dataset.id, n.dataset.state])), pressed: (all('.kit-ab-node').find(n => n.getAttribute('aria-pressed') === 'true') || { dataset: {} }).dataset.id || null, status: q('.kit-ab-status').textContent, tone: q('.kit-ab-status').dataset.tone, note: q('.ad-note').textContent });
-  return { w, m, q, all, node, btn, snapshot, sent, root };
+  return { w, m, q, all, node, btn, snapshot, sent, root, errors };
 }
 
 (async () => {
@@ -67,7 +67,11 @@ async function session(db, o) {
   s.m.destroy();
   /* 6b. previews: one Claude has written shows at once; without one the button asks for it, naming the files in dependency order */
   db.docs['ns/shared/previews/c.c'] = { html: '<!doctype html><p id="made">built for c.c</p>' };
-  s = await session(db); s.node('c.c').click(); await sleep(120);
+  s = await session(db);
+  /* the artifact in the frame draws SVG that c.c owns: selecting, switching away and selecting again must keep loading the stored preview (assigning to className on SVG threw, and select stopped before it asked for the preview) */
+  const fr = s.q('.kit-ai-frame'); fr.contentDocument.body.innerHTML = '<svg class="k2" width="30" height="30"><circle r="5"/></svg><div class="k1">b</div><div class="zz">z</div>'; fr.dispatchEvent(new s.w.Event('load')); await sleep(500);
+  s.node('c.c').click(); await sleep(120); s.node('c.a').click(); await sleep(120); out.afterSwitch = !!s.q('.kit-ai-pv-frame'); s.node('c.c').click(); await sleep(120);
+  out.svgGlueErrors = s.errors.slice();
   const pf = s.q('.kit-ai-pv-frame'); out.previewShown = { frame: !!pf, srcdoc: pf ? pf.srcdoc : '', sandbox: pf ? pf.getAttribute('sandbox') : '', head: s.q('.kit-ai-snap-h').textContent };
   /* a preview that reports a script error, one that draws nothing, and one that draws: the caption must tell them apart */
   const capOf = () => s.q('.kit-ai-snap-c').textContent, pvf = () => s.q('.kit-ai-pv-frame');
@@ -83,6 +87,14 @@ async function session(db, o) {
   out.buttonAfter = s.q('.kit-ai-snap .kit-ai-btn').textContent;
   db.docs['ns/shared/previews/c.b'] = { html: '<p>now there is one</p>' }; db.doc('ns/shared/previews/c.b').set({ html: '<p>now there is one</p>' }); await sleep(60);
   out.arrives = (s.q('.kit-ai-pv-frame') || {}).srcdoc || ''; out.selectDidNotThrow = !s.q('.kit-ab-node[data-id="c.b"]') ? false : true;
+  /* clicking a block nobody owns: assign it to c.a; it is kept on the server and the next click selects c.a */
+  s.q('.kit-ai-btn').click(); fr.contentDocument.querySelector('.zz').dispatchEvent(new fr.contentWindow.MouseEvent('click', { bubbles: true, cancelable: true })); await sleep(60);
+  out.unownedPanel = { head: s.q('.kit-ai-snap-h').textContent, assign: !!s.q('.kit-ai-assign'), note: s.q('.ad-note').textContent };
+  const asel = s.q('.kit-ai-assign select'); asel.value = 'c.a'; s.q('.kit-ai-assign .kit-ai-btn').click(); await sleep(200);
+  out.assignedState = ((db.docs['ns/shared/adopt/state'] || {}).items || []).find(x => x.id === 'c.a');
+  out.afterAssign = { selected: s.snapshot().pressed, said: s.q('.ad-note').textContent, panelGone: !s.q('.kit-ai-assign') };
+  s.q('.kit-ai-btn').click(); fr.contentDocument.querySelector('.zz').dispatchEvent(new fr.contentWindow.MouseEvent('click', { bubbles: true, cancelable: true })); await sleep(60);
+  out.clickNowSelects = s.snapshot().pressed; out.noErrorsAfterAssign = s.errors.slice();
   s.m.destroy();
   /* 7. a dotted id is a list entry, never a path */
   out.noDotKeys = Object.keys(db.docs['ns/shared/adopt/state']).every(k => k.indexOf('.') < 0) && db.writes.every(w => Object.keys(w[1]).every(k => k.indexOf('.') < 0));

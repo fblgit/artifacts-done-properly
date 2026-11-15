@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-15T16:37:15Z",
+ "built": "2026-11-15T16:49:19Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -70,7 +70,7 @@
     "adp"
    ],
    "status": "new",
-   "version": "0.2.0",
+   "version": "0.3.0",
    "requires": [],
    "globals": [],
    "provides": [
@@ -96,11 +96,11 @@
     {
      "path": "kit/adopt.js",
      "role": "script",
-     "sha256": "a0b4137a7dcb504e665418be5165dfda1ce73a523982ede3e9793b9607eefb2e",
-     "bytes": 10470
+     "sha256": "d7836e2e60f4463c021882c14286ad28fb85f389f827d86720112878c4973be3",
+     "bytes": 10946
     }
    ],
-   "hash": "5a6add7b8913"
+   "hash": "2ddb40283fd4"
   },
   {
    "id": "kit.callout-refusal",
@@ -1425,7 +1425,7 @@
     "snapshot"
    ],
    "status": "new",
-   "version": "0.3.1",
+   "version": "0.4.0",
    "requires": [
     "kit.adopt"
    ],
@@ -1438,17 +1438,17 @@
     {
      "path": "kit/patterns/adopt-inspector.js",
      "role": "script",
-     "sha256": "ab8a715e115b3b197cedfccdb5600fa125431dc1bc30e180a0b7384596d6aba3",
-     "bytes": 15956
+     "sha256": "df8285de716af30a1a2c96de56f90760f1641f5bd9342c574dd23553e181aa33",
+     "bytes": 19933
     },
     {
      "path": "kit/patterns/adopt-inspector.css",
      "role": "style",
-     "sha256": "183b56dd4e00f0f35ba1d97c2112f426ba129ecdd452f3c45fdb9be9b461b983",
-     "bytes": 1958
+     "sha256": "6ea9d972e0818424ea178382a6611276458585893d6b1055926d8b50db34ca26",
+     "bytes": 2192
     }
    ],
-   "hash": "8bdd71813524"
+   "hash": "05107b296474"
   },
   {
    "id": "pattern.answer-queue",

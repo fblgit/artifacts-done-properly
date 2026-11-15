@@ -10,7 +10,8 @@
  *   Kit.adopt.STATES                      ['detected', 'selected', 'working', 'preview', 'ready', 'discarded']
  *   Kit.adopt.MOVES                       {state: [{to, label}]}: what a person may do from each state
  *   Kit.adopt.can(from, to) -> boolean    Kit.adopt.label(state) -> the word    Kit.adopt.tone(state) -> ok | warn | accent | muted | ''
- *   Kit.adopt.merge(candidates, overlay)  -> candidates with {state, notes} from overlay {id: {state, notes, at}}; a state that is not in STATES is ignored
+ *   Kit.adopt.merge(candidates, overlay)  -> candidates with {state, notes} from overlay {id: {state, notes, classes?, ids?, at}}; a state that is not in STATES is ignored;
+ *                                          classes and ids in the overlay (what a person assigned by clicking in the preview) are added to the candidate's own
  *   Kit.adopt.counts(candidates)          -> {state: n, all: n}
  *   Kit.adopt.layout(candidates, {colW, rowH, nodeW, nodeH, pad, width}) -> {nodes [{id, x, y, w, h, layer}], edges [{from, to}], width, height}
  *                                          layer 0 holds candidates that need nothing; an edge runs from what is needed to what needs it;
@@ -28,7 +29,7 @@
  * @kind      component
  * @group     Board kit
  * @status    new
- * @version   0.2.0
+ * @version   0.3.0
  * @updated   2026-11-15
  * @summary   The adopt flow without a view: candidate states and moves, what adopting requires of the rest, a layered graph layout, which candidate owns a DOM element, counts, a .adp pack check and a download.
  * @tags      adopt, extract, candidates, state machine, graph, layout, pack, adp
@@ -40,7 +41,7 @@
  * @globals   none
  * @db        none
  * @source    Adopt workbench, 2026-11-15 | docs/adopt.md | the states and the owner-by-class rule of the adopt flow
- * @changed   closure and edgeKind say what adopting requires of other candidates (lit paths, needed, conflicts); layout takes the width available.
+ * @changed   merge adds the classes and ids a person assigned to a candidate; closure and edgeKind say what adopting requires of other candidates; layout takes the width available.
  */
 (function () {
 'use strict';
@@ -65,7 +66,8 @@ function merge(cands, overlay) {
   overlay = overlay || {};
   return (cands || []).map(c => {
     const o = overlay[c.id] || {};
-    return Object.assign({}, c, { state: STATES.indexOf(o.state) >= 0 ? o.state : (c.state || 'detected'), notes: o.notes || c.notes || '' });
+    const more = (a, b) => (Array.isArray(b) && b.length ? (a || []).concat(b.filter(x => (a || []).indexOf(x) < 0)) : a);      // what the person assigned in the preview adds to what the analysis found
+    return Object.assign({}, c, { state: STATES.indexOf(o.state) >= 0 ? o.state : (c.state || 'detected'), notes: o.notes || c.notes || '', classes: more(c.classes, o.classes), ids: more(c.ids, o.ids) });
   });
 }
 
