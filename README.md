@@ -32,11 +32,27 @@ A growing catalog gives you more to start from. Refinement becomes an investment
 
 ## Install
 
-Python 3 is the only requirement. ADP comes in two forms:
+ADP comes in two forms:
 
 - **The plugin `artifacts-done-properly`**, for Claude Code: the CLI, and the Code tab of the
   desktop app. A marketplace installs it and brings its updates.
 - **`adp.skill`**, a zip, for the Claude desktop app's skill library or a manual install.
+
+### Requirements
+
+- **Python 3** runs ADP. Check it with `python3 --version`. ADP uses only its standard library: no pip, no npm.
+- **Node.js** is not needed to use ADP. It is needed to work on ADP itself: `tools/roundtrip.py` and the `adp.js` parity tests run `node` (CI requires it; without it those checks are skipped). Use the current LTS release.
+
+Install Node.js with nvm (macOS, Linux, WSL):
+
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+Open a new terminal, then:
+
+    nvm install --lts
+    node --version
+
+On Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows) or the installer from <https://nodejs.org>.
 
 ### Claude Code: the plugin
 
