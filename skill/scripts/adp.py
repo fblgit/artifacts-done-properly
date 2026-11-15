@@ -51,6 +51,14 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
   adp.py kit list [CATALOG] [--kind K] [--tag T]    one JSON line per entry; CATALOG defaults to - (the saved catalog)
   adp.py kit show ID [CATALOG]                      name, summary, about, tags, files, requires, provides
   adp.py kit describe ID [CATALOG]                  the mount signature: needs, provides, requires, file paths, the sample path (a bundle, and sample_key in it)
+Adopt (docs/adopt.md: an artifact into kits, one candidate at a time):
+  adp.py extract DIR [--catalog -|catalog.json] [--ns NAME] [--out candidates.json] [--into ADOPTER_DIR]
+                                                    candidates of the artifact in DIR (adopt-candidates/1: files, provides, needs, classes, catalog overlap); --into also
+                                                    copies the artifact to ADOPTER_DIR/subject/ with candidates.json, for the adopter template's live preview
+  adp.py pack ENTRY_ID STAGING_DIR [--candidates F --cid ID] [--version V] [--requires id,id] [--out FILE.adp.json]
+                                                    one portable adp-pack/1 file: the files laid out as under skill/catalog/, their sha256, the provenance, a git-apply patch
+  adp.py unpack FILE.adp.json [--to DIR] [--apply REPO]
+                                                    verify a pack (exit 1 on a mismatch); --to writes its files, --apply runs git apply in a catalog checkout
 The loop (docs/architecture.md "The loop"; each reads what the model fetched, from files):
   adp.py export DIR --url URL [--files-listing F.json] [--docs D.json] [--version V]
                                                     remote-to-local incoming: without the listing or the docs it prints the reads (exit 2);
@@ -158,7 +166,7 @@ def load(d):
             if n.startswith('.') or is_seed(os.path.relpath(os.path.join(root, n), d)): continue
             p = os.path.relpath(os.path.join(root, n), d); b = open(os.path.join(root, n), 'rb').read()
             files[p] = hashlib.sha256(b).hexdigest()[:12]
-            if p.endswith(TEXT) and MARK.search(t := b.decode('utf-8', 'replace')): marked[p] = t
+            if p.endswith(TEXT) and not p.startswith('subject/') and MARK.search(t := b.decode('utf-8', 'replace')): marked[p] = t     # subject/: another artifact's copy (docs/adopt.md), hashed and published, never read for parts
     return files, marked
 
 
@@ -1394,12 +1402,12 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop, adp_dev, adp_lib
-adp_loop.A = adp_dev.A = sys.modules[__name__]
+import adp_loop, adp_dev, adp_lib, adp_adopt
+adp_loop.A = adp_dev.A = adp_adopt.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
+    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main, 'extract': adp_adopt.extract, 'pack': adp_adopt.pack_cmd, 'unpack': adp_adopt.unpack_cmd}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):

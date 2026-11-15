@@ -7,7 +7,8 @@
 const $ = s => document.querySelector(s);
 const copy = id => window.ADP ? window.ADP.content(id) : '';
 
-const VIEWS = {
+/* Views other scripts add (parts/*.js loaded before this one): window.ADP_VIEWS = {id: {label, parts, html(), mount(ctx) -> {destroy()}, titles}}. They come first. */
+const VIEWS = Object.assign({}, window.ADP_VIEWS, {
   /* part:home */
   home: {
     label: 'Home',
@@ -64,13 +65,14 @@ const VIEWS = {
     </section>`,
   },
   /* /part:settings */
-};
+});
 const TITLES = {'page.header': 'Header', 'page.lead': 'Lead', 'page.tabs': 'Views', 'page.changes': 'What changed', 'page.assist': 'Work with Claude',
   requests: 'Requests', 'requests.intro': 'Requests intro', 'requests.list': 'Request list',
   canvas: 'Canvas', 'canvas.intro': 'Canvas intro', 'canvas.board': 'Canvas board',
   mycatalog: 'My catalog', 'mycatalog.intro': 'My catalog intro', 'mycatalog.list': 'My catalog list',
   home: 'Home', 'home.welcome': 'Welcome', 'home.examples': 'Examples', 'home.next': 'Next steps', 'home.about': 'How this page works',
   settings: 'Settings', 'settings.intro': 'Settings intro', 'settings.switches': 'Switches', 'settings.inbox': 'Incoming', 'settings.namespaces': 'Namespaces'};
+Object.keys(VIEWS).forEach(k => Object.assign(TITLES, VIEWS[k].titles));
 const COPY = new Set(Object.keys(window.ADP_CONTENT || {}));   // parts whose inner HTML is copy
 
 /* A switch of the template's own, as the example to copy: declare a group, read it with get, follow it with on. */
@@ -414,6 +416,7 @@ function show(v){
   else if (v === 'requests') { ready.then(mountRequests); }
   else if (v === 'canvas') mountCanvas();
   else if (v === 'mycatalog') mountMyCatalog();
+  else if (VIEWS[v].mount) { const m = VIEWS[v].mount({root: $('#views'), engine: () => engine, panel: () => panel, ready, setOpen, show, titles: TITLES}); if (m) mounted.push(m); }
   else { mountExamples(); if (window.ADP && ADP.config) { const c = $('[data-part="home.about"]'); if (c) c.hidden = !ADP.config.get('page.show-about'); } }
   if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
 }

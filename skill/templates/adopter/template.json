@@ -1,0 +1,75 @@
+{
+ "name": "adopter",
+ "installed": true,
+ "base": "assistant",
+ "summary": "The assistant page with an Adopt view: the artifact being adopted runs live beside a dependency map of its candidate kits; pick an element or a node, send work to Claude, mark each candidate ready or discard it, and download a ready one as a .adp.json pack.",
+ "use_when": "Turning an existing artifact into catalog kits one component at a time. Run adp.py extract SUBJECT --into DIR first; see docs/adopt.md.",
+ "capabilities": {
+  "db": {
+   "rules": [
+    {
+     "path": "",
+     "read": "view",
+     "write": "admin"
+    },
+    {
+     "path": "ns/shared",
+     "read": "view",
+     "write": "interact"
+    },
+    {
+     "path": "ns/users/{self}",
+     "read": "view",
+     "write": "interact"
+    },
+    {
+     "path": "requests",
+     "read": "view",
+     "write": "interact"
+    },
+    {
+     "path": "conversations",
+     "read": "view",
+     "write": "interact"
+    },
+    {
+     "path": "presence",
+     "read": "view",
+     "write": "interact"
+    }
+   ]
+  },
+  "user": {},
+  "comments": {
+   "customAnchors": true
+  },
+  "artifact": {},
+  "sample": {}
+ },
+ "take": [
+  "kit.dom",
+  "kit.tokens",
+  "kit.vocab",
+  "kit.keep-state",
+  "pattern.settings",
+  "pattern.inbox",
+  "pattern.namespaces",
+  "pattern.assist",
+  "pattern.block-picker",
+  "pattern.request-card",
+  "pattern.presence",
+  "pattern.assist-panel",
+  "kit.store",
+  "kit.chrome",
+  "kit.canvas",
+  "pattern.mindmap",
+  "layout.topbar",
+  "kit.view-registry",
+  "kit.skins",
+  "kit.md",
+  "theme.*",
+  "kit.adopt",
+  "pattern.adopt-board",
+  "pattern.adopt-inspector"
+ ]
+}
