@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Plan, URL-stamp and parity-check the packed publish of skill/catalog/ (stdlib only). It publishes nothing itself.
+"""Plan, URL-stamp and parity-check the packed publish of the catalog (the skill folder's catalog/, or ~/.adp/catalog; stdlib only). It publishes nothing itself.
+Run it as python3 -I <adp skill folder>/scripts/publish_catalog.py COMMAND ... (--out defaults to ./catalog-publish).
 
 The catalog goes up packed. Published directly, as real files: the page (index.html, adp.js, content.js, parts/, styles/), catalog.json, and the
 kit files the inbox needs to run (the closure of BOOT_ENTRY). Everything else under kit/ rides the seed (seed.json and seed/ packs, made by
@@ -31,10 +32,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_CATALOG = ROOT / "skill" / "catalog"
-DEFAULT_OUT = ROOT / "dist" / "catalog-publish"
-ADP = ROOT / "skill" / "scripts" / "adp.py"
+HERE = Path(__file__).resolve().parent
+SKILL = HERE.parent      # the adp skill folder (a repo's skill/, a plugin's, or an installed adp/)
+ADP = HERE / "adp.py"
+# the catalog to publish: the skill folder's own catalog/ (a repo, a clone, a plugin), else the user's local copy (an installed zip: setup put it there)
+DEFAULT_CATALOG = SKILL / "catalog" if (SKILL / "catalog" / "catalog.json").is_file() else Path(os.environ.get("ADP_HOME") or Path.home() / ".adp") / "catalog"
+DEFAULT_OUT = Path.cwd() / "catalog-publish"
 PAGE = "index.html"
 REPO = "https://github.com/fblgit/artifacts-done-properly"
 WELCOME = Path(__file__).with_name("welcome.html")
@@ -158,14 +161,14 @@ def human(n):
 
 
 def welcome_html(catalog, url):
-    """The About ADP page: tools/welcome.html with the catalog's counts, version and the source commit filled in; URL may be None (before it exists)."""
+    """The About ADP page: welcome.html (beside this script) with the catalog's counts, version and the source commit filled in; URL may be None (before it exists)."""
     idx = json.loads(read_text(catalog / "catalog.json"))
     kinds = {}
     for e in idx["entries"]:
         kinds[e["kind"]] = kinds.get(e["kind"], 0) + 1
     files = walk(catalog)
     try:
-        commit = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=10).stdout.strip() or "unknown"
+        commit = subprocess.run(["git", "-C", str(SKILL), "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=10).stdout.strip() or "unknown"
     except (OSError, subprocess.SubprocessError):
         commit = "unknown"
     vals = {"REPO": REPO, "REPO_SHORT": REPO.split("github.com/")[1], "ENTRIES": len(idx["entries"]), "COMPONENTS": kinds.get("component", 0),
