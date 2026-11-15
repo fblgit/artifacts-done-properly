@@ -29,6 +29,9 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
       let dead = false, offs = [], pvOff = null, board = null, insp = null, base = [], overlay = {}, packs = {}, sel = null, can = true, restored = false, chain = Promise.resolve();
       const db = window.ADP && ADP.db, ref = db ? ADP.ns('shared').doc(STATE) : null, viewRef = db ? ADP.ns('shared').doc(VIEW) : null, packRef = id => ADP.ns('shared').doc('packs/' + id), previewRef = id => ADP.ns('shared').doc('previews/' + id);      // a doc path has an even number of parts: ns/shared/packs/<id>
       const status = (t, tone) => { if (board) board.setStatus(t, tone); };
+      /* What each preview did when it loaded here (ok, blank, error, unreadable), kept in ns/shared/adopt/diag so a session can read what a person sees without asking. */
+      const diagRef = db ? ADP.ns('shared').doc('adopt/diag') : null, diag = {};
+      const reportPreview = s => { diag[s.id] = Object.assign({}, s, {at: new Date().toISOString(), page: String(location.pathname).slice(-80)}); if (diagRef) write(diagRef, {items: Object.keys(diag).map(k => Object.assign({}, diag[k]))}).catch(() => {}); };
       const merged = () => Kit.adopt.merge(base, overlay);
       const push = () => { const l = merged(); if (board) board.setCandidates(l); if (insp) insp.setCandidates(l); };
       /* One write at a time, the whole doc each time. Ids hold dots (c.picker), so the decisions are a list, not a map keyed by id: a db update would read a dotted key as a path. */
@@ -73,7 +76,7 @@ window.ADP_VIEWS = Object.assign(window.ADP_VIEWS || {}, {
               const quote = c ? c.name + ' · ' + (c.files || []).map(f => f.path).join(', ') + ' · provides ' + (c.provides || []).join(', ') : '';
               return e.send({lane: 'task', scope: {kind: 'part', id: 'adopt.board', label: 'Candidate ' + id, hash: ''}, quote,
                 text: 'Adopt candidate ' + id + ' of this subject (docs/adopt.md; the candidates contract is there too). ' + text + ' When you change files, put the result in the db doc ns/shared/packs/' + id + ' (collection ns/shared/packs, an adp-pack/1 object from adp.py pack) and set state "preview" on the item with id ' + id + ' in the list ns/shared/adopt/state.items (write the whole list back).'}).then(() => { if (c && c.state !== 'working') save(id, {state: 'working'}); }); }});
-          insp = Kit.adoptInspector.mount(inspEl, {src: SRC, candidates: l, selected: sel, onBuild: buildPreview,
+          insp = Kit.adoptInspector.mount(inspEl, {src: SRC, candidates: l, selected: sel, onBuild: buildPreview, onPreviewState: reportPreview,
             onPick: p => { if (!p.id) { note.textContent = 'No candidate owns <' + p.tag + '>.'; return; } choose(p.id, true); note.textContent = p.id + ' (matched by ' + p.via + ' ' + p.value + ').'; }});
           if (!can) status('You can look but not change: only editors can save decisions.', 'warn');
           if (ref) offs.push(ref.onSnapshot(s => {

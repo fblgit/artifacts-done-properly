@@ -157,6 +157,11 @@ class Glue(unittest.TestCase):
         self.assertEqual(o['capBlank'], 'The preview page loaded but drew nothing.')
         self.assertTrue(o['capOk'].startswith('A preview page built for this component'))
 
+    def test_how_each_preview_loaded_is_kept_on_the_server_for_a_session_to_read(self):
+        o = self.o
+        self.assertEqual(o['diagSeq'], ['error', 'blank', 'ok'])                    # one entry per candidate, the latest outcome
+        self.assertEqual(o['diag'], [['c.c', 'ok', [], 1]])
+
     def test_without_a_preview_the_button_asks_for_one_with_the_files_in_order(self):
         o = self.o
         self.assertEqual(o['noPreview'], {'frame': False, 'button': 'Ask Claude to build a preview'})

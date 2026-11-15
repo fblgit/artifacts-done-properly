@@ -71,9 +71,11 @@ async function session(db, o) {
   const pf = s.q('.kit-ai-pv-frame'); out.previewShown = { frame: !!pf, srcdoc: pf ? pf.srcdoc : '', sandbox: pf ? pf.getAttribute('sandbox') : '', head: s.q('.kit-ai-snap-h').textContent };
   /* a preview that reports a script error, one that draws nothing, and one that draws: the caption must tell them apart */
   const capOf = () => s.q('.kit-ai-snap-c').textContent, pvf = () => s.q('.kit-ai-pv-frame');
-  pvf().contentWindow.__pvErrors = ['boom @picker.js:9']; pvf().dispatchEvent(new s.w.Event('load')); await sleep(1700); out.capError = capOf();
-  pvf().contentWindow.__pvErrors = []; pvf().dispatchEvent(new s.w.Event('load')); await sleep(1700); out.capBlank = capOf();
-  pvf().contentDocument.body.innerHTML = '<div>drawn</div>'; pvf().dispatchEvent(new s.w.Event('load')); await sleep(1700); out.capOk = capOf();
+  const stored = () => ((db.docs['ns/shared/adopt/diag'] || {}).items || []).map(x => x.status).join(); out.diagSeq = [];
+  pvf().contentWindow.__pvErrors = ['boom @picker.js:9']; pvf().dispatchEvent(new s.w.Event('load')); await sleep(1700); out.capError = capOf(); out.diagSeq.push(stored());
+  pvf().contentWindow.__pvErrors = []; pvf().dispatchEvent(new s.w.Event('load')); await sleep(1700); out.capBlank = capOf(); out.diagSeq.push(stored());
+  pvf().contentDocument.body.innerHTML = '<div>drawn</div>'; pvf().dispatchEvent(new s.w.Event('load')); await sleep(1700); out.capOk = capOf(); out.diagSeq.push(stored());
+  out.diag = ((db.docs['ns/shared/adopt/diag'] || {}).items || []).map(x => [x.id, x.status, x.errors, x.children]);      // what each load reported, for a session to read
   s.node('c.b').click(); await sleep(120);
   out.noPreview = { frame: !!s.q('.kit-ai-pv-frame'), button: (s.q('.kit-ai-snap .kit-ai-btn') || {}).textContent || '' };
   s.q('.kit-ai-snap .kit-ai-btn').click(); await sleep(80);

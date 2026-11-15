@@ -10,6 +10,8 @@
  *     setPreview  a preview page for one candidate: a complete HTML document that renders just that component from the artifact's own files with sample data, shown in its own
  *                 frame (scripts run; relative addresses resolve against this page, so it loads subject/...). It wins over the on-screen picture. setPreview(id, null) removes it.
  *     onBuild     (id) the person pressed "Ask Claude to build a preview"; the page sends the request. Without it the button is not offered.
+ *     onPreviewState  ({id, status, errors, children, text, html}) once a preview page has loaded: status ok, blank (it drew nothing), error (it reported script errors in
+ *                 window.__pvErrors) or unreadable (the frame could not be read). The page can keep it, so what a person sees is known without asking them.
  *     src         the frame's address, relative to the page (for example subject/index.html)
  *     candidates  the records Kit.adopt.index reads: {id, name, state, classes, ids, provides, summary}
  *     selected    the candidate shown as a picture and ringed in the frame
@@ -22,19 +24,19 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.3.0
+ * @version   0.3.1
  * @updated   2026-11-15
  * @summary   The artifact running live in a same-origin frame with a dev-tools picker: hover names the owning candidate, a click selects it, elements are painted by candidate state, and the selected one shows as a still picture.
  * @tags      adopt, inspector, picker, iframe, devtools, preview, select, highlight, snapshot
  * @requires  kit.adopt
  * @files     kit/patterns/adopt-inspector.css
  * @provides  Kit.adoptInspector.mount
- * @config    Kit.adoptInspector.mount(root, opts) | src, candidates, selected, onPick({id, via, value, tag}), onBuild(id), label
+ * @config    Kit.adoptInspector.mount(root, opts) | src, candidates, selected, onPick({id, via, value, tag}), onBuild(id), onPreviewState({id, status, errors}), label
  * @tokens   --panel --sunk --ink --ink-2 --rule --accent --accent-ink --warn --f-ui --f-mono
  * @globals   none
  * @db        none
  * @source    Adopt workbench, 2026-11-15 | docs/adopt.md | the inspector view
- * @changed   a candidate can have a preview page built for it (setPreview) that shows whatever the frame is on; without one the picture or a message offers to have one built.
+ * @changed   reports how a preview page loaded (ok, blank, error, unreadable) through onPreviewState; a candidate can have a preview page built for it (setPreview).
  */
 (function () {
 'use strict';
@@ -93,10 +95,13 @@ function mount(root, opts) {
       /* A blank preview must not look like a working one: once the page has loaded, say what it reported (it keeps script errors in window.__pvErrors) or that it drew nothing. */
       f.addEventListener('load', () => setTimeout(() => {
         if (dead || previews[c.id] !== pv) return;
+        let report;
         try {
           const d = f.contentDocument, errs = (f.contentWindow && f.contentWindow.__pvErrors) || [], blank = !d || !d.body || !d.body.children.length;
           cap.textContent = errs.length ? 'The preview reported a problem: ' + errs.slice(0, 3).join(' · ') : blank ? 'The preview page loaded but drew nothing.' : said; cap.dataset.tone = errs.length || blank ? 'warn' : '';
-        } catch (e) { cap.textContent = 'The preview frame cannot be read here (' + ((e && e.message) || 'blocked') + ').'; cap.dataset.tone = 'warn'; }
+          report = { id: c.id, status: errs.length ? 'error' : blank ? 'blank' : 'ok', errors: errs.slice(0, 3).map(x => String(x).slice(0, 200)), children: d && d.body ? d.body.children.length : -1, text: d && d.body ? d.body.textContent.trim().length : -1, html: pv.length };
+        } catch (e) { cap.textContent = 'The preview frame cannot be read here (' + ((e && e.message) || 'blocked') + ').'; cap.dataset.tone = 'warn'; report = { id: c.id, status: 'unreadable', errors: [String((e && e.message) || 'blocked').slice(0, 200)], html: pv.length }; }
+        if (o.onPreviewState) { try { o.onPreviewState(report); } catch (e) { /* the page's reporting must never break the preview */ } }
       }, 1500));
       snapBody.replaceChildren(f, cap, ...(again ? [again] : [])); return;
     }
