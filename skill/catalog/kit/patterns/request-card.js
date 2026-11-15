@@ -21,6 +21,8 @@
  *     onReveal(partId)   what the block buttons do (scroll to the block); without it they are plain text
  *     onReply(rid, text) -> Promise   the static form's reply (without engine or onReply there is no reply box)
  *     canReply   false hides the reply box (default true)     markdown(text) -> html   default Kit.md when it and its libraries are loaded, else plain paragraphs
+ *     fold       true: the card is one line (kind, first words, state, time) that opens to the whole card; a done request starts folded, any other state starts open
+ *     open       true: a folded card starts open even when it is done (the newest request); what the person opens or folds is kept across redraws
  *     now        ISO or Date for "x min ago" and stuck (default the clock)     words  {lanes: {lane: word}, states: {state: word}, reply, replyHint, stuck, waitAnswer, noSend}
  * Methods of what Kit.requestCard.mount returns: update({request, thread})
  *
@@ -28,8 +30,8 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.1
- * @updated   2026-11-14
+ * @version   0.1.2
+ * @updated   2026-11-15
  * @summary   One request to Claude as its sender follows it: kind, block, a four-station track from queued to done, the conversation with Claude's answer, progress lines, the blocks it changed, and a reply box.
  * @tags      request, task, claude, progress, track, thread, reply, conversation, assist, status
  * @requires  kit.tokens, kit.vocab, kit.keep-state, kit.dom
@@ -37,7 +39,7 @@
  * @provides  Kit.requestCard.mount, Kit.requestCard.state, Kit.requestCard.steps, Kit.requestCard.vocab
  * @related   pattern.assist, pattern.assist-panel, pattern.answer-queue, pattern.questions
  * @optional  pattern.assist, kit.md
- * @config    Kit.requestCard.mount(box, opts) | engine and rid (live), or request {id, lane, scope, text, quote, by, at, status, state, ackBy, progress, response, changed, version} and thread {text, response, turns} (static); me, names {uid: name}, titles, onReveal(partId), onReply(rid, text) for the static form, canReply, markdown(text), now, words; returns {update, destroy}
+ * @config    Kit.requestCard.mount(box, opts) | engine and rid (live), or request {id, lane, scope, text, quote, by, at, status, state, ackBy, progress, response, changed, version} and thread {text, response, turns} (static); me, names {uid: name}, titles, onReveal(partId), onReply(rid, text) for the static form, canReply, markdown(text), fold, open, now, words; returns {update, destroy}
  * @config    engine | optional: a Kit.assist engine (pattern.assist); the card reads engine.thread(rid) and writes only through engine.reply
  * @tokens    --panel --sunk --ink --ink-2 --rule --rule-2 --accent --accent-ink? --warn --f-ui --f-mono --seam?
  * @globals   none
@@ -158,9 +160,20 @@ function mount(box, opts) {
     if (can && st === 'done' && sendable) card.append(replyBox());
     else if (can && st === 'done') card.append(el('p', 'kit-rc-hint', w.noSend));
     else if (can) card.append(el('p', 'kit-rc-hint', w.waitAnswer));
+    if (o.fold) fold(st, q);
     const sig = (q ? 'stuck' : st) + '|' + turns.length;
     if (last && last !== sig) live.textContent = 'Request ' + ((V().get('assist-state', q ? 'stuck' : st) || {}).word || st) + (turns.length > last.split('|')[1] ? ', new message' : '') + '.';
     last = sig;
+  }
+  function fold(st, q) {      // the whole card goes inside one details: its summary is the line a folded request shows
+    const kids = Array.from(card.childNodes), d = el('details', 'kit-rc-fold'), s = el('summary', 'kit-rc-sum'), key = q ? 'stuck' : st;
+    d.dataset.keep = 'f-' + rid(); d.open = !!o.open || st !== 'done';      // data-keep: what the person opened or folded survives a redraw
+    const lp = V().pill('assist-lane', req.lane || 'task', { unknown: 'flag' }), row = V().get('assist-state', key);
+    if (lp) s.append(lp);
+    s.append(el('span', 'kit-rc-snip', String((th && th.text) || req.text || '').replace(/\s+/g, ' ').slice(0, 110)),
+      el('span', 'kit-rc-sw', (o.words.states && o.words.states[key]) || (row ? row.word : key)));
+    if (req.at) { const t = el('time', 'kit-rc-at', ago(req.at, now())); t.dateTime = iso(req.at); s.append(t); }
+    d.append(s, ...kids); card.append(d);
   }
   function replyBox() {
     const f = el('form', 'kit-rc-reply'); const id = 'kit-rc-r-' + (rid() || 'x');

@@ -39,6 +39,7 @@
   "layout.topbar",
   "kit.view-registry",
   "kit.skins",
+  "kit.md",
   "theme.*"
  ]
 }

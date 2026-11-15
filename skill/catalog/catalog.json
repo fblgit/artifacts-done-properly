@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-15T01:09:29Z",
+ "built": "2026-11-15T11:34:16Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -3294,7 +3294,7 @@
     "status"
    ],
    "status": "new",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "requires": [
     "kit.tokens",
     "kit.vocab",
@@ -3313,14 +3313,14 @@
     {
      "path": "kit/patterns/request-card.js",
      "role": "script",
-     "sha256": "72cdfc7495e261e3cb52f3fc91585df250957516028aefa857f2cdba0a20ba17",
-     "bytes": 16934
+     "sha256": "825e75e08d49cd86ba7fba914442853b31e773dd8d645107b42ea384265eb7b5",
+     "bytes": 18206
     },
     {
      "path": "kit/patterns/request-card.css",
      "role": "style",
-     "sha256": "210165f3ac4ad6c03ee9a406086c55598ae32a48d232dcc3c6cb028c4cc41657",
-     "bytes": 5946
+     "sha256": "34e2c55957d224112ac69f7d47a4e1b8d9bf395963cca935aa818a737c99f621",
+     "bytes": 6906
     },
     {
      "path": "kit/samples/patterns.json",
@@ -3329,7 +3329,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "0501bfb1fdf7"
+   "hash": "9c0db071a596"
   },
   {
    "id": "pattern.roster",

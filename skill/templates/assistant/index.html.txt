@@ -82,6 +82,7 @@
 <link rel="stylesheet" href="kit/layout/topbar.css">
 <link rel="stylesheet" href="kit/view-registry.css">
 <link rel="stylesheet" href="kit/skins.css">
+<link rel="stylesheet" href="kit/md.css">
 <link rel="stylesheet" href="styles/canvas.css">
 <link rel="stylesheet" href="styles/assist.css">
 
@@ -128,6 +129,8 @@
 <script src="adp.js"></script>
 <script src="content.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
 <script src="kit/dom.js"></script>
 <script src="kit/tokens.js"></script>
 <script src="kit/vocab.js"></script>
@@ -147,4 +150,5 @@
 <script src="kit/layout/topbar.js"></script>
 <script src="kit/view-registry.js"></script>
 <script src="kit/skins.js"></script>
+<script src="kit/md.js"></script>
 <script src="parts/app.js"></script>
