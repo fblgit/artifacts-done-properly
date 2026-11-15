@@ -154,7 +154,7 @@ def c2():
     tree = sorted(os.path.relpath(os.path.join(d_, n), CAT).replace(os.sep, '/') for d_, ds, ns in os.walk(CAT) for n in ns
                   if not n.startswith('.') and '__pycache__' not in d_)
     page = read(os.path.join(CAT, 'index.html'))
-    loaded = {m for m in re.findall(r'(?:src|href)="([^"#?:]+)"', page) if '//' not in m}        # what the page itself loads
+    loaded = {m for m in re.findall(r'<(?:script|link)\b[^>]*?(?:src|href)="([^"#?:]+)"', page) if '//' not in m}        # what the page itself loads (scripts and stylesheets; a plain link, as About ADP, is optional)
     missing = sorted(p for p in loaded if not os.path.isfile(os.path.join(CAT, p)))
     if missing: fails.append('index.html loads files that are not there: ' + first(missing))
     orphans = sorted(set(tree) - set(listed) - loaded - {'index.html', 'catalog.json'})

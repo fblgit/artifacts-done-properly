@@ -40,7 +40,7 @@ class Base(unittest.TestCase):
         self.out = self.tmp / "out"
 
     def plan(self, cat=None):
-        return run("plan", "--catalog-dir", str(cat or self.cat), "--out", str(self.out))
+        return run("plan", "--url", URL1, "--catalog-dir", str(cat or self.cat), "--out", str(self.out))
 
 
 def tree_of(root):
@@ -82,6 +82,10 @@ class PlanTests(Base):
         self.assertEqual(direct, boot_kit)
         self.assertIn("catalog.json", pub["files"])
         self.assertIn("seed.json", pub["files"])
+        self.assertIn("welcome.html", pub["files"])      # About ADP, published beside the catalog
+        self.assertEqual(json.loads((tree / "catalog.json").read_text())["url"], URL1)      # the URL is in the staged copies, not in the working tree
+        self.assertIn("catalog URL: " + URL1, (tree / "index.html").read_text())
+        self.assertIn(URL1, (tree / "welcome.html").read_text())
         # every other kit file is in exactly one proposal (one per kit folder), chunks joined byte for byte
         docs = seed_docs(tree)
         props = {i: d for (c, i), d in docs.items() if c == "incoming"}
@@ -104,6 +108,43 @@ class PlanTests(Base):
         want = sorted(q for q in tree_of(real) if q.startswith("kit/") and q not in boot_kit)
         self.assertEqual(sorted(seen), want)
         self.assertEqual(len(seen), len(set(seen)))
+
+    def test_plan_needs_a_url_and_welcome_is_one_page_with_the_catalogs_counts(self):
+        with self.assertRaises(SystemExit): run("plan", "--catalog-dir", str(self.cat), "--out", str(self.out))      # --url is mandatory
+        real = REPO / "skill" / "catalog"
+        code, _, _ = run("welcome", "--catalog-dir", str(real), "--out", str(self.out))
+        self.assertEqual(code, 0)
+        page = (self.out / "tree" / "index.html").read_text()
+        self.assertNotIn("{{", page)
+        entries = json.loads((real / "catalog.json").read_text())["entries"]
+        self.assertIn("<b>%d</b><span>entries</span>" % len(entries), page)
+        self.assertIn("<b>%d</b><span>themes</span>" % sum(e["kind"] == "theme" for e in entries), page)
+        self.assertEqual(json.loads((self.out / "publish.json").read_text())["files"], {})      # one file: the page, whose publish gives the artifact its URL
+
+    def test_update_makes_proposals_with_the_live_sha_for_changed_new_and_removed_files(self):
+        real = REPO / "skill" / "catalog"
+        live, new = self.tmp / "live", self.tmp / "new"
+        for d in (live, new):
+            shutil.copytree(real, d)
+            pc.write_text(d / "catalog.json", pc.stamp(d, URL1)[0])      # the live copy and the new tree carry the same URL
+        sha = lambda p: hashlib.sha256((live / p).read_bytes()).hexdigest()
+        with open(new / "kit" / "dom.js", "a", encoding="utf-8") as f: f.write("// changed\n")
+        (new / "kit" / "tokens.js").unlink()
+        (new / "kit" / "newthing.js").write_text("N")
+        code, text, _ = run("update", "--url", URL1, "--live", str(live), "--catalog-dir", str(new), "--out", str(self.out))
+        self.assertEqual(code, 0, text)
+        self.assertIn("1 changed, 1 new, 1 removed", text)
+        docs = [w for f in sorted(self.out.glob("update-*.json")) for w in json.loads(f.read_text())["writes"]]
+        files = {f["path"]: f for w in docs if w["collection"] == "incoming" for f in w["data"]["files"]}
+        self.assertEqual(sorted(files), ["kit/dom.js", "kit/newthing.js", "kit/tokens.js"])
+        self.assertEqual(files["kit/dom.js"]["ifMatch"], sha("kit/dom.js"))      # changed: the live sha, so a file that moved meanwhile is held
+        self.assertIsNone(files["kit/newthing.js"]["ifMatch"])
+        self.assertEqual((files["kit/tokens.js"]["ifMatch"], files["kit/tokens.js"]["content"], "sha256" in files["kit/tokens.js"]), (sha("kit/tokens.js"), None, False))
+        self.assertEqual(docs[-1]["collection"], "incoming")      # a proposal's doc is written after its chunks
+        shutil.rmtree(self.out)
+        same = run("update", "--url", URL1, "--live", str(live), "--catalog-dir", str(live), "--out", str(self.out))
+        self.assertIn("nothing to update", same[1])
+        self.assertEqual(run("update", "--url", URL1, "--live", str(self.tmp / "none"), "--out", str(self.out))[0], 1)      # no copy of the live catalog
 
     def test_a_file_that_is_not_text_stops_the_plan(self):
         cj = json.loads((self.cat / "catalog.json").read_text())

@@ -59,6 +59,9 @@ function closure(e) {
 const kb = n => n >= 1024 ? (n / 1024).toFixed(1) + ' kB' : n + ' B';
 const short = h => (h || '').slice(0, 12);
 
+// the About ADP page (welcome.html) is published beside the catalog; the link shows only when it is there
+const about = $('#aboutAdp'); if (about) fetch('welcome.html', { method: 'HEAD' }).then(r => { if (r.ok) about.hidden = false; }, () => {});
+
 // ---------------------------------------------------------------- data: catalog.json first, then the db when it answers
 fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
   .then(d => { if (S.src === 'db') return; set({ entries: clean(d.entries), src: 'file', self: { url: d.url || '', ver: d.ver || '' } }); })

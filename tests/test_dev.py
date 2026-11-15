@@ -57,6 +57,11 @@ class DevTests(Base):
         self.assertEqual(self.post('/__adp/publish', {'files': {'../x': 'x'}})['error']['code'], 'invalid_argument')
         self.assertIn('artifact', self.get('__adp/shim.js'))
 
+    def test_outbox_takes_one_artifactdata_batch_call_as_writes(self):
+        res = self.post('/__adp/outbox', {'url': 'x', 'action': 'batch', 'writes': [{'op': 'set', 'collection': 'a', 'doc_id': 'b', 'data': {'v': 1}}]})
+        self.assertTrue(res['results'][0]['ok'])
+        self.assertEqual(json.loads(self.get('__adp/db'))['docs']['a/b']['data'], {'v': 1})
+
     def test_no_fallback_leaves_the_catalog_files_missing(self):
         os.makedirs(os.path.join(self.root, 'catalog', 'kit'))
         with open(os.path.join(self.root, 'catalog', 'kit', 'x.js'), 'w') as f: f.write('KIT')

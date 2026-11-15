@@ -44,7 +44,7 @@
  * @source    ADP 0.3.0, 2026-10-27 | the explainer's proposed-version card | one proposal applied by a person, generalised to the inbox
  * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/patterns.json#inbox"]}
  * @samples   inbox
- * @changed   autoApply and onAutoApplied (opt-in): a page that ships its own files as proposals applies them itself, one at a time, retries a failed one once, warns and does not call onAutoApplied while one is failed or held; the default stays an editor's press.
+ * @changed   autoApply and onAutoApplied (opt-in): a page that ships its own files as proposals applies them itself, one at a time, retries a failed one once, warns and does not call onAutoApplied while one is failed or held, and sends no wake-up for a proposal it applied itself; the default stays an editor's press.
  */
 (function () {
 'use strict';
@@ -80,7 +80,7 @@ function mount(root, opts) {
   const usr = () => o.user || (window.ADP && window.ADP.user) || {};
   const classify = (...a) => (o.classify || window.ADP.classify)(...a);
   const canEdit = () => !!usr().canEdit, by = () => usr().id || 'page';
-  let props = [], man = null, presence = [], requests = [], art = null, artWhy = 'checking…', dead = false, busy = {}, timers = {}, notes = {}, cm = null, canSend = '', autoTried = new Set(), autoRetried = new Set(), autoFailed = new Set(), autoRunning = false, autoOk = 0, autoCalled = false;
+  let props = [], man = null, presence = [], requests = [], art = null, artWhy = 'checking…', dead = false, busy = {}, timers = {}, notes = {}, cm = null, canSend = '', autoTried = new Set(), autoQuiet = new Set(), autoRetried = new Set(), autoFailed = new Set(), autoRunning = false, autoOk = 0, autoCalled = false;
   const offs = [];
   const box = el('section', B + 'root'); box.setAttribute('aria-label', 'Incoming proposals'); root.replaceChildren(box);
 
@@ -161,7 +161,7 @@ function mount(root, opts) {
       for (;;) {
         const p = props.find(x => x.status === 'merged' && !autoTried.has(x.pid) && !busy[x.pid]);
         if (!p) break;
-        autoTried.add(p.pid); await applyNow(p);
+        autoTried.add(p.pid); autoQuiet.add(p.pid); await applyNow(p);
         if (!notes[p.pid]) continue;
         if (notes[p.pid].startsWith('Not applied') && !autoRetried.has(p.pid)) {       // an error, not a conflict: one more try after a pause
           autoRetried.add(p.pid); autoTried.delete(p.pid); notes[p.pid] = ''; await new Promise(r => setTimeout(r, 1500));
@@ -215,7 +215,7 @@ function mount(root, opts) {
       await D.doc('incoming/' + p.pid).update({ status: 'applied', applied: { version: res.version || '', at } });
       await dataChange('Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)'));
       notes[p.pid] = ''; autoFailed.delete(p.pid); autoOk++;
-      wake(p, 'Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)') + '.', 'applied ' + (res.version || 'records'));
+      if (!autoQuiet.has(p.pid)) wake(p, 'Proposal ' + p.pid + ' applied as version ' + (res.version || '(records only)') + '.', 'applied ' + (res.version || 'records'));      // a proposal the page applied on its own wakes nobody
     } catch (e) {
       if (e && e.code === 'conflict') {
         const moved = (e.paths || []).map(x => ({ path: x.path, expected: x.expected, actual: x.actual }));

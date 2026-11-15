@@ -176,7 +176,7 @@ def handler(d, state, user, fallback=True):
             if path == '/__adp/publish':
                 with store.mu: return self.send(publish(d, state, b.get('files') or {}))
             if path == '/__adp/outbox':
-                batches = b.get('batches') if isinstance(b, dict) else b
+                batches = (b.get('batches') or ([b['writes']] if 'writes' in b else None)) if isinstance(b, dict) else b      # {batches: [[w]]}, [[w]], or one ArtifactData batch call {writes: [w]}
                 if batches and isinstance(batches[0], dict): batches = [batches]
                 with store.mu: res = store.apply(batches or [])
                 push([f"{x['collection']}/{x['id']}" for r in res if r['ok'] for x in r['docs']])
