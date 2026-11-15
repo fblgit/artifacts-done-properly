@@ -79,7 +79,11 @@ folders beside it (in the project's `.claude/skills` when `setup` ran with scope
 
 ### The `adp.skill` zip
 
-`adp.skill` is a zip whose root folder is `adp/`. Get it from the
+`adp.skill` is a zip whose root folder is `adp/`. It holds under 200 files, the most a skill upload
+takes: the catalog's kit travels in it as a few JSON packs (`catalog-pack-NN.json`; a zip may not
+hold a zip), which `setup` unpacks (see "First
+run"). It holds exactly one `SKILL.md`, the most an upload takes: the four road skills are
+`refs/<road>/road.md` in it, and `setup` installs them as `SKILL.md`. Get it from the
 [latest release](https://github.com/fblgit/artifacts-done-properly/releases/latest), or build it in a clone:
 `python3 tools/package.py` writes `dist/adp.skill`. If the release page shows 404, no release is published yet: build it.
 The two routes below use it.
@@ -115,7 +119,8 @@ The CLI needs the unpacked folder. Loading the zip directly is UNVERIFIED; do no
 
 1. Ask your agent to set ADP up. It runs `python3 -I <skill folder>/scripts/adp.py setup --dry-run`
    and asks you ONE question: scope `user`, `project` or `local`.
-2. Answer. It runs `setup --scope <answer>`, which writes `~/.adp/config.json`. From the zip it
+2. Answer. It runs `setup --scope <answer>`, which writes `~/.adp/config.json` and puts the kit the
+   skill ships into `~/.adp/catalog` (My Own Kit; a file already there is left as it is). From the zip it
    also copies four road skills (`adp-new`, `adp-catalog`, `adp-edit`, `adp-adopt`). In the plugin
    it copies none: the plugin already serves them, and its updates reach them.
    It adds its line to your `CLAUDE.md` only if you agree.
@@ -136,13 +141,14 @@ at <https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu> (the owner shares the art
 until then only they can open it).
 
 1. Point your ADP at it: `python3 -I <skill folder>/scripts/adp.py catalog https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu`.
-   This saves the URL in `~/.adp/config.json` and prints the Artifact reads that copy the whole kit
-   into `~/.adp/catalog` (My Own Kit). Make those reads, then run the same command again: it says
+   This saves the URL in `~/.adp/config.json`. `setup` already put the shipped kit into
+   `~/.adp/catalog` (My Own Kit), so the command prints Artifact reads only for files that differ
+   from the live catalog. Make those reads, then run the same command again: it says
    `complete: true` when every file is local.
 2. From then on the agent works from that local copy: `adp.py kit list`, `kit show ID`, `kit describe ID`
    and `suggest` read the entries' headers on disk, and `adp.py take` gives a files map that takes
    an entry by reference, so a taken part costs a few tokens and a written one costs thousands.
-3. To update, run `adp.py catalog` again.
+3. To update, run `adp.py catalog` again: it lists only what changed.
 
 Maintainers publish and update the catalog as `docs/RELEASING.md` describes ("Publish the catalog").
 

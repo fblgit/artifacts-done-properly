@@ -1,6 +1,6 @@
 ---
 name: adp-catalog
-description: Find, use and add components, themes, layouts and guides from the ADP catalog (the shared library of reusable artifact parts). Load it whenever an artifact needs a component, theme, layout or pattern that may already exist, when the user says take, reuse, catalog, kit or theme, or when a new reusable piece should be added. Covers search, taking entries by reference with the files map, and the catalog rules.
+description: Find, use and add components, themes, layouts and guides from the ADP catalog (the shared library of reusable artifact parts). Load it whenever an artifact needs a component, theme, layout or pattern that may already exist, when the user says take, reuse, catalog, kit or theme, or when a new reusable piece should be added. Covers search, taking entries by reference with the files map, and the catalog rules. Also load it when the user wants their own, a separate or a private copy of the catalog.
 metadata:
   version: "2.0.0"
 ---
@@ -9,11 +9,23 @@ metadata:
 
 The catalog is a published artifact whose files are kit entries, listed in its `catalog.json` (schema `kit-catalog/2`, generated from the header of each entry's main file). Taking an entry by reference means the server copies the files into your artifact: nothing is downloaded, retyped or pasted.
 
-`ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. CATALOG is the catalog url (its fetched index is the live one), `-` for the saved catalog, or a local `catalog.json` (the repo's build is `catalog/catalog.json` in the adp skill's folder: not the live catalog).
+`ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. CATALOG is the catalog url (its fetched index is the live one), `-` for the saved catalog, or a local `catalog.json` (the shipped build is `~/.adp/catalog/catalog.json` after setup: not the live catalog).
 
 ## Save and fetch the user's catalog (My Own Kit)
 
-The user's whole catalog lives on disk in `~/.adp/catalog/`: get it first. `ADP catalog URL` saves the url in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalog/`. Make that read, then run the command again: it prints `fetched: true`, the build date, the entry count and, for every file the index lists that is not on disk yet, `read` calls with `paths` (at most 256 each, `out_dir` `~/.adp/catalog/`). Make them all, run the command once more, and it prints `complete: true`. `take`, `kit` and `suggest` read from that folder (an older `~/.adp/catalogs/<id>/` copy still counts); `adp.py` stays offline, it only prints the calls. `ver` is empty until the catalog's owner sets one, so compare the build date. `ADP catalog` alone shows the saved one. Never assume a catalog.
+The user's whole catalog lives on disk in `~/.adp/catalog/`: get it first. Setup already put the shipped copy there, so `ADP catalog URL` then only lists what differs. `ADP catalog URL` saves the url in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalog/`. Make that read, then run the command again: it prints `fetched: true`, the build date, the entry count and, for every file the index lists that is not on disk yet, `read` calls with `paths` (at most 256 each, `out_dir` `~/.adp/catalog/`). Make them all, run the command once more, and it prints `complete: true`. `take`, `kit` and `suggest` read from that folder (an older `~/.adp/catalogs/<id>/` copy still counts); `adp.py` stays offline, it only prints the calls. `ver` is empty until the catalog's owner sets one, so compare the build date. `ADP catalog` alone shows the saved one. Never assume a catalog.
+
+## Your own published catalog
+
+When the user wants their own, a separate or a private catalog: after setup the shipped catalog is already in `~/.adp/catalog`, so nothing needs downloading to start.
+
+1. Clone first. The user clones the catalog artifact in claude.ai (their own copy, with its own link). You cannot do it: ask them to, and wait for the link. A clone carries every file, the seed packs and the first-open bootstrap, and it opens like the original. Then run `ADP catalog <the clone's link>`.
+2. Only when cloning is not possible: publish from `~/.adp/catalog` with `python3 -I <adp skill folder>/scripts/publish_catalog.py`. `welcome --out DIR` makes the first page: publish it as a new artifact, with the capabilities it lists, to get the link. `plan --url <that link> --out DIR` writes the packed publish: publish its `publish.json` once, into that artifact, then hand off: the page applies the proposals itself and reloads. The steps are in the repo's `docs/RELEASING.md`, "Publish the catalog".
+
+- Never download the whole catalog to publish a copy of it.
+- Never publish a files map of hundreds of references: an upload takes at most about 250 files, and a catalog copy by reference has no bootstrap.
+- A published catalog changes by proposal, not by a publish over it.
+- The owner shares it (view) from the Share menu; you cannot.
 
 ## Find
 
@@ -40,4 +52,4 @@ The user's whole catalog lives on disk in `~/.adp/catalog/`: get it first. `ADP 
 
 ## Add or update entries
 
-No `adp.py` command adds an entry. An entry is files under `catalog/kit/`, the main one with a header comment (id, kind, group, status, version, updated, summary, tags, requires, files and the rest: the format is the repo's `docs/catalog-header.md`; a theme also `@fonts`, the url in its json). `python3 -I <adp skill folder>/scripts/adp_catalog.py build` writes the entry's record into `catalog.json` from that header, and `python3 -I <adp skill folder>/scripts/adp_catalog.py` must pass. The catalog artifact is published from the repo with `tools/publish_catalog.py` (`docs/RELEASING.md`, "Publish the catalog"), not from the installed skill. Never publish over, test on or republish a catalog others use: ask the user first, and try anything on a scratch artifact.
+No `adp.py` command adds an entry. An entry is files under `catalog/kit/`, the main one with a header comment (id, kind, group, status, version, updated, summary, tags, requires, files and the rest: the format is the repo's `docs/catalog-header.md`; a theme also `@fonts`, the url in its json). `python3 -I <adp skill folder>/scripts/adp_catalog.py build` writes the entry's record into `catalog.json` from that header, and `python3 -I <adp skill folder>/scripts/adp_catalog.py` must pass. The catalog artifact is planned by `python3 -I <adp skill folder>/scripts/publish_catalog.py` (the steps are in the repo's `docs/RELEASING.md`, "Publish the catalog"). Never publish over, test on or republish a catalog others use: ask the user first, and try anything on a scratch artifact.

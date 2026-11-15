@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO / "tools"))
+sys.path.insert(0, str(REPO / "skill" / "scripts"))
 import publish_catalog as pc  # noqa: E402
 
 URL0 = "https://claude.ai/artifact/OLD"

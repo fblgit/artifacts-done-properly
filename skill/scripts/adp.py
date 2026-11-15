@@ -1279,6 +1279,13 @@ def init_cmd(a):
     print(f'created {p}; registered in {reg}'); return 0
 
 
+def road_tree(d):
+    """{relative path: bytes} of a road skill folder under refs/. A skill zip may hold only one SKILL.md, so the zip's roads are refs/<road>/road.md: it comes back as SKILL.md."""
+    t = tree_files(d)
+    if 'road.md' in t and 'SKILL.md' not in t: t['SKILL.md'] = t.pop('road.md')
+    return t
+
+
 def ref_version(skill_md):
     """metadata.version from a SKILL.md frontmatter, or None."""
     try: lines = open(skill_md).read().split('\n')
@@ -1305,7 +1312,33 @@ def plugin_name():
     except (OSError, ValueError, AttributeError): return None
 
 
-SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills (not in a plugin: it serves them itself), write the config, print (--yes: write) the CLAUDE.md pointer
+def shipped_catalog():
+    """{relative path: bytes} of the catalog this skill folder ships: its catalog/ folder (a plugin, a clone) or the catalog-pack-NN.json files a skill zip carries (a zip may not hold a zip); {} when it has neither."""
+    d = os.path.join(HERE, 'catalog')
+    if os.path.isfile(os.path.join(d, 'catalog.json')):
+        return {k.replace(os.sep, '/'): v for k, v in tree_files(d).items() if not k.endswith('.pyc')}
+    out = {}
+    for n in sorted(x for x in os.listdir(HERE) if re.fullmatch(r'catalog-pack-\d+\.json', x)):
+        try: pack = json.load(open(os.path.join(HERE, n), encoding='utf-8'))
+        except (OSError, ValueError): continue
+        if not isinstance(pack, dict) or pack.get('schema') != 'adp-catalog-pack/1' or not isinstance(pack.get('files'), dict): continue
+        out.update({k: v.encode('utf-8') for k, v in pack['files'].items() if isinstance(v, str) and not os.path.isabs(k) and '..' not in k.split('/')})
+    return out
+
+
+def unpack_catalog(dry):
+    """Put the shipped kit in ~/.adp/catalog (My Own Kit): every file that is not there yet. A file already there is left as it is (it may be newer, fetched from the live catalog). -> (files shipped, files new)"""
+    files = shipped_catalog()
+    dest = os.path.join(ADP_HOME, 'catalog')
+    new = [k for k in files if not os.path.isfile(os.path.join(dest, k))]
+    if not dry:
+        for k in new:
+            p = os.path.join(dest, k); os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'wb') as f: f.write(files[k])
+    return len(files), len(new)
+
+
+SETUP_USAGE = '''usage: adp.py setup --scope user|project|local [--yes]    copy the road skills (not in a plugin: it serves them itself), write the config, add the shipped catalog's missing files to ~/.adp/catalog, print (--yes: write) the CLAUDE.md pointer
        adp.py setup [--scope user|project|local] --dry-run   show what it would do (scope user when not given); writes nothing'''
 
 
@@ -1330,17 +1363,21 @@ def setup_cmd(a):
     print(f'setup {scope}{" (dry run)" if dry else ""}: ' + (f'the {len(names)} road skills ({", ".join(names)}) come with the plugin {plug} and are not copied' if plug else f'{len(names)} skills ({", ".join(names)}) -> {skills}') + f'; skill_root {HERE}')
     print(f'config: {cfg}' + ('' if scope == 'user' else f'; registry {os.path.join(ADP_HOME, "projects")}/<name>/config.json (path {cwd})')); print(f'pointer {ptr}' + ('' if yes and not dry else ' (add with --yes)') + ':'); print(block)
     if gi: print(f'gitignore {gi}: .adp/log.jsonl' + ('' if yes and not dry else ' (add with --yes)'))
-    modified = [os.path.join(skills, n) for n in copy if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != tree_files(os.path.join(refs, n))]
+    total, fresh = unpack_catalog(dry)
+    print(f'catalog (My Own Kit) {os.path.join(ADP_HOME, "catalog")}: ' + (f'{total} shipped files, {fresh} {"would be " if dry else ""}added, the others were already there and are left as they are' if total else 'this skill folder ships none; adp.py catalog URL fetches it'))
+    modified = [os.path.join(skills, n) for n in copy if os.path.isdir(os.path.join(skills, n)) and tree_files(os.path.join(skills, n)) != road_tree(os.path.join(refs, n))]
     for m in modified: print(f'{"would replace" if dry else "replaced"} {m}: it differs from the packaged skill (an older copy or local edits); setup installs the packaged one')
     if dry: return 0
     for n in copy:        # an update is an update: every road skill folder becomes the packaged one, whatever was there
         t = os.path.join(skills, n)
         shutil.rmtree(t, ignore_errors=True)
-        shutil.copytree(os.path.join(refs, n), t, ignore=shutil.ignore_patterns('__pycache__'))
+        for rel, data in road_tree(os.path.join(refs, n)).items():
+            p = os.path.join(t, rel); os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'wb') as f: f.write(data)
     os.makedirs(os.path.dirname(cfg), exist_ok=True)
     c = json.load(open(cfg)) if os.path.isfile(cfg) else {}
     mine = {'schema': 'adp-setup/1', 'scope': scope, **({'plugin': plug} if plug else {'skill_root': HERE}), 'skills': names,     # a plugin's folder changes with every version: record its name, not its path
-            'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md')))}, 'at': now()}
+            'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md' if os.path.isfile(os.path.join(refs, n, 'SKILL.md')) else 'road.md')))}, 'at': now()}
     add = {k: v for k, v in mine.items() if k not in c}     # a config that is already there is used as it is: setup only adds the keys it lacks
     if add: c.update(add); json.dump(c, open(cfg, 'w'), indent=1)
     if scope != 'user': register_project(cwd, scope)
