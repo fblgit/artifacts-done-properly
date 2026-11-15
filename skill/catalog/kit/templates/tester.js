@@ -48,13 +48,18 @@ const ACTIONS = {
   },
   async write(c) {
     const docs = c.S.docs || []; if (!docs.length) throw new Error('read the docs first');
-    if (!window.ADP || typeof ADP.unpack !== 'function') throw new Error('ADP.unpack is not there: load adp.js (runtime.adp)');
-    const n = docs.length;
-    c.log(`ADP.unpack: ${n} files under ${c.cfg.prefix}, in chunks`);
+    const a = c.S.api || await c.claude().use('artifact'); if (!a) throw new Error('no artifact capability: check the rights first');
+    const map = {};
+    for (const d of docs) { map[c.cfg.prefix + d.path] = d.text; c.log(`add ${c.cfg.prefix + d.path} (${d.text.length} chars)`); c.bump({ planned: Object.keys(map).length }); c.toast('Added ' + c.cfg.prefix + d.path); await c.sleep(300); }
+    const n = Object.keys(map).length;
+    c.log(`publish ${n} files in one call`);
     await c.busy('Publishing', n, async tick => {
       tick(0); const t = performance.now();
-      const r = await ADP.unpack(docs.map(d => ({ path: d.path, text: d.text })), { prefix: c.cfg.prefix, progress: (done, total) => { tick(done); c.bump({ planned: total, written: done }); } });
-      c.log(`${r.files} files in ${r.chunks} call${r.chunks === 1 ? '' : 's'}, ${Math.round(performance.now() - t)} ms`, 'ok');
+      const res = await a.publish(map);
+      c.log(`resolved in ${Math.round(performance.now() - t)} ms: version ${res.version}`, 'ok');
+      if (res.changed && res.changed.length) c.log('files others changed since this view: ' + JSON.stringify(res.changed));
+      for (const [p, h] of Object.entries(res.shas || {})) c.log(`  ${p}  sha256 ${h.slice(0, 12)}`);
+      tick(n); c.bump({ written: n });
     });
     c.toast(`Wrote ${n} files`, 'ok');
   },

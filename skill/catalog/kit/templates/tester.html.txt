@@ -2,7 +2,7 @@
 Step-by-step tester page
 Taken as text, as template.adp2-shell is: copy the markup into your own index.html (or take the whole page with it) and keep extending it. It is a test harness: a rail of steps, a Run step button, toasts for what each step does, and a log. A person presses the button; Claude presses the same step from outside.
 
-What it is: a page that runs a flow one step at a time and says what it did. The steps it ships prove a whole chain: loader (the pack, seed.json and seed/, is expanded into the db by adp.js: nothing here unpacks anything), read (the collection of file docs), rights (may this viewer publish), write (ADP.unpack from adp.js publishes the docs as files, in chunks), reload, verify (fetch each file back and compare it with its doc) and clean up (delete the files again).
+What it is: a page that runs a flow one step at a time and says what it did. The steps it ships prove a whole chain: loader (the pack, seed.json and seed/, is expanded into the db by adp.js: nothing here unpacks anything), read (the collection of file docs), rights (may this viewer publish), write (claude.use('artifact').publish(files), one call), reload, verify (fetch each file back and compare it with its doc) and clean up (delete the files again).
 Steps are the extension point. kit/templates/tester.js lists them in STEPS (id, label, hint) and what each does in ACTIONS (id -> async function(ctx), it throws to fail); add one there, or pass Kit.tester.mount(root, {steps, actions, config}). ctx carries the state, log, toast, busy bar and counters. config: prefix (where files are written, default unpacked/), collection (the db collection holding the file docs, default kitfiles), ns (the db docs test/cmd and test/state, default test).
 Remote: Claude writes the doc <ns>/cmd {id, action: run|back|skip|reset, step?, ts} (ArtifactData set) and the page presses it (an id seen is ignored; older than 90 s is ignored); the page reports <ns>/state {at, done, running, counts, remote, tail, t}, written only by an editor.
 Data: the pack. kit/samples/tester.json holds three invented text files as db docs; pass it (or your own) to adp.py seed or adp.py new with --data and the docs ride the seed packs. The page needs the db capability, a signed-in viewer, and the artifact capability to publish.
@@ -15,7 +15,7 @@ Provides (no global): Kit.tester.mount; .tester.
 @kind      template
 @group     Templates
 @status    new
-@version   0.1.1
+@version   0.1.0
 @updated   2026-11-15
 @summary   A step-by-step test harness: a rail of steps with Run, Back, Skip and Reset buttons, toasts, a log, and remote presses by Claude through a db doc. Ships the pack to files steps; add your own.
 @tags      tester, test, steps, stepper, toast, log, remote, loader, pack, seed, publish, template, page
@@ -31,7 +31,7 @@ Provides (no global): Kit.tester.mount; .tester.
 @db        reads status/seed; kitfiles/*; test/cmd / writes test/state / note the file docs reach kitfiles by the loader (seed.json), not by this page; test/state is written by editors only
 @source    Pack Unpack Test | built in a session with Claude, 2026-11-15 | the test page that proved the loader, the files-map publish and the read-back
 @preview   {"render": "template", "samples": ["kit/templates/tester.html.txt"]}
-@changed   The write step calls ADP.unpack (adp.js) instead of its own publish code.
+@changed   Published as .html.txt: as .html it would be a second page of this catalog, and HTML files cannot be copied between artifacts server-side.
 -->
 <!-- part:kit.template.tester -->
 <link rel="stylesheet" href="kit/chrome.css">

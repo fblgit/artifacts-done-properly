@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import io
 import json
 import shutil
@@ -46,36 +47,68 @@ def tree_of(root):
     return sorted(p.relative_to(root).as_posix() for p in Path(root).rglob("*") if p.is_file() and "__pycache__" not in p.parts)
 
 
+def seed_docs(tree):
+    """Every doc the seed under TREE holds: {(collection, id): data}."""
+    out = {}
+    for p in json.loads((tree / "seed.json").read_text())["packs"]:
+        for d in json.loads((tree / p).read_text())["docs"]:
+            out[(d["collection"], d["id"])] = d["data"]
+    return out
+
+
 class PlanTests(Base):
-    def test_real_catalog_rides_the_packs_and_the_page_goes_up_as_files(self):
+    def test_real_catalog_boots_with_the_inbox_and_every_other_kit_file_rides_one_proposal(self):
         real = REPO / "skill" / "catalog"
         before = tree_of(REPO)
         code, text, _ = self.plan(real)
         self.assertEqual(code, 0, text)
         self.assertEqual(before, tree_of(REPO))      # it publishes nothing and writes nothing in the repo
         pub = json.loads((self.out / "publish.json").read_text())
-        self.assertEqual(pub["file_path"], str((self.out / "tree" / "index.html").resolve()))
-        for p in pub["files"]:
-            self.assertFalse(p.startswith("kit/") or p == "catalog.json", p)      # the kit rides the packs
-        self.assertIn("seed.json", pub["files"])
-        packs = [p for p in pub["files"] if p.startswith("seed/pack-")]
-        self.assertTrue(packs)
+        tree = self.out / "tree"
+        self.assertEqual(pub["file_path"], str((tree / "index.html").resolve()))
         for k in ("artifact", "db", "comments", "user"):
             self.assertIn(k, pub["capabilities"])
-        seed = json.loads((self.out / "tree" / "seed.json").read_text())
-        self.assertEqual(seed["unpack"], pc.COLLECTION)      # adp.js publishes this collection's docs as the files
-        docs = {}
-        for p in packs:
-            for d in json.loads((self.out / "tree" / p).read_text())["docs"]:
-                if d["collection"] == pc.COLLECTION:
-                    docs[d["data"]["path"]] = d
-        want = [p for p in tree_of(real) if p.startswith(pc.PACKED)]
-        self.assertEqual(sorted(docs), want)      # the packs hold exactly the kit folders and catalog.json
-        for p in want:
-            self.assertEqual(docs[p]["id"], p.replace("/", "~"))
-            self.assertEqual(docs[p]["data"]["text"], (real / p).read_text(encoding="utf-8"), p)      # byte for byte
+        # what is published directly: the page, catalog.json, the seed and the kit files the inbox needs (its entry and what it requires)
+        idx = json.loads((real / "catalog.json").read_text())
+        by = {e["id"]: e for e in idx["entries"]}
+        need, todo = set(), [pc.BOOT_ENTRY]
+        while todo:
+            e = by[todo.pop()]
+            todo += [r for r in e.get("requires", []) if r not in need]
+            need.add(e["id"])
+        boot_kit = sorted(f["path"] for i in need for f in by[i]["files"] if f.get("role") != "sample")
+        self.assertIn("kit/patterns/inbox.js", boot_kit)
+        direct = sorted(p for p in pub["files"] if p.startswith("kit/"))
+        self.assertEqual(direct, boot_kit)
+        self.assertIn("catalog.json", pub["files"])
+        self.assertIn("seed.json", pub["files"])
+        # every other kit file is in exactly one proposal (one per kit folder), chunks joined byte for byte
+        docs = seed_docs(tree)
+        props = {i: d for (c, i), d in docs.items() if c == "incoming"}
+        self.assertEqual(sorted({i.split("-")[2] for i in props}), ["guides", "kit", "layout", "patterns", "samples", "templates", "themes", "viz"])
+        seen = []
+        for pid, p in props.items():
+            self.assertEqual((p["status"], p["parts"], p["by"]), ("new", [], "catalog"))
+            self.assertLessEqual(len(p["files"]), pc.MAX_FILES)      # one Apply is one publish call: a folder over the caps is split
+            self.assertLessEqual(sum(f["size"] for f in p["files"]), pc.MAX_BYTES + max(f["size"] for f in p["files"]))
+            chunks = {}
+            for (c, i), d in docs.items():
+                if c == "incoming/%s/chunks" % pid:
+                    chunks.setdefault(d["path"], []).append(d)
+            for f in p["files"]:
+                self.assertIsNone(f["ifMatch"])      # a new file
+                text_of = "".join(c["content"] for c in sorted(chunks[f["path"]], key=lambda c: c["n"]))
+                self.assertEqual(text_of, (real / f["path"]).read_text(encoding="utf-8"), f["path"])
+                self.assertEqual(hashlib.sha256(text_of.encode("utf-8")).hexdigest(), f["sha256"])
+                seen.append(f["path"])
+        want = sorted(q for q in tree_of(real) if q.startswith("kit/") and q not in boot_kit)
+        self.assertEqual(sorted(seen), want)
+        self.assertEqual(len(seen), len(set(seen)))
 
     def test_a_file_that_is_not_text_stops_the_plan(self):
+        cj = json.loads((self.cat / "catalog.json").read_text())
+        cj["entries"] = [{"id": pc.BOOT_ENTRY, "files": [], "requires": []}]
+        (self.cat / "catalog.json").write_text(json.dumps(cj))
         (self.cat / "kit").mkdir()
         (self.cat / "kit" / "x.bin").write_bytes(b"\xff\xfe\x00\x80")
         code, _, err = self.plan()

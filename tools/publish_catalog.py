@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Plan, URL-stamp and parity-check the packed publish of skill/catalog/ (stdlib only). It publishes nothing itself.
 
-The catalog goes up packed: the page's own files (index.html, adp.js, content.js, parts/, styles/) plus a seed (seed.json and seed/ packs,
-made by `adp.py seed --data`) that carries the kit folders and catalog.json as `kitfiles` docs. adp.js's loader writes the docs to the db on
-the first open by an editor: seed.json's `unpack` names the collection, and adp.js publishes its docs as the real files (kit/..., catalog.json),
-then writes the record and reloads. Nothing else unpacks.
+The catalog goes up packed. Published directly, as real files: the page (index.html, adp.js, content.js, parts/, styles/), catalog.json, and the
+kit files the inbox needs to run (the closure of BOOT_ENTRY). Everything else under kit/ rides the seed (seed.json and seed/ packs, made by
+`adp.py seed --data`) as ONE PROPOSAL PER KIT FOLDER: an incoming/<pid> doc and its incoming/<pid>/chunks docs, the shape `adp.py propose` writes.
+adp.js's loader writes them to the db on the first open by an editor; the page's Incoming panel (Kit.inbox) lists them, and an editor's Apply
+publishes each folder's files with an ifMatch per file and records it in What changed, with its real version. Nothing else unpacks.
 
   plan [--catalog-dir D] [--out D]   stage the page and the seed under OUT/tree, write OUT/publish.json (the Artifact publish call)
   set-url URL                        stamp URL into catalog.json and the index.html comment (then plan again)
@@ -12,6 +13,7 @@ then writes the record and reloads. Nothing else unpacks.
 """
 import argparse
 import difflib
+import hashlib
 import json
 import os
 import re
@@ -25,13 +27,15 @@ DEFAULT_CATALOG = ROOT / "skill" / "catalog"
 DEFAULT_OUT = ROOT / "dist" / "catalog-publish"
 ADP = ROOT / "skill" / "scripts" / "adp.py"
 PAGE = "index.html"
-COLLECTION = "kitfiles"      # seed.json `unpack`: adp.js publishes this collection's docs {path, text} as files
-PACKED = ("kit/", "catalog.json")      # what rides the packs; every other file is the page's own
+BOOT_ENTRY = "pattern.inbox"      # the entry the page runs to apply the proposals: it and its requires are published directly
+MAX_FILES, MAX_BYTES = 60, 600 * 1024      # one proposal = one publish call; a real call of 100 files / 900 KB went through, so stay well under it
+CHUNK = 100 * 1024     # a chunk doc holds this many characters of a file (adp_loop.propose splits at CHUNK // 2 of 200 KB)
+CTYPE = {".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".md": "text/markdown", ".txt": "text/plain", ".html": "text/html"}
 CAPABILITIES = {
     "comments": {"customAnchors": True},
     "db": {"rules": [{"path": "", "read": "view", "write": "admin"}]},
     "user": {},
-    "artifact": {},      # adp.js publishes the unpacked files
+    "artifact": {},      # Apply publishes the files
 }
 COMMENT_RE = re.compile(r"(This artifact's own URL is the catalog URL: )(\S+)[ \t]*$", re.M)
 
@@ -59,8 +63,67 @@ def walk(catalog):
     return sorted(out)
 
 
-def doc_id(path):
-    return path.replace("/", "~")      # a doc id holds no slash
+def boot_kit_files(catalog):
+    """The kit files BOOT_ENTRY needs to run: its own files and those of everything it requires, from the catalog's own index (no samples)."""
+    idx = json.loads(read_text(catalog / "catalog.json"))
+    by = {e["id"]: e for e in idx["entries"]}
+    if BOOT_ENTRY not in by:
+        raise Fail("catalog.json has no entry %s" % BOOT_ENTRY)
+    seen, order = set(), []
+
+    def visit(i):
+        if i in seen:
+            return
+        seen.add(i)
+        for r in by[i].get("requires", []):
+            visit(r)
+        order.append(i)
+    visit(BOOT_ENTRY)
+    return sorted({f["path"] for i in order for f in by[i]["files"] if f.get("role") != "sample"})
+
+
+def folder_of(path):
+    """kit/x.js -> kit ; kit/layout/x.js -> layout"""
+    parts = path.split("/")
+    return parts[1] if len(parts) > 2 else "kit"
+
+
+def proposals(catalog, paths):
+    """One proposal per kit folder: [(pid, folder, files, docs)], docs being the incoming/<pid> doc and its chunk docs as {collection, id, data}."""
+    groups = {}
+    for p in paths:
+        groups.setdefault(folder_of(p), []).append(p)
+    parts = []      # a folder over the caps becomes several proposals (patterns-1, patterns-2, ...): one Apply is one publish call
+    for name in sorted(groups):
+        cur, size, pieces = [], 0, []
+        for p in groups[name]:
+            n = (catalog / p).stat().st_size
+            if cur and (len(cur) >= MAX_FILES or size + n > MAX_BYTES):
+                pieces.append(cur); cur, size = [], 0
+            cur.append(p); size += n
+        pieces.append(cur)
+        parts += [(name if len(pieces) == 1 else "%s-%d" % (name, k), g) for k, g in enumerate(pieces, 1)]
+    out = []
+    for folder, group in parts:
+        files, chunks, h = [], [], hashlib.sha256()
+        for p in group:
+            try:
+                text = read_text(catalog / p)
+            except UnicodeDecodeError:
+                raise Fail("%s is not UTF-8 text: a proposal holds text" % p)
+            h.update(p.encode("utf-8") + b"\0" + text.encode("utf-8") + b"\0")
+            pieces = [text[i:i + CHUNK] for i in range(0, len(text), CHUNK)] or [""]
+            files.append({"path": p, "ifMatch": None, "contentType": CTYPE.get(os.path.splitext(p)[1].lower(), "text/plain"),
+                          "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(), "size": len(text.encode("utf-8")), "chunks": len(pieces)})
+            chunks += [{"path": p, "n": n, "of": len(pieces), "content": c} for n, c in enumerate(pieces)]
+        pid = "p-catalog-%s-%s" % (folder, h.hexdigest()[:8])
+        doc = {"by": "catalog", "at": "", "summary": "Catalog kit files: %s (%d files)" % (folder, len(files)), "threads": [],
+               "base": {"version": "", "page_hash": "", "docs": {}}, "parts": [], "files": files, "live_files": {}, "status": "new",
+               "decided": {"by": "", "at": "", "reason": ""}, "applied": {"version": "", "at": ""}}
+        docs = [{"collection": "incoming/%s/chunks" % pid, "id": str(i), "data": c} for i, c in enumerate(chunks)]
+        docs.append({"collection": "incoming", "id": pid, "data": doc})
+        out.append((pid, folder, files, docs))
+    return out
 
 
 def cmd_plan(a):
@@ -68,24 +131,19 @@ def cmd_plan(a):
     if not (catalog / PAGE).is_file():
         raise Fail("%s not found in %s" % (PAGE, catalog))
     files = walk(catalog)
-    packed = [p for p in files if p.startswith(PACKED)]
-    boot = [p for p in files if p not in packed]
-    docs = []
-    for p in packed:
-        try:
-            text = read_text(catalog / p)
-        except UnicodeDecodeError:
-            raise Fail("%s is not UTF-8 text: a pack holds text" % p)
-        docs.append({"collection": COLLECTION, "id": doc_id(p), "data": {"path": p, "text": text}})
+    boot_kit = boot_kit_files(catalog)
+    kit = [p for p in files if p.startswith("kit/") and p not in boot_kit]
+    boot = [p for p in files if not p.startswith("kit/") or p in boot_kit]
+    props = proposals(catalog, kit)
     tree = out / "tree"
     if out.exists():
         shutil.rmtree(out)
     for p in boot:
         (tree / p).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(catalog / p, tree / p)
-    data = out / "kitfiles.json"
-    write_text(data, json.dumps({"docs": docs}, ensure_ascii=False))
-    r = subprocess.run([sys.executable, "-I", str(ADP), "seed", str(tree), "--by", "catalog", "--data", str(data), "--unpack", COLLECTION], capture_output=True, text=True)
+    data = out / "proposals.json"
+    write_text(data, json.dumps({"docs": [d for _pid, _folder, _files, docs in props for d in docs]}, ensure_ascii=False))
+    r = subprocess.run([sys.executable, "-I", str(ADP), "seed", str(tree), "--by", "catalog", "--data", str(data)], capture_output=True, text=True)
     if r.returncode:
         raise Fail("adp.py seed failed: %s" % (r.stderr or r.stdout).strip()[-600:])
     staged = walk(tree)
@@ -95,14 +153,17 @@ def cmd_plan(a):
         "root": str(tree),
         "files": {p: p for p in staged if p != PAGE},
         "capabilities": CAPABILITIES,
-        "description": "%s, published packed: %d kit files unpack themselves on the first open." % (title.group(1).strip() if title else "Catalog", len(packed)),
+        "description": "%s, published packed: %d kit files wait in %d proposals, applied from the Incoming panel." % (title.group(1).strip() if title else "Catalog", len(kit), len(props)),
         "icon": "catalog",
         "label": "Packed publish",
     }
     write_text(out / "publish.json", json.dumps(obj, indent=1, ensure_ascii=False) + "\n")
     packs = [p for p in staged if p.startswith("seed/")]
-    print("page files: %d, packs: %d (%d bytes), kit files packed: %d (%d bytes)" % (
-        len(boot), len(packs), sum((tree / p).stat().st_size for p in packs), len(packed), sum((catalog / p).stat().st_size for p in packed)))
+    print("published directly: %d files (the page, catalog.json and %d kit files the inbox needs: %s)" % (len(boot), len(boot_kit), ", ".join(boot_kit)))
+    print("proposals: %d, kit files in them: %d (%d bytes), packs: %d (%d bytes)" % (
+        len(props), len(kit), sum((catalog / p).stat().st_size for p in kit), len(packs), sum((tree / p).stat().st_size for p in packs)))
+    for pid, folder, fl, _docs in props:
+        print("  %-10s %3d files %8d bytes  %s" % (folder, len(fl), sum(f["size"] for f in fl), pid))
     print("publish: %s (%d files)" % (out / "publish.json", len(staged)))
     return 0
 

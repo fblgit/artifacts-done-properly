@@ -302,7 +302,7 @@ Chunked files (text over 200 KiB in bytes): `incoming/<pid>/chunks/<i>` with `{p
 
 ## 11. Contract 5: what the page does with a proposal
 
-`Kit.inbox.mount(root, {db, user, artifact, config, url, comments, classify, debounce})`, in the template's Settings view under "Incoming" (`settings.inbox`).
+`Kit.inbox.mount(root, {db, user, artifact, config, url, comments, classify, debounce, autoApply, onAutoApplied})`, in the template's Settings view under "Incoming" (`settings.inbox`). `autoApply: true` (default false) makes the page apply every proposal that classifies as merged itself, one at a time, and `onAutoApplied(n)` is called once when none is left open: the packed catalog ships its kit folders as proposals and reloads there.
 
 ### Statuses
 

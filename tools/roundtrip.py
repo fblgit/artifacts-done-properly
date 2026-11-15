@@ -299,7 +299,7 @@ global.fetch = async p => { const f = path.join(dir, p); if (!fs.existsSync(f)) 
 const pushErr = m => errs.push(String(m));
 const tour = () => ({step() {}, progress() {}, done() {}, fail(w) { errs.push('tour fail: ' + w); }});
 const d = {doc: p => ({get: async () => ({exists: store.has(p)}), set: async data => { order.push(p); store.set(p, JSON.parse(JSON.stringify(data))); }})};
-const src = fs.readFileSync(adpjs, 'utf8'), a = src.indexOf('/* ---------- unpack:'), b = src.indexOf('/* ---------- page self-check');
+const src = fs.readFileSync(adpjs, 'utf8'), a = src.indexOf('async function seedFromFile(d){'), b = src.indexOf('/* ---------- page self-check');
 if (a < 0 || b < a) { console.error('seedFromFile not found in adp.js'); process.exit(1); }
 const AF = Object.getPrototypeOf(async function () {}).constructor;
 const fn = new AF('d', 'fetch', 'pushErr', 'tour', 'user', 'window', 'let seeded = null;\n' + src.slice(a, b) + '\nawait seedFromFile(d); return seeded;');

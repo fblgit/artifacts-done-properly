@@ -1,4 +1,4 @@
-/* adp.py dev: a stand-in for the claude.ai viewer's window.claude (db, user, comments), served at /__adp/shim.js by `adp.py dev serve`,
+/* adp.py dev: a stand-in for the claude.ai viewer's window.claude (db, user, comments, artifact.publish), served at /__adp/shim.js by `adp.py dev serve`,
    which prepends window.__ADP_DEV = {user}. use(name) resolves later, memoized, and null for anything not stood in here.
    Live updates: the server's event stream names the changed docs; the page then re-reads the db and fires the listeners whose result changed. */
 (function () {
@@ -110,7 +110,9 @@ const comments = Object.freeze({
   anchorFor: async () => ({ path: 'body', x: 0, y: 0 }),
 });
 
-const NS = { db: () => load().then(() => db), user: () => user, comments: () => comments };
+const artifact = Object.freeze({ publish: files => post('/__adp/publish', { files }) });      // writes the files into the served folder: {version, shas}; an ifMatch that moved rejects {code: 'conflict', paths}
+
+const NS = { db: () => load().then(() => db), user: () => user, comments: () => comments, artifact: () => artifact };
 const memo = new Map();
 const use = name => {
   if (!memo.has(name)) memo.set(name, Promise.resolve().then(() => NS[name] ? NS[name]() : null));

@@ -2,14 +2,14 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/KCrDvttwWWE3ZZAR9ceQE6",
  "ver": "",
- "built": "2026-11-14T22:28:13Z",
+ "built": "2026-11-15T00:17:16Z",
  "entries": [
   {
    "id": "runtime.adp",
    "kind": "component",
    "group": "Runtime",
    "name": "ADP runtime",
-   "summary": "The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open (and unpacking packed files) and the page self-check.",
+   "summary": "The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.",
    "tags": [
     "adp",
     "dataplane",
@@ -24,7 +24,7 @@
     "seed"
    ],
    "status": "stable",
-   "version": "2.1.0",
+   "version": "2.0.1",
    "requires": [],
    "globals": [],
    "provides": [
@@ -38,7 +38,6 @@
     "window.ADP.build",
     "window.ADP.integrity",
     "window.ADP.seeded",
-    "window.ADP.unpack",
     "window.ADP.db",
     "window.ADP_CHECK",
     "window.ADP_SEED"
@@ -48,11 +47,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "bcb49f5a7ebee875df931fe543102ea8348b889cf4983bc7191fc613dbb74646",
-     "bytes": 44754
+     "sha256": "68045fb1d5d37d9bd457cc349934baa80d1bb238754c3cfde68db17b90355dea",
+     "bytes": 39809
     }
    ],
-   "hash": "e4281e161999"
+   "hash": "699e33bf83b1"
   },
   {
    "id": "kit.callout-refusal",
@@ -2452,7 +2451,7 @@
     "presence"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.2.0",
    "requires": [
     "kit.tokens",
     "kit.dom"
@@ -2466,8 +2465,8 @@
     {
      "path": "kit/patterns/inbox.js",
      "role": "script",
-     "sha256": "24dc3a15c13a68dbd532a91e2ad438df5da94d263a83a046c1673b38cbf5c64a",
-     "bytes": 26786
+     "sha256": "20c7472e5734eea26eea798823f09d4ba3ec85162bbc445beede6fe1dbe853c2",
+     "bytes": 29447
     },
     {
      "path": "kit/patterns/inbox.css",
@@ -2482,7 +2481,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "0cd0bf6fa2a2"
+   "hash": "2c9909207c23"
   },
   {
    "id": "pattern.integrity",
@@ -4479,7 +4478,7 @@
     "page"
    ],
    "status": "new",
-   "version": "0.1.1",
+   "version": "0.1.0",
    "requires": [
     "runtime.adp",
     "kit.store",
@@ -4499,8 +4498,8 @@
     {
      "path": "kit/templates/tester.html.txt",
      "role": "template",
-     "sha256": "fc30ced5ead3ac669a4f1c57dddd8fa75aedd6d8d599eefaf7462235c793ae43",
-     "bytes": 5286
+     "sha256": "19222f609e1a57ce22c3513364ec90fecc95235d3668e8c1b924c85cede2dd99",
+     "bytes": 5337
     },
     {
      "path": "kit/templates/tester.css",
@@ -4511,8 +4510,8 @@
     {
      "path": "kit/templates/tester.js",
      "role": "script",
-     "sha256": "c04d6025b519628477eb3e9dc29c57c52331eb5925d2d2fb678b1e14b8974083",
-     "bytes": 15192
+     "sha256": "21c06ebf5b0e3421aafbca54948bbe20bdb20fe00a63d5ab2d53a2c2f6665ed3",
+     "bytes": 15524
     },
     {
      "path": "kit/samples/tester.json",
@@ -4521,7 +4520,7 @@
      "bytes": 800
     }
    ],
-   "hash": "7cd08e73174b"
+   "hash": "b39debb3b969"
   },
   {
    "id": "theme.adr-drafting-table",

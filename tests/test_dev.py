@@ -43,6 +43,27 @@ class DevTests(Base):
         self.assertNotEqual(r.returncode, 0); self.assertIn('run adp.py dev serve', r.stderr)
         self.assertIn('usage: adp.py dev', self.run_adp('dev', 'bogus').stderr)
 
+    def test_artifact_publish_writes_files_and_an_ifmatch_that_moved_is_a_conflict(self):
+        r = self.post('/__adp/publish', {'files': {'kit/a.js': {'content': 'A', 'contentType': 'text/javascript', 'ifMatch': None}, 'b.txt': 'B'}})
+        self.assertEqual((r['version'], sorted(r['shas'])), ('dev-1', ['b.txt', 'kit/a.js']))
+        self.assertEqual(self.get('kit/a.js'), 'A')
+        sha = r['shas']['kit/a.js']
+        bad = self.post('/__adp/publish', {'files': {'kit/a.js': {'content': 'A2', 'ifMatch': 'f' * 64}, 'new.js': 'N'}})['error']
+        self.assertEqual((bad['code'], bad['paths'][0]['path'], bad['paths'][0]['actual']), ('conflict', 'kit/a.js', sha))
+        self.assertEqual(self.get('kit/a.js'), 'A')      # nothing was written, new.js either
+        with self.assertRaises(urllib.error.HTTPError): self.get('new.js')
+        self.assertEqual(self.post('/__adp/publish', {'files': {'kit/a.js': {'content': 'A2', 'ifMatch': sha}, 'b.txt': None}})['version'], 'dev-2')
+        self.assertEqual(self.get('kit/a.js'), 'A2')
+        self.assertEqual(self.post('/__adp/publish', {'files': {'../x': 'x'}})['error']['code'], 'invalid_argument')
+        self.assertIn('artifact', self.get('__adp/shim.js'))
+
+    def test_no_fallback_leaves_the_catalog_files_missing(self):
+        os.makedirs(os.path.join(self.root, 'catalog', 'kit'))
+        with open(os.path.join(self.root, 'catalog', 'kit', 'x.js'), 'w') as f: f.write('KIT')
+        url = json.loads(self.spawn('serve', self.d, '--port', '0', '--no-fallback').readline())['url']
+        with self.assertRaises(urllib.error.HTTPError) as e: urllib.request.urlopen(url + 'kit/x.js')
+        self.assertEqual(e.exception.code, 404)
+
     def test_request_goes_through_watch_and_its_answer_through_send(self):
         req = {'lane': 'task', 'text': 'fix', 'at': '2026-01-01T00:00:00Z', 'status': 'open'}
         self.post('/__adp/db', {'op': 'set', 'path': 'requests/r-1', 'data': req})

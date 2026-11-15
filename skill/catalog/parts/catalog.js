@@ -72,6 +72,15 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
     if (docs.length) set({ entries: clean(docs), src: 'db' });
   }, () => {});
   db.doc('catalog/self').onSnapshot(d => { if (d.exists) { const v = d.data() || {}; set({ self: { url: v.url || S.self.url, ver: v.ver || S.self.ver } }); } }, () => {});
+  // the packed catalog's kit files wait in proposals (incoming/); an editor applies them here, with the inbox every ADP page has
+  // mounted once status/seed says done: on a first open the seed is still writing the proposals, and the inbox reads incoming/ when it mounts
+  const box = $('#incomingBox'), sec = $('#incoming'); let inbox = false;
+  if (box && sec && window.Kit && Kit.inbox) db.doc('status/seed').onSnapshot(d => {
+    if (inbox || !d.exists || (d.data() || {}).state !== 'done') return;
+    inbox = true; sec.hidden = false;
+    // bootstrap: the packed catalog's kit folders are applied by the page itself, then it reloads to load them
+    Kit.inbox.mount(box, { db, autoApply: true, onAutoApplied: () => setTimeout(() => location.reload(), 1500) });
+  }, () => {});
 })();
 
 // ---------------------------------------------------------------- routing: #<entry id>
@@ -248,6 +257,7 @@ const loaded = {};
 function loadFile(path) {
   if (loaded[path]) return loaded[path];
   let p;
+  if (document.querySelector((path.endsWith('.css') ? 'link[href="' : 'script[src="') + path + '"]')) return loaded[path] = Promise.resolve();      // the page already loads it (the inbox's own files)
   if (path.endsWith('.css')) p = new Promise((res, rej) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = path; l.onload = res; l.onerror = () => rej(new Error('could not load ' + path)); document.head.append(l); });
   else if (path.endsWith('.js')) p = new Promise((res, rej) => { const s = document.createElement('script'); s.src = path; s.async = false; s.onload = res; s.onerror = () => rej(new Error('could not load ' + path)); document.head.append(s); });
   else p = fetch(path).then(r => { if (!r.ok) throw new Error(path + ': HTTP ' + r.status); return path.endsWith('.json') ? r.json() : r.text(); });
@@ -502,8 +512,8 @@ render(html`<${App}/>`, $('#app'));
 render(html`<${Tabs}/>`, $('#tabs'));
 render(html`<${Meta}/>`, $('#topMeta'));
 
-const PARTS = ['page.header', 'page.tabs', 'page.changes', 'catalog.lead', 'catalog.index', 'catalog.landing', 'catalog.howto', 'entry.sheet', 'entry.preview', 'entry.needs', 'entry.take', 'entry.files', 'entry.origin'];
-const TITLES = { 'page.header': 'Header', 'page.tabs': 'Kinds of entry', 'page.changes': 'What changed', 'catalog.lead': 'Catalog description', 'catalog.index': 'Entry index and search',
+const PARTS = ['page.header', 'page.tabs', 'page.changes', 'catalog.incoming', 'catalog.lead', 'catalog.index', 'catalog.landing', 'catalog.howto', 'entry.sheet', 'entry.preview', 'entry.needs', 'entry.take', 'entry.files', 'entry.origin'];
+const TITLES = { 'page.header': 'Header', 'page.tabs': 'Kinds of entry', 'page.changes': 'What changed', 'catalog.incoming': 'Incoming', 'catalog.lead': 'Catalog description', 'catalog.index': 'Entry index and search',
   'catalog.landing': 'Catalog landing', 'catalog.howto': 'How taking works', 'entry.sheet': 'Entry sheet', 'entry.preview': 'Preview', 'entry.needs': 'What it needs', 'entry.take': 'Take it', 'entry.files': 'Files', 'entry.origin': 'Origin' };
 if (window.ADP) window.ADP.page({
   view: () => S.sel && byId(S.sel) ? 'entry.' + S.tab : 'landing',
