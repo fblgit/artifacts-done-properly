@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
-import {readFileSync} from 'node:fs';
+import {readFileSync, mkdtempSync, writeFileSync, rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import worker from '../skill/assets/hosts/openai-sites/worker.mjs';
 const sql=new DatabaseSync(':memory:');
@@ -97,7 +99,12 @@ assert.equal((await turns.get()).size,1);
 assert.equal((await turns.get()).empty,false);
 await request('write',{path:'requests/agent-work',mode:'set',data:{text:'Verify guarded claim',status:'open'},expectedRevision:0});
 const workRead=await request('read',{path:'requests/agent-work'});
-const workPlan=JSON.parse(execFileSync('python3',['-I','skill/scripts/adp.py','work','/dev/stdin','--host','sites','--artifact','demo','--path','requests/agent-work','--action','claim','--by','worker-test'],{input:JSON.stringify([{collection:'requests',id:'agent-work',data:workRead.data,revision:workRead.revision}]),encoding:'utf8',timeout:2000,env:{...process.env,ADP_HOME:'/tmp/adp81-work-test-home'}}));
+const workDirectory=mkdtempSync(join(tmpdir(),'adp81-work-')), workReadPath=join(workDirectory,'read.json');
+let workPlan;
+try {
+ writeFileSync(workReadPath,JSON.stringify([{collection:'requests',id:'agent-work',data:workRead.data,revision:workRead.revision}]));
+ workPlan=JSON.parse(execFileSync('python3',['-I','skill/scripts/adp.py','work',workReadPath,'--host','sites','--artifact','demo','--path','requests/agent-work','--action','claim','--by','worker-test'],{encoding:'utf8',timeout:2000,env:{...process.env,ADP_HOME:workDirectory}}));
+} finally {rmSync(workDirectory,{recursive:true,force:true});}
 assert.equal((await request('write',workPlan.calls[0].args)).status,200);
 assert.equal((await request('write',workPlan.calls[0].args)).status,409);
 await import('../skill/assets/adapters/openai-sites-comments.js');
