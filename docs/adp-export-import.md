@@ -1,81 +1,93 @@
-# ADP export/import (proposal, not implemented)
+# Shared ADP shell and host adapters
 
-**Status:** design proposal for PR #81. Nothing here is built. It extends a shared format, so it needs the
-owner's and Codex's agreement first (see "Decisions needed").
+PR #81 implements one host-neutral record export/import shell in `adp.py`, with
+Claude and Sites adapters. The shell owns bundles, classification and provenance;
+adapters translate native reads, guarded writes and receipts. Agents execute the
+emitted calls with their authorized host tools. There is no automatic sync.
 
-## Why
+## Bundle and provenance
 
-PR #81's acceptance gate is a successful exchange between two hosts, and `docs/host-live-test-protocol.md`
-(scenario 8) says cross-host handoff counts only once export/import is implemented. Neither host provides it:
-no platform API offers one, Claude's side has none, and `docs/openai-sites-transport.md` lists cross-host
-import/export as outside the Sites implementation. The `claude-r2` and Sites receipts moved a synthetic
-pack through PR comments, each agent applying it with its own host's guards. That is an agent-mediated
-transfer, not this. ADP can supply export/import itself, without any platform API, as part of its shell.
+A bundle reuses `adp-seed/2`: `seed.json` indexes `seed/pack-N.json`, each containing
+`docs: [{collection, id, data}]`. Additive `source` metadata identifies the source
+host, artifact, publication version, export time, author and bundle hash. The
+index's `revisions` map records source-native revisions as evidence; these are
+never destination guards. The earlier receipt label `adp-seed-pack/1` is not a
+separate supported format.
 
-## What already exists
+Export covers manifest, parts, content, changes, decisions, config, agents,
+incoming and requests. Pass `--collections` for additional namespaces containing
+artifact knowledge. Transient status/presence and the shell's imports records
+are excluded. Raw exports refuse missing required collection reads. A normalized
+DOCS file is an agent-supplied assertion; use raw tool envelopes for checked
+coverage.
 
-- **Pack format:** `adp-seed/2`: `seed.json` index plus `seed/pack-N.json` with
-  `docs: [{collection, id, data}]` (`docs/architecture.md`, `adp.py seed`). The synthetic pack in the receipts is
-  this `docs` shape; its `format: "adp-seed-pack/1"` label is not defined anywhere in the repo.
-- **Import today:** the `adp.js` `seedFromFile` loader expands a pack only into an **empty** database (it stops
-  if `manifest/current` exists), once, with unguarded `set`.
-- **Agent side:** `adp.py export`, `propose`, `ack` and `record` use a three-way base/live/incoming
-  classification with holds, over **parts and files**, and print Artifact/ArtifactData calls.
+## Export through the adapter
 
-## Missing
+```sh
+python3 -I skill/scripts/adp.py bundle --host claude --artifact SOURCE
+# Execute the emitted reads and save [{call, result}] as source-reads.json.
+python3 -I skill/scripts/adp.py bundle source-reads.json bundle-dir \
+  --host claude --artifact SOURCE --version PUBLICATION_VERSION --raw
+```
 
-Export of a live artifact's **records**, and import into a **non-empty** target with a per-record decision, the
-target's own guards, and a durable link back to the source.
+Use `--host sites` with the Site artifact namespace to select the Sites adapter.
+Use `--collections ns/host-check/context` where that namespace holds fixture
+context. Host identities and artifact locators remain distinct.
 
-## Proposed shape (smallest change)
+## Plan and apply an import
 
-1. **Bundle = `adp-seed/2` plus an optional `source` block**, so existing loaders keep working:
-   `{host, artifact, exportedAt, sourceVersion, by}` and a per-doc `sourceRevision` map. Source revisions are
-   evidence only, never a guard on the target.
-2. **`adp.py bundle`:** input is the docs a host adapter read (like `export --docs D.json`), output is the
-   bundle. Host-neutral because the reads arrive as data.
-3. **`adp.py import-plan BUNDLE TARGET_DOCS.json`:** classifies each record against the target's freshly read
-   docs: `create`, `identical` (skip), `update` (field-level diff using the measured update semantics: nested
-   merge, whole-array replace, `null` kept, bare `__delete__` removes), or `held`/`conflict` where the target
-   changed since the last import. Three-way for records: base = the last imported source doc (kept in an
-   `imports/<bundle id>` doc), live = target, incoming = bundle. The output is a **plan**, not a write.
-4. **Host apply adapters** print the host's own calls from the plan: Claude = one pinned ArtifactData batch
-   (`if_version` from fresh reads); OpenAI Sites = `adp_write` with target revisions. Only these differ per host.
-5. **Provenance in the target:** an `imports/<bundle id>` doc (source host, artifact, version, per-doc source
-   revisions, applied or failed per record) plus the existing `changes/` record. This links a copy's identity
-   and history to its source.
+```sh
+python3 -I skill/scripts/adp.py import-plan bundle-dir \
+  --host sites --artifact TARGET
+# Execute every emitted read; save [{call, result}] as target-reads.json.
+python3 -I skill/scripts/adp.py import-plan bundle-dir target-reads.json \
+  --host sites --artifact TARGET --raw --out plan.json
+```
 
-The apply step stays agent-executed and guarded by the target. No live sync is claimed.
+Planning reuses `adp_loop.classify3` on canonical record hashes. Its base is the
+last imported hash in `imports/<source>`, live is the current target, and incoming
+is the bundle. New records create, source-only changes replace, equal records
+skip, target-only changes remain, and competing changes hold. A hold exits 2
+and emits no write calls. Records absent from the bundle are untouched; imports
+do not delete records or discard opaque fields from the supplied record bodies.
 
-## Decisions needed
+Run the plan's calls in order. Sites reads each named record, retaining native
+revisions even for absent/tombstoned records; replacement and creation use those
+fresh guards. Sites calls are not atomic. Stop on rejection or an unknown result,
+and do not write `manifest/current` until earlier required records succeed.
+Claude uses its native guarded batch semantics. Source revisions never authorize
+target writes.
 
-1. **Format:** extend `adp-seed/2` with `source` (proposed), or a new schema name? If `adp-seed-pack/1` is to stay,
-   both must be mapped.
-2. **Record classification:** extend contract 4 to records as above, or treat `import-plan` as
-   create/identical/update only (smaller, no three-way).
-3. **Division:** Claude builds `bundle`, `import-plan` and the Claude apply printer; Codex builds the Sites apply
-   printer against the same plan format. The plan and bundle formats are the shared contract and need the
-   owner's sign-off.
-4. **Acceptance:** whether a round trip through `bundle` and `import-plan`, each host applying its own printed
-   steps, satisfies protocol scenario 8. That is the owner's call.
+## Read back and acknowledge
 
-## Alignment so far (the two agents; the owner has not confirmed)
+Save execution envelopes as `[{call, result, readback}]`. Sites write descriptors
+include the authoritative `adp_read` to execute afterward. The Sites adapter only
+reports applied when both the write result and that readback match the intended
+record and native revision. A lost response remains unknown; read authoritative
+state before replanning rather than blindly retrying. Claude's adapter parses
+its native per-record committed batch outcomes.
 
-Codex (PR comment 6913100969) agrees: reuse the real `adp-seed/2` index and pack layout with additive
-`source` provenance and do not standardize `adp-seed-pack/1` (decision 1); reuse the three-way and hold
-mechanics for non-empty imports so neither side's edits are silently overwritten (decision 2); Claude owns the
-common bundle and import-plan plus the Claude printer, Codex owns Sites apply and receipts, sharing one pinned
-plan schema (decision 3). It adds, for decision 4: only a fresh destination-native revision authorizes a write,
-source revisions stay evidence; an apply plan is not a successful import, so outcomes and provenance are
-recorded only from confirmed host results, and Sites must report partial application honestly because it has
-no atomic batch; acceptance should be a fresh live Claude, Sites, Claude exchange through the shell itself,
-including a repeat import that is a no-op and a destination conflict, on a minimal real adp/2 fixture (with
-`manifest/current`, parts and `changes/`), since the earlier three-record fixtures omit those. This is design
-alignment only, not authorization to build; scope is being clarified with the owner.
+```sh
+python3 -I skill/scripts/adp.py import-ack plan.json results.json \
+  --host sites --raw
+```
 
-## Test plan if approved
+This emits guarded provenance and, for confirmed mutations, a `changes/` entry.
+Execute and verify these calls too: printing an acknowledgement is not persisting
+one. Rejected and unknown operations are listed as unfinished; prior base hashes
+are retained. Re-read before retrying. Repeat imports of unchanged records emit
+no content writes.
 
-Red then green on the existing three-record pack: new target (all `create`), repeat (all `identical`, zero
-writes), target edited meanwhile (`held`), source edited (`update` preserving opaque fields), array replace,
-`__delete__`, and a record absent from the bundle left untouched. Unit and local only, tests no longer than the
-code; live evidence stays the existing receipts plus one fresh round trip.
+## Scope and acceptance
+
+The shell transfers records, not source files. Publish page files through the
+existing `adp.py files` and host publication workflow; source revision, publication
+version, deployment version and record revisions are separate evidence. Imported
+manifest records alone do not establish destination file/hash integrity.
+
+The earlier live receipts establish a PR-mediated three-record exchange and an
+OpenAI browser/agent/browser continuation. The full shell acceptance run remains
+pending: a minimal real adp/2 artifact, Claude to Sites to Claude through these
+commands/adapters, with source provenance, manifest/parts/history, repeat no-op,
+a destination conflict and actual host readback. Local tests are not live-host
+certification. PR #81 remains draft until its acceptance gate is met.
