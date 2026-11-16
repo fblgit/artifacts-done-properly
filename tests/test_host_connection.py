@@ -120,3 +120,24 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
             result = self.run_case(mode)
             self.assertFalse(result['user']['canEdit'])
             self.assertNotIn('write', result['calls'])
+
+    def test_a_reply_ends_an_agents_claim_only_where_there_is_one(self):
+        script = r'''
+const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/skill/catalog/kit/';
+const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, TextEncoder, crypto: require('crypto').webcrypto,
+  document: { createElement: () => ({}), getElementById: () => null, head: { append() {} }, addEventListener() {}, removeEventListener() {} }, addEventListener() {} };
+w.window = w; vm.createContext(w);
+for (const f of ['dom.js', 'patterns/assist.js']) vm.runInContext(fs.readFileSync(K + f, 'utf8'), w);
+const claim = { actor: 'a', token: 'T', state: 'working' }, base = { lane: 'task', scope: { kind: 'page', id: '', label: 'P' }, text: 'x', at: '2026-11-16T00:00:00Z', status: 'open', state: 'working', progress: [] };
+const sleep = () => new Promise(r => setTimeout(r, 30));
+(async () => {
+  for (const [seed, fail] of [[{ ...base, execution: claim, workGeneration: 2 }, 0], [{ ...base }, 0], [{ ...base, execution: claim, workGeneration: 2 }, 1]]) {
+    const comments = { anchorFor: async () => 'page', canSendToClaude: async () => 'available', sendToClaude: async () => { if (fail) throw new Error('x'); } };
+    const e = w.Kit.assist.start({ seed: { 'requests/r': seed }, comments }); await e.ready; await sleep();
+    await e.reply('r', 'hi').catch(() => 0); await sleep();
+    const r = e.requests({}).get()[0]; console.log(JSON.stringify([r.execution === undefined ? 'absent' : r.execution && r.execution.token, r.workGeneration === undefined ? 'absent' : r.workGeneration])); e.destroy();
+  }
+  process.exit(0);
+})();'''
+        run = run_node(['-e', script, str(ROOT)])
+        self.assertEqual(run.stdout.split(), ['[null,3]', '["absent","absent"]', '["T",2]'], run.stderr)      # claim cleared and generation bumped; an ordinary request untouched; a failed send restores the claim
