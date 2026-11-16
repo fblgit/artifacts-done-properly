@@ -78,6 +78,8 @@ def work(a):
     data = copy.deepcopy(row['data'])
     actor, action = A.opt(a, '--by'), A.opt(a, '--action', 'inspect')
     execution = data.get('execution') or {}
+    origin = {'host': adapter.HOST, 'artifact': artifact}
+    foreign = bool(execution) and execution.get('origin') != origin
     if action == 'inspect':
         return A.emit({'path': path, 'revision': row['revision'], 'status': data.get('status'), 'resolved': data.get('resolved') is True, 'execution': execution})
     if action not in ('claim', 'progress', 'checkpoint', 'block', 'complete') or not actor or len(actor) > 120:
@@ -95,15 +97,18 @@ def work(a):
     if collection == 'incoming' and (data.get('publishRequest') or {}).get('inputHash') != fingerprint:
         sys.exit('Publication needs editor approval bound to the current proposal')
     if action == 'claim':
+        if foreign:
+            data['executionProvenance'] = list(data.get('executionProvenance') or []) + [execution]
+            execution, live = {}, False
         if execution.get('state') == 'blocked':
             sys.exit('Blocked work needs new user input or a renewed publication request')
         if live:
             sys.exit('Work has an active lease; inspect it instead of starting duplicate work')
         token = str(uuid.uuid4())
-        execution = {**execution, 'schema': 'adp-work/1', 'actor': actor, 'token': token, 'attempt': execution.get('attempt', 0) + 1,
+        execution = {**execution, 'schema': 'adp-work/1', 'origin': origin, 'actor': actor, 'token': token, 'attempt': execution.get('attempt', 0) + 1,
                      'inputHash': fingerprint, 'claimedAt': at, 'state': 'working'}
         data.update({'ackBy': actor, 'ackAt': at})
-    elif not live or token != execution.get('token') or actor != execution.get('actor') or fingerprint != execution.get('inputHash'):
+    elif foreign or not live or token != execution.get('token') or actor != execution.get('actor') or fingerprint != execution.get('inputHash'):
         sys.exit('Lease expired, changed input or wrong claimant; reread and reclaim before work')
     execution['leaseUntil'] = (now + datetime.timedelta(seconds=int(lease))).isoformat(timespec='seconds').replace('+00:00', 'Z')
     execution['updatedAt'] = at
@@ -137,7 +142,7 @@ def work(a):
             data.update({'status': 'done', 'doneAt': at})
     data['execution'] = execution
     if collection == 'requests':
-        data['state'] = 'done' if action == 'complete' else 'waiting' if action == 'block' else 'working'
+        data['state'] = 'done' if action == 'complete' else 'ack' if action == 'block' else 'working'
         data['delivery'] = 'completed' if action == 'complete' else 'acknowledged'
     calls = adapter.write_calls(artifact, [{'op': 'replace', 'collection': collection, 'id': doc_id, 'data': data, 'guard': row['revision']}])
     return A.emit({'schema': 'adp-work-plan/1', 'path': path, 'action': action, 'leaseToken': token, 'calls': calls,

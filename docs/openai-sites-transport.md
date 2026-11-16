@@ -212,6 +212,16 @@ the source lifecycle above. A queued record alone does not start an agent. The
 runner needs a verified authenticated connection, an authorized scope and a live
 schedule; a local thread heartbeat depends on that local agent environment.
 
+Execution is bound to the adapter host and artifact identifier. An imported or
+legacy unbound claim cannot be continued: a fresh destination claim retains it
+in `executionProvenance`, with a new token and destination revision guard.
+Tokens coordinate agents; they are not authentication secrets. Namespace names
+must identify the intended Site in the executor's configuration; identical names
+on different Sites are not a global identity. Lease times use executor/viewer
+clocks, so expiry labels are advisory; native revisions remain authoritative.
+Blocked requests retain the existing `ack` state and explain the block through
+`execution.state` and `execution.reason`.
+
 ## Verification evidence
 
 `test_openai_sites_bridge.py` tests browser transport behavior and polling.

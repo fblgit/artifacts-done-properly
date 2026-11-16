@@ -117,6 +117,13 @@ class BundleTests(Cmd):
         self.assertEqual((r.returncode,done['calls'][0]['args']['data']['response']),(0,'Earlier answer'))
         expired = {**active,'data':{**active['data'],'execution':{**active['data']['execution'],'leaseUntil':'2000-01-01T00:00:00Z'}}}
         self.assertEqual(work('claim',expired)[0].returncode,0)
+        foreign = {**active,'data':{**active['data'],'execution':{**active['data']['execution'],'origin':{'host':'claude','artifact':'other'}}}}
+        self.assertNotEqual(work('progress',foreign,'--token',token,'--text','Wrong host')[0].returncode,0)
+        r, reclaimed = work('claim',foreign)
+        self.assertEqual(r.returncode,0,r.stderr)
+        self.assertEqual(reclaimed['calls'][0]['args']['data']['executionProvenance'][-1],foreign['data']['execution'])
+        _, blocked = work('block',active,'--token',token,'--text','Needs input')
+        self.assertEqual(blocked['calls'][0]['args']['data']['state'],'ack')
 
     def test_publication_work_requires_approval_and_matching_receipts(self):
         data = {'status':'merged','files':[{'path':'index.html','content':'Published'}],'parts':[],'base':{'version':'old'}}
