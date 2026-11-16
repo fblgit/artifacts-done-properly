@@ -1152,7 +1152,7 @@ def requests_cmd(a):
     if not acts:
         rows = [{'id': k, 'lane': d.get('lane', ''), 'state': rstate(d), 'scope': d.get('scope') or {}, 'project': d.get('project', ''),
                  'text': d.get('text', ''), 'quote': d.get('quote', ''), 'by': d.get('by', ''), 'at': d.get('at', ''),
-                 'last_progress': ((d.get('progress') or [{}])[-1] or {}).get('text', ''), 'reopened': bool(d.get('response') or d.get('doneAt'))}
+                 'last_progress': ((d.get('progress') or [{}])[-1] or {}).get('text', ''), 'reopened': bool(d.get('response') or d.get('doneAt')), 'resolved': d.get('resolved') is True}      # a thread a person resolved (Sites): shown beside state, never turned into done
                 for k, (d, _) in docs.items() if d.get('status') != 'done']
         rows.sort(key=lambda r: r['at'])
         return emit({'open': rows, 'count': len(rows), 'trailer': '· adp request {<rid>} · lane <lane> · scope part:<id>|page'})

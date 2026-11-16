@@ -310,7 +310,7 @@ class RequestsTests(Cmd):
     def setUp(self):
         super().setUp()
         self.dump = self.write_json('dump.json', [
-            {'id': 'r1', 'version': 3, 'data': {'lane': 'edit', 'text': 'fix', 'by': 'u', 'at': '2026-01-02T00:00:00Z', 'scope': {'part': 'home'}}},
+            {'id': 'r1', 'version': 3, 'data': {'lane': 'edit', 'text': 'fix', 'by': 'u', 'at': '2026-01-02T00:00:00Z', 'scope': {'part': 'home'}, 'resolved': True}},
             {'id': 'r2', 'version': 1, 'data': {'lane': 'ask', 'text': 'q', 'at': '2026-01-01T00:00:00Z', 'state': 'working',
                                                 'progress': [{'at': 'x', 'text': 'half'}]}},
             {'id': 'r3', 'version': 2, 'data': {'status': 'done', 'lane': 'edit'}}])
@@ -323,7 +323,7 @@ class RequestsTests(Cmd):
         self.assertEqual([r['id'] for r in out['open']], ['r2', 'r1'])
         r2, r1 = out['open']
         self.assertEqual((r2['state'], r2['last_progress'], r2['lane']), ('working', 'half', 'ask'))
-        self.assertEqual((r1['state'], r1['scope'], r1['by'], r1['text']), ('queue', {'part': 'home'}, 'u', 'fix'))
+        self.assertEqual((r1['state'], r1['scope'], r1['by'], r1['text'], r1['resolved'], r2['resolved']), ('queue', {'part': 'home'}, 'u', 'fix', True, False))      # a resolved thread is shown, and is not completion
         self.assertIn('trailer', out)
         self.assertFalse(os.path.exists(os.path.join(self.home, '.adp', 'requests')))      # listing writes nothing
 

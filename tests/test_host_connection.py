@@ -46,7 +46,7 @@ console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,
 @unittest.skipUnless(shutil.which('node'), 'node required')
 class HostConnection(unittest.TestCase):
     def run_case(self, mode):
-        run = subprocess.run(['node', '-e', HARNESS, mode, str(ROOT / 'skill/assets/adp.js')], capture_output=True, text=True)
+        run = subprocess.run(['node', '-e', HARNESS, mode, str(ROOT / 'skill/assets/adp.js')], capture_output=True, text=True, timeout=8, start_new_session=True)      # its own session, killed after 8 s
         self.assertEqual(run.returncode, 0, run.stderr)
         return json.loads(run.stdout)
 
@@ -99,7 +99,7 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
   await assert.rejects((await host.connect()).comments.customAnchors({}), e => e.code === 'unavailable');
 })().catch(e => { console.error(e); process.exitCode = 1; });
 '''
-        run = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True)
+        run = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True, timeout=8, start_new_session=True)
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
 
     def test_absent_store_and_denied_user(self):
