@@ -65,25 +65,43 @@ after `db` and `user` resolve (before, in parallel).
 
 ## Test interfaces against the live types
 
-Compared by reading the platform's `window.claude` type definitions (runtime contract 0.2.96), **not by
-calling a live viewer**. Differences in `skill/scripts/adp_dev.js` / `adp_dev.py`, the stand-in the tests
-and `adp.py dev` use:
+Two sources, in decreasing weight. **Observed live** (2026-11-16, one claude.ai viewer, runtime contract
+0.2.96, a private disposable probe page with synthetic data; it exercised the viewer's own `window.claude`,
+not `adapters/claude.js` itself): and the platform's type definitions for that contract. Differences in
+`skill/scripts/adp_dev.js` / `adp_dev.py`, the stand-in the tests and `adp.py dev` use:
 
-- Matches: `canSendToClaude` resolves the `available|writers_only|no_session|off` strings; publish conflicts
-  carry `paths: [{path, expected, actual}]`; `{version, shas}` results; snapshot `id/exists/data/metadata`.
-- Missing: `doc.acquire`, `artifact.publish(html)`, `artifact.edit/sync/metadata`, `PublishResult.changed`,
-  `comments.openComposer`, `user.isOwner/me/profiles`. Wrong: publish reports `invalid_argument`, which is
-  not a live error code.
+- Observed, matches: `canEdit()` resolves a boolean; `canSendToClaude()` resolves `available`; `set` resolves
+  `undefined`; snapshots carry `data/exists/id/metadata`; `update` merges; a missing doc reads
+  `exists: false`; a stale `ifMatch` publish rejects `conflict` with `paths: [{path, expected, actual}]`.
+- Observed, the dev stand-in lacks it: the top-level db also has path methods `get/set/update/delete/query/
+  subscribe/unsubscribe/acquire` (the types list only `doc`/`collection`); `comments` also has `create/delete/
+  reply/resolve`; `user` has `isOwner/me/profiles/search`; `doc.acquire` resolves
+  `{acquired, expiresAt, holder, version}`; a conflict's `live` is the current version id and `changed` is
+  present (the stand-in sends `live: ''`).
+- Observed, snapshot behaviour a host or fake must tolerate: a local write fires the listener with
+  `hasPendingWrites: true`, then an empty-changes snapshot (`fromCache: true`), then a `modified` change for
+  the doc it just added, then a settled snapshot. The stand-in's metadata is constant and fires once.
+- Observed, errors: `db.doc()` with an odd segment count throws synchronously with no `code`; an invalid query
+  operator rejects `invalid_argument`. Not observed: the stand-in's `invalid_argument` from publish; the types
+  do not list it as a publish code.
+- Observed, timing: the db capability took 1.3 s to resolve; `use()` of an unknown name resolved `null` at once.
 - The fakes in `tests/test_host_connection.py` are shape stubs (`doc()`/`collection()` entry points and
-  canned snapshots), deliberately not behavioural. The adapter test passes a non-boolean `canEdit` to prove
-  no coercion; the live type is boolean.
-- Behaviour the types cannot show (consent prompts, 10 s `use()` timeout, rate limits, live reload after
-  publish, snapshot ordering) is UNVERIFIED until a live viewer run.
+  canned snapshots), deliberately not behavioural, and do not reproduce the snapshot sequence above.
+- Still UNVERIFIED: consent prompts, the 10 s `use()` timeout, rate limits, live reload after a successful
+  publish, read-only viewers (a write attempted `as_level: view` is blocked by the agent tool before it is
+  sent, so it proves nothing about server rejection), and `adapters/claude.js` itself in a live viewer.
 
 ## Agent side (not implemented here)
 
 `adp.py` prints Artifact and ArtifactData calls; nothing here changes it. Mapped to the contract's
-operations by reading the existing `adp-edit` protocol (not run live): Discover/Read = `Artifact read` +
-ArtifactData reads (each carries `version`); Propose = `adp.py propose` (`incoming/`); Publish =
-`Artifact publish` to the same url plus pinned ArtifactData writes; Verify = re-read; Acknowledge =
-`adp.py record`. Whether an ArtifactData batch is atomic is UNVERIFIED.
+operations by reading the existing `adp-edit` protocol: Discover/Read = `Artifact read` + ArtifactData reads
+(each carries `version`); Propose = `adp.py propose` (`incoming/`); Publish = `Artifact publish` to the same
+url plus pinned ArtifactData writes; Verify = re-read; Acknowledge = `adp.py record`.
+
+Observed live through ArtifactData on the probe artifact (same run, synthetic records at `content/intro`,
+`decisions/keep-intent`, `ns/host-check/context/current`, which is collection `ns/host-check/context`, doc
+`current`): a 3-write `batch` reported "committed atomically" with per-doc `version` 1; an `update` pinned
+`if_version: 1` committed and returned version 2 (top-level fields merge, unknown fields survive, an array
+field is replaced whole); a second write pinned to version 1 was refused `version_mismatch` naming version 2,
+and wrote nothing; read-back matched. These versions are Claude doc revisions and are not tokens for another
+host. Not observed: partial batch failure, a lost write response, or the rendered page reflecting the edit.
