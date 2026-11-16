@@ -130,7 +130,7 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
   const log = [], caps = {comments: {canSendToClaude: async () => 'available', sendToClaude: async m => (log.push(m), {threadId: 't1'}), anchorFor: async e => 'a:' + e}, artifact: {publish: async (f, o) => [f, o]}, sample: async m => ({text: m}), db, user};
   claude = {use: async n => caps[n] || null};
   const g = await host.connect(), ag = await g.agent;      // Claude's own methods, behind the host-neutral names
-  assert.deepEqual([ag.label, await ag.canSend(), await ag.send({anchor: 'x', text: 'hi', requestId: 'r-1', turnId: '0001'}), await ag.anchorFor('e'), log], ['Claude', 'available', {threadId: 't1', delivery: 'accepted'}, 'a:e', [{anchor: 'x', text: 'hi'}]]);
+  assert.deepEqual([ag.label, ag.where, await ag.canSend(), await ag.send({anchor: 'x', text: 'hi', requestId: 'r-1', turnId: '0001'}), await ag.anchorFor('e'), log], ['Claude', 'Claude Code', 'available', {threadId: 't1', delivery: 'accepted'}, 'a:e', [{anchor: 'x', text: 'hi'}]]);
   assert.deepEqual([await (await g.publish).files(1, 2), await (await g.ask)('m')], [[1, 2], {text: 'm'}]);
   claude = {use: async n => n === 'db' ? db : n === 'user' ? user : null};      // not granted: none, not a handle that fails later
   const n = await host.connect(); assert.deepEqual([await n.agent, await n.publish, await n.ask], [null, null, null]);

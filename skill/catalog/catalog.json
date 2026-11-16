@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T15:45:07Z",
+ "built": "2026-11-16T15:48:49Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -52,11 +52,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "9ea34a6b60b5906322205ce9e25dcbe646795358e7797db6bc16beae3a5463a5",
-     "bytes": 44751
+     "sha256": "76049da31c43b0862af74cccf3fb15b660c227cb6d3331c6fa4debf6f649fa14",
+     "bytes": 44773
     }
    ],
-   "hash": "7116b5f1e858"
+   "hash": "a96cbb83ee79"
   },
   {
    "id": "kit.callout-refusal",
@@ -1470,8 +1470,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "33ca2b5bcddd9731fa1f32526d3fffae52351969449449c32b660840b36bd929",
-     "bytes": 36159
+     "sha256": "ab543decda28c04456afcab1c1c8cdb3989dfcdf4cc024b38ce4c0cf7add9fa0",
+     "bytes": 36219
     },
     {
      "path": "kit/samples/patterns.json",
@@ -1480,7 +1480,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "5549da571e83"
+   "hash": "14645fc74f90"
   },
   {
    "id": "pattern.attention-list",
@@ -2976,7 +2976,7 @@
    "kind": "component",
    "group": "Patterns",
    "name": "Session presence",
-   "summary": "Whether a Claude Code session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.",
+   "summary": "Whether an agent session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.",
    "tags": [
     "presence",
     "session",
@@ -3003,8 +3003,8 @@
     {
      "path": "kit/patterns/presence.js",
      "role": "script",
-     "sha256": "89335a0d4153e9187e4c9f4c418eaf0d7d2995372f85fa278241c67db6dec4b4",
-     "bytes": 11758
+     "sha256": "4d8325e57d9d44b1b726f74c257ec95d42a6cee1cd98fb56d6770b8e1988b5c9",
+     "bytes": 11947
     },
     {
      "path": "kit/patterns/presence.css",
@@ -3019,7 +3019,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "df125f5e41b4"
+   "hash": "d64ecf9380b7"
   },
   {
    "id": "pattern.prototype",

@@ -105,7 +105,7 @@ which exist. The accessors return promises because a host may bind a capability 
 
 | Handle | Shape | Meaning |
 | --- | --- | --- |
-| `agent` | `{label, canSend(), send({anchor\|threadId, text}), anchorFor(el)}` | Hand a request to an agent. `label` is the name the UI shows ("Claude", "Codex"). `canSend()` answers `available` (a session is watching), `queued` (the host keeps it durably for an agent that picks it up later), `writers_only`, `no_session` or `off`. `send()` resolves `{threadId, delivery}`: `queued` (kept, read back), `accepted` (the native host took the handoff: **not** that the agent ran or finished it) or `unknown` (reconcile the same id before sending again) |
+| `agent` | `{label, where?, canSend(), send({anchor\|threadId, text}), anchorFor(el)}` | Hand a request to an agent. `label` is the name the UI shows ("Claude", "Codex"). `where` (optional) is the place a person starts the agent ("Claude Code"); the UI says "your agent" without it. `canSend()` answers `available` (a session is watching), `queued` (the host keeps it durably for an agent that picks it up later), `writers_only`, `no_session` or `off`. `send()` resolves `{threadId, delivery}`: `queued` (kept, read back), `accepted` (the native host took the handoff: **not** that the agent ran or finished it) or `unknown` (reconcile the same id before sending again) |
 | `publish` | `{files(files, opts)}` | The immediate native file publish (`{version, shas}`). Absent where the host has none; asynchronous approval is not forced into it |
 | `ask` | `(messages, opts) => {text, …}` | An immediate model answer from the page. Separate from `agent`: a queued agent answer is not browser sampling |
 

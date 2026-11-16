@@ -40,7 +40,7 @@ let host = Object.freeze({protocol: 'adp-host/1', id: '', status: 'connecting'})
    agent {label, canSend(), send({anchor|threadId, text}) -> {threadId, delivery}, anchorFor(el)}; publish {files(files, opts)}; ask(messages, opts). */
 const HANDLE_OK = {agent: o => !!o && typeof o.canSend === 'function' && typeof o.send === 'function', publish: o => !!o && typeof o.files === 'function', ask: o => typeof o === 'function'};
 let handles = {};
-const claudeAgent = c => c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? Object.freeze({label: 'Claude', canSend: () => Promise.resolve(c.canSendToClaude()),
+const claudeAgent = c => c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? Object.freeze({label: 'Claude', where: 'Claude Code', canSend: () => Promise.resolve(c.canSendToClaude()),
   send: async m => { const r = await c.sendToClaude(m && m.threadId ? {threadId: m.threadId, text: m.text} : {anchor: m && m.anchor, text: m && m.text}); return {threadId: (r && r.threadId) || (m && m.threadId) || '', delivery: 'accepted'}; }, anchorFor: el => Promise.resolve(c.anchorFor(el))}) : null;
 const claudePublish = a => a && typeof a.publish === 'function' ? Object.freeze({files: (files, opts) => Promise.resolve(a.publish(files, opts))}) : null;
 const claudeAsk = s => typeof s === 'function' ? (messages, opts) => s(messages, opts) : null;      // the built-in Claude default's own copy of what adapters/claude.js builds
