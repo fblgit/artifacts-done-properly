@@ -83,6 +83,12 @@ one. Rejected and unknown operations are listed as unfinished; prior base hashes
 are retained. Re-read before retrying. Repeat imports of unchanged records emit
 no content writes.
 
+For a first return to the originating artifact, pass
+`--base ORIGINAL_BUNDLE_DIR` to `import-plan` to name the known common ancestor.
+Otherwise a changed record with no prior import is held. Recorded import hashes
+take precedence over this optional base; fresh destination revisions still guard
+every write. `--raw` is a no-value switch and may precede `--by` or other options.
+
 ## Scope and acceptance
 
 The shell transfers records, not source files. Publish page files through the
@@ -90,9 +96,13 @@ existing `adp.py files` and host publication workflow; source revision, publicat
 version, deployment version and record revisions are separate evidence. Imported
 manifest records alone do not establish destination file/hash integrity.
 
-The earlier live receipts establish a PR-mediated three-record exchange and an
-OpenAI browser/agent/browser continuation. The full shell acceptance run remains
-pending: a minimal real adp/2 artifact, Claude to Sites to Claude through these
-commands/adapters, with source provenance, manifest/parts/history, repeat no-op,
-a destination conflict and actual host readback. Local tests are not live-host
-certification. PR #81 remains draft until its acceptance gate is met.
+Live record-store receipts now cover a minimal real adp/2 artifact moving Claude
+to Sites to the original Claude artifact through these commands and adapters,
+with manifest, parts, history, guarded writes and readback. Sites verified repeat
+no-op and stale-destination rejection; Claude's receipt reports the corresponding
+return-side checks passed too. Claude's live phase durations were not recorded.
+The earlier OpenAI browser/agent/browser receipt
+is separate from this record-store shell run. Fresh browser rendering after the
+return and source-file/hash integrity are not established by these receipts.
+Local tests are not live-host certification. PR #81 remains draft until its
+agreed acceptance gate is met.
