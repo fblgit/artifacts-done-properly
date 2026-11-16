@@ -18,6 +18,10 @@ ADP makes a shared Artifact safe to edit: every piece of the page is a part with
 
 Use `--help` or a subcommand with no arguments to see its usage; do not guess a subcommand, a guessed one does not exist and costs a turn.
 
+For local Claude/Codex messages, presence and Codex chat delivery, read
+[the local bus guide](refs/local-bus.md). Its commands, diagrams and verification
+limits are maintained there; run the separate `scripts/adp_bus.py` helper.
+
 ## First run: check before anything else
 
 1. Is `~/.adp/config.json` or `./.adp/config.json` present? If yes, ADP is set up: go to the table.

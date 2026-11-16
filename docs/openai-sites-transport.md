@@ -181,6 +181,11 @@ The inbox's disabled Apply button is not a successful publication receipt.
 
 ## Agent feedback and publication
 
+For workstation agent coordination, the separate [local bus](../skill/refs/local-bus.md)
+can queue prefixed messages into a subscribed Codex chat. It does not monitor
+hosted requests or add wake-ups to this transport. Commands, diagrams, tests and
+host-specific delivery evidence live in that guide.
+
 With comments enabled, the Sites bridge supplies a host-neutral agent handle:
 `label: 'Codex'`, `canSend()` returns `queued` for editors and `off` otherwise,
 and `send()` reuses anchored request/reply writes with authoritative readback.
