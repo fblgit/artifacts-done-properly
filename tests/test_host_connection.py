@@ -37,6 +37,7 @@ if(mode==='no-db') delete connection.db;
 if(mode==='reject-user') connection.user={canEdit:async()=>{throw Error('no');},id:async()=>{throw Error('no');}};
 if(mode==='truthy-user') connection.user={canEdit:()=> 'true',id:()=> 'viewer'};
 if(mode==='comments-error') connection.comments={customAnchors:async()=>{throw Error('no');}};
+if(mode==='handles'){connection.agent=Promise.resolve({label:'X',canSend:async()=>'queued',send:async()=>({})});connection.publish={};}
 const adapter=mode.startsWith('adapter');
 if(mode!=='legacy' && mode!=='legacy-slow-comments' && mode!=='static' && !adapter) win.ADP_HOST={protocol:mode==='bad-protocol'?'wrong':'adp-host/1',connect:async()=>{calls.push('explicit');if(mode==='reject')throw Error('no');return connection;}};
 if(mode==='legacy'||mode==='legacy-slow-comments'||mode==='both'||mode==='reject'||(adapter&&mode!=='adapter-no-claude'))win.claude={use:async name=>{calls.push('claude:'+name);if(/slow-comments/.test(mode)&&name==='comments')return new Promise(()=>{});return name==='db'?db:name==='user'?user:null;}};
@@ -51,7 +52,8 @@ vm.runInContext(fs.readFileSync(process.argv[2],'utf8'),win);
 await new Promise(resolve=>setImmediate(resolve));
 let ns=false;try{ns=!!win.ADP.ns('app').doc('x');}catch(e){}
 const acc=typeof win.ADP.claude; if(acc==='function') await win.ADP.claude('artifact');
-console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,acc,calls}));})().catch(e=>{console.error(e);process.exitCode=1;});
+const h=(await Promise.all([win.ADP.agent(),win.ADP.publish(),win.ADP.ask()].map(p=>Promise.race([p,new Promise(r=>setTimeout(()=>r('slow'),60))])))).map(x=>x&&typeof x);
+console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,acc,calls,h}));})().catch(e=>{console.error(e);process.exitCode=1;});
 '''
 
 
@@ -70,6 +72,11 @@ class HostConnection(unittest.TestCase):
             self.assertFalse(any(x.startswith('claude:') for x in result['calls']))      # ADP.claude('artifact') on a non-Claude host never reaches window.claude
             self.assertEqual(result['acc'], 'function'); self.assertNotIn('write', result['calls'])
 
+    def test_agent_publish_ask_are_the_hosts_handle_or_null(self):
+        r = self.run_case('handles')      # a promise of a handle is accepted; a handle of the wrong shape reads as none
+        self.assertEqual((r['h'], [r['host'][k] for k in ('agent', 'publish', 'ask')]), (['object', None, None], [True, False, False]))
+        self.assertEqual(self.run_case('explicit')['h'], [None, None, None])
+
     def test_failed_provider_is_closed_and_ready(self):
         for mode in ('reject', 'bad-protocol', 'bad-ref'):
             result = self.run_case(mode)
@@ -80,15 +87,16 @@ class HostConnection(unittest.TestCase):
     def test_legacy_and_static(self):
         result = self.run_case('legacy')
         self.assertEqual(result['host']['id'], 'claude')
-        self.assertEqual(sorted(result['calls']), ['claude:artifact', 'claude:comments', 'claude:db', 'claude:user'])      # on a Claude host the same accessor does ask
+        self.assertEqual(sorted(set(result['calls'])), ['claude:artifact', 'claude:comments', 'claude:db', 'claude:sample', 'claude:user'])      # on a Claude host the handles do ask; the built-in default builds agent, publish and ask from them
         self.assertEqual(self.run_case('legacy-slow-comments')['host']['status'], 'connected')
         result = self.run_case('static')
         self.assertEqual(result['host']['id'], 'static')
         self.assertFalse(result['db'] or result['ns'])
 
     def test_claude_adapter_matches_builtin_default(self):
-        strip = lambda r: {**r, 'calls': sorted(r['calls']), 'host': {k: v for k, v in r['host'].items() if k != 'comments'}}
-        legacy = strip(self.run_case('legacy'))
+        strip = lambda r: {**r, 'h': 0, 'calls': sorted(r['calls']), 'host': {k: v for k, v in r['host'].items() if k != 'comments'}}
+        raw = self.run_case('legacy'); legacy = strip(raw)
+        self.assertEqual(self.run_case('adapter')['h'], raw['h'])      # slow comments leave the agent pending, so only the plain run compares handles
         for mode in ('adapter', 'adapter-slow-comments'):  # slow comments must not hold connect()
             self.assertEqual(strip(self.run_case(mode)), legacy)
         failed = self.run_case('adapter-no-claude')        # explicit adapter fails closed, not 'static'
@@ -109,6 +117,13 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
   assert.equal(await got, ctl);
   claude = {use: async () => null};
   await assert.rejects((await host.connect()).comments.customAnchors({}), e => e.code === 'unavailable');
+  const log = [], caps = {comments: {canSendToClaude: async () => 'available', sendToClaude: async m => (log.push(m), {threadId: 't1'}), anchorFor: async e => 'a:' + e}, artifact: {publish: async (f, o) => [f, o]}, sample: async m => ({text: m}), db, user};
+  claude = {use: async n => caps[n] || null};
+  const g = await host.connect(), ag = await g.agent;      // Claude's own methods, behind the host-neutral names
+  assert.deepEqual([ag.label, await ag.canSend(), await ag.send({anchor: 'x', text: 'hi'}), await ag.anchorFor('e'), log], ['Claude', 'available', {threadId: 't1', delivery: 'accepted'}, 'a:e', [{anchor: 'x', text: 'hi'}]]);
+  assert.deepEqual([await (await g.publish).files(1, 2), await (await g.ask)('m')], [[1, 2], {text: 'm'}]);
+  claude = {use: async n => n === 'db' ? db : n === 'user' ? user : null};      // not granted: none, not a handle that fails later
+  const n = await host.connect(); assert.deepEqual([await n.agent, await n.publish, await n.ask], [null, null, null]);
 })().catch(e => { console.error(e); process.exitCode = 1; });
 '''
         run = run_node(['-e', script], cwd=ROOT)

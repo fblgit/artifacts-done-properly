@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T14:25:03Z",
+ "built": "2026-11-16T14:57:08Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -35,6 +35,9 @@
     "window.ADP.user",
     "window.ADP.ns",
     "window.ADP.claude",
+    "window.ADP.agent",
+    "window.ADP.publish",
+    "window.ADP.ask",
     "window.ADP.classify",
     "window.ADP.hash",
     "window.ADP.build",
@@ -49,11 +52,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "cc71ebc4328782e60f0526951b91f3442e97b56b98060f0b7e99edd19b958854",
-     "bytes": 42608
+     "sha256": "9b45766b859644807b87bfeb7b404616a6174a0994fe13cf101c435f54225a23",
+     "bytes": 44653
     }
    ],
-   "hash": "ec1e8b118706"
+   "hash": "d6cdf38c01e9"
   },
   {
    "id": "kit.callout-refusal",

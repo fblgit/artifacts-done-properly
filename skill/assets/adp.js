@@ -14,7 +14,7 @@
  * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
  * @requires  none
  * @files     none
- * @provides  window.ADP.host, window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.claude, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
+ * @provides  window.ADP.host, window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.claude, window.ADP.agent, window.ADP.publish, window.ADP.ask, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
  * @config    <meta name="adp:build"> | the build number, before the script
  * @config    window.ADP_CONTENT | content.js: the baseline copy of the parts
  * @config    page.header, page.tabs, page.changes | parts the page must render; #wc, #wcN, #wcChanges, #wcDecisions for the panel
@@ -24,7 +24,7 @@
  * @db        reads content; changes; decisions; incoming; manifest/current; config/current / writes status/integrity (attempted for any viewer with a db: it lands only where the db rules allow); checks/latest (editors only); config/current and a changes/d-<time> record when a setting is saved; the seed docs on first open
  * @source    this repository | skill/assets/adp.js | the same bytes
  * @preview   {"render": "runtime.adp", "samples": []}
- * @changed   Adds an explicit host connection boundary while preserving the legacy Claude default.
+ * @changed   Adds an explicit host connection boundary while preserving the legacy Claude default, and the host's agent, publish and ask handles (ADP.agent(), ADP.publish(), ADP.ask(): a promise of the handle or null).
  */
 (function(){
 'use strict';
@@ -36,6 +36,14 @@ const user = {canEdit: false, id: ''};
 /* Host connection is a capability boundary, not a persistence/authorization guarantee.
    Explicit providers never fall back to another host on error. See docs/host-adapters.md. */
 let host = Object.freeze({protocol: 'adp-host/1', id: '', status: 'connecting'}), hostComments = null;
+/* The host's agent channel, publish and ask handles (each a handle or a promise of one, null when the host has none): ADP.agent(), ADP.publish(), ADP.ask().
+   agent {label, canSend(), send({anchor|threadId, text}) -> {threadId, delivery}, anchorFor(el)}; publish {files(files, opts)}; ask(messages, opts). */
+const HANDLE_OK = {agent: o => !!o && typeof o.canSend === 'function' && typeof o.send === 'function', publish: o => !!o && typeof o.files === 'function', ask: o => typeof o === 'function'};
+let handles = {};
+const claudeAgent = c => c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? Object.freeze({label: 'Claude', canSend: () => Promise.resolve(c.canSendToClaude()),
+  send: async m => { const r = await c.sendToClaude(m); return {threadId: (r && r.threadId) || (m && m.threadId) || '', delivery: 'accepted'}; }, anchorFor: el => Promise.resolve(c.anchorFor(el))}) : null;
+const claudePublish = a => a && typeof a.publish === 'function' ? Object.freeze({files: (files, opts) => Promise.resolve(a.publish(files, opts))}) : null;
+const claudeAsk = s => typeof s === 'function' ? (messages, opts) => s(messages, opts) : null;      // the built-in Claude default's own copy of what adapters/claude.js builds
 async function connectHost(){
   const explicit = Object.prototype.hasOwnProperty.call(window, 'ADP_HOST');
   let connection;
@@ -47,7 +55,7 @@ async function connectHost(){
     const use = name => Promise.resolve().then(() => window.claude.use(name)).catch(() => null);
     const comments = use('comments');
     const [db, user] = await Promise.all(['db', 'user'].map(use));
-    connection = {id: 'claude', db, user, legacyComments: comments, seedFiles: true};
+    connection = {id: 'claude', db, user, legacyComments: comments, seedFiles: true, agent: comments.then(claudeAgent), publish: use('artifact').then(claudePublish), ask: use('sample').then(claudeAsk)};
   } else return {id: 'static'};
   if (!connection || typeof connection.id !== 'string' || !connection.id.trim()) throw new Error('Host connection needs an id');
   if (connection.db && (typeof connection.db.doc !== 'function' || typeof connection.db.collection !== 'function')) throw new Error('Host database needs the document-store profile');
@@ -510,7 +518,9 @@ addEventListener('resize', () => { place(); later(); });
   const d = connection.db || null, u = connection.user || null;
   hostComments = connection.comments || null;
   host = Object.freeze({protocol: 'adp-host/1', id: connection.id, status: 'connected', records: !!d,
-    comments: !!(hostComments && typeof hostComments.customAnchors === 'function'), seedFiles: connection.seedFiles === true});
+    comments: !!(hostComments && typeof hostComments.customAnchors === 'function'), seedFiles: connection.seedFiles === true, agent: false, publish: false, ask: false});
+  for (const k of ['agent', 'publish', 'ask']) handles[k] = Promise.resolve(connection[k]).then(o => HANDLE_OK[k](o) ? o : null, () => null)
+    .then(o => { if (o) host = Object.freeze(Object.assign({}, host, {[k]: true})); return o; });
   if (connection.legacyComments) {
     connection.legacyComments.then(cm => {
       hostComments = cm;
@@ -538,5 +548,6 @@ addEventListener('resize', () => { place(); later(); });
 const config = Object.freeze({define, get, all, on, set, reset, ready: readyP, get doc(){ return cdoc; }});
 const ns = name => { if (!db) throw new Error('ADP.ns needs a database'); const b = 'ns/' + name + '/'; return {doc: p => db.doc(b + p), collection: p => db.collection(b + p)}; };
 const claude = name => readyP.then(() => host.id === 'claude' && window.claude && typeof window.claude.use === 'function' ? window.claude.use(name) : null).catch(() => null);      // a Claude-only handle (artifact, comments.sendToClaude, sample): asked of window.claude only once the connected host is Claude, else null
-window.ADP = Object.freeze({get host(){ return host; }, build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, claude, classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, get db(){ return db; }});
+const handle = k => readyP.then(() => handles[k] || null).catch(() => null);      // the host's handle once connected, else null
+window.ADP = Object.freeze({get host(){ return host; }, build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, claude, agent: () => handle('agent'), publish: () => handle('publish'), ask: () => handle('ask'), classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, get db(){ return db; }});
 })();
