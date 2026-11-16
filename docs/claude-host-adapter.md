@@ -24,8 +24,14 @@ not `static`. It never falls back to another host.
 | `user` passes through unchanged; no coercion into edit rights | adapter unit test |
 | Missing `window.claude` fails closed | both |
 
-All of it runs against fakes. **No live claude.ai viewer, publish or Claude session was
-tested**, and no cross-host (Claude to OpenAI) flow was tested.
+The rows above run against fakes. Separately, on 2026-11-16 a private disposable page loaded the real
+`adp.js` with this adapter in one live claude.ai viewer (owner, editor): `ADP.host` reported
+`{id: "claude", status: "connected", records: true, comments: true, seedFiles: true}`, `canEdit` was
+`true`, the part was painted from `content/intro`, and it repainted about a second after an agent
+(ArtifactData) edit. Not exercised live: whether the comment anchors registered, a reader or logged-out
+session with the adapter, and a reload from a fresh tab. One synthetic seed-pack was moved Claude to OpenAI
+Site to Claude by two agents through PR comments (each applying it with its own host's guards); that is an
+agent-mediated transfer, not an export/import feature, and no automatic cross-host sync exists.
 
 ## Not supported by the contract (gaps, proposals)
 
@@ -109,8 +115,9 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 - The fakes in `tests/test_host_connection.py` are shape stubs (`doc()`/`collection()` entry points and
   canned snapshots), deliberately not behavioural, and do not reproduce the snapshot sequence above.
 - Still UNVERIFIED: consent prompts, the 10 s `use()` timeout, rate limits, live reload after a successful
-  publish, read-only viewers (a write attempted `as_level: view` is blocked by the agent tool before it is
-  sent, so it proves nothing about server rejection), and `adapters/claude.js` itself in a live viewer.
+  publish, the Contributor level, a logged-out session, a lost write response, and the adapter in a viewer
+  that is not an editor. (A write attempted `as_level: view` is blocked by the agent tool before it is sent,
+  so it proves nothing; the second-account run above is the server evidence.)
 
 ## Agent side (not implemented here)
 
