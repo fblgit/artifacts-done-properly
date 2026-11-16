@@ -26,9 +26,14 @@ def fail(code, msg):
 
 
 def merge(a, b):
-    """update(): nested objects merge recursively, anything else replaces the field."""
+    """update(): nested objects merge recursively, anything else replaces the field. As measured live, {"__delete__": true}
+    alone removes the field at any depth; with other keys it is refused."""
     o = copy.deepcopy(a)
-    for k, v in b.items(): o[k] = merge(o[k], v) if isinstance(v, dict) and isinstance(o.get(k), dict) else v
+    for k, v in b.items():
+        if isinstance(v, dict) and '__delete__' in v:
+            if v != {'__delete__': True}: raise ValueError(f'{k}: __delete__ must stand alone as true')
+            o.pop(k, None)
+        else: o[k] = merge(o[k], v) if isinstance(v, dict) and isinstance(o.get(k), dict) else v
     return o
 
 
@@ -56,7 +61,8 @@ class Store:
         elif not isinstance(data, dict): return fail('invalid_argument', 'a document body is a JSON object')
         elif op == 'update' and cur is None: return fail('invalid_argument', f'{path}: update needs an existing document')
         elif op in ('set', 'update'):
-            docs[i] = {'data': merge(cur['data'], data) if op == 'update' and cur else data, 'version': (cur or {}).get('version', 0) + 1}
+            try: docs[i] = {'data': merge(cur['data'], data) if op == 'update' and cur else data, 'version': (cur or {}).get('version', 0) + 1}
+            except ValueError as e: return fail('invalid_argument', str(e))
         else: return fail('invalid_argument', f'unknown op {op}')
         tmp = self.file(c) + '.tmp'
         json.dump(docs, open(tmp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1); os.replace(tmp, self.file(c))
@@ -106,19 +112,21 @@ def publish(d, state, files):
         cur = hashlib.sha256(open(p, 'rb').read()).hexdigest() if os.path.isfile(p) else None
         if v.get('ifMatch') and v['ifMatch'] != cur: moved.append({'path': rel, 'expected': v['ifMatch'], 'actual': cur})
         plan[rel] = (p, None if v.get('delete') or v.get('content') is None else v['content'])
-    if moved: return {'error': {'code': 'conflict', 'message': 'files moved since they were read', 'paths': moved, 'live': ''}}
+    n = os.path.join(state, 'publish.n'); k = int(open(n).read() or 0) if os.path.isfile(n) else 0
+    if moved: return {'error': {'code': 'conflict', 'message': 'files moved since they were read', 'paths': moved, 'live': f'dev-{k}', 'changed': []}}
     shas = {}
     for rel, (p, text) in plan.items():
         if text is None:
             if os.path.isfile(p): os.remove(p)
             shas[rel] = None; continue
         os.makedirs(os.path.dirname(p), exist_ok=True); b = text.encode('utf-8'); open(p, 'wb').write(b); shas[rel] = hashlib.sha256(b).hexdigest()
-    n = os.path.join(state, 'publish.n'); k = int(open(n).read() or 0) + 1 if os.path.isfile(n) else 1; open(n, 'w').write(str(k))
+    k += 1; open(n, 'w').write(str(k))
     return {'version': f'dev-{k}', 'shas': shas}
 
 
 def handler(d, state, user, fallback=True):
     store, subs = Store(state), []
+    ident = hashlib.sha256(os.path.abspath(d).encode()).hexdigest()[:16]      # which artifact this is: the shim scopes the browser's cached query results to it
     inbox = os.path.join(state, 'inbox'); os.makedirs(inbox, exist_ok=True)
 
     def push(paths):
@@ -140,7 +148,7 @@ def handler(d, state, user, fallback=True):
         def do_GET(self):
             path = self.path.split('?')[0]
             if path == '/__adp/shim.js':
-                js = f'window.__ADP_DEV={json.dumps({"user": user})};\n' + open(SHIM, encoding='utf-8').read()
+                js = f'window.__ADP_DEV={json.dumps({"user": user, "store": ident})};\n' + open(SHIM, encoding='utf-8').read()
                 return self.send(js.encode(), 'text/javascript; charset=utf-8')
             if path == '/__adp/db': return self.send({'docs': store.all(), 'canSend': 'available' if listening(state) else 'no_session'})
             if path == '/__adp/events': return self.events()

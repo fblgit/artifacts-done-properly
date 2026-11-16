@@ -336,6 +336,23 @@ if __name__ == '__main__':
 
 
 class Capabilities(unittest.TestCase):
+    def test_published_indicator_tracks_manifest_and_read_errors(self):
+        app = read(os.path.join(TPL, 'assistant'), 'parts/app.js.txt')
+        source = re.search(r'function mountPublishedStatus\(.*?\n}', app, re.S)
+        self.assertIsNotNone(source, 'Missing live publication indicator')
+        script = source.group(0) + """
+const assert = require('node:assert/strict'), node = {}; let next, fail;
+const db = {collection(c){assert.equal(c,'manifest');return {doc(id){assert.equal(id,'current');return {onSnapshot(n,e){next=n;fail=e;}};}};}};
+mountPublishedStatus(node, db);
+next({exists:false}); assert.equal(node.textContent,'Last published: not recorded');
+next({exists:true,data:()=>({version:'native-v1'})}); assert.equal(node.textContent,'Last published: native-v1');
+next({exists:true,data:()=>({version:'native-v2'})}); assert.equal(node.textContent,'Last published: native-v2');
+fail(); assert.equal(node.textContent,'Last published: unavailable');
+"""
+        subprocess.run(['node', '-e', script], check=True, timeout=3)
+        self.assertIn('mountPublishedStatus(published, ADP.db)', app)
+        self.assertIn('id="lastPublished"', read(os.path.join(TPL, 'assistant'), 'index.html.txt'))
+
     def test_no_template_declares_downloads_or_a_status_rule(self):
         for t in ('starter', 'assistant', 'default'):
             m = load(os.path.join(TPL, t, 'template.json'))

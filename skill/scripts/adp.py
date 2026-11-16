@@ -60,6 +60,18 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
   adp.py propose DIR --by NAME --summary S [--retire ID --reason R ...]   (every deleted part id needs its own --retire ID --reason R pair, paired in order)
                                                     local-to-remote incoming: the incoming/<pid> doc and its one ArtifactData batch;
                                                     exit 2 with the list when anything is held, a part is deleted unretired, or no export
+  adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections c,ns/x/y] [--raw]
+                                                    records export (docs/adp-export-import.md): DOCS.json = what the source's reads returned; without it the reads
+                                                    to run (exit 2). OUT_DIR = adp-seed/2 seed.json + seed/ plus `source` and `revisions`; host adapters: adp_<host>_adapter.py
+  adp.py import-plan BUNDLE_DIR [TARGET_DOCS.json] --host H --artifact ID [--out PLAN.json] [--raw] [--base ORIGINAL_BUNDLE_DIR] [--only COLLECTION,..]
+                                                    each bundle record against the target's fresh read (classify3: base = the last import's hash): create / replace /
+                                                    skip / hold, the guarded write calls, exit 2 with the reads to run, or with anything held (nothing to write).
+                                                    --base: a return trip (this bundle is the other host's export of records you exported): the bundle it came from is the base
+                                                    --only: plan just those collections (first path segment, so requests also covers requests/<rid>/turns); the rest is
+                                                    the other host's own (its manifest, parts, history, proposals) and is neither planned nor held; the plan and the import record name it
+  adp.py work [READS.json] --host H --artifact ID --path requests/ID|incoming/ID [--raw] [--action claim|progress|checkpoint|block|complete] --by NAME
+                                                    guarded agent lease/progress plans; --token TOKEN continues work; --text T, --checkpoint FILE, --receipt FILE carry progress/evidence
+  adp.py import-ack PLAN.json RESULTS.json --host H [--raw]   the host's receipts -> the imports/<source> record, from confirmed outcomes only; exit 2 when one failed
   adp.py ack DIR [--result FILE | stdin] [--proposal PID]
                                                     a publish or batch result into state.json; --proposal: an applied one moves base
   adp.py gate [--input FILE | stdin]                the PreToolUse hook decision: deny while the inbox holds anything or a pin is stale
@@ -225,7 +237,7 @@ def opt(a, name, default=None):
     return a[a.index(name) + 1] if name in a and a.index(name) + 1 < len(a) else default
 
 
-FLAGS = ('--dry-run', '--batches', '--yes', '--hook')      # the options that take no value
+FLAGS = ('--dry-run', '--batches', '--yes', '--hook', '--raw')      # the options that take no value
 
 
 def bare(a):
@@ -1142,7 +1154,8 @@ def requests_cmd(a):
     if not acts:
         rows = [{'id': k, 'lane': d.get('lane', ''), 'state': rstate(d), 'scope': d.get('scope') or {}, 'project': d.get('project', ''),
                  'text': d.get('text', ''), 'quote': d.get('quote', ''), 'by': d.get('by', ''), 'at': d.get('at', ''),
-                 'last_progress': ((d.get('progress') or [{}])[-1] or {}).get('text', ''), 'reopened': bool(d.get('response') or d.get('doneAt'))}
+                 'last_progress': ((d.get('progress') or [{}])[-1] or {}).get('text', ''), 'reopened': bool(d.get('response') or d.get('doneAt')), 'resolved': d.get('resolved') is True,      # a thread a person resolved (Sites): shown beside state, never turned into done
+                 'lease': {k: (d.get('execution') or {}).get(s) for k, s in (('actor', 'actor'), ('state', 'state'), ('until', 'leaseUntil'), ('attempt', 'attempt'))} | {'host': ((d.get('execution') or {}).get('origin') or {}).get('host')} if d.get('execution') else None}      # an agent's claim as recorded, not judged live: clocks and hosts differ; host is where it was made (a claim from another host is a copy)
                 for k, (d, _) in docs.items() if d.get('status') != 'done']
         rows.sort(key=lambda r: r['at'])
         return emit({'open': rows, 'count': len(rows), 'trailer': '· adp request {<rid>} · lane <lane> · scope part:<id>|page'})
@@ -1394,12 +1407,12 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop, adp_dev, adp_lib
-adp_loop.A = adp_dev.A = sys.modules[__name__]
+import adp_loop, adp_dev, adp_lib, adp_bundle, adp_work
+adp_loop.A = adp_dev.A = adp_bundle.A = adp_work.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
+    cmds = {'work': adp_work.work, 'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):

@@ -93,7 +93,7 @@
   <div class="wrap top-in">
     <h1>{{title}}</h1>
     <div class="top-actions">
-      <button type="button" class="assist-btn" id="assistBtn" aria-expanded="false" aria-controls="assist" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Work with Claude</span></button>
+      <button type="button" class="assist-btn" id="assistBtn" aria-expanded="false" aria-controls="assist" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Work with the agent</span></button>
       <div class="top-meta">
       <label class="gear skin" id="skinPick" title="Theme" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 100 18c1.5 0 2-1 1.5-2.2-.6-1.4.3-2.8 1.8-2.8H17a4 4 0 004-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg><select id="skinSel" aria-label="Theme"></select></label>
       <button type="button" class="gear theme-btn" id="themeBtn" aria-label="Colour theme" title="Colour theme"></button>
@@ -111,6 +111,7 @@
     </div>
     <!-- part:page.lead --><p class="lead" data-part="page.lead" data-comment-target></p><!-- /part:page.lead -->
     <div class="top-presence" id="presence" data-assist-ui></div>
+    <p class="muted" id="lastPublished" role="status" style="overflow-wrap:anywhere">Last published: loading…</p>
   </div>
 </header>
 <!-- /part:page.header -->
@@ -119,8 +120,8 @@
 </div>
 <div class="assist-scrim" id="assistScrim" hidden></div>
 <!-- part:page.assist -->
-<aside class="assist" id="assist" data-part="page.assist" data-assist-ui aria-label="Work with Claude" hidden>
-  <button type="button" class="assist-close" id="assistClose" aria-label="Close Work with Claude">Close</button>
+<aside class="assist" id="assist" data-part="page.assist" data-assist-ui aria-label="Work with the agent" hidden>
+  <button type="button" class="assist-close" id="assistClose" aria-label="Close Work with the agent">Close</button>
   <div id="assistBody"><p class="muted">Loading.</p></div>
 </aside>
 <!-- /part:page.assist -->

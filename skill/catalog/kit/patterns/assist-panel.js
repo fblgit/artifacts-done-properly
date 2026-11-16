@@ -13,7 +13,7 @@
  *
  * API:
  *   Kit.assistPanel.mount(box, opts) -> {setScope(pick | null, focus), pick(), focus(), show("requests"|"conversation"), destroy()}
- *     engine      a Kit.assist engine (required): can, pick, send, ask, requests, messages (when present), presence, thread, reply, ping
+ *     engine      a Kit.assist engine (required): can, delivery, agentLabel, pick, send, ask, requests, messages (when present), presence, thread, reply, ping
  *     lanes       which lanes to offer (default the "assist.lanes" switch, else ask, task, fix, design); "assist.ask-now" false drops ask
  *     project     filters the request list                  titles  {partId: title} for block names
  *     onReveal(partId)   scroll to a block (block buttons on cards)     artifactUrl  for the nudge     me, names  as Kit.requestCard
@@ -51,10 +51,10 @@ const Kit = window.Kit = window.Kit || { version: '0.1.0' };
 const el = Kit.dom.el;
 const cfg = (k, d) => { try { const v = window.ADP && ADP.config && ADP.config.get(k); return v == null ? d : v; } catch (_) { return d; } };
 const LANES = { ask: 'Ask now', task: 'Task', fix: 'Fix', design: 'Design note' };
-const HELP = { ask: 'Claude answers here straight away. Nothing on the page changes.', task: 'A Claude Code session does it, publishes and says what changed.',
+const HELP = { ask: '{agent} answers here straight away. Nothing on the page changes.', task: 'A {agent} session does it, publishes and says what changed.',
   fix: 'Say what is wrong here. A session fixes it and tells you what it did.', design: 'Say how this should look or read. A session changes the design.' };
 const SEND = { ask: 'Ask now', task: 'Send to a session', fix: 'Send the fix', design: 'Send the note' };
-const WHY = { writers_only: 'Only people who can edit this artifact can send to a session.', no_session: 'No Claude Code session is listening, so the request cannot be sent yet. Start one (see above), then send.',
+const WHY = { writers_only: 'Only people who can edit this artifact can send to a session.', no_session: 'No {agent} session is listening, so the request cannot be sent yet. Start one (see above), then send.',
   off: 'Sending to a session is turned off for this artifact.', none: 'This page cannot reach a session.', ask: 'Ask now is not available on this page.' };
 const store = { get(k) { try { return sessionStorage.getItem(k) || ''; } catch (_) { return ''; } }, set(k, v) { try { v ? sessionStorage.setItem(k, v) : sessionStorage.removeItem(k); } catch (_) {} } };
 let seq = 0;
@@ -64,17 +64,18 @@ function mount(box, opts) {
   const o = Object.assign({ words: {} }, opts), E = o.engine, w = o.words, id = 'kit-ap-' + (++seq);
   let lanes = (o.lanes || (E.lanes ? E.lanes() : cfg('assist.lanes', Object.keys(LANES)))).filter(l => l !== 'ping');
   if (cfg('assist.ask-now', true) === false) lanes = lanes.filter(l => l !== 'ask');
-  const word = (t, l) => (w[t] && w[t][l]) || ({ lanes: LANES, help: HELP, send: SEND })[t][l] || l;
+  const A = () => E.agentLabel ? E.agentLabel() : 'Agent', fill = s => String(s).replace(/\{agent\}/g, A());
+  const word = (t, l) => fill((w[t] && w[t][l]) || ({ lanes: LANES, help: HELP, send: SEND })[t][l] || l);
   const keyName = Kit.blockPicker && Kit.blockPicker.keyLabel ? Kit.blockPicker.keyLabel(o.shortcut || cfg('assist.shortcut', 'Mod+Shift+K')) : 'Ctrl+Shift+K';
   const draftKey = 'kit-ap:draft:' + (o.project || '');
   let lane = lanes.includes(store.get(draftKey + ':lane')) ? store.get(draftKey + ':lane') : lanes[0] || 'task';
   let scope = null, quote = '', busy = false, view = 'requests', openOnly = false, cid = null, msgs = [], stream = null, offs = [], cards = new Map();
   box.classList.add('kit-ap'); box.setAttribute('data-assist-ui', ''); box.replaceChildren();
   const live = el('p', 'kit-ap-live'); live.setAttribute('role', 'status');
-  const head = el('header', 'kit-ap-head'); head.append(el('h2', 'kit-ap-ttl', w.title || 'Work with Claude'));
+  const head = el('header', 'kit-ap-head'); head.append(el('h2', 'kit-ap-ttl', w.title || 'Work with ' + A()));
   const pres = el('div', 'kit-ap-pres'); head.append(pres);
   // composer
-  const form = el('form', 'kit-ap-form'); form.setAttribute('aria-label', 'Write to Claude');
+  const form = el('form', 'kit-ap-form'); form.setAttribute('aria-label', 'Write to ' + A());
   const fs = el('fieldset', 'kit-ap-lanes'); fs.append(el('legend', null, w.kind || 'What do you want?'));
   const laneRow = el('div', 'kit-ap-lrow'); fs.append(laneRow);
   const help = el('p', 'kit-ap-help'); help.id = id + '-help'; fs.append(help);
@@ -89,7 +90,7 @@ function mount(box, opts) {
   const tl = el('label', 'kit-ap-tl', 'Your words'); tl.htmlFor = ta.id; ta.setAttribute('aria-describedby', id + '-help ' + id + '-why');
   const foot = el('div', 'kit-ap-foot'); const why = el('p', 'kit-ap-why'); why.id = id + '-why'; const count = el('span', 'kit-ap-count');
   const send = el('button', 'kit-ap-send'); send.type = 'submit'; send.setAttribute('data-adp-edit', '');
-  const copy = el('button', 'kit-ap-copy', 'Copy for Claude'); copy.type = 'button'; copy.hidden = true;
+  const copy = el('button', 'kit-ap-copy', 'Copy for ' + A()); copy.type = 'button'; copy.hidden = true;
   const acts = el('div', 'kit-ap-acts'); acts.append(count, copy, send); foot.append(why, acts);
   form.append(fs, sc, tl, ta, foot);
   // feed
@@ -108,10 +109,10 @@ function mount(box, opts) {
     syncCan();
   }
   function syncCan() {
-    const c = E.can(), ok = lane === 'ask' ? c.ask : c.send === 'available', none = !c.ask && c.send !== 'available' && c.send !== 'no_session';
+    const c = E.can(), go = c.send === 'available' || c.send === 'queued', ok = lane === 'ask' ? c.ask : go, none = !c.ask && !go && c.send !== 'no_session';
     send.textContent = busy ? (lane === 'ask' ? 'Asking…' : 'Sending…') : word('send', lane);
     send.disabled = busy; send.setAttribute('aria-disabled', String(!ok));
-    why.textContent = ok ? 'Ctrl or ⌘ + Enter sends.' : lane === 'ask' ? WHY.ask : (WHY[c.send] || WHY.none);
+    why.textContent = ok ? 'Ctrl or ⌘ + Enter sends.' : lane === 'ask' ? WHY.ask : fill(WHY[c.send] || WHY.none);
     why.dataset.blocked = ok ? 'false' : 'true'; copy.hidden = !none;
     count.textContent = ta.value.length ? ta.value.length + ' / 3000' : '';
   }
@@ -134,7 +135,7 @@ function mount(box, opts) {
     const f = E.pick ? E.pick() : Kit.blockPicker ? Kit.blockPicker.open({ titles: o.titles }) : Promise.resolve(null);
     return Promise.resolve(f).then(p => { if (p) { setScope(p); live.textContent = 'Picked: ' + p.label + '.'; } ta.focus(); return p; });
   }
-  function fail(e) { const c = (e && (e.code || e.message)) || 'error'; why.textContent = 'Not sent: ' + (WHY[c] || c) + ' Your words are still here.'; why.dataset.blocked = 'true'; live.textContent = why.textContent; }
+  function fail(e) { const c = (e && (e.code || e.message)) || 'error'; why.textContent = 'Not sent: ' + (WHY[c] ? fill(WHY[c]) : c) + ' Your words are still here.'; why.dataset.blocked = 'true'; live.textContent = why.textContent; }
   function submit() {
     const text = ta.value.trim(); syncCan(); if (busy) return;
     if (send.getAttribute('aria-disabled') === 'true') { live.textContent = why.textContent; return; }
@@ -143,10 +144,10 @@ function mount(box, opts) {
     const done = () => { busy = false; ta.value = ''; store.set(draftKey, ''); syncCan(); };
     if (lane === 'ask') {
       show('conversation'); msgs.push({ role: 'user', by: o.me, text }); stream = ''; drawConv();
-      E.ask(cid, text, { scope, quote, onText: t => { stream = t; drawStream(); } }).then(r => { cid = r.cid; follow(); stream = null; if (!E.messages) msgs.push({ role: 'assistant', text: r.text }); done(); drawConv(); live.textContent = 'Claude answered.'; },
+      E.ask(cid, text, { scope, quote, onText: t => { stream = t; drawStream(); } }).then(r => { cid = r.cid; follow(); stream = null; if (!E.messages) msgs.push({ role: 'assistant', text: r.text }); done(); drawConv(); live.textContent = A() + ' answered.'; },
         e => { msgs.pop(); stream = null; busy = false; drawConv(); syncCan(); fail(e); });
     } else {
-      E.send({ lane, scope, text, quote }).then(rid => { done(); show('requests'); live.textContent = word('lanes', lane) + ' sent. It waits in the queue until a session picks it up.'; flash(rid); }, e => { busy = false; syncCan(); fail(e); });
+      E.send({ lane, scope, text, quote }).then(rid => { done(); show('requests'); live.textContent = E.delivery && E.delivery(rid) === 'unknown' ? word('lanes', lane) + ' saved. Delivery to ' + (E.agentLabel ? E.agentLabel() : 'the session') + ' is not confirmed; the request stays in the list.' : word('lanes', lane) + ' sent. It waits in the queue until a session picks it up.'; flash(rid); }, e => { busy = false; syncCan(); fail(e); });
     }
   }
   form.addEventListener('submit', e => { e.preventDefault(); submit(); });
@@ -154,7 +155,7 @@ function mount(box, opts) {
   ta.addEventListener('input', () => { store.set(draftKey, ta.value); count.textContent = ta.value.length ? ta.value.length + ' / 3000' : ''; });
   copy.addEventListener('click', () => {
     const t = (scope ? 'About "' + scope.label + '" (' + scope.id + ')\n' : '') + (quote ? '> ' + quote + '\n\n' : '') + ta.value.trim();
-    try { navigator.clipboard.writeText(t).then(() => { live.textContent = 'Copied. Paste it into Claude.'; }, () => { ta.select(); live.textContent = 'Select and copy it by hand.'; }); } catch (_) { ta.select(); }
+    try { navigator.clipboard.writeText(t).then(() => { live.textContent = 'Copied. Paste it into ' + A() + '.'; }, () => { ta.select(); live.textContent = 'Select and copy it by hand.'; }); } catch (_) { ta.select(); }
   });
   // feed
   let reqOff = null, reqs = [];
@@ -169,7 +170,7 @@ function mount(box, opts) {
     reqs.forEach((r, k) => {
       let c = cards.get(r.id);
       if (!c) { const li = el('li', 'kit-ap-item'); li.dataset.rid = r.id; const div = el('div'); li.append(div);
-        const h = Kit.requestCard ? Kit.requestCard.mount(div, { engine: E, rid: r.id, me: o.me, names: o.names, titles: o.titles, onReveal: o.onReveal }) : (div.textContent = r.text, { destroy() {} });
+        const h = Kit.requestCard ? Kit.requestCard.mount(div, { engine: E, rid: r.id, claude: A(), me: o.me, names: o.names, titles: o.titles, onReveal: o.onReveal }) : (div.textContent = r.text, { destroy() {} });
         c = { li, h }; cards.set(r.id, c); }
       if (list.children[k] !== c.li) list.insertBefore(c.li, list.children[k] || null);
     });
@@ -181,7 +182,7 @@ function mount(box, opts) {
   function drawConv() {
     conv.textContent = '';
     if (!msgs.length && stream == null) {
-      conv.append(el('p', 'kit-ap-empty', E.can().ask ? 'Choose Ask now, write a question and Claude answers here. A conversation is kept with the page.' : WHY.ask));
+      conv.append(el('p', 'kit-ap-empty', E.can().ask ? 'Choose Ask now, write a question and ' + A() + ' answers here. A conversation is kept with the page.' : WHY.ask));
       const cs = E.conversations ? (E.conversations({ project: o.project }).get() || []).slice(0, 5) : [];
       if (cs.length) { const ul = el('ul', 'kit-ap-convs'); ul.setAttribute('aria-label', 'Earlier conversations');
         cs.forEach(c => { const li = el('li'); const b = el('button', 'kit-ap-mini', 'Continue: ' + (c.title || 'a conversation')); b.type = 'button';
@@ -191,13 +192,13 @@ function mount(box, opts) {
     }
     const ol = el('ol', 'kit-ap-msgs'); ol.setAttribute('aria-label', 'Conversation');
     const md = Kit.md && window.marked && window.DOMPurify ? Kit.md.create({ externalLinks: true }) : null;
-    msgs.forEach(m => { const li = el('li', 'kit-ap-msg'); li.dataset.role = m.role; li.append(el('b', null, m.role === 'assistant' ? 'Claude' : 'You'));
+    msgs.forEach(m => { const li = el('li', 'kit-ap-msg'); li.dataset.role = m.role; li.append(el('b', null, m.role === 'assistant' ? A() : 'You'));
       const b = el('div', 'kit-ap-mb' + (md && m.role === 'assistant' ? ' md' : '')); if (md && m.role === 'assistant') b.innerHTML = md(m.text); else b.textContent = m.text; li.append(b); ol.append(li); });
-    if (stream != null) { const li = el('li', 'kit-ap-msg'); li.dataset.role = 'assistant'; li.dataset.stream = 'true'; li.setAttribute('aria-busy', 'true'); li.append(el('b', null, 'Claude, writing'), el('div', 'kit-ap-mb', stream || '…')); ol.append(li); }
+    if (stream != null) { const li = el('li', 'kit-ap-msg'); li.dataset.role = 'assistant'; li.dataset.stream = 'true'; li.setAttribute('aria-busy', 'true'); li.append(el('b', null, A() + ', writing'), el('div', 'kit-ap-mb', stream || '…')); ol.append(li); }
     conv.append(ol);
     const row = el('div', 'kit-ap-crow');
     const last = msgs.filter(m => m.role === 'user').pop();
-    if (last && stream == null && E.can().send === 'available') { const b = el('button', 'kit-ap-mini', 'Send this to a session'); b.type = 'button';
+    if (last && stream == null && ['available', 'queued'].includes(E.can().send)) { const b = el('button', 'kit-ap-mini', 'Send this to a session'); b.type = 'button';
       b.addEventListener('click', () => E.send({ lane: 'task', scope, text: last.text, quote }).then(rid => { show('requests'); flash(rid); live.textContent = 'Sent to a session as a task.'; }, fail)); row.append(b); }
     const n = el('button', 'kit-ap-mini', 'New conversation'); n.type = 'button'; n.addEventListener('click', () => { cid = null; msgs = []; if (msgOff) msgOff(); msgOff = null; drawConv(); ta.focus(); }); row.append(n);
     conv.append(row);

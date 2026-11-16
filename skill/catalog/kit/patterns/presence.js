@@ -5,7 +5,7 @@
  *
  * What it is: one line that says whether a Claude Code session is watching this artifact (watching, busy with what, or nobody), when one was last seen, and a Ping button that
  * proves it: the session answers pong, the line says how fast, and a count shows the wait meanwhile. When nobody watches, or a ping gets no answer, the nudge says what to do:
- * start a Claude Code session and tell it "watch the artifact <link>", with a Copy button (and the text selectable when the clipboard refuses). Requests still queue meanwhile,
+ * start an agent session (the host names it: Claude Code on Claude) and tell it "watch the artifact <link>", with a Copy button (and the text selectable when the clipboard refuses). Requests still queue meanwhile,
  * and the nudge says so. The state is a bead, a word and a sentence, never colour alone; the ping's start and end are announced. The compact form (for a panel header) keeps the
  * line and hides the nudge behind "How to start one". Below 40rem the Ping button drops under the line.
  *
@@ -23,9 +23,9 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.1
+ * @version   0.1.2
  * @updated   2026-11-14
- * @summary   Whether a Claude Code session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.
+ * @summary   Whether an agent session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.
  * @tags      presence, session, claude code, ping, nudge, watching, online, assist
  * @requires  kit.tokens, kit.vocab, kit.dom
  * @files     kit/patterns/presence.css, kit/samples/patterns.json
@@ -38,7 +38,7 @@
  * @source    Catalog batch 16, 2026-10-26 | the same board's nudge | the copyable watch the artifact line
  * @preview   {"render": "pattern.presence", "samples": ["kit/samples/patterns.json#presence"]}
  * @samples   presence
- * @changed   One view with a compact form for a panel header.
+ * @changed   Queued hosts show the queue guidance, including while no session is watching.
  */
 (function () {
 'use strict';
@@ -59,8 +59,8 @@ function mount(box, opts) {
   ensure();
   const o = Object.assign({ canPing: true, compact: false }, opts);
   const w = Object.assign({ ping: 'Ping', pinging: 'Asking the session', pong: 'The session answered', timeout: 'No answer came from a session.', native: 'It is woken when you send a request.', nudgeTitle: 'Start a session to work on this page',
-    nudge: 'Open Claude Code on your computer and tell it:', queued: 'Requests you send now wait in the queue and are picked up when a session starts watching.',
-    askStill: 'Ask now still answers straight away; it needs no session.', copy: 'Copy', copied: 'Copied. Paste it into Claude Code.', how: 'How to start one', link: "this artifact's link" }, o.words);
+    nudge: 'Open {where} on your computer and tell it:', queued: 'Requests you send now wait in the queue and are picked up when a session starts watching.',
+    askStill: 'Ask now still answers straight away; it needs no session.', copy: 'Copy', copied: 'Copied. Paste it into {where}.', how: 'How to start one', link: "this artifact's link" }, o.words);
   const now = () => o.now ? ms(o.now) : Date.now();
   const uid = 'kit-pr-' + (++seq);
   let pres = o.presence || { watching: false, busy: false, sessions: [] }, ping = { s: 'idle', t0: 0, took: 0 }, open = !o.compact, off = null, tick = null;
@@ -77,18 +77,19 @@ function mount(box, opts) {
     if (pres.busy && s.doing) return name + ': ' + s.doing + more;
     return (pres.watching ? name + ', seen ' + when : 'Last seen ' + when + ' (' + name + ')') + more;
   }
+  const where = () => o.engine && o.engine.agentWhere ? o.engine.agentWhere() : 'your agent', fill = t => String(t).replace(/\{where\}/g, where());
   function nudge() {
     const n = el('div', 'kit-pr-nudge'); n.id = uid + '-n';
-    n.append(el('p', 'kit-pr-nt', w.nudgeTitle), el('p', null, w.nudge));
+    n.append(el('p', 'kit-pr-nt', w.nudgeTitle), el('p', null, fill(w.nudge)));
     const line = 'watch the artifact ' + (o.artifactUrl || '<' + w.link + '>');
-    const r = el('div', 'kit-pr-cmd'); const code = el('code', null, line); code.tabIndex = 0; code.setAttribute('aria-label', 'Say to Claude Code: ' + line);
+    const r = el('div', 'kit-pr-cmd'); const code = el('code', null, line); code.tabIndex = 0; code.setAttribute('aria-label', 'Say to ' + where() + ': ' + line);
     const b = el('button', 'kit-pr-btn ghost', w.copy); b.type = 'button';
     b.addEventListener('click', () => {
       const sel = () => { const rg = document.createRange(); rg.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); live.textContent = 'Selected. Copy it with Ctrl or ⌘ + C.'; };
-      try { navigator.clipboard.writeText(line).then(() => { live.textContent = w.copied; b.textContent = 'Copied'; setTimeout(() => { b.textContent = w.copy; }, 2000); }, sel); } catch (_) { sel(); }
+      try { navigator.clipboard.writeText(line).then(() => { live.textContent = fill(w.copied); b.textContent = 'Copied'; setTimeout(() => { b.textContent = w.copy; }, 2000); }, sel); } catch (_) { sel(); }
     });
     r.append(code, b); n.append(r);
-    if (o.engine ? o.engine.can().send === 'available' : o.queued !== false) n.append(el('p', 'kit-pr-sm', w.queued));
+    if (o.engine ? ['available', 'queued'].includes(o.engine.can().send) : o.queued !== false) n.append(el('p', 'kit-pr-sm', w.queued));
     if (o.ask) n.append(el('p', 'kit-pr-sm', w.askStill));
     return n;
   }

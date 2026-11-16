@@ -310,9 +310,9 @@ class RequestsTests(Cmd):
     def setUp(self):
         super().setUp()
         self.dump = self.write_json('dump.json', [
-            {'id': 'r1', 'version': 3, 'data': {'lane': 'edit', 'text': 'fix', 'by': 'u', 'at': '2026-01-02T00:00:00Z', 'scope': {'part': 'home'}}},
+            {'id': 'r1', 'version': 3, 'data': {'lane': 'edit', 'text': 'fix', 'by': 'u', 'at': '2026-01-02T00:00:00Z', 'scope': {'part': 'home'}, 'resolved': True}},
             {'id': 'r2', 'version': 1, 'data': {'lane': 'ask', 'text': 'q', 'at': '2026-01-01T00:00:00Z', 'state': 'working',
-                                                'progress': [{'at': 'x', 'text': 'half'}]}},
+                                                'progress': [{'at': 'x', 'text': 'half'}], 'execution': {'actor': 'codex', 'state': 'working', 'leaseUntil': '2099-01-01T00:00:00Z', 'attempt': 2, 'token': 'secret', 'origin': {'host': 'sites', 'artifact': 's'}}}},
             {'id': 'r3', 'version': 2, 'data': {'status': 'done', 'lane': 'edit'}}])
         self.out = self.p('req')
         open(self.p('resp.md'), 'w').write('the answer\n')
@@ -323,7 +323,8 @@ class RequestsTests(Cmd):
         self.assertEqual([r['id'] for r in out['open']], ['r2', 'r1'])
         r2, r1 = out['open']
         self.assertEqual((r2['state'], r2['last_progress'], r2['lane']), ('working', 'half', 'ask'))
-        self.assertEqual((r1['state'], r1['scope'], r1['by'], r1['text']), ('queue', {'part': 'home'}, 'u', 'fix'))
+        self.assertEqual((r1['state'], r1['scope'], r1['by'], r1['text'], r1['resolved'], r2['resolved']), ('queue', {'part': 'home'}, 'u', 'fix', True, False))      # a resolved thread is shown, and is not completion
+        self.assertEqual((r2['lease'], r1['lease']), ({'actor': 'codex', 'state': 'working', 'until': '2099-01-01T00:00:00Z', 'attempt': 2, 'host': 'sites'}, None))      # the claim as recorded, with the host it was made on; its token is not shown
         self.assertIn('trailer', out)
         self.assertFalse(os.path.exists(os.path.join(self.home, '.adp', 'requests')))      # listing writes nothing
 
@@ -408,6 +409,24 @@ class ProposeAckTests(Cmd):
         out = self.ok('propose', d, '--by', 'me', '--summary', 's')
         self.assertEqual(out['nothing'], 'work equals live')
         self.assertEqual(glob.glob(d + '.adp/propose-*'), [])
+
+    def test_a_stale_fallback_copy_does_not_revert_live_content(self):
+        d = self.exported()
+        ik = sorted(glob.glob(d + '.adp/incoming/content/*.html'))
+        self.assertTrue(ik)
+        open(ik[0], 'w').write('<p>edited natively after content.js was written</p>')      # the live content/ doc moved; DIR's fallback copy did not
+        self.edit(d)
+        kinds = lambda out: [x['id'] for x in json.load(open(out['doc']))['parts'] if x.get('kind') == 'content']
+        self.assertEqual(kinds(self.ok('propose', d, '--by', 'me', '--summary', 's')), [])
+        st = self.state(d); del st['src_copy']; self.save_state(d, st)      # an export made before the snapshot existed keeps the old behaviour
+        self.assertEqual(len(kinds(self.ok('propose', d, '--by', 'me', '--summary', 's2'))), 1)
+
+    def test_a_pending_copy_edit_survives_a_re_export(self):
+        d = self.exported(); cj = os.path.join(d, 'content.js'); txt = open(cj).read()
+        open(cj, 'w').write(txt.replace('Replace this line', 'Replace this line NOW', 1))
+        self.ok('export', d, '--url', URL)      # a re-export before the propose must not make the edit the baseline
+        parts = json.load(open(self.ok('propose', d, '--by', 'me', '--summary', 's')['doc']))['parts']
+        self.assertIn('page.lead', [x['id'] for x in parts if x.get('kind') == 'content'])
 
     def test_proposal_doc_and_batch(self):
         d = self.exported()

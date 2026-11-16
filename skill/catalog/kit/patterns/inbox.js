@@ -8,17 +8,18 @@
  * (a line diff of its html as text); each held item with both versions and, for editors, a pick (keep live, take the proposal) recorded on the proposal; the files it will publish
  * with their ifMatch (content null: the file is removed, with its reason); a part with kind content is copy whose content/<id> doc moves (its file rides along). Apply (editors) makes one debounced files-form publish with an ifMatch per file; after {shas} it writes manifest/current, parts/<id>, content/<id>,
  * changes/<seq> and sets the proposal applied; on conflict it names the files that moved and leaves the proposal held. Decline asks for a reason and records it.
- * A presence line says whether an agent is watching (a presence/* doc fresher than assist.presence-minutes, or comments.canSendToClaude() answering available); else it offers
- * the handoff to copy. After a publish conflict, a hold on open or Decline it wakes the watching sessions with comments.sendToClaude; a successful Apply wakes nobody (docs/assist.md: the comment is only
+ * A presence line says whether an agent is watching (a presence/* doc fresher than assist.presence-minutes, or the agent handle's canSend() answering available); else it offers
+ * the handoff to copy. After a publish conflict, a hold on open or Decline it wakes the watching sessions through the agent handle; a successful Apply wakes nobody (docs/assist.md: the comment is only
  * the wake-up, the proposal doc is the record; the trailer line is "· adp proposal {<pid>} · held | declined"); the thread id is kept on the proposal as
  * wake.thread and later events reply into it. Without a listening session the data change stands and the next export finds it. Nothing is published on load.
  *
  * API:
  *   Kit.inbox.mount(root, opts) -> {update(), destroy()}
- *     db        the db handle (default ADP.db)      user  {canEdit, id} (default ADP.user)      artifact  the artifact capability handle, or a promise of it (default claude.use('artifact'))
+ *     db        the db handle (default ADP.db)      user  {canEdit, id} (default ADP.user)      artifact  the artifact capability handle or the host's publish handle {files}, or a promise of either (default ADP.publish(), else ADP.claude('artifact'))
  *     config    ADP.config (assist.presence-minutes)      url   the artifact's claude.ai url for the handoff line (optional; the line says "this artifact" without it)
- *     comments  the comments capability handle, or a promise of it (default claude.use('comments')); without sendToClaude on it, no wake-up is sent
+ *     agent     the host's agent handle {canSend, send, anchorFor}, or a promise of it (default ADP.agent()); without one, no wake-up is sent
  *     classify  (base, live, incoming) => classes (default ADP.classify)      debounce  ms Apply waits for a second press to fold into one call (default 600)
+ *     requestPublish(pid) optional agent executor route when native publish is absent; queues approval only, never marks applied
  *     autoApply  true applies every proposal that classifies as merged, one at a time (editors, with the artifact capability): a page that ships its own files as proposals; default false, an editor presses Apply
  *     onAutoApplied  (n) => void, called once when that queue has applied n proposals and none is left open, failed or held (a failed one is retried once, then the panel warns): the page can reload to use the files
  * The proposal's live_files {path: sha256} is the live listing the agent exported; Apply records it, so a record-only proposal (no files) still trues manifest.files.
@@ -28,14 +29,14 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.2.1
- * @updated   2026-11-15
+ * @version   0.2.4
+ * @updated   2026-11-16
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
  * @requires  kit.tokens, kit.dom
  * @files     kit/patterns/inbox.css, kit/samples/patterns.json
  * @provides  Kit.inbox.mount
- * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or promise (default claude.use('artifact')), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms, autoApply (apply each merged proposal, one at a time), onAutoApplied(n); returns {update, destroy}
+ * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or publish handle (default ADP.publish()), agent handle (default ADP.agent()), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms, autoApply (apply each merged proposal, one at a time), onAutoApplied(n); returns {update, destroy}
  * @config    ADP.classify(base, live, incoming) | contract 4 of docs/architecture.md, in adp.js
  * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui? --f-mono? --radius?
  * @globals   none
@@ -84,15 +85,15 @@ function mount(root, opts) {
   const offs = [];
   const box = el('section', B + 'root'); box.setAttribute('aria-label', 'Incoming proposals'); root.replaceChildren(box);
 
-  Promise.resolve(o.artifact !== undefined ? o.artifact : (window.claude && typeof claude.use === 'function' ? claude.use('artifact') : null))
-    .then(a => { art = a && typeof a.publish === 'function' ? a : null; artWhy = art ? '' : 'Apply needs the artifact capability, which this page does not declare.'; draw(); autoApply(); },
+  Promise.resolve(o.artifact !== undefined ? o.artifact : (window.ADP && ADP.publish ? ADP.publish() : null))
+    .then(a => { art = a && typeof a.publish === 'function' ? a : a && typeof a.files === 'function' ? { publish: x => a.files(x) } : null; artWhy = art ? '' : window.ADP && ADP.host && ADP.host.id && ADP.host.id !== 'claude' ? 'Apply publishes this page\'s files, which only a Claude host can do; this host does not provide it.' : 'Apply needs the artifact capability, which this page does not declare.'; draw(); autoApply(); },
       e => { art = null; artWhy = 'The artifact capability is unavailable here (' + (e && e.code || e) + ').'; draw(); });
 
-  Promise.resolve(o.comments !== undefined ? o.comments : (window.claude && typeof claude.use === 'function' ? claude.use('comments') : null))
-    .then(c => { cm = c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? c : null; askCanSend(); }, () => { cm = null; });
+  Promise.resolve(o.agent !== undefined ? o.agent : (window.ADP && ADP.agent ? ADP.agent() : null))
+    .then(c => { cm = c && typeof c.send === 'function' && typeof c.canSend === 'function' ? c : null; askCanSend(); }, () => { cm = null; });
   const askCanSend = () => {       // re-checked every 30 s, as pattern.assist does: watching sessions are learned asynchronously
     if (!cm || dead) return;
-    cm.canSendToClaude().then(v => { if (v !== canSend) { canSend = v; draw(); } }, () => { canSend = ''; });
+    Promise.resolve(cm.canSend()).then(v => { if (v !== canSend) { canSend = v; draw(); } }, () => { canSend = ''; });
     timers.canSend = setTimeout(askCanSend, 30000);
   };
 
@@ -113,10 +114,10 @@ function mount(root, opts) {
   async function wake(p, line, status) {
     if (!cm) return;
     try {
-      if ((await cm.canSendToClaude()) !== 'available') return;
+      if ((await cm.canSend()) !== 'available') return;      // a wake-up goes to a watching session only: a queued (durable) path would turn every decision into new work
       const text = line + '\n\nProposal incoming/' + p.pid + ' on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal ' + p.pid + '; reply here with the version your record shows and resolve the thread.\n· adp proposal {' + p.pid + '} · ' + status;
       const prev = p.wake && p.wake.thread;
-      const r = await cm.sendToClaude(prev ? { threadId: prev, text } : { anchor: await cm.anchorFor(box), text });
+      const r = await cm.send(prev ? { threadId: prev, text } : { anchor: await cm.anchorFor(box), text });
       if (r && r.threadId && r.threadId !== prev) await D.doc('incoming/' + p.pid).update({ wake: { thread: r.threadId, at: new Date().toISOString() } }).catch(() => {});
     } catch (e) {}
   }
@@ -243,7 +244,7 @@ function mount(root, opts) {
     const fresh = presence.filter(x => now - Date.parse(x.last_seen || x.at || 0) < mins * 60000);
     const line = el('div', B + 'presence');
     if (fresh.length) { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, (fresh[0].name || fresh[0].id) + ' is watching')); return line; }
-    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'A Claude session is listening: it is woken when a proposal is held or declined here.')); return line; }
+    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'An agent session is listening: it is woken when a proposal is held or declined here.')); return line; }
     const handoff = 'watch the artifact ' + (o.url || '(this artifact\'s link)') + (requests.length ? ' — open requests: ' + requests.join(', ') : '');
     const b = el('button', B + 'btn', 'Copy the handoff'); b.type = 'button';
     b.addEventListener('click', () => { (navigator.clipboard ? navigator.clipboard.writeText(handoff) : Promise.reject()).then(() => { b.textContent = 'Copied'; }, () => { b.textContent = 'Select and copy below'; }); });
@@ -285,11 +286,27 @@ function mount(root, opts) {
     if (notes[p.pid]) { const n = el('p', B + 'note', notes[p.pid]); n.setAttribute('role', 'status'); c.append(n); }
     if (canEdit()) {
       const act = el('div', B + 'act'), unpicked = held.filter(x => !picks[x.id]).length;
-      const ap = el('button', B + 'btn ' + B + 'primary', 'Apply'); ap.type = 'button';
-      ap.disabled = !art || !!busy[p.pid] || st === 'new' || !!unpicked || !!p.conflict;
-      const why = !art ? artWhy : busy[p.pid] ? '' : st === 'new' ? 'Classifying the proposal against the live record…' : unpicked ? 'Pick Keep live or Take the proposal for every held part first.' : p.conflict ? 'The files moved under this proposal; the agent must export and propose again.' : '';
+      const agentRoute = !art && typeof o.requestPublish === 'function';
+      const requested = agentRoute && p.execution && p.execution.state === 'working' && Date.parse(p.execution.leaseUntil) > Date.now();
+      const ap = el('button', B + 'btn ' + B + 'primary', agentRoute ? 'Request publication' : 'Apply'); ap.type = 'button';
+      ap.disabled = (!art && !agentRoute) || requested || !!busy[p.pid] || st === 'new' || !!unpicked || !!p.conflict;
+      const why = requested ? 'Publication requested; the agent must verify deployment before this proposal is applied.' : !art && !agentRoute ? artWhy : busy[p.pid] ? '' : st === 'new' ? 'Classifying the proposal against the live record…' : unpicked ? 'Pick Keep live or Take the proposal for every held part first.' : p.conflict ? 'The files moved under this proposal; the agent must export and propose again.' : '';
       ap.title = why;
-      ap.addEventListener('click', () => apply(p));
+      if (agentRoute && artWhy) act.append(el('p', B + 'meta', artWhy));
+      ap.addEventListener('click', async () => {
+        if (!agentRoute) return apply(p);
+        if (ap.disabled) return;
+        busy[p.pid] = true; notes[p.pid] = 'Saving publication request…'; draw();
+        try { await o.requestPublish(p.pid); notes[p.pid] = 'Publication requested. Awaiting agent acknowledgement.'; }
+        catch (error) { notes[p.pid] = 'Request unconfirmed: ' + (error.message || error) + '. Inspect the stored proposal before retrying.'; }
+        finally { delete busy[p.pid]; draw(); }
+      });
+      if (agentRoute && p.execution) {
+        const work = p.execution;
+        const state = work.state === 'blocked' ? 'Blocked: ' + (work.reason || 'needs input') : Date.parse(work.leaseUntil) <= Date.now() ? 'Waiting for agent recovery' : 'Working · ' + work.actor;
+        act.append(el('p', B + 'meta', state));
+        if (p.progress && p.progress.length) act.append(el('p', B + 'meta', p.progress[p.progress.length - 1].text));
+      }
       const dc = el('button', B + 'btn', 'Decline'); dc.type = 'button';
       dc.addEventListener('click', () => {
         const f = el('form', B + 'decline'), inp = el('input'); inp.required = true; inp.placeholder = 'Why (the agent reads this)'; inp.setAttribute('aria-label', 'Reason for declining');

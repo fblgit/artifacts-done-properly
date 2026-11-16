@@ -17,7 +17,7 @@
  *     engine     a Kit.assist engine; with rid the card follows engine.thread(rid) and replies through engine.reply(rid, text)
  *     rid        the request id                 request  {id, lane, scope: {id, label}, text, by, at, status, state, ackBy, progress, response, changed}  (static form)
  *     thread     {text, response, turns: [{by, at, text}]}  (static form; default from request)
- *     me         the viewer's uid (their words read "You")    names  {uid: name}    claude  the name of the session side (default "Claude")
+ *     me         the viewer's uid (their words read "You")    names  {uid: name}    claude  the name of the session side (default engine.agentLabel() or "Agent")
  *     onReveal(partId)   what the block buttons do (scroll to the block); without it they are plain text
  *     onReply(rid, text) -> Promise   the static form's reply (without engine or onReply there is no reply box)
  *     canReply   false hides the reply box (default true)     markdown(text) -> html   default Kit.md when it and its libraries are loaded, else plain paragraphs
@@ -30,7 +30,7 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.2
+ * @version   0.1.3
  * @updated   2026-11-15
  * @summary   One request to Claude as its sender follows it: kind, block, a four-station track from queued to done, the conversation with Claude's answer, progress lines, the blocks it changed, and a reply box.
  * @tags      request, task, claude, progress, track, thread, reply, conversation, assist, status
@@ -47,7 +47,7 @@
  * @source    Catalog batch 16, 2026-10-26 | a drafting board's request card | the lane eyebrow, the state pill, the four-segment track, the thread, the progress log, the changed chips, the reply box
  * @preview   {"render": "pattern.request-card", "samples": ["kit/samples/patterns.json#request-card"]}
  * @samples   request-card
- * @changed   The track is one seam with a word under every station; the source coloured four segments.
+ * @changed   Queued hosts can reply; response names follow the agent handle. The track is one seam with a word under every station; the source coloured four segments.
  */
 (function () {
 'use strict';
@@ -83,9 +83,11 @@ const clock = t => { const n = ms(t); return isFinite(n) ? new Date(n).toLocaleT
 
 function mount(box, opts) {
   ensure();
-  const o = Object.assign({ claude: 'Claude', canReply: true }, opts); o.names = o.names || {}; o.words = o.words || {};
+  const agent = opts && opts.engine && opts.engine.agentLabel ? opts.engine.agentLabel() : 'Agent';
+  const o = Object.assign({ claude: agent, canReply: true }, opts);
+  o.names = o.names || {}; o.words = o.words || {};
   const w = Object.assign({ reply: 'Reply', replyHint: 'Ctrl or ⌘ + Enter sends. Your reply reopens the request.', stuck: 'Queued for more than three minutes. Nothing failed: it waits for a session to pick it up.',
-    waitAnswer: 'You can reply once Claude answers.', noSend: 'A reply goes to a session, and sending is not available to you here.', progress: 'Progress', changed: 'Changed', show: 'Show block' }, o.words);
+    waitAnswer: 'You can reply once the agent answers.', noSend: 'A reply goes to a session, and sending is not available to you here.', progress: 'Progress', changed: 'Changed', show: 'Show block' }, o.words);
   const md = o.markdown || (Kit.md && window.marked && window.DOMPurify ? Kit.md.create({ externalLinks: true }) : null);
   const now = () => o.now ? ms(o.now) : Date.now();
   let req = null, th = null, last = null, sending = false, err = '', off = null;
@@ -156,7 +158,8 @@ function mount(box, opts) {
     }
     if (req.changed && req.changed.length) { const c = el('p', 'kit-rc-changed'); c.append(el('span', 'kit-rc-k', w.changed)); req.changed.forEach(id => c.append(partBtn(id, (o.titles && o.titles[id]) || id))); if (req.version) c.append(el('code', null, req.version)); card.append(c); }
     const can = o.canReply && req.lane !== 'ping' && (o.engine || o.onReply);
-    const sendable = !o.engine || !o.engine.can || o.engine.can().send === 'available';
+    const delivery = o.engine && o.engine.can ? o.engine.can().send : 'available';
+    const sendable = delivery === 'available' || delivery === 'queued';
     if (can && st === 'done' && sendable) card.append(replyBox());
     else if (can && st === 'done') card.append(el('p', 'kit-rc-hint', w.noSend));
     else if (can) card.append(el('p', 'kit-rc-hint', w.waitAnswer));

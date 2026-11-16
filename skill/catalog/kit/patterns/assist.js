@@ -1,7 +1,7 @@
 /* part:page.script.kit.assist */
 /**
  * Assist engine
- * Kit.assist.start({db, user, comments, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. send({lane, scope, text, quote}) writes requests/<rid> and wakes the sessions watching the artifact with comments.sendToClaude, whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session answers the request with done (response, changed parts, version), after working (progress lines) if long, and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.
+ * Kit.assist.start({db, user, agent, sample, config, page, project}) is the engine docs/assist.md describes, with no view of its own. agent is the host's agent handle (ADP.agent(): label, canSend, send, anchorFor; default page.agent()). send({lane, scope, text, quote}) writes requests/<rid> and hands the request to the agent (on Claude: wakes the sessions watching the artifact with comments.sendToClaude), whose text ends in a trailer the session parses (· adp request {rid} · lane · scope); a session answers the request with done (response, changed parts, version), after working (progress lines) if long, and the page only creates it or, with reply(rid, text), appends a turn and reopens it. ask(cid, text, {onText}) asks Claude at once through sample, with the page's framing and the last twenty messages, streams the answer and stores both messages in conversations/<cid>/messages. ping() resolves pong or, after 90 s, timeout. requests(), conversations(), messages(cid), thread(rid) and presence() are live lists ({on, get}) with the state derived (queue, ack, working, done; a request queued over three minutes reads stuck) and presence fresh within assist.presence-minutes. can() says whether sending is available, writers_only, no_session, off or none, re-checked every 30 s, and whether Ask now is possible. pick() dims the page and rings the [data-part] under the pointer with its title; the arrow keys move between blocks, Enter or a click picks, Esc leaves, and the pick returns {id, label, hash, quote, el}, the quote being at most 600 characters (Kit.blockPicker dresses it when loaded). The shortcut (assist.shortcut, Mod+Shift+K: Cmd on a Mac, Ctrl elsewhere) is ignored while typing in a field. Every write appends a changes/d-<ms> data change unless log.data-changes is off. Without a db it keeps everything in memory. It draws no panel, card or presence line: those are the assist views.
  *
  * The engine behind a page that works with Claude out of the box (docs/assist.md is the contract, word for word). People pick a block, say what they want, and
  * either send it to a Claude Code session watching the artifact (a request doc plus a comment that wakes the session) or ask Claude at once through `sample` (a stored
@@ -9,12 +9,12 @@
  * presence line are other entries built over this API only.
  *
  * API:
- *   Kit.assist.start({db, user, comments, sample, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed}) -> engine
+ *   Kit.assist.start({db, user, agent, sample, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed}) -> engine
  *     every handle optional and may be a promise (claude.use(...) as it is); page = window.ADP (db, user, config); titles {part id: title} and manifest
  *     (manifest/current: parts {id: hash}) name and hash picked blocks; words {lane: word}; frame replaces the Ask now framing; onPick(pick) after the shortcut;
  *     shortcut false turns the key off; no db -> an in-memory store (seed {path: doc}), nothing leaves the page.
  *   engine.ready                  Promise, resolved once the handles are in and the lists are subscribed
- *   engine.can()                  {send: 'available'|'writers_only'|'no_session'|'off'|'none', ask: bool}; re-checked every 30 s
+ *   engine.can()                  {send: 'available'|'queued'|'writers_only'|'no_session'|'off'|'none', ask: bool}; re-checked every 30 s
  *   engine.watch(fn) -> off       fn(can()) whenever it changes
  *   engine.pick()                 Promise<{id, label, hash, quote, el} | null>: Kit.blockPicker.open when that entry is loaded, else the built-in dim layer
  *   engine.send({lane, scope: {kind, id, label, hash}, text, quote, project}) -> Promise<rid>; rejects with the capability's code (no_session, claude_unavailable, ...)
@@ -23,12 +23,12 @@
  *   engine.ping()                 Promise<'pong' | 'timeout'> (90 s)
  *   engine.requests({project, open}) / engine.conversations({project}) / engine.messages(cid) / engine.presence() / engine.thread(rid): live {on(fn) -> off, get()}
  *     requests: [{id, ...doc, state (derived), stuck}] newest first, ping excluded; thread: {id, req, state, stuck, text, response, turns [{id, by, at, text}]} or null
- *     presence: {watching, native, busy, sessions [{session, at, doing, fresh}]} (watching: a fresh presence doc, or native: canSendToClaude answers available); messages: [{id, role, by, at, text, quote?}]
+ *     presence: {watching, native, busy, sessions [{session, at, doing, fresh}]} (watching: a fresh presence doc, or native: the agent handle's canSend answers available); messages: [{id, role, by, at, text, quote?}]
  *   engine.me()                   the viewer's uid ('' when unknown), so a view can say You
  *   engine.state(req)             'queue' | 'ack' | 'working' | 'done';  engine.lanes() the offered lanes;  engine.word(lane);  engine.destroy()
  *   Kit.assist.memory(seed) -> a db-shaped in-memory handle;  Kit.assist.parseShortcut('Mod+Shift+K');  Kit.assist.state(req)
  *
- * Keeps: the switches (ADP.config.define('assist', ...) when the runtime exists), canSendToClaude re-checked every 30 s, the comment text within 4000 bytes with its trailer last,
+ * Keeps: the switches (ADP.config.define('assist', ...) when the runtime exists), canSend re-checked every 30 s, the comment text within 4000 bytes with its trailer last,
  * a failed send deleting its request doc, every write logged as changes/d-<ms> unless log.data-changes is off (not in the memory path), the shortcut ignored while typing.
  *
  * The picker: the page dims, the [data-part] under the pointer is ringed with its title, arrows move between blocks, Enter or a click picks, Esc leaves; announced through role=status.
@@ -37,15 +37,15 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.2
- * @updated   2026-11-14
+ * @version   0.2.1
+ * @updated   2026-11-16
  * @summary   The engine of a page that works with Claude: pick a block, send it as a request a watching Claude Code session does and reports on, or ask Claude at once; requests, turns, conversations and presence live in the db.
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
  * @requires  kit.tokens, kit.dom
  * @files     kit/samples/patterns.json
  * @provides  Kit.assist.start, Kit.assist.memory, Kit.assist.parseShortcut, Kit.assist.matches, Kit.assist.state
  * @related   pattern.assist-panel, pattern.request-card, pattern.answer-queue, pattern.questions
- * @config    Kit.assist.start(opts) | db, user, comments, sample, config (handles or the promises claude.use returns), page (window.ADP), project, now, titles {part id: title}, manifest (for hashes), words {lane: word}, frame (the Ask now framing), onPick(pick) after the shortcut, shortcut false, pingTimeout, seed (the memory store); returns the engine
+ * @config    Kit.assist.start(opts) | db, user, agent (default page.agent()), sample (default page.ask()), config (handles or promises of them), page (window.ADP), project, now, titles {part id: title}, manifest (for hashes), words {lane: word}, frame (the Ask now framing), onPick(pick) after the shortcut, shortcut false, pingTimeout, seed (the memory store); returns the engine
  * @config    assist.enabled | switch, bool, default true: the lane exists on the page (button, shortcut, panel)
  * @config    assist.lanes | switch, list, default ask, task, fix, design: the lanes the composer offers
  * @config    assist.ask-now | switch, bool, default true: offer sample when granted
@@ -66,7 +66,7 @@
 const Kit = window.Kit = window.Kit || { version: '0.1.0' };
 const WORDS = { ask: 'Question', task: 'Task', fix: 'Fix', design: 'Design', ping: 'Ping' };
 const LANES = ['ask', 'task', 'fix', 'design'];
-const CAN = ['available', 'writers_only', 'no_session', 'off'];
+const CAN = ['available', 'queued', 'writers_only', 'no_session', 'off'];      // queued: the host keeps the request durably for an agent that picks it up later
 const DEAD = ['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'];
 const STUCK = 180000, RECHECK = 30000;
 const clone = x => x === undefined ? x : JSON.parse(JSON.stringify(x));
@@ -80,6 +80,8 @@ const byId = (a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 const reduce = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 const el = Kit.dom.el;
 const settle = async x => { try { return await x; } catch (e) { return null; } };
+/* the host's agent handle {label, canSend, send, anchorFor}; null when it is not one */
+const agentOf = c => c && typeof c.send === 'function' && typeof c.canSend === 'function' ? c : null;
 function fit(s, max) {
   if (bytes(s) <= max) return s;
   let lo = 0, hi = s.length;
@@ -153,8 +155,8 @@ function css() {
 function start(o) {
   o = o || {};
   const page = o.page || null;
-  const H = { db: null, user: null, comments: null, sample: null, config: o.config || (page && page.config) || null, memory: false };
-  const offs = [], timers = [], lives = new Set(), cache = {}, tids = {}, watchers = new Set();
+  const H = { db: null, user: null, agent: null, sample: null, config: o.config || (page && page.config) || null, memory: false };
+  const offs = [], timers = [], lives = new Set(), cache = {}, tids = {}, deliveries = {}, watchers = new Set();
   let dead = false, canSend = 'none', askDead = false, uid = '', reqs = [], pres = [], convs = [], picking = null, closePick = null;
   const clock = () => { const n = typeof o.now === 'function' ? o.now() : o.now; const t = n == null ? Date.now() : new Date(n).getTime(); return isNaN(t) ? Date.now() : t; };
   const iso = () => new Date(clock()).toISOString();
@@ -164,9 +166,9 @@ function start(o) {
   if (H.config && typeof H.config.define === 'function') {
     try {
       H.config.define('assist', {
-        enabled: { type: 'bool', default: true, label: 'Assist', help: 'The lane to Claude exists on the page: button, shortcut, panel.' },
+        enabled: { type: 'bool', default: true, label: 'Assist', help: 'The lane to the agent exists on the page: button, shortcut, panel.' },
         lanes: { type: 'list', default: LANES.slice(), label: 'Lanes', help: 'Which lanes the composer offers.' },
-        'ask-now': { type: 'bool', default: true, label: 'Ask now', help: 'Offer an immediate answer from Claude when the page may ask it.' },
+        'ask-now': { type: 'bool', default: true, label: 'Ask now', help: 'Offer an immediate answer from the model when the page may ask it.' },
         'presence-minutes': { type: 'enum', options: ['2', '5', '15'], default: '5', label: 'Watching window (minutes)', help: 'How fresh a session’s presence doc must be to read watching.' },
         shortcut: { type: 'text', default: 'Mod+Shift+K', label: 'Picker shortcut', help: 'The key combination that opens the block picker.' }
       });
@@ -189,8 +191,8 @@ function start(o) {
     try { offs.push(ref.onSnapshot(fn, e => console.warn('assist: snapshot ' + (e && e.code)))); } catch (e) { console.warn('assist: subscribe ' + (e && e.message)); }
   }
   async function recheck() {
-    const c = H.comments; let v = 'none';
-    if (c && typeof c.canSendToClaude === 'function') { try { v = await c.canSendToClaude(); } catch (e) { v = 'off'; } if (CAN.indexOf(v) < 0) v = 'off'; }
+    const c = H.agent; let v = 'none';
+    if (c) { try { v = await c.canSend(); } catch (e) { v = 'off'; } if (CAN.indexOf(v) < 0) v = 'off'; }
     if (!enabled()) v = 'off';
     if (v !== canSend) { canSend = v; notify(); if (cache.p) cache.p.emit(); }      // presence() reads canSend too
     return v;
@@ -199,10 +201,11 @@ function start(o) {
 
   const ready = (async () => {
     if (page && page.config && page.config.ready) await settle(page.config.ready);
-    const got = await Promise.all([o.db, o.user, o.comments, o.sample].map(settle));
+    // agent: the option, else the page's host (ADP.agent()); sample likewise falls back to ADP.ask()
+    const got = await Promise.all([o.db, o.user, o.agent !== undefined ? o.agent : page && page.agent ? page.agent() : null, o.sample !== undefined ? o.sample : page && page.ask ? page.ask() : null].map(settle));
     const db = got[0] || (page && page.db) || null;
     H.db = db || memory(o.seed); H.memory = !db;
-    H.user = got[1]; H.comments = got[2]; H.sample = typeof got[3] === 'function' ? got[3] : null;
+    H.user = got[1]; H.agent = agentOf(got[2]); H.sample = typeof got[3] === 'function' ? got[3] : null;
     const u = H.user;
     uid = String((u && typeof u.id === 'function' ? await settle(u.id()) : u && u.id) || (page && page.user && page.user.id) || '');
     if (dead) return;
@@ -229,7 +232,7 @@ function start(o) {
     return cache.p || (cache.p = live(() => {
       const win = (Number(cfg('assist.presence-minutes', '5')) || 5) * 60000;
       const s = pres.map(p => ({ session: p.session || p.id, at: p.at || '', doing: p.doing || '', fresh: clock() - new Date(p.at).getTime() < win })).sort(byAt);
-      // native: the platform itself says a watching session would be woken (comments.canSendToClaude), though no fresh presence doc names it.
+      // native: the platform itself says a watching session would be woken (the agent handle's canSend), though no fresh presence doc names it.
       // A session that watches and has not acted for a while is still watching: its presence doc is written only when it acts.
       const f = s.filter(x => x.fresh), native = !f.length && canSend === 'available';
       return { watching: f.length > 0 || native, native, busy: f.some(x => !!x.doing), sessions: s };
@@ -259,6 +262,7 @@ function start(o) {
     if (H.memory || cfg('log.data-changes', true) === false) return Promise.resolve();
     return H.db.doc('changes/d-' + Date.now()).set({ version: '', at: iso(), by: by(), summary, parts: [], threads: [], data: docs.map(d => ({ doc: d })) }).catch(() => {});
   }
+  const who = () => H.agent && H.agent.label || 'Agent';
   const word = l => (o.words && o.words[l]) || WORDS[l] || l;
   const lanes = () => { const v = cfg('assist.lanes', LANES); return Array.isArray(v) && v.length ? v.slice() : LANES.slice(); };
   const scopeOf = s => { s = s || {}; const id = squash(s.id, 200); return { kind: s.kind || (id ? 'part' : 'page'), id, label: squash(s.label, 120), hash: String(s.hash || '') }; };
@@ -274,13 +278,14 @@ function start(o) {
   }
   function anchorOf(s, elx) {
     const e = elx || (isPart(s) && document.querySelector('[data-part="' + s.id.replace(/"/g, '') + '"]')) || document.body;
-    return H.comments.anchorFor(e);
+    return H.agent.anchorFor(e);
   }
   const asErr = e => e && e.code ? e : fail('upstream_error', String(e && e.message || e));
   async function gate() {
     await ready;
     const v = await recheck();
-    if (v !== 'available') throw fail(v, v === 'none' ? 'This page cannot send to Claude here.' : 'Sending to Claude is not possible right now: ' + v + '.');
+    const who = H.agent && H.agent.label || 'Agent';
+    if (v !== 'available' && v !== 'queued') throw fail(v, v === 'none' ? 'This page cannot send to ' + who + ' here.' : 'Sending to ' + who + ' is not possible right now: ' + v + '.');
   }
   async function send(a) {
     a = a || {};
@@ -292,14 +297,16 @@ function start(o) {
     await ref.set({ lane, scope: s, project, text, quote, by: by(), at: iso(), status: 'open', state: null, ackBy: '', ackAt: '', progress: [],
       response: '', doneAt: '', changed: [], version: '', estimate: a.estimate == null ? null : a.estimate, actual: null });
     try {
-      const r = await H.comments.sendToClaude({ anchor: await anchorOf(s, a.scope && a.scope.el), text: commentText(word(lane) + ': ' + text, quote, rid, lane, s, project) });
+      const r = await H.agent.send({ anchor: await anchorOf(s, a.scope && a.scope.el), text: commentText(word(lane) + ': ' + text, quote, rid, lane, s, project), requestId: rid });      // requestId: the request is already stored; a host that keeps its own record must not create another
       if (r && r.threadId) tids[rid] = r.threadId;
+      if (r && r.delivery) deliveries[rid] = r.delivery;      // 'unknown': the host kept the request but could not confirm the handoff; the record stays, nothing is retried
     } catch (e) {
       ref.delete().catch(() => {});
       if (e && e.code === 'claude_unavailable') recheck();
       throw asErr(e);
     }
-    log('Request ' + rid + ' sent', ['requests/' + rid]);
+    log('Request ' + rid + (deliveries[rid] === 'unknown' ? ' saved; delivery to ' + who() + ' unconfirmed' : ' sent'), ['requests/' + rid]);
+    if (deliveries[rid] === 'unknown') notify();
     return rid;
   }
   async function reply(rid, text) {
@@ -310,14 +317,14 @@ function start(o) {
     if (!snap.exists) throw fail('not_found', 'No request ' + rid);
     const req = snap.data() || {}, tid = nextId(rows(await ref.collection('turns').get())), tref = ref.collection('turns').doc(tid);
     await tref.set({ by: by(), at: iso(), text });
-    await ref.update({ status: 'open', state: null });
+    await ref.update({ status: 'open', state: null, ...(req.execution ? { execution: null, workGeneration: (req.workGeneration || 0) + 1 } : {}) });      // a reply ends an agent's claim (Sites' reply does the same)
     try {
       const head = 'Reply ' + parseInt(tid, 10) + ' on ' + word(req.lane).toLowerCase() + ' request ' + rid + ': ' + text + '\n\nRead the whole conversation on requests/' + rid + ' (text, response, then turns).';
       const body = commentText(head, '', rid, req.lane, req.scope, req.project);
-      await H.comments.sendToClaude(tids[rid] ? { threadId: tids[rid], text: body } : { anchor: await anchorOf(req.scope), text: body });
+      await H.agent.send(Object.assign(tids[rid] ? { threadId: tids[rid], text: body } : { anchor: await anchorOf(req.scope), text: body }, { requestId: rid, turnId: tid }));      // the reply turn is already stored
     } catch (e) {
       tref.delete().catch(() => {});
-      ref.update({ status: req.status || 'open', state: req.state == null ? null : req.state }).catch(() => {});
+      ref.update({ status: req.status || 'open', state: req.state == null ? null : req.state, ...(req.execution ? { execution: req.execution, workGeneration: req.workGeneration == null ? null : req.workGeneration } : {}) }).catch(() => {});
       throw asErr(e);
     }
     log('Reply on ' + rid, ['requests/' + rid, 'requests/' + rid + '/turns/' + tid]);
@@ -330,7 +337,7 @@ function start(o) {
     x = x || {}; text = String(text || '').trim();
     if (!text) throw fail('invalid_request', 'Write the question first.');
     await ready;
-    if (!can().ask) throw fail(H.sample ? 'not_granted' : 'none', 'Asking Claude from this page is not possible here.');
+    if (!can().ask) throw fail(H.sample ? 'not_granted' : 'none', 'Asking a model from this page is not possible here.');
     const cref = id => H.db.doc('conversations/' + id);
     let conv;
     if (!cid) {
@@ -435,7 +442,7 @@ function start(o) {
     document.removeEventListener('keydown', onShortcut); if (closePick) closePick(); watchers.clear(); lives.clear();
   }
   return {
-    ready, can, me: () => uid, watch: fn => { watchers.add(fn); return () => watchers.delete(fn); }, pick, send, reply, ask, ping,
+    ready, can, delivery: rid => deliveries[rid] || '', agentLabel: who, agentWhere: () => H.agent && H.agent.where || 'your agent', me: () => uid, watch: fn => { watchers.add(fn); return () => watchers.delete(fn); }, pick, send, reply, ask, ping,
     requests, conversations, messages, presence, thread, state, lanes, word, destroy
   };
 }

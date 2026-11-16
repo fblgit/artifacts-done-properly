@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ADP · Sites host check</title>
+<style>body{font:17px system-ui;max-width:800px;margin:8vh auto;padding:24px;background:#11151c;color:#e9eef5}h1{font-size:36px}button{padding:12px 18px;border:0;border-radius:8px;background:#b9f5d8;cursor:pointer;margin:6px}pre{white-space:pre-wrap;background:#1d2530;padding:20px;border-radius:12px}small{color:#b9c7d7}</style>
+<h1>ADP · Sites host check</h1><p>This is a disposable transport fixture, not a production artifact editor.</p>
+<p data-part="intro">Test intent, decisions and feedback across browser and agent sessions.</p>
+<button id="read">Read saved record</button><button id="write" disabled>Save next revision</button><button id="stale" disabled>Test stale-write rejection</button>
+<pre id="output" role="status" aria-live="polite">Connecting…</pre><small>Comments save anchored ADP requests here. Saving does not automatically deliver a request to an agent.</small>
+<script src="/openai.js"></script><script src="/openai-sites.js"></script><script src="/openai-sites-comments.js"></script>
+<script>window.ADP_HOST=ADPOpenAIHost.create({profile:'sites',bridge:ADPOpenAISites.create({endpoint:'/api/adp/host-check',comments:true})});</script>
+<script src="/adp.js"></script>
+<script>
+(async()=>{
+ const output=document.querySelector('#output'), show=value=>output.textContent=JSON.stringify(value,null,2);
+ try {
+  const host=await ADP_HOST.connect(), ref=host.db.doc('ns/host-check/context/current'); let last=null;
+  const read=async()=>{last=await ref.get();show({host:'openai-sites',identity:await host.user.id(),revision:last.revision,exists:last.exists,data:last.data()});};
+  document.querySelector('#read').onclick=()=>read().catch(e=>show({error:e.message}));
+  document.querySelector('#write').disabled=!(await host.user.canEdit());
+  document.querySelector('#write').onclick=async()=>{try{await read();const before=last;await ref.set({intent:'Preserve understanding across hosts',part:'intro',decision:'Keep logical identity across sessions',feedback:'Verify me through the Site MCP tool',counter:(before.data()?.counter||0)+1},{expectedRevision:before.revision});await read();document.querySelector('#stale').disabled=false;document.querySelector('#stale').onclick=async()=>{try{await ref.set({shouldNotLand:true},{expectedRevision:before.revision});show({FAIL:'Stale write accepted'});}catch(e){show({result:e.status===409?'PASS':'FAIL',status:e.status,message:e.message});}};}catch(e){show({error:e.message});}};
+  await read();
+ }catch(e){show({error:e.message,hint:'Requires Sites sign-in, explicit membership and migrated D1 binding.'});}
+})();
+</script></html>

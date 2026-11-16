@@ -28,8 +28,8 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.0
- * @updated   2026-11-13
+ * @version   0.1.1
+ * @updated   2026-11-16
  * @summary   Who can write where on an ADP artifact, read-only: each db rule as a path, a sentence and a ladder of the four levels, what you can do there, and the locked part prefixes with the parts they cover.
  * @tags      namespaces, permissions, db-rules, locks, parts, read-only, settings, access
  * @requires  kit.tokens, kit.dom
@@ -115,6 +115,8 @@ function mount(root, opts) {
     const rules = (Array.isArray(data.rules) ? data.rules : readMeta()).slice().sort((a, b) => segs(b.path).length - segs(a.path).length);
     const s = el('section', 'kit-ns-sec'), h = el('h3', 'kit-ns-h', 'Who can write where'); h.id = 'kit-ns-h-data-' + uid; s.setAttribute('aria-labelledby', h.id);
     const hd = el('div', 'kit-ns-shd'); hd.append(h, el('span', 'kit-ns-cnt', rules.length + (rules.length === 1 ? ' rule' : ' rules'))); s.append(hd);
+    const hid = window.ADP && window.ADP.host && window.ADP.host.id, fx = !!hid && hid !== 'claude';      // the levels are Claude's db capability: another host applies its own policy
+    if (fx) s.append(el('p', 'kit-ns-foot', "These rules are the page's declaration for Claude's access levels. " + hid + ' applies its own membership rules, so nothing below says what you can do here.'));
     if (!rules.length) { s.append(el('p', 'kit-ns-empty', 'This page declares no db rules, so the defaults of the host apply.')); }
     else {
       const panel = el('div', 'kit-ns-panel');
@@ -131,13 +133,13 @@ function mount(root, opts) {
         else if (self) p.append(el('span', 'kit-ns-note', "each viewer's own"));
         p.append(el('p', 'kit-ns-says', sentence(r)));
         const me = el('div', 'kit-ns-me'), w = canWrite(r.write), rd = canRead(r.read);
-        me.dataset.can = w ? 'write' : rd ? 'read' : 'none';
-        me.append(icon(w ? 'pen' : rd ? 'eye' : 'dash'), el('span', null, w ? 'You write' : rd ? 'You read' : 'Not you'));
+        me.dataset.can = fx ? 'none' : w ? 'write' : rd ? 'read' : 'none';
+        me.append(icon(fx ? 'dash' : w ? 'pen' : rd ? 'eye' : 'dash'), el('span', null, fx ? 'Set by host' : w ? 'You write' : rd ? 'You read' : 'Not you'));
         li.append(p, ladder(r), me); ul.append(li);
       });
       panel.append(scale, ul); s.append(panel);
     }
-    s.append(el('p', 'kit-ns-foot', 'Changing a rule is a republish. "You" follows what this runtime reports: an editor counts as interact, so writes interact-level paths and below; a viewer writes nothing; admin and owner paths are never marked as yours.'));
+    s.append(el('p', 'kit-ns-foot', fx ? 'Changing a rule is a republish.' : 'Changing a rule is a republish. "You" follows what this runtime reports: an editor counts as interact, so writes interact-level paths and below; a viewer writes nothing; admin and owner paths are never marked as yours.'));
     return s;
   }
   function partsSection() {

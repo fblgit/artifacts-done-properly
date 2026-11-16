@@ -1,0 +1,206 @@
+# Claude host adapter (`adp-host/1`)
+
+`skill/assets/adapters/claude.js` is an explicit `adp-host/1` provider over the claude.ai
+viewer's `window.claude.use('db'|'user'|'comments')`. It does what the runtime's built-in
+Claude default does (same capabilities, same `claude` host id, seed files on), so existing
+`adp/2` records, part ids, hashes and classification are untouched. The default is
+unchanged: pages with no `ADP_HOST` still use the built-in bridge. The adapter is opt-in:
+
+```html
+<script src="adapters/claude.js"></script>
+<script>window.ADP_HOST = ADPClaudeHost.create();</script>
+<script src="adp.js"></script>
+```
+
+Without `window.claude` the adapter's `connect()` throws: `ADP.host.status` is `failed`,
+not `static`. It never falls back to another host.
+
+## Verified, and how
+
+| Behaviour | Evidence |
+| --- | --- |
+| Adapter and built-in default give the same `ADP.host` (except `comments`), `ADP.db`, `ADP.ns`, `ADP.user` and `claude.use` calls | `tests/test_host_connection.py` (Node, fake `window.claude`, real `adp.js`) |
+| Slow or never-settling `comments` does not hold `connect()` or page startup | same, plus adapter unit test |
+| `user` passes through unchanged; no coercion into edit rights | adapter unit test |
+| Missing `window.claude` fails closed | both |
+
+The rows above run against fakes. Separately, on 2026-11-16 a private disposable page loaded the real
+`adp.js` with this adapter in one live claude.ai viewer (owner, editor): `ADP.host` reported
+`{id: "claude", status: "connected", records: true, comments: true, seedFiles: true}`, `canEdit` was
+`true`, the part was painted from `content/intro`, and it repainted about a second after an agent
+(ArtifactData) edit. Not exercised live: whether the comment anchors registered, a reader or logged-out
+session with the adapter, and a reload from a fresh tab. A first synthetic seed-pack was moved Claude to OpenAI
+Site to Claude by two agents through PR comments, before any shell existed. Later runs used the shared records
+shell (`adp.py bundle`, `import-plan`, `import-ack`; see `docs/adp-export-import.md`) with this repo's
+Claude and Sites adapters. Applying is still done by an agent running the printed calls, and no automatic
+cross-host sync exists.
+
+## Not supported by the contract (gaps, proposals)
+
+The adapter stays inside `adp-host/1` as written. These Claude behaviours cannot be
+expressed by it today; the proposals are for the contract owners and are **not** applied.
+
+1. **`artifact.publish`** (files map, `ifMatch`, `null` delete, all-or-nothing, `{version, shas}`,
+   `conflict` rejection with paths): **now the optional `publish.files(files, opts)` handle** (`ADP.publish()`), used by
+   the inbox Apply. Still Claude-only: the tester template and docs-to-files call `claude.use('artifact')` directly.
+   A per-path receipt beyond `{version, shas}` is not in the contract.
+2. **Request delivery** (`comments.canSendToClaude`, `sendToClaude`, `anchorFor`): **now the optional `agent` handle**
+   (`ADP.agent()`: `label`, `canSend`, `send` → `{threadId, delivery}`, `anchorFor`), used by `Kit.assist` and
+   `Kit.inbox`; `sample` is the separate `ask` handle. `claude-lane` still reaches the comments handle through
+   `kit/store.js` and stays Claude-only. See `docs/host-adapters.md`.
+3. **Late-bound capabilities.** `connect()` must settle but Claude's `comments` can be slow; the runtime
+   solves this with an internal field of the built-in default (`commentsReady`). The adapter uses a lazy wrapper, so
+   `ADP.host.comments` is `true` even if the viewer later grants none (anchoring then reports
+   `not registered: unavailable`). *Proposal:* let `comments` be a promise, or add a settled-later status.
+4. **Db profile is narrower than use.** The kit's assist pattern calls `doc.delete()`; the contract profile
+   lists only `get/set/update/onSnapshot` plus queries. The live 0.2.96 types also give `doc.collection`,
+   `collection.add`, `query.get` and `doc.acquire` (a lease: `{holder, ttlMs, data}` to `{acquired, version,
+   expiresAt, holder}`). Nothing in this repo calls `acquire`. *Proposal:* list the exact operations and run
+   one conformance suite against the dev shim.
+5. **Kit bypasses `ADP.host`.** `store.js`, `inbox.js`, `assist.js`, `claude-lane.js`, `catalog.js`, the assistant
+   template and `tester.js` call `window.claude` directly. With an explicit non-Claude provider and
+   `window.claude` both present they would still reach Claude, against the no-fallback rule.
+   *Proposal:* expose granted capabilities through `ADP.host`, then move the kit onto it.
+6. **No record version token.** Agent writes pin `if_version` per doc and publishes carry an artifact version;
+   the contract's receipt says only "native version(s)". *Proposal:* name `source` and `record` tokens.
+   Claude has no separate deployment version.
+7. **No host attribution.** Records carry `by = user.id` only, so a later session on another host cannot
+   tell which host wrote a change. *Proposal:* an additive `host` field (schema decision, not a bug fix).
+
+Two behaviour changes sit in the shared runtime on the existing Claude path, not in this adapter:
+`canEdit` now requires literal `true` (it accepted any truthy value; the live type is `Promise<boolean>`,
+so the strict check matches the contract, though no live call was observed), and `anchors()` starts only
+after `db` and `user` resolve (before, in parallel).
+
+## Test interfaces against the live types
+
+Two sources, in decreasing weight. **Observed live** (2026-11-16, one claude.ai viewer, runtime contract
+0.2.96, a private disposable probe page with synthetic data; it exercised the viewer's own `window.claude`,
+not `adapters/claude.js` itself): and the platform's type definitions for that contract. Differences in
+`skill/scripts/adp_dev.js` / `adp_dev.py`, the stand-in the tests and `adp.py dev` use:
+
+- Observed, matches: `canEdit()` resolves a boolean; `canSendToClaude()` resolves `available`; `set` resolves
+  `undefined`; snapshots carry `data/exists/id/metadata`; `update` merges; a missing doc reads
+  `exists: false`; a stale `ifMatch` publish rejects `conflict` with `paths: [{path, expected, actual}]`.
+- Observed, still missing from the dev stand-in because the behaviour was not measured, only the names or
+  the uncontended shape: the top-level db path methods `get/set/update/delete/query/subscribe/unsubscribe/
+  acquire` (the types list only `doc`/`collection`); `comments.create/delete/reply/resolve`;
+  `user.profiles/search`; `doc.acquire`, which resolved `{acquired, expiresAt, holder, version}` uncontended
+  (contention is unmeasured, so it is not faked).
+- Fixed in the stand-in to match what was measured (`skill/scripts/adp_dev.*`): a publish conflict's `live` is
+  the current version id and it carries `changed: []`; `update` removes a field for a bare
+  `{__delete__: true}` and refuses the marker with other keys (`invalid_argument`); `orderBy` puts `null`
+  lowest and a missing field last in both directions; `user.isOwner()` and `user.me()` with the live key
+  set. Checked by `tests/test_dev.py` (marker, conflict) and a throwaway run of the real shim file for the
+  ordering and `user` additions, which is not in the suite.
+- Observed, snapshot behaviour a host or fake must tolerate: a local write fires the listener with
+  `hasPendingWrites: true`, then an empty-changes snapshot (`fromCache: true`), then a `modified` change for
+  the doc it just added, then a settled snapshot; after a reload the first snapshot is `fromCache: true` and may
+  hold documents deleted since, which later `removed` changes correct.
+  **Stand-in, modelled (query `onSnapshot` only), one case:** a document newly `set` through the stand-in produces
+  exactly the five snapshots of **run A**, recorded live on a collection that already held two documents
+  (`+existing`, `+new` pending, empty cache echo, `~new` from cache, settled empty), and a reload produces the persisted result first (`fromCache`, stale documents included) and then the
+  corrected one with `removed`/`added`. The persisted result is the page's `localStorage`, standing in for the
+  viewer's cache, keyed by the artifact: the server sends a store identity (a hash of the folder it serves) with
+  the shim, so another artifact on the same localhost origin never sees it; without an identity nothing is kept. `tests/test_dev.py` runs the real shim in Node and asserts both traces.
+  **Replayed, not modelled:** the full six-snapshot reload recorded live (stale cache, pending echo, `-stale +added`,
+  `-b`, empty, `+b ~a`, which includes another client's churn) is fed to the real `adp.js` content watcher through
+  the host contract; the part texts follow it (stale removed, `b` dropped and back). A mutation that ignores
+  `removed` fails that check.
+  **Recorded later, contradicts the stand-in's flags (spec page, owner's viewer, 2026-11-16):** the same write
+  against an **empty** collection (run B) gave four snapshots and `fromCache` false throughout
+  (`none` size 0, `+new` pending, `none` pending, `~new` settled, no trailing empty snapshot inside 3 s). The
+  trace pressed again straight after (run C) first replayed the earlier probe, already deleted, `fromCache` true,
+  then `+new` cache and pending, then `-stale` as a server correction, `none` pending, `~new` settled. The
+  stand-in's echo and acknowledgement flags match A only, so for an empty collection it is wrong. Run D, the
+  controlled measurement (one document, `keep-1`, written to the collection first, then the trace pressed
+  once): `+C-probe` size 1 `fromCache` true, `+new` size 2 cache and pending, `-C-probe +keep-1` size 2 pending
+  (not cache), `none` pending, `~new` settled. It **refutes** "a non-empty collection gives cache-flagged echo
+  rows": D's collection was not empty and its rows after the correction were all `fromCache` false. What D and
+  C share with the earlier reload recording is that the first snapshot of a new listener is the viewer's last
+  cached result for the query (it holds documents deleted since and lacks `keep-1`, added since), corrected by
+  the server's answer one snapshot later. A's `fromCache` rows 3 and 4 remain unexplained. Four samples, one
+  per shape, so none of it is modelled beyond run A and the reload.
+  **Not modelled, not measured:** updates, deletes, document-level `onSnapshot` (settled only), concurrent
+  writers, the extra pending/echo steps a reload shows around the first write, and query listeners the viewer
+  already has open when a write lands. The stand-in's persisted result is not the viewer's cache: it survives
+  only as long as the page's `localStorage` does.
+  Consumers: `adp.js` is checked as above. The assistant template and the preview kit also apply each
+  `docChanges` entry by document id (read, not run against these traces). Nothing shipped reads
+  `hasPendingWrites` or `fromCache`; a page that shows a "saving" state from them, or counts notifications per
+  write, is not covered by these traces.
+- Observed, errors: `db.doc()` with an odd segment count throws synchronously with no `code`; an invalid query
+  operator rejects `invalid_argument`. Not observed: the stand-in's `invalid_argument` from publish; the types
+  do not list it as a publish code.
+- Observed, a second signed-in account the owner shared the artifact with (stated view-only; its level was
+  not independently confirmed): `use('db')` resolved, but `use('user')`, `use('comments')` and
+  `use('artifact')` resolved `null`, and reads worked. All seven write attempts (set, update, delete, add,
+  `acquire`, a nested `ns/` update) rejected `invalid_argument` ("The request was malformed or exceeds a
+  limit"); the owner then read the fixtures back unchanged, no new docs. A refusal is therefore
+  indistinguishable from a malformed request or a missing document: there is no permission-specific code.
+  Not tested: the Contributor level, an unauthenticated session, a lost write response.
+- Observed, `doc.update` (browser and ArtifactData agree): nested objects merge recursively
+  (`{a:{x:1,y:2}}` + `{a:{y:9,z:3}}` gives `{a:{x:1,y:9,z:3}}`); arrays and scalars replace; an explicit
+  `null` is stored as `null`; `{a:{__delete__:true}}` removes `a`; a dotted key such as `'a.x'` is stored as a
+  literal key, not a path; updating a missing document rejects `invalid_argument`; `set` drops an `undefined`
+  field. `orderBy('n')` also returned a document with no `n`, so a fake must not assume Firestore's exclusion.
+- Observed, a reload's first snapshot is `fromCache: true` and can still hold documents deleted since;
+  `removed` changes correct it a moment later. `adp.js` handles `removed` for `content/` (line 141); the other
+  listeners were not checked.
+- Observed, timing: the db capability took 1.3 s to resolve cold and 4 ms warm; `use()` of an unknown name resolved `null` at once.
+- The fakes in `tests/test_host_connection.py` are shape stubs (`doc()`/`collection()` entry points and
+  canned snapshots), deliberately not behavioural, and do not reproduce the snapshot sequence above.
+- Still UNVERIFIED: consent prompts, the 10 s `use()` timeout, rate limits, live reload after a successful
+  publish, the Contributor level, a logged-out session, a lost write response, and the adapter in a viewer
+  that is not an editor. (A write attempted `as_level: view` is blocked by the agent tool before it is sent,
+  so it proves nothing; the second-account run above is the server evidence.)
+
+## Claude-only handles in shared code
+
+`db` and `user` reach the kit through `ADP.db` and `ADP.user`, so an explicit host (Sites included) is honoured.
+Claude's `artifact.publish`, `comments.sendToClaude` / `canSendToClaude` / `anchorFor` and `sample` reach shared
+code as the host-neutral `agent`, `publish` and `ask` handles (`ADP.agent()`, `ADP.publish()`, `ADP.ask()`; see
+`docs/host-adapters.md`): `Kit.assist`, `Kit.inbox` and the assistant template use them, and the Claude adapter and
+built-in default are the only places those Claude names are mapped. `ADP.claude(name)` stays for pages that already
+call it: it waits for the connection and calls `window.claude.use(name)` **only when the connected host's id is
+`claude`**; on any other host it resolves `null` without touching `window.claude`. The text below describes that
+accessor as first delivered; a runtime older than the new accessors keeps the old direct probe. On a
+non-Claude host the inbox disables Apply and says "Apply publishes this page's files, which only a Claude host can
+do; this host does not provide it." (it used to blame the page: "does not declare"). The assistant panel already
+says "This page cannot reach a session." and "Ask now is not available on this page."
+
+Observed with the real `adp.js` and `inbox.js` in Node on an explicit host with a `window.claude` that throws when
+touched (a throwaway script, not committed): host id `openai-sites` gave a disabled Apply row, the message above and
+no `window.claude` call; the committed code on the same host called `window.claude.use('artifact')`; host id
+`claude` still asks for `artifact` and `comments`. Not run: a browser, the assistant template mounted, Sites.
+
+**Outside this surface:** `kit/store.js` is the adp/1 board store. It connects only through `window.claude.use('db')`
+and `('user')` and says "Open this page on claude.ai" when that is absent, so a board built on it is Claude-only; it
+is not part of the adp/2 host contract and is left unchanged. `kit/templates/tester.js` is a Claude capability tester
+and is Claude-only by design.
+
+## Agent side
+
+`skill/scripts/adp_claude_adapter.py` is the Claude half of the shared records shell. It prints ArtifactData
+`list` calls to read, one atomic `batch` (at most 50 writes, 1 MiB) to write, and parses the result text the agent
+saves, wrapped as `[{call, result}]`. Observed live and relied on: a collection `list` shows each doc's native
+`version`; a batch result names every committed doc with its new version; a refused batch starts "db batch
+write failed (version_mismatch)", says nothing was written and names the first stale entry; an update that
+rewrites the same text still bumps the version. Documented by the tool but not triggered here: a `set` over an
+existing doc is refused unless pinned, which is what makes an unpinned create safe. A batch is all or nothing,
+so `parse_receipt` never reports part of one as applied. The adapter needs no
+separate readback: the batch result is the authority. Claude's page files are not part of the shell (use
+`adp.py files` plus a publish).
+
+Mapped to the contract's
+operations by reading the existing `adp-edit` protocol: Discover/Read = `Artifact read` + ArtifactData reads
+(each carries `version`); Propose = `adp.py propose` (`incoming/`); Publish = `Artifact publish` to the same
+url plus pinned ArtifactData writes; Verify = re-read; Acknowledge = `adp.py record`.
+
+Observed live through ArtifactData on the probe artifact (same run, synthetic records at `content/intro`,
+`decisions/keep-intent`, `ns/host-check/context/current`, which is collection `ns/host-check/context`, doc
+`current`): a 3-write `batch` reported "committed atomically" with per-doc `version` 1; an `update` pinned
+`if_version: 1` committed and returned version 2 (top-level fields merge, unknown fields survive, an array
+field is replaced whole); a second write pinned to version 1 was refused `version_mismatch` naming version 2,
+and wrote nothing; read-back matched. These versions are Claude doc revisions and are not tokens for another
+host. Not observed: partial batch failure, a lost write response, or the rendered page reflecting the edit.

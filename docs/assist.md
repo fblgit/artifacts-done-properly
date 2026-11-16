@@ -137,9 +137,9 @@ In the panel, after an Ask now answer, a button "Send this to a session" appears
 
 `engine.send({lane, scope, text, quote, project})`:
 
-1. Refuses empty text (`invalid`). Runs `gate()`: rechecks `comments.canSendToClaude()`; anything but `available` rejects with that value as the error code (`none` says "This page cannot send to Claude here."; the others "Sending to Claude is not possible right now: <value>.").
+1. Refuses empty text (`invalid`). Runs `gate()`: rechecks the agent handle's `canSend()` (on Claude: `comments.canSendToClaude()`); anything but `available` or `queued` rejects with that value as the error code (`none` says "This page cannot send to <label> here."; the others "Sending to <label> is not possible right now: <value>.", the label being `agent.label`, "Claude" without one).
 2. Writes `requests/<rid>` (section 2).
-3. Calls `comments.sendToClaude({anchor, text})`. The anchor is `comments.anchorFor(el)` of the `[data-part]` element named by `scope.id`, else of `document.body`. The returned `threadId` is kept in memory only (a page reload forgets it).
+3. Calls the agent handle's `send({anchor, text})` (on Claude: `comments.sendToClaude`). The anchor is `anchorFor(el)` of the `[data-part]` element named by `scope.id`, else of `document.body`. The returned `threadId` is kept in memory only (a page reload forgets it).
 4. On failure it deletes the request doc, rechecks if the code was `claude_unavailable`, and rejects.
 5. Logs `changes/d-<ms>`.
 
@@ -338,7 +338,7 @@ An editor presses Decline, types a reason, and the inbox writes `status: 'declin
 
 ### The wake-up
 
-After a publish conflict, a hold on open, and Decline, the inbox sends a comment with `comments.sendToClaude` when `canSendToClaude()` answers `available` (no wake-up on a successful Apply, none on `merged`, none otherwise). It is only the wake-up; the proposal doc is the record. The text is the event line, then "Proposal incoming/<pid> on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal <pid>; reply here with the version your record shows and resolve the thread.", then the trailer `· adp proposal {<pid>} · <status>`, where `<status>` is `held` or `declined`. The thread id is stored on the proposal as `wake: {thread, at}` and later events reply into that thread. Without a listening session the data change stands and the next `adp.py export` finds the status.
+After a publish conflict, a hold on open, and Decline, the inbox sends a comment through the agent handle (on Claude: `comments.sendToClaude`) when its `canSend()` answers `available` (no wake-up on a successful Apply, none on `merged`, none otherwise). It is only the wake-up; the proposal doc is the record. The text is the event line, then "Proposal incoming/<pid> on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal <pid>; reply here with the version your record shows and resolve the thread.", then the trailer `· adp proposal {<pid>} · <status>`, where `<status>` is `held` or `declined`. The thread id is stored on the proposal as `wake: {thread, at}` and later events reply into that thread. Without a listening session the data change stands and the next `adp.py export` finds the status.
 
 `adp.py ack DIR --proposal <pid>` is refused unless the last export shows the proposal `applied` or `declined`; for `applied` it moves the project's base to the proposed work (see `docs/architecture.md`).
 

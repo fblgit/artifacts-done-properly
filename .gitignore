@@ -8,3 +8,6 @@ __pycache__/
 .ruff_cache/
 .adp/
 .codebase-memory.json
+
+# Codex/Sites local SQLite state (never publish)
+.adp-sites/
