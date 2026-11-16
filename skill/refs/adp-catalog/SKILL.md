@@ -34,6 +34,15 @@ When the user wants their own, a separate or a private catalog: after setup the 
 - `ADP kit show ID [CATALOG]`: name, summary, about, tags, files, requires, provides, and what the entry's header says (status, version, config, db, source, changed); `about` and those fields are read from the main file in the local kit.
 - `ADP kit describe ID [CATALOG]`: the mount signature: needs, provides, requires, file paths, the sample path.
 
+## Connect the selected Sites catalog
+
+For a Codex/Sites catalog, use the Sites skill to publish and connect that exact Site. Keep its returned project ID, published origin, MCP endpoint and local artifact namespace together; a namespace such as `catalog` is not a Site address. Never reuse another Site's connected tools just because their names are also `adp_read`, `adp_query` and `adp_write`.
+
+1. Read that Site with `include_mcp_connection: true`. Use its returned plugin ID unchanged. Sites publication provisions the plugin; do not create a fixture-specific replacement or a proxy to another Site.
+2. If the plugin's tools are absent and installation is unconfirmed, offer the returned plugin through Plugin Management. Installed does not mean tools are available in this chat. Sites documents trying a new chat for an already-installed plugin; report this connection blocker explicitly rather than claiming setup succeeded.
+3. Through the selected Site's own tools, call `adp_session`, then `adp_read` for its artifact namespace and `manifest/current`. Configure membership only with the authenticated Site-scoped identity and the owner's authorization. Do not borrow an identity from another Site or substitute a static-file access token.
+4. A native record read with its revision is the agent connection receipt. Browser initialization, a successful deployment, or reading `catalog.json` does not prove that connection. Saved guidance and ADP records require native revision guards; source publication uses the Sites lifecycle. Keep both receipts.
+
 ## Take from a Sites catalog
 
 An HTTPS `*.chatgpt.site` catalog uses authenticated HTTP reads, not Claude server-side artifact references. The shell stays offline; the agent supplies the authorized Site session without putting credentials in commands, saved plans or replies.
