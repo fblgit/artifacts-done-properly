@@ -15,9 +15,9 @@
  *
  * API:
  *   Kit.inbox.mount(root, opts) -> {update(), destroy()}
- *     db        the db handle (default ADP.db)      user  {canEdit, id} (default ADP.user)      artifact  the artifact capability handle, or a promise of it (default ADP.claude('artifact', Claude hosts only))
+ *     db        the db handle (default ADP.db)      user  {canEdit, id} (default ADP.user)      artifact  the artifact capability handle or the host's publish handle {files}, or a promise of either (default ADP.publish(), else ADP.claude('artifact'))
  *     config    ADP.config (assist.presence-minutes)      url   the artifact's claude.ai url for the handoff line (optional; the line says "this artifact" without it)
- *     comments  the comments capability handle, or a promise of it (default ADP.claude('comments'), Claude hosts only); without sendToClaude on it, no wake-up is sent
+ *     agent     the host's agent handle {canSend, send, anchorFor}, or a promise of it (default ADP.agent()); comments: a legacy Claude comments handle (sendToClaude), still accepted; without either, no wake-up is sent
  *     classify  (base, live, incoming) => classes (default ADP.classify)      debounce  ms Apply waits for a second press to fold into one call (default 600)
  *     requestPublish(pid) optional agent executor route when native publish is absent; queues approval only, never marks applied
  *     autoApply  true applies every proposal that classifies as merged, one at a time (editors, with the artifact capability): a page that ships its own files as proposals; default false, an editor presses Apply
@@ -29,14 +29,14 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.2.3
+ * @version   0.2.4
  * @updated   2026-11-16
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
  * @requires  kit.tokens, kit.dom
  * @files     kit/patterns/inbox.css, kit/samples/patterns.json
  * @provides  Kit.inbox.mount
- * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or promise (default ADP.claude('artifact', Claude hosts only)), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms, autoApply (apply each merged proposal, one at a time), onAutoApplied(n); returns {update, destroy}
+ * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or publish handle (default ADP.publish()), agent handle (default ADP.agent()), comments (legacy), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms, autoApply (apply each merged proposal, one at a time), onAutoApplied(n); returns {update, destroy}
  * @config    ADP.classify(base, live, incoming) | contract 4 of docs/architecture.md, in adp.js
  * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui? --f-mono? --radius?
  * @globals   none
@@ -85,15 +85,16 @@ function mount(root, opts) {
   const offs = [];
   const box = el('section', B + 'root'); box.setAttribute('aria-label', 'Incoming proposals'); root.replaceChildren(box);
 
-  Promise.resolve(o.artifact !== undefined ? o.artifact : (window.ADP && ADP.claude ? ADP.claude('artifact') : window.claude && typeof claude.use === 'function' ? claude.use('artifact') : null))
-    .then(a => { art = a && typeof a.publish === 'function' ? a : null; artWhy = art ? '' : window.ADP && ADP.host && ADP.host.id && ADP.host.id !== 'claude' ? 'Apply publishes this page\'s files, which only a Claude host can do; this host does not provide it.' : 'Apply needs the artifact capability, which this page does not declare.'; draw(); autoApply(); },
+  Promise.resolve(o.artifact !== undefined ? o.artifact : (window.ADP && ADP.publish ? ADP.publish() : window.ADP && ADP.claude ? ADP.claude('artifact') : window.claude && typeof claude.use === 'function' ? claude.use('artifact') : null))
+    .then(a => { art = a && typeof a.publish === 'function' ? a : a && typeof a.files === 'function' ? { publish: x => a.files(x) } : null; artWhy = art ? '' : window.ADP && ADP.host && ADP.host.id && ADP.host.id !== 'claude' ? 'Apply publishes this page\'s files, which only a Claude host can do; this host does not provide it.' : 'Apply needs the artifact capability, which this page does not declare.'; draw(); autoApply(); },
       e => { art = null; artWhy = 'The artifact capability is unavailable here (' + (e && e.code || e) + ').'; draw(); });
 
-  Promise.resolve(o.comments !== undefined ? o.comments : (window.ADP && ADP.claude ? ADP.claude('comments') : window.claude && typeof claude.use === 'function' ? claude.use('comments') : null))
-    .then(c => { cm = c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? c : null; askCanSend(); }, () => { cm = null; });
+  Promise.resolve(o.agent !== undefined ? o.agent : o.comments !== undefined ? o.comments : (window.ADP && ADP.agent ? ADP.agent() : window.ADP && ADP.claude ? ADP.claude('comments') : window.claude && typeof claude.use === 'function' ? claude.use('comments') : null))
+    .then(c => { cm = !c ? null : typeof c.send === 'function' && typeof c.canSend === 'function' ? c : typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function'      // the host's agent handle, or a legacy Claude comments handle in the same shape
+      ? { canSend: () => c.canSendToClaude(), send: m => c.sendToClaude(m), anchorFor: e => c.anchorFor(e) } : null; askCanSend(); }, () => { cm = null; });
   const askCanSend = () => {       // re-checked every 30 s, as pattern.assist does: watching sessions are learned asynchronously
     if (!cm || dead) return;
-    cm.canSendToClaude().then(v => { if (v !== canSend) { canSend = v; draw(); } }, () => { canSend = ''; });
+    Promise.resolve(cm.canSend()).then(v => { if (v !== canSend) { canSend = v; draw(); } }, () => { canSend = ''; });
     timers.canSend = setTimeout(askCanSend, 30000);
   };
 
@@ -114,10 +115,10 @@ function mount(root, opts) {
   async function wake(p, line, status) {
     if (!cm) return;
     try {
-      if ((await cm.canSendToClaude()) !== 'available') return;
+      if ((await cm.canSend()) !== 'available') return;      // a wake-up goes to a watching session only: a queued (durable) path would turn every decision into new work
       const text = line + '\n\nProposal incoming/' + p.pid + ' on this artifact was decided on the page. Export this artifact, then adp.py ack DIR --proposal ' + p.pid + '; reply here with the version your record shows and resolve the thread.\n· adp proposal {' + p.pid + '} · ' + status;
       const prev = p.wake && p.wake.thread;
-      const r = await cm.sendToClaude(prev ? { threadId: prev, text } : { anchor: await cm.anchorFor(box), text });
+      const r = await cm.send(prev ? { threadId: prev, text } : { anchor: await cm.anchorFor(box), text });
       if (r && r.threadId && r.threadId !== prev) await D.doc('incoming/' + p.pid).update({ wake: { thread: r.threadId, at: new Date().toISOString() } }).catch(() => {});
     } catch (e) {}
   }

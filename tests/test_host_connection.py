@@ -57,6 +57,16 @@ console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,
 '''
 
 
+ASSIST_ENV = r'''
+const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/skill/catalog/kit/';
+const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, TextEncoder, crypto: require('crypto').webcrypto,
+  document: { createElement: () => ({}), getElementById: () => null, head: { append() {} }, addEventListener() {}, removeEventListener() {} }, addEventListener() {} };
+w.window = w; vm.createContext(w);
+for (const f of ['dom.js', 'patterns/assist.js']) vm.runInContext(fs.readFileSync(K + f, 'utf8'), w);
+const sleep = () => new Promise(r => setTimeout(r, 30));
+'''
+
+
 @unittest.skipUnless(shutil.which('node'), 'node required')
 class HostConnection(unittest.TestCase):
     def run_case(self, mode):
@@ -136,15 +146,21 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
             self.assertFalse(result['user']['canEdit'])
             self.assertNotIn('write', result['calls'])
 
+    def test_assist_sends_through_the_hosts_agent_handle(self):
+        script = ASSIST_ENV + r'''
+const sent = [], mk = (state, label) => ({ label, canSend: async () => state, send: async m => (sent.push(m), { threadId: 't', delivery: 'queued' }), anchorFor: async () => 'page' });
+const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts }); await e.ready; await sleep(); const r = await e.send({ text: 'hi' }).then(() => 'ok', x => x.code + ': ' + x.message); e.destroy(); return r; };
+(async () => {
+  console.log(JSON.stringify([await run({ agent: mk('queued', 'Codex') }), await run({ agent: mk('no_session', 'Codex') }), await run({ page: { agent: async () => mk('available', 'X') } }),
+    await run({ comments: { canSendToClaude: async () => 'available', sendToClaude: async () => ({}), anchorFor: async () => 'p' } }), await run({}), sent.length]));
+  process.exit(0);
+})();'''
+        run = run_node(['-e', script, str(ROOT)])
+        self.assertEqual(json.loads(run.stdout), ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'ok', 'none: This page cannot send to Claude here.', 2], run.stderr)      # queued is sendable; words from the label; default from the page's host; a legacy comments handle still works
+
     def test_a_reply_ends_an_agents_claim_only_where_there_is_one(self):
-        script = r'''
-const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/skill/catalog/kit/';
-const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, TextEncoder, crypto: require('crypto').webcrypto,
-  document: { createElement: () => ({}), getElementById: () => null, head: { append() {} }, addEventListener() {}, removeEventListener() {} }, addEventListener() {} };
-w.window = w; vm.createContext(w);
-for (const f of ['dom.js', 'patterns/assist.js']) vm.runInContext(fs.readFileSync(K + f, 'utf8'), w);
+        script = ASSIST_ENV + r'''
 const claim = { actor: 'a', token: 'T', state: 'working' }, base = { lane: 'task', scope: { kind: 'page', id: '', label: 'P' }, text: 'x', at: '2026-11-16T00:00:00Z', status: 'open', state: 'working', progress: [] };
-const sleep = () => new Promise(r => setTimeout(r, 30));
 (async () => {
   for (const [seed, fail] of [[{ ...base, execution: claim, workGeneration: 2 }, 0], [{ ...base }, 0], [{ ...base, execution: claim, workGeneration: 2 }, 1]]) {
     const comments = { anchorFor: async () => 'page', canSendToClaude: async () => 'available', sendToClaude: async () => { if (fail) throw new Error('x'); } };

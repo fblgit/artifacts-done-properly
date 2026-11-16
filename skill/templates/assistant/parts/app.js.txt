@@ -99,7 +99,7 @@ const claudeUse = n => window.ADP && ADP.claude ? ADP.claude(n) : (window.claude
 const ready = hasAssist ? ADP.config.ready.then(() => {
   engine = Kit0.assist.start({
     page: window.ADP, config: ADP.config, titles: TITLES,
-    comments: claudeUse('comments'), sample: claudeUse('sample'),
+    agent: ADP.agent ? ADP.agent() : claudeUse('comments'), sample: ADP.ask ? ADP.ask() : claudeUse('sample'),      // the host's handles; an older runtime falls back to the Claude ones
     onPick: p => { setOpen(true); if (panel) panel.setScope(p, true); },
   });
   return engine.ready;
