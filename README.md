@@ -191,7 +191,11 @@ Apache License 2.0, see `LICENSE`. Redistributions keep `NOTICE`; the `adp.skill
 ## Host adapter work
 
 The experimental [host adapter contract](docs/host-adapters.md) separates the
-existing `adp/2` records from runtime host capabilities. Claude remains the default;
-other hosts require an explicit adapter. Agent publishing and native Space Page
-integration are separate from the browser connection. The opt-in
-[Claude adapter](docs/claude-host-adapter.md) lists what it does and does not cover.
+existing `adp/2` records from runtime host capabilities: records, viewer, comments and the host's
+`agent`, `publish` and `ask` handles (`ADP.agent()`, `ADP.publish()`, `ADP.ask()`). Claude remains the default;
+other hosts require an explicit adapter, and OpenAI Sites has one ([docs/openai-host-adapter.md](docs/openai-host-adapter.md)).
+A page's records move between Claude and Sites with the shared records shell
+(`adp.py bundle`, `import-plan`, `import-ack`; [docs/adp-export-import.md](docs/adp-export-import.md)): it prints the
+native calls and an authorized agent runs them, nothing syncs by itself. Live runs on both hosts are recorded on PR #81;
+native Space Page integration is not implemented. The opt-in
+[Claude adapter](docs/claude-host-adapter.md) lists what it does, what was observed live and what it does not cover.

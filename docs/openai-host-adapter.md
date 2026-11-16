@@ -84,7 +84,14 @@ Run `python3 -m unittest discover -s tests -p test_openai_host_adapter.py -v`.
 Coverage includes explicit setup, missing/malformed sessions, anonymous and
 strict edit permission, optional capabilities, error propagation, and profile
 selection. The concrete [Sites transport](openai-sites-transport.md) now supplies a Worker/D1
-implementation and local integration tests. Live deployment remains unverified.
-A deployed bridge still needs integration tests for server authorization,
-query/snapshot behavior, identity scoping, disconnect/reconnect, concurrency,
-comment anchoring, and publication receipts before claiming production support.
+implementation and local integration tests. Hosted owner flows were also observed:
+record editing and reload persistence, browser/agent record handoff, and guarded
+publication with deployed-source and record readback. See the
+[Sites verification evidence](openai-sites-transport.md#verification-evidence)
+for receipts and the distinction between local and hosted checks.
+
+These observations do not certify production support or every host capability.
+Separate reader/anonymous authorization, identity changes, interrupted-network
+recovery and racing live claimants are not established by those owner receipts.
+The transport's polling, collection-budget and non-atomic-write limits remain;
+connecting one Site does not establish agent access to another Site.

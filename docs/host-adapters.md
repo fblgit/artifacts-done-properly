@@ -4,7 +4,8 @@ ADP preserves more than an artifact's bytes: named parts, intent, decisions,
 feedback, provenance, proposals and safe evolution. A host supplies the local
 storage, interaction and publishing mechanisms; it does not redefine those
 records. This first seam keeps the existing `adp/2` records and hash/classification
-rules unchanged. It is not a new wire protocol, cross-host migration tool, or a
+rules unchanged. It is not a new wire protocol and not itself a migration tool (the records shell in
+`docs/adp-export-import.md` moves a page's records between hosts), and it makes no
 claim that every host supports the Claude experience.
 
 ## Two different boundaries
@@ -13,9 +14,11 @@ claim that every host supports the Claude experience.
    viewer hints, and optional anchored comments. Implemented below.
 2. **Agent host:** reading source, finding feedback, proposing changes, guarded
    publication, and verifying the result. The contract below is a handoff design,
-   not an implemented publisher. Existing `adp.py` commands, assist, inbox and
-   templates still contain Claude-specific operations; this change does not
-   silently convert those into OpenAI operations.
+   partly implemented: the records shell (`adp.py bundle`, `import-plan`, `import-ack`)
+   and the work planner (`adp.py work`) work for Claude and Sites, and `adp.py` stays
+   offline: it prints the calls and an authorized agent runs them. Assist, inbox and
+   the assistant template take the host's handles (below); `claude-lane`, `store.js`,
+   the tester and the catalog page remain Claude-only.
 
 ## Browser connection
 
@@ -111,10 +114,12 @@ which exist. The accessors return promises because a host may bind a capability 
 
 Claude maps these from `comments.sendToClaude`/`canSendToClaude`/`anchorFor`, `artifact.publish` and `sample` (the adapter
 and the built-in default); a Sites adapter supplies its own `agent` and leaves `publish` and `ask` out. `ADP.claude(name)`
-and the older `comments`/`artifact`/`sample` options of `Kit.assist` and `Kit.inbox` keep working. A wake-up from the
+stays for pages that call it. The `comments` option of `Kit.assist` and `Kit.inbox` is gone (a Claude-shaped
+object is no longer taken for an agent): pass `agent`, `artifact` (a publish handle) and `sample`, or take the
+page's host defaults. A wake-up from the
 inbox is sent only when `canSend()` answers `available`.
 
-## Agent-host handoff contract (design, not implemented)
+## Agent-host handoff contract (design, partly implemented)
 
 Keep source/record authority explicit. A future adapter should provide these
 operations and receipts, without naming in-session connector calls as a public SDK:
@@ -141,8 +146,8 @@ returned success for a different operation.
 - **Claude:** preserve `adp/2` schemas, existing content/config/manifest and
   incoming/changes/decisions records. Claude's adapter can replace the inline
   compatibility bridge with an explicit provider without changing logical IDs.
-  Assist, inbox, publish/sample and request-delivery flows require their own
-  migration, not just changing `claude.use` in boot.
+  Assist, inbox, the assistant template, publish/sample and request
+  delivery now run through the host-neutral handles, which both the explicit adapter and the built-in default supply.
 - **ChatGPT Sites:** a Worker and durable backend (for example D1) can implement
   the document-store facade. Server authentication, authorization, subscriptions
   or polling, conditional writes and backend provisioning are separate work.
@@ -158,7 +163,8 @@ returned success for a different operation.
   arbitrary runtime fetches or subscriptions. Native spreadsheets/slides require
   their own document profile.
 
-No live Claude, Sites or Space installation is validated by the unit harness.
+The unit harness validates no live host. Live runs on Claude and Sites are recorded as receipts on PR #81 (summarised in
+`docs/claude-host-adapter.md` and `docs/openai-sites-transport.md`); no Space installation has been validated.
 The release gates for each host are: fresh and existing artifact, anonymous and
 editor access, stale version rejection, concurrent writes, interrupted/repeated
 publish, readback/receipt reconciliation, missing capabilities, and reopening in

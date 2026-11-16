@@ -2,7 +2,10 @@
 
 This implements the OpenAI side using **Sites' existing Worker + D1 hosting**.
 It does not require a separately purchased backend or invent an OpenAI browser SDK.
-It is a working transport implementation, not yet a live-host certification.
+It has local integration coverage and observed hosted owner flows, recorded in
+[PR #81](https://github.com/fblgit/artifacts-done-properly/pull/81), now merged.
+It remains experimental: those receipts do not certify every role, failure mode
+or newly created Site's agent connection.
 
 For a ready-to-run local server, see [Codex/Sites localhost](openai-localhost.md).
 
@@ -268,5 +271,18 @@ Node 22+ with `node:sqlite` is needed for SQL tests; older Node skips that suite
 explicitly. These are local integration tests with injected identity, **not**
 proof of hosted Dispatch, deployed D1 persistence or plugin discovery.
 
-Use [the live test protocol](host-live-test-protocol.md) to record those results
+Hosted owner evidence is separate from those local tests:
+
+- [Owner edit and reload receipt](https://github.com/fblgit/artifacts-done-properly/pull/81#issuecomment-6914915590): the imported shell's intro edit persisted at revision 3 after reload.
+- [Final Sites acceptance receipt](https://github.com/fblgit/artifacts-done-properly/pull/81#issuecomment-6926240289): deployed source `d7cb813bc71fd142da52b38dc964f9286b01b4ba`, successful deployment, served-source checks, guarded assistant/spec change and manifest readbacks, and browser reload displaying the deployed version. The receipt distinguishes its local acknowledgement check from live publication evidence.
+
+Those owner receipts do not establish separate reader/anonymous authorization,
+identity changes, interrupted-network recovery or racing live claimants. They do
+not remove the collection budget, independent listener polling, hidden-tab first
+snapshot delay, lack of browser sampling or lack of atomic batch/namespace-role
+parity. Rendered integrity remains qualified. A deployed Site and a working
+browser alone do not prove its plugin tools are connected in an agent session;
+verify each Site's own authenticated tool read.
+
+Use [the live test protocol](host-live-test-protocol.md) to record further results
 at an exact commit in the PR. Sites passing does not certify Spaces or Claude.

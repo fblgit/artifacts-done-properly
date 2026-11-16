@@ -110,5 +110,8 @@ in PR comments 6914883927 and 6914915590 verify the owner's subsequent intro edi
 at revision 3 and its persistence after reload. That newer edit has not been
 returned to Claude. Claude browser rendering after the return and source-file/hash
 integrity are not established by these receipts.
-Local tests are not live-host certification. PR #81 remains draft until its
-agreed acceptance gate is met.
+Local tests are not live-host certification. [PR #81](https://github.com/fblgit/artifacts-done-properly/pull/81)
+is merged for its documented experimental scope; that merge does not expand what
+these record-transfer receipts establish. The [final Sites acceptance receipt](https://github.com/fblgit/artifacts-done-properly/pull/81#issuecomment-6926240289)
+separately records deployment, served-source checks, guarded record readback and
+browser reload verification.
