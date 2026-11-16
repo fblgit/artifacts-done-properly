@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T13:05:31Z",
+ "built": "2026-11-16T13:09:03Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -2745,7 +2745,7 @@
     "access"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "requires": [
     "kit.tokens",
     "kit.dom"
@@ -2760,8 +2760,8 @@
     {
      "path": "kit/patterns/namespaces.js",
      "role": "script",
-     "sha256": "e8d76a3914febd7f04fcf95baf374dd40178b351d95dfc021199002995ed3929",
-     "bytes": 14820
+     "sha256": "d6a420170932b0db6d8d055f6887671e05c4f977deb16afa7d7a7ea0e590c1c4",
+     "bytes": 15300
     },
     {
      "path": "kit/patterns/namespaces.css",
@@ -2776,7 +2776,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "d20322ce1cc4"
+   "hash": "01a997db21b4"
   },
   {
    "id": "pattern.next-steps",
