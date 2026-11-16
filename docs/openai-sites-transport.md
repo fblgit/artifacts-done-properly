@@ -6,6 +6,27 @@ It is a working transport implementation, not yet a live-host certification.
 
 For a ready-to-run local server, see [Codex/Sites localhost](openai-localhost.md).
 
+## Anchored requests and identity
+
+Load `openai-sites-comments.js` before connecting and pass `comments: true` to
+`ADPOpenAISites.create` to enable application-owned anchored feedback. Its
+`customAnchors` controller implements the ADP runtime's mode, thread, compose,
+reveal and placement flow. Feedback uses existing `requests/` and numbered
+`requests/<id>/turns/` records, with part scope, native revision guards and
+authoritative readback. Resolution of a thread does not assert that an agent
+completed the request. Saves are queued, never labelled delivered to an agent.
+Unknown writes and failed readbacks require inspection before another send;
+partially saved replies are reported separately from request reopening.
+
+The Sites identity exposes `id`, `canEdit`, `can('data.write')`, `isOwner` and
+`me`. Ownership comes from explicit `ADP_OWNERS`, not editor membership.
+Unavailable profile fields are empty/null. The Worker continues to enforce
+membership and editor writes independently of these UI hints. Nested
+`doc.collection` and guarded `collection.add` support the existing kit's turns.
+
+These capabilities are undergoing live verification on PR #81; application-owned
+feedback must not be described as a native Sites comment service.
+
 ## Components
 
 - `skill/assets/adapters/openai-sites.js`: same-origin HTTP bridge implementing
@@ -111,10 +132,11 @@ the calling agent still follows its user's authorized scope.
 - Polling is not real-time push. Failure callbacks are delivered, polling resumes,
   and subscriptions can be canceled. Writes with an unknown response must be read
   back before retrying; automatic mutation retries are not implemented.
-- Native anchored comments, source publication, cross-host import/export, automatic
-  agent wakeups, legacy Claude-only assist/inbox/catalog paths, and native Space
-  Pages remain outside this implementation. Persisting ordinary feedback records
-  does not mean native comment UI works.
+- Native Sites comments and automatic agent wakeups are not provided by this
+  transport. Anchored requests use the application-owned controller above.
+  Record import/export is implemented by the shared shell. Source publication
+  and remaining kit portability are tracked separately in PR #81's expanded
+  compliance work; native Space Pages remain a separate host.
 
 ## Evidence
 

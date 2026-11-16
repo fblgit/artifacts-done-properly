@@ -55,7 +55,8 @@ export async function start(config) {
     '/':resolve(base,'assets/hosts/openai-sites/fixture.html'),
     '/adp.js':resolve(base,'assets/adp.js'),
     '/openai.js':resolve(base,'assets/adapters/openai.js'),
-    '/openai-sites.js':resolve(base,'assets/adapters/openai-sites.js')
+    '/openai-sites.js':resolve(base,'assets/adapters/openai-sites.js'),
+    '/openai-sites-comments.js':resolve(base,'assets/adapters/openai-sites-comments.js')
   };
   async function staticFile(pathname) {
     if(publicRoot) {

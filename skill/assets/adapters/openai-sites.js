@@ -142,15 +142,18 @@
       const id = session.id, canEdit = session.canEdit;
       const isOwner = session.isOwner === true;
       identity = id;
-      return Object.freeze({db: Object.freeze({doc, collection: value => query(value)}),
-        user: Object.freeze({
+      const db = Object.freeze({doc, collection: value => query(value)});
+      const user = Object.freeze({
           id: async () => id,
           canEdit: async () => canEdit,
           isOwner: async () => isOwner,
           can: async permission => permission === 'data.write' && canEdit,
           // Sites does not disclose profile fields here; never infer cross-host identity.
           me: async () => ({id,name:'',avatarUrl:'',color:'',email:null,isOwner,canEdit})
-        }), comments: null});
+        });
+      if (options.comments === true && !root.ADPOpenAISitesComments) throw new Error('Load the Sites comments adapter before connecting');
+      const comments = options.comments === true ? root.ADPOpenAISitesComments.create({db,user}) : null;
+      return Object.freeze({db,user,comments});
       })();
       return connection;
     }});
