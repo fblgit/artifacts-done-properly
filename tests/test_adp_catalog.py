@@ -99,6 +99,11 @@ class CheckCatalog(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn('catalog.json: kit.demo.', out)
 
+    def test_the_shipped_catalog_keeps_its_url(self):
+        # build keeps the url already in catalog.json, so a rebuild from a blank one stays blank and `adp.py new --catalog` then refuses it
+        with open(os.path.join(ROOT, 'skill', 'catalog', 'catalog.json')) as f:
+            self.assertTrue(json.load(f)['url'].startswith('https://'))
+
     def test_no_header_fails(self):
         code, out = self.run_check('(function () {})();\n')
         self.assertEqual(code, 1)
