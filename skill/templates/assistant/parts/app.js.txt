@@ -96,7 +96,6 @@ function setOpen(on, focus){
   try { sessionStorage.setItem('assist-open', on ? '1' : ''); } catch (e) {}
   if (on && focus && panel) panel.focus(); else if (!on && focus) B.focus();
 }
-const claudeUse = n => window.ADP && ADP.claude ? ADP.claude(n) : (window.claude && claude.use ? Promise.resolve(claude.use(n)).catch(() => null) : Promise.resolve(null));      // Claude-only handles: asked of window.claude only on a Claude host
 const ready = hasAssist ? ADP.config.ready.then(() => {
   engine = Kit0.assist.start({
     page: window.ADP, config: ADP.config, titles: TITLES,
@@ -330,7 +329,7 @@ function mountMind(host){
   if (!window.ADP || !ADP.db) { host.innerHTML = '<p class="muted canvas-note">A database is needed to keep the mind map, and there is none here.</p>'; return {destroy(){}}; }
   const ref = ADP.ns('shared').doc('mindmaps/main'), seed = () => ({nodes: [{id: 'n1', text: document.title || 'My map', parent: null, order: 0}]});
   let dead = false, off = null, mm = null, writing = Promise.resolve(), can = true;
-  Promise.resolve(claudeUse('user')).then(u => { try { return u && u.can ? u.can('data.write') : null; } catch (e) { return null; } }).then(w => {
+  ADP.user.can('data.write').then(w => {
     if (dead) return;
     can = w !== false;
     mm = Kit.mindmap.mount(host, {data: seed(), readOnly: !can, label: 'Mind map', layout: 'free',

@@ -49,7 +49,7 @@ expressed by it today; the proposals are for the contract owners and are **not**
    `Kit.inbox`; `sample` is the separate `ask` handle. `claude-lane` still reaches the comments handle through
    `kit/store.js` and stays Claude-only. See `docs/host-adapters.md`.
 3. **Late-bound capabilities.** `connect()` must settle but Claude's `comments` can be slow; the runtime
-   solves this with an undocumented `legacyComments` field. The adapter uses a lazy wrapper, so
+   solves this with an internal field of the built-in default (`commentsReady`). The adapter uses a lazy wrapper, so
    `ADP.host.comments` is `true` even if the viewer later grants none (anchoring then reports
    `not registered: unavailable`). *Proposal:* let `comments` be a promise, or add a settled-later status.
 4. **Db profile is narrower than use.** The kit's assist pattern calls `doc.delete()`; the contract profile

@@ -77,7 +77,7 @@ this behavior. Seeding is not a transaction or compare-and-set guarantee.
 ### Identity and permissions
 
 `user.canEdit()` must return the boolean `true` to enable editing UI; other values
-and failures mean false. `user.id()` is a host-local display/audit identifier, not
+and failures mean false. `user.can(name)` is optional: `ADP.user.can(name)` resolves its answer for a named right (the kit asks `data.write`), or `null` when the host says nothing. `user.id()` is a host-local display/audit identifier, not
 a portable authorization credential. Omitted identity means anonymous read-only
 UI. Never trust the browser's identity/flags at a server boundary: enforce access
 there. Existing integrity reporting can attempt a `status/integrity` write even

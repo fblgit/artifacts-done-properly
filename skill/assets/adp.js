@@ -32,7 +32,7 @@ const meta = document.querySelector('meta[name="adp:build"]');
 const BUILD = meta ? meta.content : '';
 const ID = /^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*$/;
 const live = {}, errors = [], stats = {anchors: 'not started', threads: 0, placed: 0, unknown: []};
-const user = {canEdit: false, id: ''};
+const user = {canEdit: false, id: '', can: () => Promise.resolve(null)};
 /* Host connection is a capability boundary, not a persistence/authorization guarantee.
    Explicit providers never fall back to another host on error. See docs/host-adapters.md. */
 let host = Object.freeze({protocol: 'adp-host/1', id: '', status: 'connecting'}), hostComments = null;
@@ -55,7 +55,7 @@ async function connectHost(){
     const use = name => Promise.resolve().then(() => window.claude.use(name)).catch(() => null);
     const comments = use('comments');
     const [db, user] = await Promise.all(['db', 'user'].map(use));
-    connection = {id: 'claude', db, user, legacyComments: comments, seedFiles: true, agent: comments.then(claudeAgent), publish: use('artifact').then(claudePublish), ask: use('sample').then(claudeAsk)};
+    connection = {id: 'claude', db, user, commentsReady: comments, seedFiles: true, agent: comments.then(claudeAgent), publish: use('artifact').then(claudePublish), ask: use('sample').then(claudeAsk)};
   } else return {id: 'static'};
   if (!connection || typeof connection.id !== 'string' || !connection.id.trim()) throw new Error('Host connection needs an id');
   if (connection.db && (typeof connection.db.doc !== 'function' || typeof connection.db.collection !== 'function')) throw new Error('Host database needs the document-store profile');
@@ -521,8 +521,8 @@ addEventListener('resize', () => { place(); later(); });
     comments: !!(hostComments && typeof hostComments.customAnchors === 'function'), seedFiles: connection.seedFiles === true, agent: false, publish: false, ask: false});
   for (const k of ['agent', 'publish', 'ask']) handles[k] = Promise.resolve(connection[k]).then(o => HANDLE_OK[k](o) ? o : null, () => null)
     .then(o => { if (o) host = Object.freeze(Object.assign({}, host, {[k]: true})); return o; });
-  if (connection.legacyComments) {
-    connection.legacyComments.then(cm => {
+  if (connection.commentsReady) {
+    connection.commentsReady.then(cm => {
       hostComments = cm;
       host = Object.freeze(Object.assign({}, host, {comments: !!(cm && typeof cm.customAnchors === 'function')}));
       return anchors();
@@ -530,6 +530,7 @@ addEventListener('resize', () => { place(); later(); });
   } else anchors().catch(() => pushErr('comments unavailable'));
   canEdit = u ? await Promise.resolve().then(() => u.canEdit()).then(v => v === true).catch(() => false) : false;
   user.canEdit = canEdit; user.id = u ? String(await Promise.resolve().then(() => u.id()).catch(() => '') || '') : '';
+  user.can = n => u && typeof u.can === 'function' ? Promise.resolve().then(() => u.can(n)).catch(() => null) : Promise.resolve(null);      // the host's answer for a named right (data.write), or null when it does not say
   if (d && canEdit && host.seedFiles) await seedFromFile(d);     // before anything reads the record: the first editor at an empty db writes it
   db = d;
   if (db) { changesPanel(); watchContent(); }
@@ -540,7 +541,7 @@ addEventListener('resize', () => { place(); later(); });
   }
   later();
 })().catch(() => {
-  db = null; canEdit = false; user.canEdit = false;
+  db = null; canEdit = false; user.canEdit = false; user.can = () => Promise.resolve(null);
   host = Object.freeze({protocol: 'adp-host/1', id: host.id, status: 'failed'});
   pushErr('host initialization failed'); ready();
 });

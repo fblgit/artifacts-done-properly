@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T15:48:49Z",
+ "built": "2026-11-16T15:56:04Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -52,11 +52,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "76049da31c43b0862af74cccf3fb15b660c227cb6d3331c6fa4debf6f649fa14",
-     "bytes": 44773
+     "sha256": "de7c6796d072bf84de917e4410d0b4f6a5cdd8ecce4063972996ee48febe9d3f",
+     "bytes": 45066
     }
    ],
-   "hash": "a96cbb83ee79"
+   "hash": "3c53fe28adba"
   },
   {
    "id": "kit.callout-refusal",
@@ -259,7 +259,7 @@
    "id": "kit.claude-lane",
    "kind": "component",
    "group": "Board kit",
-   "name": "Claude lane",
+   "name": "Claude lane (Claude-only: it calls comments.sendToClaude itself. A page that must also run on another host uses pattern.assist, which sends through the host's agent handle.)",
    "summary": "Sends a request to the Claude Code session that has the page open, queues it on the board when nobody listens, and shows each request’s answer state: queued, acknowledged, working, answered.",
    "tags": [
     "claude",
@@ -289,8 +289,8 @@
     {
      "path": "kit/claude-lane.js",
      "role": "script",
-     "sha256": "ecef9b857f2d0b17093366e34e14dd22dd76042a012ece2d1d9ee9a0b163b210",
-     "bytes": 12088
+     "sha256": "a9ffed22ba77a3d90a732269bf2c11f3d689cdf32688860c29e5d73d15e29797",
+     "bytes": 12250
     },
     {
      "path": "kit/claude-lane.css",
@@ -305,7 +305,7 @@
      "bytes": 33634
     }
    ],
-   "hash": "2c132a38b176"
+   "hash": "c4e647d3b812"
   },
   {
    "id": "kit.code-gate",
@@ -4064,8 +4064,8 @@
     {
      "path": "kit/save-status.js",
      "role": "script",
-     "sha256": "e55109acb8a7cc6471141257c1d888a3d3d8ea4f9dbfd62db65c0dca3938baff",
-     "bytes": 8826
+     "sha256": "016dde2059c3ddee06dcba95f80c1dd3eddd4087b354bfa8dac66400e05d9310",
+     "bytes": 8855
     },
     {
      "path": "kit/save-status.css",
@@ -4080,7 +4080,7 @@
      "bytes": 33634
     }
    ],
-   "hash": "101701d63dc2"
+   "hash": "86abc498f5d4"
   },
   {
    "id": "kit.skins",
@@ -4515,8 +4515,8 @@
     {
      "path": "kit/templates/tester.js",
      "role": "script",
-     "sha256": "21c06ebf5b0e3421aafbca54948bbe20bdb20fe00a63d5ab2d53a2c2f6665ed3",
-     "bytes": 15524
+     "sha256": "6fd5d1cb3302a672158342eb8be2cc11efceba9d82928516237a1f80815e0f0e",
+     "bytes": 15632
     },
     {
      "path": "kit/samples/tester.json",
@@ -4525,7 +4525,7 @@
      "bytes": 800
     }
    ],
-   "hash": "b39debb3b969"
+   "hash": "5dba9c72d4f1"
   },
   {
    "id": "theme.adr-drafting-table",

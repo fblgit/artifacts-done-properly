@@ -37,7 +37,7 @@ if(mode==='no-db') delete connection.db;
 if(mode==='reject-user') connection.user={canEdit:async()=>{throw Error('no');},id:async()=>{throw Error('no');}};
 if(mode==='truthy-user') connection.user={canEdit:()=> 'true',id:()=> 'viewer'};
 if(mode==='comments-error') connection.comments={customAnchors:async()=>{throw Error('no');}};
-if(mode==='handles'){connection.agent=Promise.resolve({label:'X',canSend:async()=>'queued',send:async()=>({})});connection.publish={};}
+if(mode==='handles'){connection.agent=Promise.resolve({label:'X',canSend:async()=>'queued',send:async()=>({})});connection.publish={};connection.user.can=async n=>n==='data.write';}
 const adapter=mode.startsWith('adapter');
 if(mode!=='legacy' && mode!=='legacy-slow-comments' && mode!=='static' && !adapter) win.ADP_HOST={protocol:mode==='bad-protocol'?'wrong':'adp-host/1',connect:async()=>{calls.push('explicit');if(mode==='reject')throw Error('no');return connection;}};
 if(mode==='legacy'||mode==='legacy-slow-comments'||mode==='both'||mode==='reject'||(adapter&&mode!=='adapter-no-claude'))win.claude={use:async name=>{calls.push('claude:'+name);if(/slow-comments/.test(mode)&&name==='comments')return new Promise(()=>{});return name==='db'?db:name==='user'?user:null;}};
@@ -53,7 +53,8 @@ await new Promise(resolve=>setImmediate(resolve));
 let ns=false;try{ns=!!win.ADP.ns('app').doc('x');}catch(e){}
 const acc=typeof win.ADP.claude; if(acc==='function') await win.ADP.claude('artifact');
 const h=(await Promise.all([win.ADP.agent(),win.ADP.publish(),win.ADP.ask()].map(p=>Promise.race([p,new Promise(r=>setTimeout(()=>r('slow'),60))])))).map(x=>x&&typeof x);
-console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,acc,calls,h}));})().catch(e=>{console.error(e);process.exitCode=1;});
+const can=await win.ADP.user.can('data.write');
+console.log(JSON.stringify({can,host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,acc,calls,h}));})().catch(e=>{console.error(e);process.exitCode=1;});
 '''
 
 
@@ -86,6 +87,7 @@ class HostConnection(unittest.TestCase):
         r = self.run_case('handles')      # a promise of a handle is accepted; a handle of the wrong shape reads as none
         self.assertEqual((r['h'], [r['host'][k] for k in ('agent', 'publish', 'ask')]), (['object', None, None], [True, False, False]))
         self.assertEqual(self.run_case('explicit')['h'], [None, None, None])
+        self.assertEqual((r['can'], self.run_case('explicit')['can']), (True, None))      # ADP.user.can passes the host's answer for a right, or null when it gives none
 
     def test_failed_provider_is_closed_and_ready(self):
         for mode in ('reject', 'bad-protocol', 'bad-ref'):
@@ -167,16 +169,20 @@ const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts });
     def test_the_panel_lets_a_queued_host_send(self):
         script = r"""
 const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/skill/catalog/kit/', made = [], noop = () => {};
-const mk = () => { const a = {}, t = { attrs: a, dataset: {}, style: {}, classList: { add: noop, remove: noop, toggle: noop }, textContent: '', setAttribute: (k, v) => { a[k] = String(v); }, getAttribute: k => a[k] ?? null };
+const mk = tag => { const a = {}, h = {}, t = { tag, h, attrs: a, addEventListener: (k, f) => { h[k] = f; }, dataset: {}, style: {}, classList: { add: noop, remove: noop, toggle: noop }, textContent: '', setAttribute: (k, v) => { a[k] = String(v); }, getAttribute: k => a[k] ?? null };
   return new Proxy(t, { get: (o, k) => k in o ? o[k] : k === 'className' ? '' : k === 'querySelectorAll' ? () => [] : noop, set: (o, k, v) => (o[k] = v, true) }); };
-const doc = { createElement: () => { const e = mk(); made.push(e); return e; }, createTextNode: mk, getElementById: () => null, head: mk(), body: mk(), addEventListener: noop, removeEventListener: noop };
+const doc = { createElement: tag => { const e = mk(tag); made.push(e); return e; }, createTextNode: mk, getElementById: () => null, head: mk(), body: mk(), addEventListener: noop, removeEventListener: noop };
 const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, document: doc, addEventListener: noop, TextEncoder }; w.window = w; vm.createContext(w);
 for (const f of ['dom.js', 'patterns/assist-panel.js']) vm.runInContext(fs.readFileSync(K + f, 'utf8'), w);
 const view = () => ({ get: () => [], on: () => noop }), eng = s => ({ can: () => ({ ask: false, send: s }), requests: view, conversations: view, watch: () => noop, lanes: () => ['task'], word: l => l, presence: () => ({}), me: () => 'u', agentLabel: () => 'Codex' });
 console.log(JSON.stringify(['available', 'queued', 'no_session', 'off'].map(s => { made.length = 0; w.Kit.assistPanel.mount(mk(), { engine: eng(s) }); return made.find(e => e.attrs['aria-disabled'] !== undefined).attrs['aria-disabled'] + made.some(e => e.textContent === 'Work with Codex'); })));
-process.exit(0);"""
+const sendWith = async d => { made.length = 0; w.Kit.assistPanel.mount(mk(), { engine: { ...eng('queued'), send: async () => 'r1', delivery: () => d } }); made.find(e => e.tag === 'textarea').value = 'hi';
+  made.find(e => e.h.submit).h.submit({ preventDefault: noop }); await new Promise(r => setTimeout(r, 20)); return made.find(e => e.className === 'kit-ap-live').textContent; };
+(async () => { console.log(JSON.stringify([await sendWith('unknown'), await sendWith('queued')])); process.exit(0); })();"""
         run = run_node(['-e', script, str(ROOT)])
-        self.assertEqual(json.loads(run.stdout), ['falsetrue', 'falsetrue', 'truetrue', 'truetrue'], run.stderr)      # queued enables Send, as available does; no_session and off still block; the title names the host's agent
+        gate, said = [json.loads(x) for x in run.stdout.splitlines()]
+        self.assertEqual(gate, ['falsetrue', 'falsetrue', 'truetrue', 'truetrue'], run.stderr)      # queued enables Send, as available does; no_session and off still block; the title names the host's agent
+        self.assertEqual([x.startswith(p) for x, p in zip(said, ['Task saved. Delivery to Codex is not confirmed', 'Task sent. It waits'])], [True, True], said)      # unknown delivery is said as saved, not sent
 
     def test_a_reply_ends_an_agents_claim_only_where_there_is_one(self):
         script = ASSIST_ENV + r'''

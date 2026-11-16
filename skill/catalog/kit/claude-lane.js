@@ -1,6 +1,6 @@
 /* part:page.script.kit.claude-lane */
 /**
- * Claude lane
+ * Claude lane (Claude-only: it calls comments.sendToClaude itself. A page that must also run on another host uses pattern.assist, which sends through the host's agent handle.)
  * sendRequest(text, anchorEl, recordId) writes the request doc first, then delivers it through comments.sendToClaude when a session listens; otherwise the doc waits for the next session. The session writes back working with progress lines and done with a response, and the lane paints each step. ListenHint says whether a session is listening, QueueStrip counts requests per step, ReqList shows the requests about one record.
  *
  * What it is: sends a request to the Claude Code session that has the artifact open (comments.sendToClaude, anchored to an element), with a queued

@@ -11,7 +11,7 @@
  *   Kit.saveStatus.create({el, lsKey, doc, db, debounce, words, normalize, onRemote}) -> {persist(data), flush(), get(), connect(db, path), state(), destroy()}
  *     el          the element that shows the line (it gets role="status", aria-live="polite" and data-state)
  *     lsKey       localStorage key for the browser copy (omit to keep none);  doc  initial data, used when the browser has no copy
- *     db, path    a db capability (claude.use("db")) and the doc that holds the data, e.g. "board/state"; or call connect(db, path) once the capability resolves
+ *     db, path    a db handle (ADP.db on any host, or claude.use("db") on Claude) and the doc that holds the data, e.g. "board/state"; or call connect(db, path) once the capability resolves
  *                 (changes made before that are kept in the browser and written when it connects)
  *     debounce    ms to wait after the last change before writing (default 500)
  *     normalize(x) -> data     shapes whatever came from storage (default: identity)

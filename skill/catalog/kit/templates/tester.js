@@ -1,6 +1,6 @@
 /* part:page.script.kit.templates.tester */
 /* Kit template script: step-by-step test harness (Kit.tester)    kit version 0.1.0    belongs to kit/templates/tester.html.txt (the page) and tester.css
-   What it is: a flow of steps the page runs one at a time. A person presses Run step; Claude presses the same step from outside by writing the db doc <ns>/cmd; the page reports where it is in <ns>/state.
+   Claude-only by design: it exercises claude.use(...) capabilities and says so when window.claude is missing. What it is: a flow of steps the page runs one at a time. A person presses Run step; Claude presses the same step from outside by writing the db doc <ns>/cmd; the page reports where it is in <ns>/state.
    Every step toasts what it did and writes a line to the log. State, toast, busy bar and the rail are the kit's (kit.store, kit.chrome, viz.stepper); the pack is expanded by ADP's own loader
    (seed.json and seed/, adp.js seedFromFile) into the db: nothing here unpacks anything.
    Extend it in ONE place: STEPS (id, label, hint) and ACTIONS (id -> async function(ctx)) below, or pass mount(root, {steps, actions}) to add to them. A step throws to fail; ctx has
