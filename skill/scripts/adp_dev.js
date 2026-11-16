@@ -1,6 +1,9 @@
 /* adp.py dev: a stand-in for the claude.ai viewer's window.claude (db, user, comments, artifact.publish), served at /__adp/shim.js by `adp.py dev serve`,
    which prepends window.__ADP_DEV = {user}. use(name) resolves later, memoized, and null for anything not stood in here.
-   Live updates: the server's event stream names the changed docs; the page then re-reads the db and fires the listeners whose result changed. */
+   Live updates: the server's event stream names the changed docs; the page then re-reads the db and fires the listeners whose result changed.
+   Snapshot model, bounded: every notification is settled (constant metadata, one per changed result). The live viewer also sends pending-write, cache and echo
+   snapshots and, after a reload, a stale-cache first snapshot that `removed` changes then correct (docs/claude-host-adapter.md). Not modelled, because no shipped
+   code reads that metadata and every docChanges consumer applies changes per id; tests/test_dev.py fails when a shipped file starts to read it. */
 (function () {
 'use strict';
 const USER = (window.__ADP_DEV || {}).user;
@@ -27,6 +30,7 @@ function refresh() {
 }
 const load = () => loaded || (loaded = refresh().then(() => { new EventSource('/__adp/events').onmessage = refresh; }));
 
+// The one constant every snapshot carries: change it only together with a measured model of the live sequence and tests/test_dev.py's guard on it.
 const META = { fromCache: false, hasPendingWrites: false };
 const snap = p => ({ id: p.split('/').pop(), exists: !!docs[p], data: () => docs[p] ? clone(docs[p].data) : undefined, metadata: META });
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);

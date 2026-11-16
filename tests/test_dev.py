@@ -1,5 +1,5 @@
 """`adp.py dev`: the server a page runs against, and the session side: watch (messages in) and send (batches out)."""
-import glob, json, os, subprocess, sys, time, urllib.error, urllib.request
+import glob, json, os, pathlib, re, subprocess, sys, time, urllib.error, urllib.request
 
 from test_setup import Base
 
@@ -57,6 +57,10 @@ class DevTests(Base):
         self.assertEqual(self.get('kit/a.js'), 'A2')
         self.assertEqual(self.post('/__adp/publish', {'files': {'../x': 'x'}})['error']['code'], 'invalid_argument')
         self.assertIn('artifact', self.get('__adp/shim.js'))
+
+    def test_no_shipped_code_reads_snapshot_metadata_so_the_stand_in_may_keep_it_constant(self):      # the live sequence is documented, not modelled: docs/claude-host-adapter.md
+        files = [os.path.join(d, f) for d, _, fs in os.walk(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill')) for f in fs if f.endswith(('.js', '.mjs', '.txt', '.html', '.py')) and f != 'adp_dev.js']
+        self.assertEqual([p for p in files if re.search(r'hasPendingWrites|fromCache', pathlib.Path(p).read_text(errors='ignore'))], [])
 
     def test_update_marker_removes_a_field_and_one_with_other_keys_is_refused(self):      # both as measured on the live viewer
         db = lambda op, data: self.post('/__adp/db', {'op': op, 'path': 'a/b', 'data': data})

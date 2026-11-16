@@ -94,7 +94,18 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   ordering and `user` additions, which is not in the suite.
 - Observed, snapshot behaviour a host or fake must tolerate: a local write fires the listener with
   `hasPendingWrites: true`, then an empty-changes snapshot (`fromCache: true`), then a `modified` change for
-  the doc it just added, then a settled snapshot. The stand-in's metadata is constant and fires once.
+  the doc it just added, then a settled snapshot; after a reload the first snapshot is `fromCache: true` and may
+  hold documents deleted since, which later `removed` changes correct. **Known divergence, bounded, not
+  emulated:** the stand-in sends settled snapshots only (constant metadata, one notification per changed
+  result). Only two sequences were measured (a new document written from the listener, and a reload over earlier
+  runs' leftovers); updates, deletes and concurrent writers were not, so a fake of the rest would be a guess. The
+  bound holds because no shipped code reads `hasPendingWrites` or `fromCache` (a scan of everything under
+  `skill/` finds only the stand-in's own constant) and every `docChanges` consumer (`adp.js` content watcher,
+  the assistant template's `applySnap`, the preview kit) applies each change by document id, so repeated,
+  `modified` and `removed`-after-`added` notifications are tolerated. `tests/test_dev.py` fails as soon as any
+  shipped file reads that metadata: the sequence must then be modelled from fresh measurements first. Code that
+  shows a "saving" state from `hasPendingWrites`, or counts notifications, would behave differently on the stand-in
+  than live.
 - Observed, errors: `db.doc()` with an odd segment count throws synchronously with no `code`; an invalid query
   operator rejects `invalid_argument`. Not observed: the stand-in's `invalid_argument` from publish; the types
   do not list it as a publish code.
