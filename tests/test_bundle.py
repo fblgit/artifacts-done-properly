@@ -79,6 +79,9 @@ class BundleTests(Cmd):
         self.assertEqual(r.returncode, 1); self.assertIn('does not cover', r.stderr)
         r = self.run_adp('bundle', raw, self.p('b3'), '--host', 'claude', '--artifact', 'src', '--raw')      # an export that read one collection must not look complete
         self.assertEqual(r.returncode, 1); self.assertIn('does not cover', r.stderr)
+        full = [{'call': {'collection': c}, 'result': '{"id":"r-1","data":{},"version":1}' if c == 'requests' else 'No documents matched'} for c in ('manifest', 'parts', 'content', 'changes', 'decisions', 'config', 'agents', 'incoming', 'requests')]
+        r = self.run_adp('bundle', self.write_json('full.json', full), self.p('b4'), '--host', 'claude', '--artifact', 'src', '--raw')      # replies live in requests/<rid>/turns: asked for, not dropped
+        self.assertEqual((r.returncode, json.loads(r.stdout)['reads'][0]['collection']), (2, 'requests/r-1/turns'))
         r = self.run_adp('import-plan', self.p('b1'), '--host', 'sites', '--artifact', 'roundtrip')      # named records: one read per bundle doc plus imports/<source>
         self.assertEqual((r.returncode, len(json.loads(r.stdout)['reads'])), (2, n + 1))
         gone = [{'collection': x['collection'], 'id': x['id'], 'exists': False, 'revision': 7} for x in src] + [{'collection': 'imports', 'id': 'claude-src', 'exists': False, 'revision': 3}]

@@ -48,6 +48,9 @@ def bundle(a):
     if len(pos) != 2: sys.exit('usage: adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections ...] [--raw]')
     got, _, cov = reads_in(a, pos[0]); miss = [c for c in want if cov is not None and c not in cov]
     if miss: sys.exit(f'the read does not cover {", ".join(miss)}: a bundle from it would silently drop them; read them again')
+    nested = sorted({f"requests/{x['id']}/turns" for x in got.values() if x['collection'] == 'requests'})      # replies live one collection per request, known only once requests are read
+    if cov is not None and (more := [c for c in nested if c not in cov]):
+        print('append the results of these reads to the same file and run bundle again', file=sys.stderr); return reads(ad.read_calls(art, more))
     docs = sorted((x for x in got.values() if x['collection'].split('/')[0] not in SKIP), key=lambda x: (x['collection'], x['id']))
     at, counts, packs, cur, size = A.opt(a, '--at') or A.now(), {}, [], [], 0
     bid = 'b-' + chash([[x['collection'], x['id'], x['data']] for x in docs])[7:19]
