@@ -40,7 +40,8 @@ function rows(c, q) {
   for (const [f, op, v] of q.where) l = l.filter(p => f in docs[p].data && OPS[op](docs[p].data[f], v));
   if (q.order) {
     const [f, s] = [q.order[0], q.order[1] === 'desc' ? -1 : 1], val = p => docs[p].data[f];
-    l.sort((a, b) => val(a) === val(b) ? 0 : val(a) === undefined ? 1 : val(b) === undefined ? -1 : val(a) < val(b) ? -s : s);
+    const lt = (x, y) => x === null ? y !== null : y === null ? false : x < y;      // measured live: null is the lowest value, a missing field sorts last either way
+    l.sort((a, b) => val(a) === val(b) ? 0 : val(a) === undefined ? 1 : val(b) === undefined ? -1 : lt(val(a), val(b)) ? -s : s);
   }
   return q.limit ? l.slice(0, q.limit) : l;
 }
@@ -102,7 +103,8 @@ function colRef(path) {
 }
 const db = Object.freeze({ doc: docRef, collection: colRef });
 
-const user = Object.freeze({ id: async () => USER, canEdit: async () => true, can: async name => name === 'data.write' });
+const user = Object.freeze({ id: async () => USER, canEdit: async () => true, can: async name => name === 'data.write', isOwner: async () => true,
+  me: async () => ({ id: USER, name: '', avatarUrl: '', color: '', email: null, isOwner: true, canEdit: true }) });      // the key set the live viewer returned
 
 const comments = Object.freeze({
   canSendToClaude: async () => { await refresh(); return canSend; },

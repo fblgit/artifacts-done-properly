@@ -50,12 +50,20 @@ class DevTests(Base):
         sha = r['shas']['kit/a.js']
         bad = self.post('/__adp/publish', {'files': {'kit/a.js': {'content': 'A2', 'ifMatch': 'f' * 64}, 'new.js': 'N'}})['error']
         self.assertEqual((bad['code'], bad['paths'][0]['path'], bad['paths'][0]['actual']), ('conflict', 'kit/a.js', sha))
+        self.assertEqual((bad['live'], bad['changed']), ('dev-1', []))      # as the live viewer: the current version id, and a changed list
         self.assertEqual(self.get('kit/a.js'), 'A')      # nothing was written, new.js either
         with self.assertRaises(urllib.error.HTTPError): self.get('new.js')
         self.assertEqual(self.post('/__adp/publish', {'files': {'kit/a.js': {'content': 'A2', 'ifMatch': sha}, 'b.txt': None}})['version'], 'dev-2')
         self.assertEqual(self.get('kit/a.js'), 'A2')
         self.assertEqual(self.post('/__adp/publish', {'files': {'../x': 'x'}})['error']['code'], 'invalid_argument')
         self.assertIn('artifact', self.get('__adp/shim.js'))
+
+    def test_update_marker_removes_a_field_and_one_with_other_keys_is_refused(self):      # both as measured on the live viewer
+        db = lambda op, data: self.post('/__adp/db', {'op': op, 'path': 'a/b', 'data': data})
+        db('set', {'x': {'p': 1}, 'y': 2})
+        self.assertEqual(db('update', {'x': {'__delete__': True, 'z': 1}})['error']['code'], 'invalid_argument')
+        db('update', {'y': {'__delete__': True}})
+        self.assertEqual(json.loads(self.get('__adp/db'))['docs']['a/b']['data'], {'x': {'p': 1}})
 
     def test_outbox_takes_one_artifactdata_batch_call_as_writes(self):
         res = self.post('/__adp/outbox', {'url': 'x', 'action': 'batch', 'writes': [{'op': 'set', 'collection': 'a', 'doc_id': 'b', 'data': {'v': 1}}]})

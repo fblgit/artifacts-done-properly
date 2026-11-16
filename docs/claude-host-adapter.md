@@ -73,11 +73,17 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 - Observed, matches: `canEdit()` resolves a boolean; `canSendToClaude()` resolves `available`; `set` resolves
   `undefined`; snapshots carry `data/exists/id/metadata`; `update` merges; a missing doc reads
   `exists: false`; a stale `ifMatch` publish rejects `conflict` with `paths: [{path, expected, actual}]`.
-- Observed, the dev stand-in lacks it: the top-level db also has path methods `get/set/update/delete/query/
-  subscribe/unsubscribe/acquire` (the types list only `doc`/`collection`); `comments` also has `create/delete/
-  reply/resolve`; `user` has `isOwner/me/profiles/search`; `doc.acquire` resolves
-  `{acquired, expiresAt, holder, version}`; a conflict's `live` is the current version id and `changed` is
-  present (the stand-in sends `live: ''`).
+- Observed, still missing from the dev stand-in because the behaviour was not measured, only the names or
+  the uncontended shape: the top-level db path methods `get/set/update/delete/query/subscribe/unsubscribe/
+  acquire` (the types list only `doc`/`collection`); `comments.create/delete/reply/resolve`;
+  `user.profiles/search`; `doc.acquire`, which resolved `{acquired, expiresAt, holder, version}` uncontended
+  (contention is unmeasured, so it is not faked).
+- Fixed in the stand-in to match what was measured (`skill/scripts/adp_dev.*`): a publish conflict's `live` is
+  the current version id and it carries `changed: []`; `update` removes a field for a bare
+  `{__delete__: true}` and refuses the marker with other keys (`invalid_argument`); `orderBy` puts `null`
+  lowest and a missing field last in both directions; `user.isOwner()` and `user.me()` with the live key
+  set. Checked by `tests/test_dev.py` (marker, conflict) and a throwaway run of the real shim file for the
+  ordering and `user` additions, which is not in the suite.
 - Observed, snapshot behaviour a host or fake must tolerate: a local write fires the listener with
   `hasPendingWrites: true`, then an empty-changes snapshot (`fromCache: true`), then a `modified` change for
   the doc it just added, then a settled snapshot. The stand-in's metadata is constant and fires once.
