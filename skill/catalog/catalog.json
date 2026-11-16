@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T15:56:04Z",
+ "built": "2026-11-16T16:03:05Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -1470,8 +1470,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "ab543decda28c04456afcab1c1c8cdb3989dfcdf4cc024b38ce4c0cf7add9fa0",
-     "bytes": 36219
+     "sha256": "29587b2a9350b61ffa4528553cb1b2fa74f7bd456efca2e52a35cc00e5afe9b0",
+     "bytes": 36228
     },
     {
      "path": "kit/samples/patterns.json",
@@ -1480,7 +1480,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "14645fc74f90"
+   "hash": "d69ef9240173"
   },
   {
    "id": "pattern.attention-list",

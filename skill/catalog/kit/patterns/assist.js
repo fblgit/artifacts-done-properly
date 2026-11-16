@@ -14,7 +14,7 @@
  *     (manifest/current: parts {id: hash}) name and hash picked blocks; words {lane: word}; frame replaces the Ask now framing; onPick(pick) after the shortcut;
  *     shortcut false turns the key off; no db -> an in-memory store (seed {path: doc}), nothing leaves the page.
  *   engine.ready                  Promise, resolved once the handles are in and the lists are subscribed
- *   engine.can()                  {send: 'available'|'writers_only'|'no_session'|'off'|'none', ask: bool}; re-checked every 30 s
+ *   engine.can()                  {send: 'available'|'queued'|'writers_only'|'no_session'|'off'|'none', ask: bool}; re-checked every 30 s
  *   engine.watch(fn) -> off       fn(can()) whenever it changes
  *   engine.pick()                 Promise<{id, label, hash, quote, el} | null>: Kit.blockPicker.open when that entry is loaded, else the built-in dim layer
  *   engine.send({lane, scope: {kind, id, label, hash}, text, quote, project}) -> Promise<rid>; rejects with the capability's code (no_session, claude_unavailable, ...)
