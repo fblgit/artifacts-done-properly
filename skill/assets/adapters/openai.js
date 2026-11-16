@@ -48,6 +48,21 @@
             if (!identity) return false;
             const id = await identity.id();
             return typeof id === 'string' && id.trim().length > 0 && await identity.canEdit() === true;
+          },
+          async isOwner() {
+            return !!(await user.id()).trim() && typeof identity?.isOwner === 'function' && await identity.isOwner() === true;
+          },
+          async can(permission) {
+            if (!(await user.id()).trim() || typeof identity?.can !== 'function') return false;
+            const allowed = await identity.can(permission) === true;
+            return allowed && (permission !== 'data.write' || await user.canEdit());
+          },
+          async me() {
+            const profile = typeof identity?.me === 'function' ? await identity.me() : {};
+            const string = key => typeof profile?.[key] === 'string' ? profile[key] : '';
+            return {id:await user.id(),name:string('name'),avatarUrl:string('avatarUrl'),color:string('color'),
+              email:typeof profile?.email === 'string' ? profile.email : null,
+              isOwner:await user.isOwner(),canEdit:await user.canEdit()};
           }
         });
         return Object.freeze({id: 'openai-' + profile, db: db || null, user,

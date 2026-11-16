@@ -15,7 +15,8 @@ function access(request, env, sessionOnly = false) {
   const canEdit = members('ADP_EDITORS').includes(id);
   if (!sessionOnly && !canEdit && !members('ADP_READERS').includes(id)) fail(403, 'Not an ADP member');
   if (request.headers.has('x-adp-user') && request.headers.get('x-adp-user') !== id) fail(409, 'Identity changed; reload');
-  return {id, canEdit};
+  // Ownership is explicit configuration, never inferred from editor membership.
+  return {id, canEdit, isOwner:members('ADP_OWNERS').includes(id)};
 }
 async function body(request) {
   if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) fail(415, 'JSON required');
