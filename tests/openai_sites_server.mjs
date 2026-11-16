@@ -158,7 +158,18 @@ await import('../skill/catalog/kit/patterns/inbox.js');
 let queuedPublication='';const inbox=Kit.inbox.mount(document.createElement('div'),{artifact:null,comments:null,user:{id:'editor',canEdit:true},config:{get(){return null;}},db:{collection(path){return {onSnapshot(fn){inboxWatch[path]=fn;return ()=>{};}};},doc(){return {onSnapshot(){return ()=>{};}};}},requestPublish:async id=>{queuedPublication=id;}});
 inboxWatch.incoming({docs:[{id:'p-ui',exists:true,data:()=>({status:'merged',summary:'Publish reviewed change',files:[],parts:[]})}]});
 const queueButton=nodes.findLast(n=>n.tag==='button' && n.textContent==='Request publication');assert.ok(queueButton);assert.equal(queueButton.disabled,false);await queueButton.listeners.click();assert.equal(queuedPublication,'p-ui');
-inbox.destroy();delete globalThis.window;delete globalThis.Kit;delete globalThis.document;
+inbox.destroy();
+document.addEventListener=()=>{};document.removeEventListener=()=>{};
+await import('../skill/catalog/kit/patterns/assist.js');
+const part={dataset:{part:'page.header'},closest:s=>s==='[data-part]'?part:null};
+const engine=Kit.assist.start({db:second.db,user:second.user,agent:withComments.agent,shortcut:false});await engine.ready;
+try {
+  const before=(await second.db.collection('requests').get()).docs.length;
+  const rid=await engine.send({text:'One kit request only',scope:{kind:'part',id:'page.header',el:part}});
+  assert.equal((await second.db.collection('requests').get()).docs.length,before+1,'Kit send must not duplicate requests');
+  await engine.reply(rid,'One kit reply only');assert.equal((await second.db.doc('requests/'+rid).collection('turns').get()).docs.length,1);
+} finally {engine.destroy();}
+delete globalThis.window;delete globalThis.Kit;delete globalThis.document;
 assert.equal((await second.db.doc('decisions/keep').get()).data().intent,'Portable understanding');
 assert.equal((await second.db.collection('decisions').where('status','==','active').get()).docs.length,1);
 const revision=(await ref.get()).revision;
