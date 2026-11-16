@@ -160,7 +160,7 @@ const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts });
 })();'''
         run = run_node(['-e', script, str(ROOT)])
         out = [json.loads(x) for x in run.stdout.splitlines()]
-        self.assertEqual(out[0], ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'ok', 'none: This page cannot send to Claude here.', [True, True]], run.stderr)      # queued is sendable; words from the label; default from the page's host; a legacy comments handle still works; the stored request id goes with the send
+        self.assertEqual(out[0], ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'none: This page cannot send to Claude here.', 'none: This page cannot send to Claude here.', [True, True]], run.stderr)      # queued is sendable; words from the label; default from the page's host; a Claude-shaped comments handle is no longer taken for an agent; the stored request id goes with the send
         self.assertEqual(out[2], ['unknown', 1])      # an unconfirmed handoff is shown and the saved request stays
         self.assertEqual(out[1], [True, 't', '0001'])      # a reply names its stored turn, so a host with its own record does not add a second
 
@@ -169,8 +169,8 @@ const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts });
 const claim = { actor: 'a', token: 'T', state: 'working' }, base = { lane: 'task', scope: { kind: 'page', id: '', label: 'P' }, text: 'x', at: '2026-11-16T00:00:00Z', status: 'open', state: 'working', progress: [] };
 (async () => {
   for (const [seed, fail] of [[{ ...base, execution: claim, workGeneration: 2 }, 0], [{ ...base }, 0], [{ ...base, execution: claim, workGeneration: 2 }, 1]]) {
-    const comments = { anchorFor: async () => 'page', canSendToClaude: async () => 'available', sendToClaude: async () => { if (fail) throw new Error('x'); } };
-    const e = w.Kit.assist.start({ seed: { 'requests/r': seed }, comments }); await e.ready; await sleep();
+    const agent = { canSend: async () => 'available', anchorFor: async () => 'page', send: async () => { if (fail) throw new Error('x'); return { threadId: 't', delivery: 'queued' }; } };
+    const e = w.Kit.assist.start({ seed: { 'requests/r': seed }, agent }); await e.ready; await sleep();
     await e.reply('r', 'hi').catch(() => 0); await sleep();
     const r = e.requests({}).get()[0]; console.log(JSON.stringify([r.execution === undefined ? 'absent' : r.execution && r.execution.token, r.workGeneration === undefined ? 'absent' : r.workGeneration])); e.destroy();
   }

@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T15:23:06Z",
+ "built": "2026-11-16T15:32:57Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -1470,8 +1470,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "2b999d9edc3befd8995dc1a3b4ef82cad3d0f822bae48824d4a73bd7252ddac8",
-     "bytes": 36727
+     "sha256": "e3b779fc34aa6df13d8d1651533ab695e4bbd59c46ecae66166e5a4fdc44afbb",
+     "bytes": 36138
     },
     {
      "path": "kit/samples/patterns.json",
@@ -1480,7 +1480,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "7ae78ac0f15c"
+   "hash": "1341b405d0f7"
   },
   {
    "id": "pattern.attention-list",
@@ -2470,8 +2470,8 @@
     {
      "path": "kit/patterns/inbox.js",
      "role": "script",
-     "sha256": "c3c50d9a67d653d865fcb8dbed4c8cac76afa3854f3e4259e3cf5d8966c8fe6e",
-     "bytes": 32079
+     "sha256": "696f2d377b5fb72dca4657780ff53aa394251718bd52db385e03c62fac8583ee",
+     "bytes": 31420
     },
     {
      "path": "kit/patterns/inbox.css",
@@ -2486,7 +2486,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "98a31d8db272"
+   "hash": "02e31d5ea45c"
   },
   {
    "id": "pattern.integrity",
