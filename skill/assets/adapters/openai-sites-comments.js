@@ -46,7 +46,7 @@
     const api = {
       async create(anchor, message, options = {}) {
         const by = await editor();
-        if (typeof anchor !== 'string' || !/^[A-Za-z][A-Za-z0-9_-]*(?::[^\s]{1,200})?$/.test(anchor)) throw new TypeError('Invalid part anchor');
+        if (typeof anchor !== 'string' || !/^[A-Za-z][A-Za-z0-9_.-]*(?::[^\s]{1,200})?$/.test(anchor)) throw new TypeError('Invalid part anchor');
         const id = 'r-' + root.crypto.randomUUID(), part = anchor.split(':')[0];
         const manifest = await db.doc('manifest/current').get();
         const hash = manifest.exists ? manifest.data().parts?.[part] : null;

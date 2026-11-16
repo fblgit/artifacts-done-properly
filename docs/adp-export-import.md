@@ -15,7 +15,9 @@ never destination guards. The earlier receipt label `adp-seed-pack/1` is not a
 separate supported format.
 
 Export covers manifest, parts, content, changes, decisions, config, agents,
-incoming and requests. Pass `--collections` for additional namespaces containing
+incoming, requests, and each request’s nested `turns` collection. Raw exports
+request the nested reads after discovering request IDs; append those results and
+retry to preserve replies. Pass `--collections` for additional namespaces containing
 artifact knowledge. Transient status/presence and the shell's imports records
 are excluded. Raw exports refuse missing required collection reads. A normalized
 DOCS file is an agent-supplied assertion; use raw tool envelopes for checked
