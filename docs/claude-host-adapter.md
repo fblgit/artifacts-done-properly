@@ -99,8 +99,9 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   **Stand-in, modelled (query `onSnapshot` only):** a document newly `set` through the stand-in produces exactly
   the five snapshots recorded live (`+existing`, `+new` pending, empty cache echo, `~new` from cache, settled
   empty), and a reload produces the persisted result first (`fromCache`, stale documents included) and then the
-  corrected one with `removed`/`added`. The persisted result is the page's `localStorage` (per origin), standing
-  in for the viewer's cache. `tests/test_dev.py` runs the real shim in Node and asserts both traces.
+  corrected one with `removed`/`added`. The persisted result is the page's `localStorage`, standing in for the
+  viewer's cache, keyed by the artifact: the server sends a store identity (a hash of the folder it serves) with
+  the shim, so another artifact on the same localhost origin never sees it; without an identity nothing is kept. `tests/test_dev.py` runs the real shim in Node and asserts both traces.
   **Replayed, not modelled:** the full six-snapshot reload recorded live (stale cache, pending echo, `-stale +added`,
   `-b`, empty, `+b ~a`, which includes another client's churn) is fed to the real `adp.js` content watcher through
   the host contract; the part texts follow it (stale removed, `b` dropped and back). A mutation that ignores

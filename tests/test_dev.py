@@ -1,13 +1,13 @@
 """`adp.py dev`: the server a page runs against, and the session side: watch (messages in) and send (batches out)."""
-import glob, json, os, subprocess, sys, time, urllib.error, urllib.request
+import glob, hashlib, json, os, subprocess, sys, time, urllib.error, urllib.request
 
 from test_host_connection import HARNESS
 from test_setup import Base
 
 SEQUENCES = r'''
 const assert = require('assert/strict'), [ADPJS, SHIM] = process.argv.slice(1), store = new Map(), SRC = fs.readFileSync(SHIM, 'utf8'), tick = () => new Promise(r => setImmediate(r));
-const page = async server => {      // one page load of the shim over a stub server; the store outlives it, as the viewer's cache does
-  const w = {__ADP_DEV: {user: 'u'}, JSON, Promise, EventSource: class {}, localStorage: {getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v)},
+const page = async (server, id = 's1') => {      // one page load of the shim over a stub server; the store outlives it, as the viewer's cache does; id = the dev server's store identity
+  const w = {__ADP_DEV: {user: 'u', store: id}, JSON, Promise, EventSource: class {}, localStorage: {getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v)},
     fetch: async (url, o) => { if (o) { const b = JSON.parse(o.body); server[b.path] = {data: b.data, version: (server[b.path] || {version: 0}).version + 1}; } return {json: async () => ({docs: JSON.parse(JSON.stringify(server)), canSend: 'no_session'})}; }};
   w.window = w; vm.createContext(w); vm.runInContext(SRC, w); return w.claude.use('db');
 };
@@ -20,6 +20,12 @@ const rec = (t, s) => t.push([s.docChanges().map(c => '+~-'['amr'.indexOf(c.type
   const tb = [], dbB = await page({'r/a': {data: {n: 1}, version: 1}, 'r/new': {data: {n: 1}, version: 1}});
   dbB.collection('r').onSnapshot(s => rec(tb, s)); await tick();
   assert.deepEqual(tb, [['+a +old', 2, 1, 0], ['-old +new', 2, 0, 0]]);      // measured live: the persisted result first, the stale document included, then corrected
+  const tc = [], dbC = await page({'r/a': {data: {n: 1}, version: 1}, 'r/other': {data: {n: 1}, version: 1}}, 's2');      // another artifact on the same origin never sees s1's cached result
+  dbC.collection('r').onSnapshot(s => rec(tc, s)); await tick();
+  assert.deepEqual(tc, [['+a +other', 2, 0, 0]]);
+  const tn = [[], []];
+  for (const t of tn) { (await page({'r/a': {data: {n: 1}, version: 1}}, null)).collection('r').onSnapshot(s => rec(t, s)); await tick(); }      // no store identity: nothing is persisted, so the second load has no cache-first snapshot
+  assert.deepEqual(tn[1], [['+a', 1, 0, 0]]);
   const LIVE = [[[['added', 'stale'], ['added', 'a'], ['added', 'b']], ['stale', 'a', 'b'], 1, 0], [[], ['stale', 'a', 'b'], 1, 1], [[['removed', 'stale'], ['added', 'cur']], ['a', 'b', 'cur'], 0, 1],
     [[['removed', 'b']], ['a', 'cur'], 0, 0], [[], ['a', 'cur'], 0, 0], [[['added', 'b'], ['modified', 'a']], ['a', 'b', 'cur'], 0, 0]];      // recorded live after a reload, with a write in the first callback
   const states = [], part = id => ({id, exists: true, data: () => ({html: '<p>' + id + '</p>'})});
@@ -57,7 +63,7 @@ class DevTests(Base):
         with open(os.path.join(self.root, 'catalog', 'kit', 'x.js'), 'w') as f: f.write('KIT')
         self.assertIn('<head><script src="/__adp/shim.js"></script><title>', self.get(''))
         self.assertEqual(self.get('kit/x.js'), 'KIT')
-        self.assertIn('window.__ADP_DEV={"user": "ann"}', self.get('__adp/shim.js'))
+        self.assertIn('window.__ADP_DEV={"user": "ann", "store": "' + hashlib.sha256(os.path.abspath(self.d).encode()).hexdigest()[:16] + '"}', self.get('__adp/shim.js'))      # the folder served is the store's identity
         self.assertEqual(self.post('/__adp/db', {'op': 'update', 'path': 'a/b', 'data': {}})['error']['code'], 'invalid_argument')
         self.assertEqual(self.post('/__adp/db', {'op': 'set', 'path': 'a', 'data': {}})['error']['code'], 'invalid_argument')
         self.assertEqual(self.post('/__adp/inbox', {'text': 'hi'})['error']['code'], 'claude_unavailable')      # nobody watches

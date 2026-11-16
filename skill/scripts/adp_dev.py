@@ -126,6 +126,7 @@ def publish(d, state, files):
 
 def handler(d, state, user, fallback=True):
     store, subs = Store(state), []
+    ident = hashlib.sha256(os.path.abspath(d).encode()).hexdigest()[:16]      # which artifact this is: the shim scopes the browser's cached query results to it
     inbox = os.path.join(state, 'inbox'); os.makedirs(inbox, exist_ok=True)
 
     def push(paths):
@@ -147,7 +148,7 @@ def handler(d, state, user, fallback=True):
         def do_GET(self):
             path = self.path.split('?')[0]
             if path == '/__adp/shim.js':
-                js = f'window.__ADP_DEV={json.dumps({"user": user})};\n' + open(SHIM, encoding='utf-8').read()
+                js = f'window.__ADP_DEV={json.dumps({"user": user, "store": ident})};\n' + open(SHIM, encoding='utf-8').read()
                 return self.send(js.encode(), 'text/javascript; charset=utf-8')
             if path == '/__adp/db': return self.send({'docs': store.all(), 'canSend': 'available' if listening(state) else 'no_session'})
             if path == '/__adp/events': return self.events()

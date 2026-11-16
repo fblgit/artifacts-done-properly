@@ -19,7 +19,7 @@ function check(path, doc) {
   return s.join('/');
 }
 
-let docs = {}, canSend = 'no_session', loaded = null, pending = Promise.resolve(), inflight = 0;
+let docs = {}, canSend = 'no_session', loaded = null, pending = Promise.resolve();
 const subs = new Set();
 const SETTLED = { fromCache: false, hasPendingWrites: false }, CACHED = { fromCache: true, hasPendingWrites: false };
 let META = SETTLED, FORCE = false;      // what the snapshots built right now carry; FORCE delivers a no-change snapshot
@@ -32,8 +32,9 @@ function refresh(meta) {
   }).catch(() => {});
 }
 const load = () => loaded || (loaded = refresh().then(() => { new EventSource('/__adp/events').onmessage = () => refresh(); }));
-const cacheGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };      // the persisted result of a query, across page loads
-const cacheSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* no storage: no cache-first snapshot */ } };
+const STORE = (window.__ADP_DEV || {}).store;      // the dev server's identity for this artifact: the cache is per artifact, and absent without one
+const cacheGet = k => { try { return STORE ? JSON.parse(localStorage.getItem(k)) : null; } catch (e) { return null; } };      // the persisted result of a query, across page loads
+const cacheSet = (k, v) => { try { if (STORE) localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* no storage: no cache-first snapshot */ } };
 const snap = (p, m = META) => ({ id: p.split('/').pop(), exists: !!docs[p], data: () => docs[p] ? clone(docs[p].data) : undefined, metadata: m });
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const OPS = {
@@ -74,9 +75,9 @@ function listen(fire) {
 }
 function write(op, path, data) {      // in order, and before any sendToClaude that follows
   const fresh = op === 'set' && !docs[path];      // measured live for a new document: shown at once (pending), echoed from cache, modified by the ack, settled
-  if (fresh) { docs[path] = { data: clone(data), version: 0 }; inflight++; notify({ fromCache: false, hasPendingWrites: true }); notify({ fromCache: true, hasPendingWrites: true }, true); }
-  const w = pending.then(() => post('/__adp/db', { op, path, data: clone(data) })).then(() => { inflight -= fresh; return refresh(fresh ? { fromCache: true, hasPendingWrites: false } : SETTLED); })
-    .then(() => { if (fresh) notify(SETTLED, true); }, e => { if (fresh) { inflight--; refresh(); } throw e; });
+  if (fresh) { docs[path] = { data: clone(data), version: 0 }; notify({ fromCache: false, hasPendingWrites: true }); notify({ fromCache: true, hasPendingWrites: true }, true); }
+  const w = pending.then(() => post('/__adp/db', { op, path, data: clone(data) })).then(() => refresh(fresh ? { fromCache: true, hasPendingWrites: false } : SETTLED))
+    .then(() => { if (fresh) notify(SETTLED, true); }, e => { if (fresh) refresh(); throw e; });
   pending = w.catch(() => {});
   return w;
 }
@@ -97,7 +98,7 @@ function query(c, q) {
     limit: n => query(c, { ...q, limit: n }),
     get: () => load().then(() => qsnap(rows(c, q), [], SETTLED)),
     onSnapshot: next => {
-      let was = null; const key = 'adp-dev:' + c + '|' + JSON.stringify(q);
+      let was = null; const key = 'adp-dev:' + STORE + ':' + c + '|' + JSON.stringify(q);
       return listen(() => {
         const l = rows(c, q), cur = l.map(p => [p, JSON.stringify(docs[p])]);
         if (was === null) { const old = cacheGet(key); if (old) { was = old; next(csnap(old)); } }      // a reload: the persisted result first, as measured
