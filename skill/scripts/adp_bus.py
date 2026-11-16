@@ -180,6 +180,8 @@ def client(args, root):
             text = line.decode().strip()
             if text and (args.search is None or args.search.casefold() in text.casefold()):
                 event = json.loads(text)
+                if args.subscribe and event.get('sender') == args.subscribe:
+                    continue
                 compact = format_event(event)
                 print(compact, flush=True)
                 if args.thread:

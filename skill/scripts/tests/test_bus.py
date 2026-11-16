@@ -91,7 +91,6 @@ class BusTests(unittest.TestCase):
         self.assertEqual(queued[:4], ['queue', '--thread', 'chat', '--message'])
         self.assertTrue(queued[-1].startswith('[ADP-MSG] ID: '))
         self.run_bus('--name', 'codex', '--send', 'own echo')
-        self.assertIn('own echo', self.line(codex))
         self.assertIn('own echo', self.line(claude))
         (self.root / 'note').write_text('file café')
         self.run_bus('--name', 'human', '--send-file', 'note')

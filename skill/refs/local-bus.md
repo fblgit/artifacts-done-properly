@@ -89,7 +89,7 @@ sequenceDiagram
     alt sender differs from codex
         S->>C: codex queue --thread ID --message [ADP-MSG]…
     else sender is codex
-        S->>S: Print; skip queueing own message
+        S->>S: Skip own message (no print, no queue)
     end
 ```
 
