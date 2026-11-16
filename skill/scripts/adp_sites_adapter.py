@@ -70,6 +70,20 @@ def verify(call, reply, readback):
     if readback is None:
         return {**receipt, 'status': 'pending', 'revision': revision}
     observed = decode(readback)
+    if isinstance(readback, dict) and 'call' in readback:
+        query = readback['call']
+        query_args = query.get('args', {})
+        if query.get('tool') != 'adp_query' or query_args.get('artifact') != args['artifact'] or query_args.get('path') != args['path'].rsplit('/', 1)[0]:
+            return {**receipt, 'status': 'unknown', 'revision': revision}
+        result = decode(readback.get('result'))
+        rows = result.get('docs')
+        if result.get('error') or not isinstance(rows, list):
+            return {**receipt, 'status': 'unknown', 'revision': revision}
+        matches = [row for row in rows if isinstance(row, dict) and row.get('id') == args['path'].rsplit('/', 1)[1]]
+        if len(matches) != 1:
+            return {**receipt, 'status': 'unknown', 'revision': revision}
+        observed = {**matches[0], 'exists': True}
+        receipt['readbackSource'] = 'adp_query'
     if type(observed.get('revision')) is not int or type(observed.get('exists')) is not bool:
         return {**receipt, 'status': 'unknown', 'revision': revision}
     matched = observed['exists'] and observed['revision'] == revision and observed.get('data') == args['data']

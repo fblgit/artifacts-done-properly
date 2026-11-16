@@ -24,13 +24,13 @@ let input='';for await(const chunk of process.stdin)input+=chunk;
 const call=JSON.parse(input),state=await mkdtemp(join(tmpdir(),'adp-adapter-'));
 const host=await start({port:0,state,user:'dev-user',readOnly:false});
 async function invoke(c){return (await fetch(host.url+'/mcp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:c.tool,arguments:c.args}})})).json();}
-try{const result=await invoke(call),readback=await invoke(call.readback),stale=await invoke(call);console.log(JSON.stringify([{call,result,readback},{call,result:stale,readback}]));}
+try{const result=await invoke(call),readback=await invoke(call.readback),stale=await invoke(call);const query={tool:'adp_query',args:{artifact:call.args.artifact,path:'content'}},group={call:query,result:await invoke(query)};console.log(JSON.stringify([{call,result,readback},{call,result:stale,readback},{call,result,readback:group}]));}
 finally{await host.close();await rm(state,{recursive:true});}
 """
         run = subprocess.run(['node', '--input-type=module', '-e', script], input=json.dumps(call), text=True, capture_output=True, timeout=5, cwd=Path(__file__).resolve().parents[1])
         self.assertEqual(run.returncode, 0, run.stderr)
         receipts = adapter.parse_receipt(json.loads(run.stdout))
-        self.assertEqual([r['outcome'] for r in receipts], ['applied', 'rejected'])
+        self.assertEqual([r['outcome'] for r in receipts], ['applied', 'rejected', 'applied'])
 
     def test_target_guard_and_readback(self):
         target = {'exists': True, 'data': {'old': 1}, 'revision': 7}
@@ -61,6 +61,8 @@ finally{await host.close();await rm(state,{recursive:true});}
         self.assertFalse(call['atomic'])
         envelope = {'call': call, 'result': {'revision': 8}, 'readback': {'exists': True, 'revision': 8, 'data': {'html': 'new'}}}
         self.assertEqual(adapter.parse_receipt([envelope])[0]['outcome'], 'applied')
+        wrong = {'call': {'tool': 'adp_query', 'args': {'artifact': 'other', 'path': 'content'}}, 'result': {'docs': [{'id': 'intro', 'data': {'html': 'new'}, 'revision': 8}]}}
+        self.assertEqual(adapter.parse_receipt([{**envelope, 'readback': wrong}])[0]['outcome'], 'unknown')
         self.assertEqual(adapter.parse_receipt([{'call': call, 'result': {'revision': 8}}])[0]['outcome'], 'unknown')
         self.assertFalse(adapter.parse_reads([{'call': reads[0], 'result': {'error': 'Unavailable'}}])['complete'])
 
