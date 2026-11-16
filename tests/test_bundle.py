@@ -36,9 +36,14 @@ class BundleTests(Cmd):
         rc, plan = self.plan('b1', [])      # empty target: everything is created, no pin on a create
         self.assertEqual((rc, plan['counts']['create']), (0, n))
         self.assertTrue(all('if_version' not in w for c in plan['calls'] for w in c['args']['writes']))
+        last = [w['collection'] + '/' + w['doc_id'] for c in plan['calls'] for w in c['args']['writes']][-1]      # the truth marker is written last, and the agent is told to stop before it
+        self.assertEqual((last, plan['order']['last']), ('manifest/current', 'manifest/current'))
+        self.assertTrue(self.ack(plan, '- set "manifest"/"current" (version 1)\ndb write failed: nothing was written')[1]['warnings'])      # applied next to a failed record: flagged
         rc, ack = self.ack(plan)
         rec = ack['record'][0]['args']['writes'][0]
-        self.assertEqual((rc, ack['failed'], rec['collection'], len(rec['data']['records'])), (0, [], 'imports', n))
+        self.assertEqual((rc, ack['failed'], rec['collection'], len(rec['data']['records']), ack['applied']), (0, [], 'imports', n, n))
+        hist = ack['record'][0]['args']['writes'][1]      # the confirmed import also leaves one changes/ entry naming its records
+        self.assertEqual((hist['collection'], hist['doc_id'][:2], len(hist['data']['data']) - 1), ('changes', 'd-', n))
         tgt = [dict(x) for x in src] + [{'collection': 'imports', 'id': rec['doc_id'], 'data': rec['data'], 'revision': 1}]
         rc, plan = self.plan('b1', tgt)      # repeat: nothing to write
         self.assertEqual((rc, plan['counts']['skip'], plan['calls']), (0, n, []))
@@ -48,7 +53,8 @@ class BundleTests(Cmd):
         w = plan['calls'][0]['args']['writes']
         self.assertEqual((rc, plan['counts']['replace'], w[0]['if_version']), (0, 1, 1))
         rc, ack = self.ack(plan, 'db write failed (version_mismatch): nothing was written')      # a rejected write is not recorded
-        self.assertEqual((rc, ack['failed'][0]['outcome']), (2, 'rejected'))
+        self.assertEqual((rc, ack['failed'][0]['outcome'], ack['applied']), (2, 'rejected', 0))      # a failed replace of an already-recorded key is not counted applied
+        self.assertEqual(['changes' in w['collection'] for w in ack['record'][0]['args']['writes']], [False])      # and leaves no history entry
         self.assertEqual(ack['record'][0]['args']['writes'][0]['data']['records'][key], rec['data']['records'][key])
         rc, plan = self.plan('b1', edit(tgt, 'target'))      # the target changed, the source did not: kept
         self.assertEqual((rc, plan['counts']['skip'], next(o['class'] for o in plan['ops'] if o['key'] == key)), (0, n, 'theirs'))
@@ -59,6 +65,8 @@ class BundleTests(Cmd):
         src = self.src(); n = self.bundle(src, 'b1')['docs']
         raw = self.write_json('raw.json', [{'call': {'collection': 'parts'}, 'result': 'No documents matched in collection "parts"'}])      # one collection of many
         r = self.run_adp('import-plan', self.p('b1'), raw, '--host', 'claude', '--artifact', URL, '--raw')
+        self.assertEqual(r.returncode, 1); self.assertIn('does not cover', r.stderr)
+        r = self.run_adp('bundle', raw, self.p('b3'), '--host', 'claude', '--artifact', 'src', '--raw')      # an export that read one collection must not look complete
         self.assertEqual(r.returncode, 1); self.assertIn('does not cover', r.stderr)
         r = self.run_adp('import-plan', self.p('b1'), '--host', 'sites', '--artifact', 'roundtrip')      # named records: one read per bundle doc plus imports/<source>
         self.assertEqual((r.returncode, len(json.loads(r.stdout)['reads'])), (2, n + 1))

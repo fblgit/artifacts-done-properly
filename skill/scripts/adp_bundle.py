@@ -1,6 +1,6 @@
 """Records export/import (docs/adp-export-import.md): bundle, import-plan, import-ack. Host-neutral: a host adapter (adp_<host>_adapter.py:
 read_calls, parse_reads, write_calls, parse_receipt) only reads and writes natively. Imported by adp.py, which sets A to itself."""
-import hashlib, importlib, json, os, re, sys
+import hashlib, importlib, json, os, re, sys, time
 
 import adp_loop
 
@@ -43,9 +43,12 @@ def bundle(a):
     """adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections c,ns/x/y] [--raw]: DOCS.json is what the source's
     reads returned; without it, print the reads to run (exit 2). OUT_DIR gets an adp-seed/2 seed.json + seed/ with `source` and `revisions` added."""
     pos, ad, art = A.bare(a[1:]), adapter(a), A.opt(a, '--artifact') or sys.exit('--artifact names the source artifact')
-    if not pos: return reads(ad.read_calls(art, list(READ[:-1]) + (A.opt(a, '--collections') or '').split(',') * bool(A.opt(a, '--collections'))))
+    want = list(READ[:-1]) + [c for c in (A.opt(a, '--collections') or '').split(',') if c]      # the list the reads are emitted for, and the list a raw read must cover
+    if not pos: return reads(ad.read_calls(art, want))
     if len(pos) != 2: sys.exit('usage: adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections ...] [--raw]')
-    docs = sorted((x for x in reads_in(a, pos[0])[0].values() if x['collection'].split('/')[0] not in SKIP), key=lambda x: (x['collection'], x['id']))
+    got, _, cov = reads_in(a, pos[0]); miss = [c for c in want if cov is not None and c not in cov]
+    if miss: sys.exit(f'the read does not cover {", ".join(miss)}: a bundle from it would silently drop them; read them again')
+    docs = sorted((x for x in got.values() if x['collection'].split('/')[0] not in SKIP), key=lambda x: (x['collection'], x['id']))
     at, counts, packs, cur, size = A.opt(a, '--at') or A.now(), {}, [], [], 0
     bid = 'b-' + chash([[x['collection'], x['id'], x['data']] for x in docs])[7:19]
     for x in docs:
@@ -79,7 +82,7 @@ def plan(a):
     miss = [k for k in keys if k not in tgt and k not in gone] if hasattr(ad, 'read_doc_calls') else [c for c in colls if cov is not None and c not in cov]
     if miss: sys.exit(f'the read does not cover {", ".join(miss[:5])}{" ..." * (len(miss) > 5)}: read them again before planning')
     prior = tgt.get(f'imports/{sk}') or {}; base = (prior.get('data') or {}).get('records') or {}; ops, held = [], []
-    for c, i, data in sorted(inc):
+    for c, i, data in sorted(inc, key=lambda x: (x[:2] == ('manifest', 'current'), x[:2])):      # manifest/current is the truth marker: last, as the seed loader writes it
         k, live = f'{c}/{i}', tgt.get(f'{c}/{i}'); ih, lh, bh = chash(data), chash(live['data']) if live else None, (base.get(f'{c}/{i}') or {}).get('hash')
         cls = adp_loop.classify3(bh, lh, ih) or 'applied'
         act = {'new': 'create', 'ours': 'replace', 'applied': 'skip', 'theirs': 'skip'}.get(cls, 'hold')
@@ -92,6 +95,8 @@ def plan(a):
     out = {'schema': PLAN, 'bundle': {'id': idx['source']['id'], 'schema': idx['schema'], 'docs': len(inc), 'source': idx['source']}, 'target': {'host': ad.HOST, 'artifact': art, 'readAt': A.now()},
            'ops': ops, 'held': held, 'counts': {n: sum(o['action'] == n for o in ops) for n in ('create', 'replace', 'skip', 'hold')},
            'provenance': {'collection': 'imports', 'id': sk, 'guard': prior['revision'] if prior else gone.get(f'imports/{sk}'), 'exists': bool(prior), 'records': base}}
+    if any(o['key'] == 'manifest/current' and o['action'] in ('create', 'replace') for o in ops):
+        out['order'] = {'last': 'manifest/current', 'rule': 'run the calls in order; if an earlier call is rejected or unknown, do not run the call that writes manifest/current'}
     if not held: out['calls'] = ad.write_calls(art, [o for o in ops if o['action'] in ('create', 'replace')]) if out['counts']['create'] + out['counts']['replace'] else []
     text = json.dumps(out, indent=1, ensure_ascii=False)
     if A.opt(a, '--out'): open(A.opt(a, '--out'), 'w', encoding='utf-8').write(text)
@@ -105,14 +110,18 @@ def ack(a):
     if len(pos) != 2: sys.exit('usage: adp.py import-ack PLAN.json RESULTS.json --host H [--raw]')
     p, res = json.load(open(pos[0], encoding='utf-8')), json.load(open(pos[1], encoding='utf-8'))
     got = {f"{r['collection']}/{r['id']}": r for r in (ad.parse_receipt(res) if '--raw' in a else res)}
-    pv, recs, failed = p['provenance'], dict(p['provenance']['records']), []
+    pv, recs, failed, done = p['provenance'], dict(p['provenance']['records']), [], []
     for o in p['ops']:
         r = got.get(o['key'])
         if o['action'] in ('create', 'replace'):
-            if r and r['outcome'] == 'applied': recs[o['key']] = {'hash': o['incomingHash'], 'revision': r.get('revision')}
+            if r and r['outcome'] == 'applied': recs[o['key']] = {'hash': o['incomingHash'], 'revision': r.get('revision')}; done.append(o['key'])
             else: failed.append({'key': o['key'], 'outcome': (r or {}).get('outcome', 'unknown'), 'error': (r or {}).get('error')})
         elif o['class'] == 'applied': recs[o['key']] = {'hash': o['incomingHash'], 'revision': None}      # observed equal at read time, not written
     doc = {'schema': 'adp-import/1', 'source': p['bundle']['source'], 'bundle': p['bundle']['id'], 'at': A.now(), 'target': p['target'], 'records': recs}
-    op = {'op': 'replace' if pv['exists'] else 'create', 'collection': pv['collection'], 'id': pv['id'], 'data': doc, 'guard': pv['guard']}
-    print(json.dumps({'applied': sum(1 for o in p['ops'] if o['key'] in recs and o['action'] in ('create', 'replace')), 'failed': failed, 'record': ad.write_calls(p['target']['artifact'], [op])}, indent=1))
+    ops = [{'op': 'replace' if pv['exists'] else 'create', 'collection': pv['collection'], 'id': pv['id'], 'data': doc, 'guard': pv['guard']}]
+    if done:      # the page's What changed panel shows it; a data change is d-<ms> (config set writes the same shape)
+        ops.append({'op': 'create', 'collection': 'changes', 'id': f'd-{int(time.time() * 1000)}', 'guard': None, 'data': {'version': '', 'at': doc['at'], 'by': A.opt(a, '--by', 'adp'),
+                    'summary': f"Imported {len(done)} records from {p['bundle']['source']['host']}:{p['bundle']['source']['artifact']} (bundle {doc['bundle']})", 'parts': [], 'threads': [], 'data': [{'doc': k} for k in done] + [{'doc': f"imports/{pv['id']}"}]}})
+    warn = ['manifest/current was applied while another record failed: the import is partial, do not trust the artifact as synced'] * bool('manifest/current' in done and failed)
+    print(json.dumps({'applied': len(done), 'failed': failed, 'warnings': warn, 'record': ad.write_calls(p['target']['artifact'], ops)}, indent=1))
     return 2 if failed else 0
