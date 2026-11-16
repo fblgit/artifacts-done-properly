@@ -95,17 +95,24 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 - Observed, snapshot behaviour a host or fake must tolerate: a local write fires the listener with
   `hasPendingWrites: true`, then an empty-changes snapshot (`fromCache: true`), then a `modified` change for
   the doc it just added, then a settled snapshot; after a reload the first snapshot is `fromCache: true` and may
-  hold documents deleted since, which later `removed` changes correct. **Known divergence, bounded, not
-  emulated:** the stand-in sends settled snapshots only (constant metadata, one notification per changed
-  result). Only two sequences were measured (a new document written from the listener, and a reload over earlier
-  runs' leftovers); updates, deletes and concurrent writers were not, so a fake of the rest would be a guess. The
-  bound holds because no shipped code reads `hasPendingWrites` or `fromCache` (a scan of everything under
-  `skill/` finds only the stand-in's own constant) and every `docChanges` consumer (`adp.js` content watcher,
-  the assistant template's `applySnap`, the preview kit) applies each change by document id, so repeated,
-  `modified` and `removed`-after-`added` notifications are tolerated. `tests/test_dev.py` fails as soon as any
-  shipped file reads that metadata: the sequence must then be modelled from fresh measurements first. Code that
-  shows a "saving" state from `hasPendingWrites`, or counts notifications, would behave differently on the stand-in
-  than live.
+  hold documents deleted since, which later `removed` changes correct.
+  **Stand-in, modelled (query `onSnapshot` only):** a document newly `set` through the stand-in produces exactly
+  the five snapshots recorded live (`+existing`, `+new` pending, empty cache echo, `~new` from cache, settled
+  empty), and a reload produces the persisted result first (`fromCache`, stale documents included) and then the
+  corrected one with `removed`/`added`. The persisted result is the page's `localStorage` (per origin), standing
+  in for the viewer's cache. `tests/test_dev.py` runs the real shim in Node and asserts both traces.
+  **Replayed, not modelled:** the full six-snapshot reload recorded live (stale cache, pending echo, `-stale +added`,
+  `-b`, empty, `+b ~a`, which includes another client's churn) is fed to the real `adp.js` content watcher through
+  the host contract; the part texts follow it (stale removed, `b` dropped and back). A mutation that ignores
+  `removed` fails that check.
+  **Not modelled, not measured:** updates, deletes, document-level `onSnapshot` (settled only), concurrent
+  writers, the extra pending/echo steps a reload shows around the first write, and query listeners the viewer
+  already has open when a write lands. The stand-in's persisted result is not the viewer's cache: it survives
+  only as long as the page's `localStorage` does.
+  Consumers: `adp.js` is checked as above. The assistant template and the preview kit also apply each
+  `docChanges` entry by document id (read, not run against these traces). Nothing shipped reads
+  `hasPendingWrites` or `fromCache`; a page that shows a "saving" state from them, or counts notifications per
+  write, is not covered by these traces.
 - Observed, errors: `db.doc()` with an odd segment count throws synchronously with no `code`; an invalid query
   operator rejects `invalid_argument`. Not observed: the stand-in's `invalid_argument` from publish; the types
   do not list it as a publish code.

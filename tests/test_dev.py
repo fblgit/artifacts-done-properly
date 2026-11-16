@@ -1,7 +1,34 @@
 """`adp.py dev`: the server a page runs against, and the session side: watch (messages in) and send (batches out)."""
-import glob, json, os, pathlib, re, subprocess, sys, time, urllib.error, urllib.request
+import glob, json, os, subprocess, sys, time, urllib.error, urllib.request
 
+from test_host_connection import HARNESS
 from test_setup import Base
+
+SEQUENCES = r'''
+const assert = require('assert/strict'), [ADPJS, SHIM] = process.argv.slice(1), store = new Map(), SRC = fs.readFileSync(SHIM, 'utf8'), tick = () => new Promise(r => setImmediate(r));
+const page = async server => {      // one page load of the shim over a stub server; the store outlives it, as the viewer's cache does
+  const w = {__ADP_DEV: {user: 'u'}, JSON, Promise, EventSource: class {}, localStorage: {getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v)},
+    fetch: async (url, o) => { if (o) { const b = JSON.parse(o.body); server[b.path] = {data: b.data, version: (server[b.path] || {version: 0}).version + 1}; } return {json: async () => ({docs: JSON.parse(JSON.stringify(server)), canSend: 'no_session'})}; }};
+  w.window = w; vm.createContext(w); vm.runInContext(SRC, w); return w.claude.use('db');
+};
+const rec = (t, s) => t.push([s.docChanges().map(c => '+~-'['amr'.indexOf(c.type[0])] + c.doc.id).join(' '), s.size, +s.metadata.fromCache, +s.metadata.hasPendingWrites]);
+(async () => {
+  const ta = [], dbA = await page({'c/0added': {data: {n: 1}, version: 1}, 'c/a': {data: {n: 1}, version: 1}});
+  dbA.collection('c').onSnapshot(s => { rec(ta, s); if (ta.length === 1) dbA.doc('c/b').set({n: 2}); }); await tick();
+  assert.deepEqual(ta, [['+0added +a', 2, 0, 0], ['+b', 3, 0, 1], ['', 3, 1, 1], ['~b', 3, 1, 0], ['', 3, 0, 0]]);      // measured live: a new document written from the first callback
+  (await page({'r/a': {data: {n: 1}, version: 1}, 'r/old': {data: {n: 1}, version: 1}})).collection('r').onSnapshot(() => {}); await tick();      // load 1 settles and is persisted
+  const tb = [], dbB = await page({'r/a': {data: {n: 1}, version: 1}, 'r/new': {data: {n: 1}, version: 1}});
+  dbB.collection('r').onSnapshot(s => rec(tb, s)); await tick();
+  assert.deepEqual(tb, [['+a +old', 2, 1, 0], ['-old +new', 2, 0, 0]]);      // measured live: the persisted result first, the stale document included, then corrected
+  const LIVE = [[[['added', 'stale'], ['added', 'a'], ['added', 'b']], ['stale', 'a', 'b'], 1, 0], [[], ['stale', 'a', 'b'], 1, 1], [[['removed', 'stale'], ['added', 'cur']], ['a', 'b', 'cur'], 0, 1],
+    [[['removed', 'b']], ['a', 'cur'], 0, 0], [[], ['a', 'cur'], 0, 0], [[['added', 'b'], ['modified', 'a']], ['a', 'b', 'cur'], 0, 0]];      // recorded live after a reload, with a write in the first callback
+  const states = [], part = id => ({id, exists: true, data: () => ({html: '<p>' + id + '</p>'})});
+  const replay = next => LIVE.forEach(([ch, ids, fc, pw]) => { next({docs: ids.map(part), size: ids.length, empty: !ids.length, metadata: {fromCache: !!fc, hasPendingWrites: !!pw}, docChanges: () => ch.map(([type, id]) => ({type, doc: part(id), oldIndex: 0, newIndex: 0}))}); states.push(['stale', 'b'].map(id => win.ADP.content(id) !== '')); });
+  win.ADP_HOST = {protocol: 'adp-host/1', connect: async () => ({id: 'replay', db: {doc: db.doc, collection: n => n === 'content' ? {onSnapshot: replay} : db.collection(n)}, user})};
+  vm.createContext(win); vm.runInContext(fs.readFileSync(ADPJS, 'utf8'), win); await tick(); await tick();
+  assert.deepEqual(states, [[true, true], [true, true], [false, true], [false, false], [false, false], [false, true]]);      // the real adp.js follows it: stale gone, b dropped and back
+})().catch(e => { console.error(e); process.exitCode = 1; });
+'''
 
 
 class DevTests(Base):
@@ -58,9 +85,11 @@ class DevTests(Base):
         self.assertEqual(self.post('/__adp/publish', {'files': {'../x': 'x'}})['error']['code'], 'invalid_argument')
         self.assertIn('artifact', self.get('__adp/shim.js'))
 
-    def test_no_shipped_code_reads_snapshot_metadata_so_the_stand_in_may_keep_it_constant(self):      # the live sequence is documented, not modelled: docs/claude-host-adapter.md
-        files = [os.path.join(d, f) for d, _, fs in os.walk(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill')) for f in fs if f.endswith(('.js', '.mjs', '.txt', '.html', '.py')) and f != 'adp_dev.js']
-        self.assertEqual([p for p in files if re.search(r'hasPendingWrites|fromCache', pathlib.Path(p).read_text(errors='ignore'))], [])
+    def test_stand_in_sends_the_measured_snapshot_sequences_and_the_real_consumer_converges(self):      # live traces and their limits: docs/claude-host-adapter.md
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        r = subprocess.run(['node', '-e', HARNESS.split('const mode')[0] + SEQUENCES, os.path.join(root, 'skill/assets/adp.js'), os.path.join(root, 'skill/scripts/adp_dev.js')],
+                           capture_output=True, text=True, timeout=8, start_new_session=True)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
     def test_update_marker_removes_a_field_and_one_with_other_keys_is_refused(self):      # both as measured on the live viewer
         db = lambda op, data: self.post('/__adp/db', {'op': op, 'path': 'a/b', 'data': data})
