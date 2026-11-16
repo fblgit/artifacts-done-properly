@@ -4,6 +4,8 @@ This implements the OpenAI side using **Sites' existing Worker + D1 hosting**.
 It does not require a separately purchased backend or invent an OpenAI browser SDK.
 It is a working transport implementation, not yet a live-host certification.
 
+For a ready-to-run local server, see [Codex/Sites localhost](openai-localhost.md).
+
 ## Components
 
 - `skill/assets/adapters/openai-sites.js`: same-origin HTTP bridge implementing
