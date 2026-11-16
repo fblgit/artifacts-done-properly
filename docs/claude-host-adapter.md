@@ -84,6 +84,13 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 - Observed, errors: `db.doc()` with an odd segment count throws synchronously with no `code`; an invalid query
   operator rejects `invalid_argument`. Not observed: the stand-in's `invalid_argument` from publish; the types
   do not list it as a publish code.
+- Observed, a second signed-in account the owner shared the artifact with (stated view-only; its level was
+  not independently confirmed): `use('db')` resolved, but `use('user')`, `use('comments')` and
+  `use('artifact')` resolved `null`, and reads worked. All seven write attempts (set, update, delete, add,
+  `acquire`, a nested `ns/` update) rejected `invalid_argument` ("The request was malformed or exceeds a
+  limit"); the owner then read the fixtures back unchanged, no new docs. A refusal is therefore
+  indistinguishable from a malformed request or a missing document: there is no permission-specific code.
+  Not tested: the Contributor level, an unauthenticated session, a lost write response.
 - Observed, `doc.update` (browser and ArtifactData agree): nested objects merge recursively
   (`{a:{x:1,y:2}}` + `{a:{y:9,z:3}}` gives `{a:{x:1,y:9,z:3}}`); arrays and scalars replace; an explicit
   `null` is stored as `null`; `{a:{__delete__:true}}` removes `a`; a dotted key such as `'a.x'` is stored as a
