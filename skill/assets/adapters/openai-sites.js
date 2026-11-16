@@ -5,6 +5,8 @@
 (function (root) {
   'use strict';
   const copy = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+  // This transport reads authoritative responses; it has no optimistic or cache snapshots.
+  const metadata = Object.freeze({fromCache:false,hasPendingWrites:false});
   function create(options = {}) {
     const endpoint = options.endpoint;
     if (typeof endpoint !== 'string' || !/^\/api\/adp\/[A-Za-z0-9_-]+$/.test(endpoint)) {
@@ -39,7 +41,7 @@
       if (!record || typeof record.exists !== 'boolean' || !Number.isInteger(record.revision) || record.revision < 0) throw new TypeError('Invalid document response');
       if (record.exists && (record.data === null || typeof record.data !== 'object' || Array.isArray(record.data))) throw new TypeError('Invalid document data');
       const data = record.exists ? copy(record.data) : undefined;
-      return Object.freeze({id, exists: record.exists, revision: record.revision, data: () => copy(data)});
+      return Object.freeze({id, exists: record.exists, revision: record.revision, metadata, data: () => copy(data)});
     }
     // Serialized poll scheduling prevents an older response overtaking a newer one.
     function subscribe(read, next, error) {
@@ -96,7 +98,8 @@
           path(record.id); ids.add(record.id);
           return documentSnapshot(record.id, {...record, exists: true});
         });
-        return Object.freeze({docs: Object.freeze(docs), docChanges: () => docs.map(d => ({type: 'added', doc: d}))});
+        return Object.freeze({docs: Object.freeze(docs),size:docs.length,empty:docs.length===0,metadata,
+          docChanges: () => docs.map(d => ({type: 'added', doc: d}))});
       }
       function onSnapshot(next, error) {
         let previous = new Map();
@@ -109,7 +112,8 @@
           });
           previous.forEach((d, id) => { if (!current.has(id)) changes.push({type: 'removed', doc: d}); });
           previous = current;
-          return Object.freeze({docs: result.docs, docChanges: () => changes.map(c => ({...c}))});
+          return Object.freeze({docs: result.docs,size:result.size,empty:result.empty,metadata,
+            docChanges: () => changes.map(c => ({...c}))});
         }, next, error);
       }
       return Object.freeze({get, onSnapshot,

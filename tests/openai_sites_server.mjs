@@ -92,6 +92,8 @@ const turns=second.db.doc('requests/r1').collection('turns');
 const added=await turns.add({text:'Portable reply'});
 assert.equal((await added.get()).data().text,'Portable reply');
 assert.equal((await turns.get()).docs[0].id,added.id);
+assert.equal((await turns.get()).size,1);
+assert.equal((await turns.get()).empty,false);
 await import('../skill/assets/adapters/openai-sites-comments.js');
 const withComments=await ADPOpenAIHost.create({profile:'sites',bridge:ADPOpenAISites.create({endpoint:'/api/adp/integration',comments:true})}).connect();
 assert.equal(typeof withComments.comments.customAnchors,'function');
