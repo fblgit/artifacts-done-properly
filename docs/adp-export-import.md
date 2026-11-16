@@ -59,6 +59,20 @@ The apply step stays agent-executed and guarded by the target. No live sync is c
 4. **Acceptance:** whether a round trip through `bundle` and `import-plan`, each host applying its own printed
    steps, satisfies protocol scenario 8. That is the owner's call.
 
+## Alignment so far (the two agents; the owner has not confirmed)
+
+Codex (PR comment 6913100969) agrees: reuse the real `adp-seed/2` index and pack layout with additive
+`source` provenance and do not standardize `adp-seed-pack/1` (decision 1); reuse the three-way and hold
+mechanics for non-empty imports so neither side's edits are silently overwritten (decision 2); Claude owns the
+common bundle and import-plan plus the Claude printer, Codex owns Sites apply and receipts, sharing one pinned
+plan schema (decision 3). It adds, for decision 4: only a fresh destination-native revision authorizes a write,
+source revisions stay evidence; an apply plan is not a successful import, so outcomes and provenance are
+recorded only from confirmed host results, and Sites must report partial application honestly because it has
+no atomic batch; acceptance should be a fresh live Claude, Sites, Claude exchange through the shell itself,
+including a repeat import that is a no-op and a destination conflict, on a minimal real adp/2 fixture (with
+`manifest/current`, parts and `changes/`), since the earlier three-record fixtures omit those. This is design
+alignment only, not authorization to build; scope is being clarified with the owner.
+
 ## Test plan if approved
 
 Red then green on the existing three-record pack: new target (all `create`), repeat (all `identical`, zero
