@@ -193,4 +193,5 @@ Apache License 2.0, see `LICENSE`. Redistributions keep `NOTICE`; the `adp.skill
 The experimental [host adapter contract](docs/host-adapters.md) separates the
 existing `adp/2` records from runtime host capabilities. Claude remains the default;
 other hosts require an explicit adapter. Agent publishing and native Space Page
-integration are separate from the browser connection.
+integration are separate from the browser connection. The opt-in
+[Claude adapter](docs/claude-host-adapter.md) lists what it does and does not cover.

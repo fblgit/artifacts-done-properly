@@ -25,9 +25,11 @@ if(mode==='no-db') delete connection.db;
 if(mode==='reject-user') connection.user={canEdit:async()=>{throw Error('no');},id:async()=>{throw Error('no');}};
 if(mode==='truthy-user') connection.user={canEdit:()=> 'true',id:()=> 'viewer'};
 if(mode==='comments-error') connection.comments={customAnchors:async()=>{throw Error('no');}};
-if(mode!=='legacy' && mode!=='legacy-slow-comments' && mode!=='static') win.ADP_HOST={protocol:mode==='bad-protocol'?'wrong':'adp-host/1',connect:async()=>{calls.push('explicit');if(mode==='reject')throw Error('no');return connection;}};
-if(mode==='legacy'||mode==='legacy-slow-comments'||mode==='both'||mode==='reject')win.claude={use:async name=>{calls.push('claude:'+name);if(mode==='legacy-slow-comments'&&name==='comments')return new Promise(()=>{});return name==='db'?db:name==='user'?user:null;}};
+const adapter=mode.startsWith('adapter');
+if(mode!=='legacy' && mode!=='legacy-slow-comments' && mode!=='static' && !adapter) win.ADP_HOST={protocol:mode==='bad-protocol'?'wrong':'adp-host/1',connect:async()=>{calls.push('explicit');if(mode==='reject')throw Error('no');return connection;}};
+if(mode==='legacy'||mode==='legacy-slow-comments'||mode==='both'||mode==='reject'||(adapter&&mode!=='adapter-no-claude'))win.claude={use:async name=>{calls.push('claude:'+name);if(/slow-comments/.test(mode)&&name==='comments')return new Promise(()=>{});return name==='db'?db:name==='user'?user:null;}};
 vm.createContext(win);
+if(adapter){vm.runInContext(fs.readFileSync(process.argv[2].replace(/adp\.js$/, 'adapters/claude.js'),'utf8'),win);win.ADP_HOST=win.ADPClaudeHost.create();}
 if(mode==='openai'){
  vm.runInContext(fs.readFileSync(process.argv[2].replace(/adp\.js$/, 'adapters/openai.js'),'utf8'),win);
  win.ADP_HOST=win.ADPOpenAIHost.create({profile:'sites',bridge:{connect:async()=>connection}});
@@ -70,6 +72,34 @@ class HostConnection(unittest.TestCase):
         result = self.run_case('static')
         self.assertEqual(result['host']['id'], 'static')
         self.assertFalse(result['db'] or result['ns'])
+
+    def test_claude_adapter_matches_builtin_default(self):
+        strip = lambda r: {**r, 'calls': sorted(r['calls']), 'host': {k: v for k, v in r['host'].items() if k != 'comments'}}
+        legacy = strip(self.run_case('legacy'))
+        for mode in ('adapter', 'adapter-slow-comments'):  # slow comments must not hold connect()
+            self.assertEqual(strip(self.run_case(mode)), legacy)
+        failed = self.run_case('adapter-no-claude')        # explicit adapter fails closed, not 'static'
+        self.assertEqual((failed['host']['status'], failed['db']), ('failed', False))
+
+    def test_claude_adapter_contract(self):
+        script = r'''
+const assert = require('node:assert/strict'); require('./skill/assets/adapters/claude.js');
+const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id: async () => 'u', canEdit: async () => 'yes'};
+(async () => {
+  await assert.rejects(host.connect(), /window\.claude/);
+  let release; const slow = new Promise(r => { release = r; }), ctl = {}, cb = {};
+  claude = {use: async n => n === 'db' ? db : n === 'user' ? user : slow};
+  const c = await host.connect();                        // slow comments do not hold connect()
+  assert.deepEqual([c.id, c.db, c.user, c.seedFiles], ['claude', db, user, true]);
+  assert.equal(await c.user.canEdit(), 'yes');           // never coerced into a permission
+  const got = c.comments.customAnchors(cb); release({customAnchors: async x => (assert.equal(x, cb), ctl)});
+  assert.equal(await got, ctl);
+  claude = {use: async () => null};
+  await assert.rejects((await host.connect()).comments.customAnchors({}), e => e.code === 'unavailable');
+})().catch(e => { console.error(e); process.exitCode = 1; });
+'''
+        run = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
 
     def test_absent_store_and_denied_user(self):
         self.assertFalse(self.run_case('no-db')['db'])
