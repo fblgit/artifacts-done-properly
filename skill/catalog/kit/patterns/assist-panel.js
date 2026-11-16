@@ -13,7 +13,7 @@
  *
  * API:
  *   Kit.assistPanel.mount(box, opts) -> {setScope(pick | null, focus), pick(), focus(), show("requests"|"conversation"), destroy()}
- *     engine      a Kit.assist engine (required): can, pick, send, ask, requests, messages (when present), presence, thread, reply, ping
+ *     engine      a Kit.assist engine (required): can, delivery, agentLabel, pick, send, ask, requests, messages (when present), presence, thread, reply, ping
  *     lanes       which lanes to offer (default the "assist.lanes" switch, else ask, task, fix, design); "assist.ask-now" false drops ask
  *     project     filters the request list                  titles  {partId: title} for block names
  *     onReveal(partId)   scroll to a block (block buttons on cards)     artifactUrl  for the nudge     me, names  as Kit.requestCard
@@ -108,7 +108,7 @@ function mount(box, opts) {
     syncCan();
   }
   function syncCan() {
-    const c = E.can(), ok = lane === 'ask' ? c.ask : c.send === 'available', none = !c.ask && c.send !== 'available' && c.send !== 'no_session';
+    const c = E.can(), go = c.send === 'available' || c.send === 'queued', ok = lane === 'ask' ? c.ask : go, none = !c.ask && !go && c.send !== 'no_session';
     send.textContent = busy ? (lane === 'ask' ? 'Asking…' : 'Sending…') : word('send', lane);
     send.disabled = busy; send.setAttribute('aria-disabled', String(!ok));
     why.textContent = ok ? 'Ctrl or ⌘ + Enter sends.' : lane === 'ask' ? WHY.ask : (WHY[c.send] || WHY.none);
@@ -146,7 +146,7 @@ function mount(box, opts) {
       E.ask(cid, text, { scope, quote, onText: t => { stream = t; drawStream(); } }).then(r => { cid = r.cid; follow(); stream = null; if (!E.messages) msgs.push({ role: 'assistant', text: r.text }); done(); drawConv(); live.textContent = 'Claude answered.'; },
         e => { msgs.pop(); stream = null; busy = false; drawConv(); syncCan(); fail(e); });
     } else {
-      E.send({ lane, scope, text, quote }).then(rid => { done(); show('requests'); live.textContent = word('lanes', lane) + ' sent. It waits in the queue until a session picks it up.'; flash(rid); }, e => { busy = false; syncCan(); fail(e); });
+      E.send({ lane, scope, text, quote }).then(rid => { done(); show('requests'); live.textContent = E.delivery && E.delivery(rid) === 'unknown' ? word('lanes', lane) + ' saved. Delivery to ' + (E.agentLabel ? E.agentLabel() : 'the session') + ' is not confirmed; the request stays in the list.' : word('lanes', lane) + ' sent. It waits in the queue until a session picks it up.'; flash(rid); }, e => { busy = false; syncCan(); fail(e); });
     }
   }
   form.addEventListener('submit', e => { e.preventDefault(); submit(); });
@@ -197,7 +197,7 @@ function mount(box, opts) {
     conv.append(ol);
     const row = el('div', 'kit-ap-crow');
     const last = msgs.filter(m => m.role === 'user').pop();
-    if (last && stream == null && E.can().send === 'available') { const b = el('button', 'kit-ap-mini', 'Send this to a session'); b.type = 'button';
+    if (last && stream == null && ['available', 'queued'].includes(E.can().send)) { const b = el('button', 'kit-ap-mini', 'Send this to a session'); b.type = 'button';
       b.addEventListener('click', () => E.send({ lane: 'task', scope, text: last.text, quote }).then(rid => { show('requests'); flash(rid); live.textContent = 'Sent to a session as a task.'; }, fail)); row.append(b); }
     const n = el('button', 'kit-ap-mini', 'New conversation'); n.type = 'button'; n.addEventListener('click', () => { cid = null; msgs = []; if (msgOff) msgOff(); msgOff = null; drawConv(); ta.focus(); }); row.append(n);
     conv.append(row);

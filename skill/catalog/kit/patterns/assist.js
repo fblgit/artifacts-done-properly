@@ -442,7 +442,7 @@ function start(o) {
     document.removeEventListener('keydown', onShortcut); if (closePick) closePick(); watchers.clear(); lives.clear();
   }
   return {
-    ready, can, delivery: rid => deliveries[rid] || '', me: () => uid, watch: fn => { watchers.add(fn); return () => watchers.delete(fn); }, pick, send, reply, ask, ping,
+    ready, can, delivery: rid => deliveries[rid] || '', agentLabel: who, me: () => uid, watch: fn => { watchers.add(fn); return () => watchers.delete(fn); }, pick, send, reply, ask, ping,
     requests, conversations, messages, presence, thread, state, lanes, word, destroy
   };
 }

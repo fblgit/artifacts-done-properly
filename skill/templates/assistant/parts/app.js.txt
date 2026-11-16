@@ -296,7 +296,7 @@ function mountExamples(){
     original = textFor(); ta.value = original; grow(); count();
     ta.style.animation = 'none'; void ta.offsetWidth; ta.style.animation = '';
   };
-  const gate = () => { const c = engine ? engine.can() : null; ok = !!c && c.send === 'available'; count();
+  const gate = () => { const c = engine ? engine.can() : null; ok = !!c && (c.send === 'available' || c.send === 'queued'); count();
     note.textContent = ok ? '' : !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to Claude is not possible here right now.'; };
   ready.then(gate);
   const t = setInterval(() => { if (!box.isConnected) clearInterval(t); else gate(); }, 30000);

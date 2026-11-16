@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T15:32:57Z",
+ "built": "2026-11-16T15:40:20Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -1414,8 +1414,8 @@
     {
      "path": "kit/patterns/assist-panel.js",
      "role": "script",
-     "sha256": "bebefaa08d6154122ab643650899c0cdc94c3610c33a3364d0325054d897eaf8",
-     "bytes": 21254
+     "sha256": "aac6ceb0e9a661b75c9d141be37bb6b9c3892cb73f12cd03be5acb8720b8776f",
+     "bytes": 21504
     },
     {
      "path": "kit/patterns/assist-panel.css",
@@ -1430,7 +1430,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "f6e1a604b639"
+   "hash": "eb23e98beee2"
   },
   {
    "id": "pattern.assist",
@@ -1470,8 +1470,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "e3b779fc34aa6df13d8d1651533ab695e4bbd59c46ecae66166e5a4fdc44afbb",
-     "bytes": 36138
+     "sha256": "fc781cfc05c43a645bd997e31ccb64d83f0fdb518a3b31953f680a2e20b4d0a6",
+     "bytes": 36155
     },
     {
      "path": "kit/samples/patterns.json",
@@ -1480,7 +1480,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "1341b405d0f7"
+   "hash": "0b6da1c92244"
   },
   {
    "id": "pattern.attention-list",

@@ -164,6 +164,20 @@ const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts });
         self.assertEqual(out[2], ['unknown', 1])      # an unconfirmed handoff is shown and the saved request stays
         self.assertEqual(out[1], [True, 't', '0001'])      # a reply names its stored turn, so a host with its own record does not add a second
 
+    def test_the_panel_lets_a_queued_host_send(self):
+        script = r"""
+const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/skill/catalog/kit/', made = [], noop = () => {};
+const mk = () => { const a = {}, t = { attrs: a, dataset: {}, style: {}, classList: { add: noop, remove: noop, toggle: noop }, textContent: '', setAttribute: (k, v) => { a[k] = String(v); }, getAttribute: k => a[k] ?? null };
+  return new Proxy(t, { get: (o, k) => k in o ? o[k] : k === 'className' ? '' : k === 'querySelectorAll' ? () => [] : noop, set: (o, k, v) => (o[k] = v, true) }); };
+const doc = { createElement: () => { const e = mk(); made.push(e); return e; }, createTextNode: mk, getElementById: () => null, head: mk(), body: mk(), addEventListener: noop, removeEventListener: noop };
+const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, document: doc, addEventListener: noop, TextEncoder }; w.window = w; vm.createContext(w);
+for (const f of ['dom.js', 'patterns/assist-panel.js']) vm.runInContext(fs.readFileSync(K + f, 'utf8'), w);
+const view = () => ({ get: () => [], on: () => noop }), eng = s => ({ can: () => ({ ask: false, send: s }), requests: view, conversations: view, watch: () => noop, lanes: () => ['task'], word: l => l, presence: () => ({}), me: () => 'u' });
+console.log(JSON.stringify(['available', 'queued', 'no_session', 'off'].map(s => { made.length = 0; w.Kit.assistPanel.mount(mk(), { engine: eng(s) }); return made.find(e => e.attrs['aria-disabled'] !== undefined).attrs['aria-disabled']; })));
+process.exit(0);"""
+        run = run_node(['-e', script, str(ROOT)])
+        self.assertEqual(json.loads(run.stdout), ['false', 'false', 'true', 'true'], run.stderr)      # queued enables Send, as available does; no_session and off still block
+
     def test_a_reply_ends_an_agents_claim_only_where_there_is_one(self):
         script = ASSIST_ENV + r'''
 const claim = { actor: 'a', token: 'T', state: 'working' }, base = { lane: 'task', scope: { kind: 'page', id: '', label: 'P' }, text: 'x', at: '2026-11-16T00:00:00Z', status: 'open', state: 'working', progress: [] };
