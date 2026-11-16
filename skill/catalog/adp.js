@@ -8,13 +8,13 @@
  * @kind      component
  * @group     Runtime
  * @status    stable
- * @version   2.0.1
- * @updated   2026-11-14
+ * @version   2.1.0
+ * @updated   2026-11-16
  * @summary   The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.
  * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
  * @requires  none
  * @files     none
- * @provides  window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
+ * @provides  window.ADP.host, window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
  * @config    <meta name="adp:build"> | the build number, before the script
  * @config    window.ADP_CONTENT | content.js: the baseline copy of the parts
  * @config    page.header, page.tabs, page.changes | parts the page must render; #wc, #wcN, #wcChanges, #wcDecisions for the panel
@@ -24,7 +24,7 @@
  * @db        reads content; changes; decisions; incoming; manifest/current; config/current / writes status/integrity (attempted for any viewer with a db: it lands only where the db rules allow); checks/latest (editors only); config/current and a changes/d-<time> record when a setting is saved; the seed docs on first open
  * @source    this repository | skill/assets/adp.js | the same bytes
  * @preview   {"render": "runtime.adp", "samples": []}
- * @changed   The catalog runs the same runtime as every page the skill makes: adds ADP.config, ADP.user, ADP.ns, ADP.db, integrity and seeding on first open.
+ * @changed   Adds an explicit host connection boundary while preserving the legacy Claude default.
  */
 (function(){
 'use strict';
@@ -33,6 +33,27 @@ const BUILD = meta ? meta.content : '';
 const ID = /^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)*$/;
 const live = {}, errors = [], stats = {anchors: 'not started', threads: 0, placed: 0, unknown: []};
 const user = {canEdit: false, id: ''};
+/* Host connection is a capability boundary, not a persistence/authorization guarantee.
+   Explicit providers never fall back to another host on error. See docs/host-adapters.md. */
+let host = Object.freeze({protocol: 'adp-host/1', id: '', status: 'connecting'}), hostComments = null;
+async function connectHost(){
+  const explicit = Object.prototype.hasOwnProperty.call(window, 'ADP_HOST');
+  let connection;
+  if (explicit) {
+    const provider = window.ADP_HOST;
+    if (!provider || provider.protocol !== 'adp-host/1' || typeof provider.connect !== 'function') throw new Error('Invalid ADP_HOST provider');
+    connection = await provider.connect();
+  } else if (window.claude && typeof window.claude.use === 'function') {
+    const use = name => Promise.resolve().then(() => window.claude.use(name)).catch(() => null);
+    const comments = use('comments');
+    const [db, user] = await Promise.all(['db', 'user'].map(use));
+    connection = {id: 'claude', db, user, legacyComments: comments, seedFiles: true};
+  } else return {id: 'static'};
+  if (!connection || typeof connection.id !== 'string' || !connection.id.trim()) throw new Error('Host connection needs an id');
+  if (connection.db && (typeof connection.db.doc !== 'function' || typeof connection.db.collection !== 'function')) throw new Error('Host database needs the document-store profile');
+  if (connection.user && (typeof connection.user.canEdit !== 'function' || typeof connection.user.id !== 'function')) throw new Error('Invalid host user capability');
+  return connection;
+}
 let PAGE = null, db = null, canEdit = false, probe = '', ctl = null, cmode = false, list = [], hlEl = null;
 
 /* ---------- pure: the part hash (adp.py manifest's rule) and the classification (architecture.md, contracts 4 and 6) ---------- */
@@ -198,7 +219,7 @@ function label(el){
 function hl(el){ if (hlEl === el) return; if (hlEl) hlEl.classList.remove('adp-hl'); hlEl = el; if (el) el.classList.add('adp-hl'); }
 const swallow = e => { if (!e.isTrusted || !cmode || !ctl || !target(e.target)) return; e.preventDefault(); e.stopPropagation(); };
 async function anchors(){
-  const cm = await claude.use('comments').catch(() => null);
+  const cm = hostComments;
   if (!cm || typeof cm.customAnchors !== 'function') { stats.anchors = 'comments unavailable'; return later(); }
   const st = document.createElement('style');
   st.textContent = '.adp-cmode [data-part]{cursor:crosshair}.adp-hl{outline:2px solid var(--accent,#9A5406)!important;outline-offset:-2px}';
@@ -483,23 +504,38 @@ new MutationObserver(() => { cancelAnimationFrame(tPlace); tPlace = requestAnima
   .observe(document.documentElement, {childList: true, subtree: true});
 addEventListener('resize', () => { place(); later(); });
 (async () => {
-  if (!window.claude || typeof window.claude.use !== 'function') return ready();
-  anchors();
-  const [d, u] = await Promise.all([claude.use('db').catch(() => null), claude.use('user').catch(() => null)]);
-  canEdit = u && typeof u.canEdit === 'function' ? await u.canEdit().catch(() => false) : false;
-  user.canEdit = canEdit; user.id = u && typeof u.id === 'function' ? String(await u.id().catch(() => '') || '') : '';
-  if (d && canEdit) await seedFromFile(d);     // before anything reads the record: the first editor at an empty db writes it
+  let connection;
+  try { connection = await connectHost(); }
+  catch (e) { host = Object.freeze({protocol: 'adp-host/1', id: '', status: 'failed'}); pushErr('host connection failed'); ready(); return; }
+  const d = connection.db || null, u = connection.user || null;
+  hostComments = connection.comments || null;
+  host = Object.freeze({protocol: 'adp-host/1', id: connection.id, status: 'connected', records: !!d,
+    comments: !!(hostComments && typeof hostComments.customAnchors === 'function'), seedFiles: connection.seedFiles === true});
+  if (connection.legacyComments) {
+    connection.legacyComments.then(cm => {
+      hostComments = cm;
+      host = Object.freeze(Object.assign({}, host, {comments: !!(cm && typeof cm.customAnchors === 'function')}));
+      return anchors();
+    }).catch(() => pushErr('comments unavailable'));
+  } else anchors().catch(() => pushErr('comments unavailable'));
+  canEdit = u ? await Promise.resolve().then(() => u.canEdit()).then(v => v === true).catch(() => false) : false;
+  user.canEdit = canEdit; user.id = u ? String(await Promise.resolve().then(() => u.id()).catch(() => '') || '') : '';
+  if (d && canEdit && host.seedFiles) await seedFromFile(d);     // before anything reads the record: the first editor at an empty db writes it
   db = d;
   if (db) { changesPanel(); watchContent(); }
   if (db) watchConfig(); else ready();
-  if (db && canEdit) {
+  if (db && canEdit && host.seedFiles) {
     try { const r = await fetch('content.js', {cache: 'no-store'}); probe = (r.ok ? 'ok ' : 'http ') + r.status + ', ' + (r.headers.get('content-type') || '?') + ', ' + (await r.text()).length + ' chars'; }
     catch (e) { probe = 'failed: ' + (e && e.message || e); }
   }
   later();
-})();
+})().catch(() => {
+  db = null; canEdit = false; user.canEdit = false;
+  host = Object.freeze({protocol: 'adp-host/1', id: host.id, status: 'failed'});
+  pushErr('host initialization failed'); ready();
+});
 
 const config = Object.freeze({define, get, all, on, set, reset, ready: readyP, get doc(){ return cdoc; }});
 const ns = name => { if (!db) throw new Error('ADP.ns needs a database'); const b = 'ns/' + name + '/'; return {doc: p => db.doc(b + p), collection: p => db.collection(b + p)}; };
-window.ADP = Object.freeze({build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, get db(){ return db; }});
+window.ADP = Object.freeze({get host(){ return host; }, build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, get db(){ return db; }});
 })();

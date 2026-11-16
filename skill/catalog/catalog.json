@@ -24,10 +24,11 @@
     "seed"
    ],
    "status": "stable",
-   "version": "2.0.1",
+   "version": "2.1.0",
    "requires": [],
    "globals": [],
    "provides": [
+    "window.ADP.host",
     "window.ADP.page",
     "window.ADP.content",
     "window.ADP.config",
@@ -47,11 +48,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "68045fb1d5d37d9bd457cc349934baa80d1bb238754c3cfde68db17b90355dea",
-     "bytes": 39809
+     "sha256": "f2bc86c97e7563e2d81bb430692fd32e953afceda823f6367f871ba52bd68b87",
+     "bytes": 42261
     }
    ],
-   "hash": "699e33bf83b1"
+   "hash": "0c6e4a6f3ad8"
   },
   {
    "id": "kit.callout-refusal",
