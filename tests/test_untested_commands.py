@@ -165,6 +165,41 @@ class Headers(Untested):
             json.dump({'viz-chips': {'note': 'Invented.', 'chips': [{'id': 'é', 'n': 1}]}, 'viz-other': {'x': 1}}, f)
         return self.p('bun', 'catalog.json')
 
+    def test_sites_catalog_take_map_uses_https_sources_not_artifact_references(self):
+        from test_host_connection import run_node
+        script = """const fs=require('fs'),assert=require('assert/strict');
+const src=fs.readFileSync('skill/catalog/parts/catalog.js','utf8');
+const takeFiles=()=>[{entry:{},f:{path:'kit/demo.js',sha256:'abc'}}];
+eval(src.slice(src.indexOf('function takeRef('),src.indexOf('function Take(')));
+assert.deepEqual(JSON.parse(takeRef({},true,{self:{url:'https://catalog.example.chatgpt.site'}})),{'kit/demo.js':{url:'https://catalog.example.chatgpt.site/kit/demo.js',sha256:'abc'}});
+assert.equal(JSON.parse(takeRef({},true,{self:{url:'https://claude.ai/artifact/demo'}}))['kit/demo.js'].artifact,'https://claude.ai/artifact/demo');"""
+        result = run_node(['-e', script], cwd=os.path.dirname(os.path.dirname(__file__)))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_sites_take_materializes_verified_dependencies_and_refuses_drift(self):
+        url = 'https://catalog.example.chatgpt.site'
+        plan = self.ok('catalog', url)
+        self.assertEqual(plan['fetch']['transport'], 'https')
+        self.assertEqual(plan['fetch']['url'], url + '/catalog.json')
+        source = self.bundled(); root = os.path.dirname(source)
+        with open(os.path.join(root, 'kit/viz/timeline.js'), 'w') as f: f.write('window.timeline = true;')
+        cat = json.load(open(source)); cat['url'] = url
+        for e in cat['entries']:
+            for f in e['files']: f['sha256'] = hashlib.sha256(open(os.path.join(root, f['path']), 'rb').read()).hexdigest()
+        target = os.path.dirname(plan['index']); shutil.copytree(root, target)
+        json.dump(cat, open(plan['index'], 'w'))
+        reads = self.fails('take', url, 'viz.timeline', code=2)
+        self.assertNotIn('files', json.loads(reads.stdout))
+        dest = self.p('taken')
+        out = self.ok('take', url, 'viz.timeline', '--materialize', dest)
+        self.assertEqual(out['entries'], ['viz.chips', 'viz.timeline'])
+        self.assertEqual(out['materialized'], ['kit/viz/chips.js', 'kit/viz/timeline.js'])
+        for name in out['materialized']:
+            self.assertEqual(open(os.path.join(dest, name), 'rb').read(), open(os.path.join(root, name), 'rb').read())
+        open(os.path.join(target, 'kit/viz/chips.js'), 'w').write('changed')
+        self.fails('take', url, 'viz.timeline', '--materialize', self.p('rejected'))
+        self.assertFalse(os.path.exists(self.p('rejected')))
+
     def test_describe_names_the_bundle_and_the_key_of_the_sample(self):
         out = self.ok('kit', 'describe', 'viz.chips', self.bundled())
         self.assertEqual((out['sample'], out['sample_key']), ('kit/samples/viz.json', 'viz-chips'))

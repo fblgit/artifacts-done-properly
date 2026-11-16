@@ -371,7 +371,11 @@ function takeFiles(e, withReq) {
 }
 function takeRef(e, withReq, s) {
   const url = s.self.url || '<catalog url>'; const ref = {};
-  for (const { entry, f } of takeFiles(e, withReq)) { const r = { artifact: url, path: f.path }; const v = f.ver || s.self.ver; if (v) r.ver = v; ref[f.path] = r; }
+  const sites = /^https:\/\/[^/]+\.chatgpt\.site\/?$/.test(url);
+  for (const { f } of takeFiles(e, withReq)) {
+    if (sites) ref[f.path] = {url: url.replace(/\/$/, '') + '/' + f.path, sha256: f.sha256};
+    else { const r = {artifact: url, path: f.path}; const v = f.ver || s.self.ver; if (v) r.ver = v; ref[f.path] = r; }
+  }
   return JSON.stringify(ref, null, 2);
 }
 function Take({ e }) {
@@ -380,6 +384,7 @@ function Take({ e }) {
   const list = takeFiles(e, withReq);
   const tmpl = e.kind === 'template';
   const refText = takeRef(e, withReq, s);
+  const sites = /^https:\/\/[^/]+\.chatgpt\.site\/?$/.test(s.self.url || '');
   const glob = [...new Set(closure(e).flatMap(x => x.globals || []))].map(g => (CDN[g] || {}).tag).filter(Boolean);
   const load = glob.concat(list.filter(x => x.f.role === 'style').map(x => `<link rel="stylesheet" href="${x.f.path}">`), list.filter(x => x.f.role === 'script').map(x => `<script src="${x.f.path}"></script>`)).join('\n');
   const reqd = closure(e).filter(x => x.id !== e.id);
@@ -388,7 +393,14 @@ function Take({ e }) {
   useEffect(() => { if (!tmpl || !shell) return; let off = false; loadFile(shell.path).then(t => { if (!off) setText(t); }, () => {}); return () => { off = true; }; }, [e.id]);
   return html`<div class="panel" data-part="entry.take" data-part-key=${e.id} data-comment-target role="tabpanel" aria-label="Take it">
     ${!s.self.url ? html`<p class="note">The catalog’s own link and version come from its database. Open the catalog signed in to see them filled in; until then the reference shows <code>${'<catalog url>'}</code>.</p>` : ''}
-    ${tmpl ? html`<ol class="steps">
+    ${sites ? html`<ol class="steps">
+      <li><h4>Read from Sites, then publish on the destination host</h4><p>Give your agent this catalog URL and entry ID. Private catalogs require an authorized Sites session. These are HTTPS source URLs and hashes, not Claude Artifact references.</p>
+        <${Code} text=${`python3 -I skill/scripts/adp.py catalog ${s.self.url}\npython3 -I skill/scripts/adp.py take ${s.self.url} ${e.id}\npython3 -I skill/scripts/adp.py take ${s.self.url} ${e.id} --materialize ./taken`} label="agent commands"/>
+        <p>The offline shell prints the reads to execute. Save the exact response bytes at its specified paths, then rerun take. It verifies every selected file against the catalog SHA-256 before copying; missing or changed files stop the operation.</p>
+        <${Code} text=${refText} label="authenticated source reads"/></li>
+      <li><h4>Publish the verified files</h4><p>Merge the copied files into your artifact, then use its host’s native publication tool. Load dependencies first and compare destination file hashes with this catalog.</p><${Code} text=${load || '(read as data)'} label="tags"/></li>
+      ${tmpl ? html`<li><h4>Use the template text</h4><p>Save this as index.html and adapt its content.</p>${text != null ? html`<${Code} text=${text} label=${shell.path}/>` : 'Loading…'}</li>` : ''}
+    </ol>` : tmpl ? html`<ol class="steps">
       <li><h4>Copy the template’s text</h4><p>A page cannot be copied between artifacts server-side, so this template is taken as text. Save it as your artifact’s <code>index.html</code>: it already holds the tags that load what it needs. Then make its title and content your own.</p>${text != null ? html`<${Code} text=${text} label=${shell.path}/>` : html`<p class="c-faint">Loading the text…</p>`}</li>
       ${list.length ? html`<li><h4>Add the files it loads to your artifact’s publish</h4>
         <p>Put this map in the <code>files</code> of the same publish. The server copies each file from this catalog at the pinned version.</p>
@@ -403,11 +415,11 @@ function Take({ e }) {
       <li><h4>Check the copy</h4><p>Read each file back from your artifact (Artifact read with its path). Its sha256 must match the one under Files here; the catalog shows <code>${short(e.hash)}</code> for the entry as a whole.</p></li>
     </ol>`}
     <h3>For programs</h3>
-    <dl class="dl">
+    ${sites ? html`<p>Read <code>catalog.json</code> over authenticated HTTPS for entries and source hashes. Native Sites records use the catalog namespace and destination revision guards.</p>` : html`<dl class="dl">
       <div><dt>this entry as data</dt><dd>ArtifactData get <code>entries/${e.id}</code> on ${s.self.url || 'the catalog'}</dd></div>
       <div><dt>every entry</dt><dd>ArtifactData list <code>entries</code>, or Artifact read path <code>catalog.json</code> (the snapshot published with the page)</dd></div>
       <div><dt>add an entry</dt><dd>one ArtifactData set of <code>entries/&lt;id&gt;</code>: the page shows it live, with no republish</dd></div>
-    </dl>
+    </dl>`}
   </div>`;
 }
 

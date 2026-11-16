@@ -7,13 +7,13 @@ metadata:
 
 # ADP catalog
 
-The catalog is a published artifact whose files are kit entries, listed in its `catalog.json` (schema `kit-catalog/2`, generated from the header of each entry's main file). Taking an entry by reference means the server copies the files into your artifact: nothing is downloaded, retyped or pasted.
+The catalog is a published artifact whose files are kit entries, listed in its `catalog.json` (schema `kit-catalog/2`, generated from the header of each entry's main file). Claude catalogs support native references: the server copies their files into your artifact. Sites catalogs use authenticated HTTPS reads, hash verification and native destination publication (see below).
 
 `ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. CATALOG is the catalog url (its fetched index is the live one), `-` for the saved catalog, or a local `catalog.json` (the shipped build is `~/.adp/catalog/catalog.json` after setup: not the live catalog).
 
 ## Save and fetch the user's catalog (My Own Kit)
 
-The user's whole catalog lives on disk in `~/.adp/catalog/`: get it first. Setup already put the shipped copy there, so `ADP catalog URL` then only lists what differs. `ADP catalog URL` saves the url in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalog/`. Make that read, then run the command again: it prints `fetched: true`, the build date, the entry count and, for every file the index lists that is not on disk yet, `read` calls with `paths` (at most 256 each, `out_dir` `~/.adp/catalog/`). Make them all, run the command once more, and it prints `complete: true`. `take`, `kit` and `suggest` read from that folder (an older `~/.adp/catalogs/<id>/` copy still counts); `adp.py` stays offline, it only prints the calls. `ver` is empty until the catalog's owner sets one, so compare the build date. `ADP catalog` alone shows the saved one. Never assume a catalog.
+For Claude catalogs, the user's whole catalog lives on disk in `~/.adp/catalog/`: get it first. Sites catalogs use `~/.adp/catalogs/<hostname>/` and can fetch only the selected entries using the Sites workflow below. Setup already put the shipped copy there, so `ADP catalog URL` then only lists what differs. `ADP catalog URL` saves the url in `~/.adp/config.json` and prints the Artifact `read` of its `catalog.json` into `~/.adp/catalog/`. Make that read, then run the command again: it prints `fetched: true`, the build date, the entry count and, for every file the index lists that is not on disk yet, `read` calls with `paths` (at most 256 each, `out_dir` `~/.adp/catalog/`). Make them all, run the command once more, and it prints `complete: true`. `take`, `kit` and `suggest` read from that folder (an older `~/.adp/catalogs/<id>/` copy still counts); `adp.py` stays offline, it only prints the calls. `ver` is empty until the catalog's owner sets one, so compare the build date. `ADP catalog` alone shows the saved one. Never assume a catalog.
 
 ## Your own published catalog
 
@@ -34,7 +34,25 @@ When the user wants their own, a separate or a private catalog: after setup the 
 - `ADP kit show ID [CATALOG]`: name, summary, about, tags, files, requires, provides, and what the entry's header says (status, version, config, db, source, changed); `about` and those fields are read from the main file in the local kit.
 - `ADP kit describe ID [CATALOG]`: the mount signature: needs, provides, requires, file paths, the sample path.
 
-## Take by reference
+## Connect the selected Sites catalog
+
+For a Codex/Sites catalog, use the Sites skill to publish and connect that exact Site. Keep its returned project ID, published origin, MCP endpoint and local artifact namespace together; a namespace such as `catalog` is not a Site address. Never reuse another Site's connected tools just because their names are also `adp_read`, `adp_query` and `adp_write`.
+
+1. Read that Site with `include_mcp_connection: true`. Use its returned plugin ID unchanged. Sites publication provisions the plugin; do not create a fixture-specific replacement or a proxy to another Site.
+2. If the plugin's tools are absent and installation is unconfirmed, offer the returned plugin through Plugin Management. Installed does not mean tools are available in this chat. Sites documents trying a new chat for an already-installed plugin; report this connection blocker explicitly rather than claiming setup succeeded.
+3. Through the selected Site's own tools, call `adp_session`, then `adp_read` for its artifact namespace and `manifest/current`. Configure membership only with the authenticated Site-scoped identity and the owner's authorization. Do not borrow an identity from another Site or substitute a static-file access token.
+4. A native record read with its revision is the agent connection receipt. Browser initialization, a successful deployment, or reading `catalog.json` does not prove that connection. Saved guidance and ADP records require native revision guards; source publication uses the Sites lifecycle. Keep both receipts.
+
+## Take from a Sites catalog
+
+An HTTPS `*.chatgpt.site` catalog uses authenticated HTTP reads, not Claude server-side artifact references. The shell stays offline; the agent supplies the authorized Site session without putting credentials in commands, saved plans or replies.
+
+1. Run `ADP catalog <Sites URL>` and execute its `fetch` plan, saving the exact live `catalog.json` bytes to `out_file`.
+2. Run `ADP take <Sites URL> ID ...`. It resolves dependencies and prints the selected HTTPS reads. Execute them and save the exact response bytes at each `out_file`; do not substitute repository copies.
+3. Run `ADP take <Sites URL> ID ... --materialize DIR`. It verifies every full SHA-256 before copying. It refuses missing/mismatched files and conflicting destination files. Retain the returned source/index/file hashes as provenance.
+4. Merge those files into the destination artifact using the normal edit protocol. `ADP files DIR` produces the native publication payload. Load script/style dependencies in order; publish with the destination's own tool and verify the destination hashes and rendered result.
+
+## Take by reference (Claude catalog)
 
 1. Run `ADP take CATALOG ID ...`. Dependencies (`requires`) come first. It prints the `catalog` used, the `entries` taken and a `files` map to pass to the Artifact tool unchanged:
    `"kit/themes/glaze.css": {"artifact": "<catalog url>", "path": "kit/themes/glaze.css"}`
