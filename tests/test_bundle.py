@@ -124,6 +124,13 @@ class BundleTests(Cmd):
         self.assertEqual(reclaimed['calls'][0]['args']['data']['executionProvenance'][-1],foreign['data']['execution'])
         _, blocked = work('block',active,'--token',token,'--text','Needs input')
         self.assertEqual(blocked['calls'][0]['args']['data']['state'],'ack')
+        claude = {**active,'data':{**active['data'],'execution':{**active['data']['execution'],'origin':{'host':'claude','artifact':'https://claude.ai/artifact/fixture'}}}}
+        for url in ('https://claude.ai/artifact/fixture/', 'https://claude.ai/artifact/fixture#part', 'https://claude.ai/artifact/fixture?view=1'):
+            r = self.run_adp('work',self.write_json('alias.json',[claude]),'--host','claude','--artifact',url,'--path','requests/r-work','--action','claim','--by','other')
+            self.assertNotEqual(r.returncode,0,url)
+        legacy = {**active,'data':{**active['data'],'execution':{k:v for k,v in active['data']['execution'].items() if k != 'origin'}}}
+        self.assertNotEqual(work('claim',legacy)[0].returncode,0)
+        self.assertTrue(work('inspect',foreign)[1]['foreign'])
 
     def test_publication_work_requires_approval_and_matching_receipts(self):
         data = {'status':'merged','files':[{'path':'index.html','content':'Published'}],'parts':[],'base':{'version':'old'}}

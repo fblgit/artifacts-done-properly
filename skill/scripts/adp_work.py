@@ -8,10 +8,20 @@ import json
 import re
 import sys
 import uuid
+from urllib.parse import urlsplit
 
 import adp_bundle
 
 A = None
+
+
+def work_origin(host, artifact):
+    """Normalize known Claude URL aliases without changing opaque Sites names."""
+    if host == 'claude' and isinstance(artifact, str):
+        url = urlsplit(artifact)
+        if url.scheme == 'https' and url.netloc == 'claude.ai' and re.fullmatch(r'/artifact/[A-Za-z0-9_-]+/?', url.path):
+            artifact = 'https://claude.ai' + url.path.rstrip('/')
+    return {'host': host, 'artifact': artifact}
 
 
 def timestamp(value):
@@ -69,7 +79,7 @@ def work(a):
         raw = json.load(open(pos[0], encoding='utf-8'))
         for envelope in raw:
             args = envelope.get('call', {}).get('args', {})
-            if args.get('artifact', args.get('url')) != artifact:
+            if work_origin(adapter.HOST, args.get('artifact', args.get('url'))) != work_origin(adapter.HOST, artifact):
                 sys.exit('Work read belongs to another artifact')
     docs, _, _ = adp_bundle.reads_in(a, pos[0])
     row = docs.get(path)
@@ -78,10 +88,11 @@ def work(a):
     data = copy.deepcopy(row['data'])
     actor, action = A.opt(a, '--by'), A.opt(a, '--action', 'inspect')
     execution = data.get('execution') or {}
-    origin = {'host': adapter.HOST, 'artifact': artifact}
-    foreign = bool(execution) and execution.get('origin') != origin
+    origin = work_origin(adapter.HOST, artifact)
+    prior = execution.get('origin') or {}
+    foreign = bool(execution) and work_origin(prior.get('host'), prior.get('artifact')) != origin
     if action == 'inspect':
-        return A.emit({'path': path, 'revision': row['revision'], 'status': data.get('status'), 'resolved': data.get('resolved') is True, 'execution': execution})
+        return A.emit({'path': path, 'revision': row['revision'], 'status': data.get('status'), 'resolved': data.get('resolved') is True, 'execution': execution, 'foreign': foreign})
     if action not in ('claim', 'progress', 'checkpoint', 'block', 'complete') or not actor or len(actor) > 120:
         sys.exit('work needs --by NAME and --action claim|progress|checkpoint|block|complete')
     if data.get('status') in ('done', 'applied', 'declined'):
@@ -97,6 +108,8 @@ def work(a):
     if collection == 'incoming' and (data.get('publishRequest') or {}).get('inputHash') != fingerprint:
         sys.exit('Publication needs editor approval bound to the current proposal')
     if action == 'claim':
+        if execution and not prior and live:
+            sys.exit('Legacy unbound lease is still active; wait for expiry before a fresh claim')
         if foreign:
             data['executionProvenance'] = list(data.get('executionProvenance') or []) + [execution]
             execution, live = {}, False
