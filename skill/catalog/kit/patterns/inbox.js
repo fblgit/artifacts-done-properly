@@ -36,7 +36,7 @@
  * @requires  kit.tokens, kit.dom
  * @files     kit/patterns/inbox.css, kit/samples/patterns.json
  * @provides  Kit.inbox.mount
- * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or publish handle (default ADP.publish()), agent handle (default ADP.agent()), comments (legacy), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms, autoApply (apply each merged proposal, one at a time), onAutoApplied(n); returns {update, destroy}
+ * @config    Kit.inbox.mount(root, opts) | db (default ADP.db), user {canEdit, id} (default ADP.user), artifact handle or publish handle (default ADP.publish()), agent handle (default ADP.agent()), config (assist.presence-minutes), url for the handoff, classify (default ADP.classify), debounce ms, autoApply (apply each merged proposal, one at a time), onAutoApplied(n); returns {update, destroy}
  * @config    ADP.classify(base, live, incoming) | contract 4 of docs/architecture.md, in adp.js
  * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --ok --warn --danger --f-ui? --f-mono? --radius?
  * @globals   none
