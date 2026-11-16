@@ -67,6 +67,11 @@ record and native revision. A lost response remains unknown; read authoritative
 state before replanning rather than blindly retrying. Claude's adapter parses
 its native per-record committed batch outcomes.
 
+Sites also accepts grouped readback as `{call: <adp_query descriptor>, result}`
+inside an execution envelope's `readback`. It checks the Site artifact namespace,
+collection, document ID, exact data and native revision for each intended write.
+These remain query receipts; they are not presented as individual document reads.
+
 ```sh
 python3 -I skill/scripts/adp.py import-ack plan.json results.json \
   --host sites --raw
