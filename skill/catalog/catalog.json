@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T15:00:21Z",
+ "built": "2026-11-16T15:10:57Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -52,11 +52,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "9b45766b859644807b87bfeb7b404616a6174a0994fe13cf101c435f54225a23",
-     "bytes": 44653
+     "sha256": "9ea34a6b60b5906322205ce9e25dcbe646795358e7797db6bc16beae3a5463a5",
+     "bytes": 44751
     }
    ],
-   "hash": "d6cdf38c01e9"
+   "hash": "7116b5f1e858"
   },
   {
    "id": "kit.callout-refusal",
@@ -1452,7 +1452,7 @@
     "engine"
    ],
    "status": "new",
-   "version": "0.2.0",
+   "version": "0.2.1",
    "requires": [
     "kit.tokens",
     "kit.dom"
@@ -1470,8 +1470,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "ca7afd81a74998e44bdd7a2f0c7c3fd77be389946c3b4f0b4753337d82c04ba4",
-     "bytes": 36006
+     "sha256": "5d18631f8a0b1c746d7bbc3bb2b3f6aa73f496cbdd66ea795d4b6b15f617f8f9",
+     "bytes": 36305
     },
     {
      "path": "kit/samples/patterns.json",
@@ -1480,7 +1480,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "e2f4375e89c6"
+   "hash": "b5b72e13f572"
   },
   {
    "id": "pattern.attention-list",

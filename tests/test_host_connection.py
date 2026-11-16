@@ -130,7 +130,7 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
   const log = [], caps = {comments: {canSendToClaude: async () => 'available', sendToClaude: async m => (log.push(m), {threadId: 't1'}), anchorFor: async e => 'a:' + e}, artifact: {publish: async (f, o) => [f, o]}, sample: async m => ({text: m}), db, user};
   claude = {use: async n => caps[n] || null};
   const g = await host.connect(), ag = await g.agent;      // Claude's own methods, behind the host-neutral names
-  assert.deepEqual([ag.label, await ag.canSend(), await ag.send({anchor: 'x', text: 'hi'}), await ag.anchorFor('e'), log], ['Claude', 'available', {threadId: 't1', delivery: 'accepted'}, 'a:e', [{anchor: 'x', text: 'hi'}]]);
+  assert.deepEqual([ag.label, await ag.canSend(), await ag.send({anchor: 'x', text: 'hi', requestId: 'r-1', turnId: '0001'}), await ag.anchorFor('e'), log], ['Claude', 'available', {threadId: 't1', delivery: 'accepted'}, 'a:e', [{anchor: 'x', text: 'hi'}]]);
   assert.deepEqual([await (await g.publish).files(1, 2), await (await g.ask)('m')], [[1, 2], {text: 'm'}]);
   claude = {use: async n => n === 'db' ? db : n === 'user' ? user : null};      // not granted: none, not a handle that fails later
   const n = await host.connect(); assert.deepEqual([await n.agent, await n.publish, await n.ask], [null, null, null]);
@@ -152,11 +152,15 @@ const sent = [], mk = (state, label) => ({ label, canSend: async () => state, se
 const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts }); await e.ready; await sleep(); const r = await e.send({ text: 'hi' }).then(() => 'ok', x => x.code + ': ' + x.message); e.destroy(); return r; };
 (async () => {
   console.log(JSON.stringify([await run({ agent: mk('queued', 'Codex') }), await run({ agent: mk('no_session', 'Codex') }), await run({ page: { agent: async () => mk('available', 'X') } }),
-    await run({ comments: { canSendToClaude: async () => 'available', sendToClaude: async () => ({}), anchorFor: async () => 'p' } }), await run({}), sent.length]));
+    await run({ comments: { canSendToClaude: async () => 'available', sendToClaude: async () => ({}), anchorFor: async () => 'p' } }), await run({}), sent.map(m => /^r-/.test(m.requestId))]));
+  const e = w.Kit.assist.start({ seed: {}, agent: mk('queued', 'Codex') }); await e.ready; await sleep(); const rid = await e.send({ text: 'hi' }); await e.reply(rid, 'again'); const m = sent[sent.length - 1];
+  console.log(JSON.stringify([m.requestId === rid, m.threadId, m.turnId]));
   process.exit(0);
 })();'''
         run = run_node(['-e', script, str(ROOT)])
-        self.assertEqual(json.loads(run.stdout), ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'ok', 'none: This page cannot send to Claude here.', 2], run.stderr)      # queued is sendable; words from the label; default from the page's host; a legacy comments handle still works
+        out = [json.loads(x) for x in run.stdout.splitlines()]
+        self.assertEqual(out[0], ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'ok', 'none: This page cannot send to Claude here.', [True, True]], run.stderr)      # queued is sendable; words from the label; default from the page's host; a legacy comments handle still works; the stored request id goes with the send
+        self.assertEqual(out[1], [True, 't', '0001'])      # a reply names its stored turn, so a host with its own record does not add a second
 
     def test_a_reply_ends_an_agents_claim_only_where_there_is_one(self):
         script = ASSIST_ENV + r'''

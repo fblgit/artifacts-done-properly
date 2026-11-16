@@ -28,7 +28,7 @@
         // agent, publish and ask are the host-neutral names for comments.sendToClaude, artifact.publish and sample; each is null when the viewer did not grant that capability.
         const agent = comments.then(c => c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? Object.freeze({
           label: 'Claude', canSend: () => Promise.resolve(c.canSendToClaude()),
-          send: async m => { const r = await c.sendToClaude(m); return {threadId: (r && r.threadId) || (m && m.threadId) || '', delivery: 'accepted'}; },
+          send: async m => { const r = await c.sendToClaude(m && m.threadId ? {threadId: m.threadId, text: m.text} : {anchor: m && m.anchor, text: m && m.text}); return {threadId: (r && r.threadId) || (m && m.threadId) || '', delivery: 'accepted'}; },      // only what sendToClaude takes: requestId and turnId are for hosts that keep their own record
           anchorFor: el => Promise.resolve(c.anchorFor(el))}) : null);
         const publish = use('artifact').then(a => a && typeof a.publish === 'function' ? Object.freeze({files: (files, opts) => Promise.resolve(a.publish(files, opts))}) : null);
         const ask = use('sample').then(s => typeof s === 'function' ? (messages, opts) => s(messages, opts) : null);

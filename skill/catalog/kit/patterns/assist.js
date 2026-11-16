@@ -37,7 +37,7 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.2.0
+ * @version   0.2.1
  * @updated   2026-11-16
  * @summary   The engine of a page that works with Claude: pick a block, send it as a request a watching Claude Code session does and reports on, or ask Claude at once; requests, turns, conversations and presence live in the db.
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
@@ -82,7 +82,7 @@ const el = Kit.dom.el;
 const settle = async x => { try { return await x; } catch (e) { return null; } };
 /* the host's agent handle {label, canSend, send, anchorFor}, or a legacy Claude comments handle (sendToClaude, canSendToClaude, anchorFor) in the same shape; null when it is neither */
 const agentOf = c => !c ? null : typeof c.send === 'function' && typeof c.canSend === 'function' ? c
-  : typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? { label: 'Claude', canSend: () => c.canSendToClaude(), send: m => c.sendToClaude(m), anchorFor: e => c.anchorFor(e) } : null;
+  : typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? { label: 'Claude', canSend: () => c.canSendToClaude(), send: m => c.sendToClaude(m.threadId ? { threadId: m.threadId, text: m.text } : { anchor: m.anchor, text: m.text }), anchorFor: e => c.anchorFor(e) } : null;
 function fit(s, max) {
   if (bytes(s) <= max) return s;
   let lo = 0, hi = s.length;
@@ -297,7 +297,7 @@ function start(o) {
     await ref.set({ lane, scope: s, project, text, quote, by: by(), at: iso(), status: 'open', state: null, ackBy: '', ackAt: '', progress: [],
       response: '', doneAt: '', changed: [], version: '', estimate: a.estimate == null ? null : a.estimate, actual: null });
     try {
-      const r = await H.agent.send({ anchor: await anchorOf(s, a.scope && a.scope.el), text: commentText(word(lane) + ': ' + text, quote, rid, lane, s, project) });
+      const r = await H.agent.send({ anchor: await anchorOf(s, a.scope && a.scope.el), text: commentText(word(lane) + ': ' + text, quote, rid, lane, s, project), requestId: rid });      // requestId: the request is already stored; a host that keeps its own record must not create another
       if (r && r.threadId) tids[rid] = r.threadId;
     } catch (e) {
       ref.delete().catch(() => {});
@@ -319,7 +319,7 @@ function start(o) {
     try {
       const head = 'Reply ' + parseInt(tid, 10) + ' on ' + word(req.lane).toLowerCase() + ' request ' + rid + ': ' + text + '\n\nRead the whole conversation on requests/' + rid + ' (text, response, then turns).';
       const body = commentText(head, '', rid, req.lane, req.scope, req.project);
-      await H.agent.send(tids[rid] ? { threadId: tids[rid], text: body } : { anchor: await anchorOf(req.scope), text: body });
+      await H.agent.send(Object.assign(tids[rid] ? { threadId: tids[rid], text: body } : { anchor: await anchorOf(req.scope), text: body }, { requestId: rid, turnId: tid }));      // the reply turn is already stored
     } catch (e) {
       tref.delete().catch(() => {});
       ref.update({ status: req.status || 'open', state: req.state == null ? null : req.state, ...(req.execution ? { execution: req.execution, workGeneration: req.workGeneration == null ? null : req.workGeneration } : {}) }).catch(() => {});
