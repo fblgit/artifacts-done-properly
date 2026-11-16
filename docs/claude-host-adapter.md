@@ -21,7 +21,8 @@ not `static`. It never falls back to another host.
 | --- | --- |
 | Adapter and built-in default give the same `ADP.host` (except `comments`), `ADP.db`, `ADP.ns`, `ADP.user` and `claude.use` calls | `tests/test_host_connection.py` (Node, fake `window.claude`, real `adp.js`) |
 | Slow or never-settling `comments` does not hold `connect()` or page startup | same, plus adapter unit test |
-| `user` passes through unchanged; no coercion into edit rights | adapter unit test |
+| `user`: `canEdit` stays the viewer's own answer (the runtime still requires literal `true`); `id()` falls back to `''` when the page did not declare the `user` capability, so a missing `id()` does not fail the host | adapter unit test, `test_a_claude_user_without_id_still_connects` |
+| `agent`, `publish` and `ask` are mapped from `comments.sendToClaude`, `artifact.publish` and `sample`, forward only what the native call takes, and are `null` when the viewer did not grant the capability | adapter contract test |
 | Missing `window.claude` fails closed | both |
 
 The rows above run against fakes. Separately, on 2026-11-16 a private disposable page loaded the real
@@ -34,6 +35,8 @@ Site to Claude by two agents through PR comments, before any shell existed. Late
 shell (`adp.py bundle`, `import-plan`, `import-ack`; see `docs/adp-export-import.md`) with this repo's
 Claude and Sites adapters. Applying is still done by an agent running the printed calls, and no automatic
 cross-host sync exists.
+
+Live runs after that, in the owner's browser, on the assistant probe (the built-in default connection, runtime `de7c6796d072`) and the spec page (this adapter, `ADP.host` `claude`, connected, Agent yes, Publish yes, Ask no because that page does not declare `sample`). Each is in the records of those artifacts and in PR comments, not only in the code: a request sent through `ADP.agent()` (one request doc, change logged after the send returned, comment received by the agent); a reply on that request (turn stored, request reopened, comment headed `Reply 1`); `ADP.ask()` (conversation `c-…`, user message `0001`, answer `0002` 12 s later); `ADP.publish()` through the inbox's Apply (new artifact version, the new file listed, proposal `applied`, exactly one change entry); a native work claim with `adp.py work` (claim, reclaim after the lease expired, completion, each a pinned batch read back); the page's own `update` with `null` (key kept as `null`, `workGeneration` bumped); the page hashing its own `adp.js` against the stamp in its info panel (match, 45,066 bytes); and the integrity run's `files_ahead` drift on the script-painted parts. The probe reloaded itself to a newly published version while the owner had it open (seen for the null and runtime-hash self-tests). Not observed live: the agent, publish and ask calls through `adapters/claude.js` as the explicit provider (only the built-in default ran them), a reader or logged-out viewer on the assistant, racing claimants, and the rendered panel and labels beyond one screenshot of an Ask answer.
 
 ## Not supported by the contract (gaps, proposals)
 
@@ -57,17 +60,14 @@ expressed by it today; the proposals are for the contract owners and are **not**
    `collection.add`, `query.get` and `doc.acquire` (a lease: `{holder, ttlMs, data}` to `{acquired, version,
    expiresAt, holder}`). Nothing in this repo calls `acquire`. *Proposal:* list the exact operations and run
    one conformance suite against the dev shim.
-5. **Kit bypasses `ADP.host`.** `store.js`, `inbox.js`, `assist.js`, `claude-lane.js`, `catalog.js`, the assistant
-   template and `tester.js` call `window.claude` directly. With an explicit non-Claude provider and
-   `window.claude` both present they would still reach Claude, against the no-fallback rule.
-   *Proposal:* expose granted capabilities through `ADP.host`, then move the kit onto it.
+5. **Kit and `window.claude`.** `store.js` (the adp/1 board store), `claude-lane.js`, `tester.js` and the catalog page's `parts/catalog.js` still call `window.claude` directly and are Claude-only by design; they say so. `inbox.js`, `assist.js`, `assist-panel.js`, `request-card.js`, `presence.js` and the assistant template no longer do: they take `ADP.db`, `ADP.user` (with `can(name)`), `ADP.agent()`, `ADP.publish()` and `ADP.ask()`, so with an explicit non-Claude provider and `window.claude` both present they stay on the provider. *Proposal:* move `claude-lane` onto `pattern.assist` and retire it.
 6. **No record version token.** Agent writes pin `if_version` per doc and publishes carry an artifact version;
    the contract's receipt says only "native version(s)". *Proposal:* name `source` and `record` tokens.
    Claude has no separate deployment version.
 7. **No host attribution.** Records carry `by = user.id` only, so a later session on another host cannot
    tell which host wrote a change. *Proposal:* an additive `host` field (schema decision, not a bug fix).
 
-Two behaviour changes sit in the shared runtime on the existing Claude path, not in this adapter:
+Three behaviour changes sit in the shared runtime on the existing Claude path, not in this adapter (the third is `user` being wrapped, above):
 `canEdit` now requires literal `true` (it accepted any truthy value; the live type is `Promise<boolean>`,
 so the strict check matches the contract, though no live call was observed), and `anchors()` starts only
 after `db` and `user` resolve (before, in parallel).
@@ -150,8 +150,7 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 - Observed, timing: the db capability took 1.3 s to resolve cold and 4 ms warm; `use()` of an unknown name resolved `null` at once.
 - The fakes in `tests/test_host_connection.py` are shape stubs (`doc()`/`collection()` entry points and
   canned snapshots), deliberately not behavioural, and do not reproduce the snapshot sequence above.
-- Still UNVERIFIED: consent prompts, the 10 s `use()` timeout, rate limits, live reload after a successful
-  publish, the Contributor level, a logged-out session, a lost write response, and the adapter in a viewer
+- Still UNVERIFIED: consent prompts, the 10 s `use()` timeout, rate limits, the Contributor level, a logged-out session, a lost write response, and the adapter in a viewer
   that is not an editor. (A write attempted `as_level: view` is blocked by the agent tool before it is sent,
   so it proves nothing; the second-account run above is the server evidence.)
 
@@ -163,21 +162,17 @@ code as the host-neutral `agent`, `publish` and `ask` handles (`ADP.agent()`, `A
 `docs/host-adapters.md`): `Kit.assist`, `Kit.inbox` and the assistant template use them, and the Claude adapter and
 built-in default are the only places those Claude names are mapped. `ADP.claude(name)` stays for pages that already
 call it: it waits for the connection and calls `window.claude.use(name)` **only when the connected host's id is
-`claude`**; on any other host it resolves `null` without touching `window.claude`. The text below describes that
-accessor as first delivered; a runtime older than the new accessors keeps the old direct probe. On a
-non-Claude host the inbox disables Apply and says "Apply publishes this page's files, which only a Claude host can
+`claude`**; on any other host it resolves `null` without touching `window.claude`. On a
+non-Claude host without a publish handle the inbox disables Apply and says "Apply publishes this page's files, which only a Claude host can
 do; this host does not provide it." (it used to blame the page: "does not declare"). The assistant panel already
 says "This page cannot reach a session." and "Ask now is not available on this page."
 
-Observed with the real `adp.js` and `inbox.js` in Node on an explicit host with a `window.claude` that throws when
-touched (a throwaway script, not committed): host id `openai-sites` gave a disabled Apply row, the message above and
-no `window.claude` call; the committed code on the same host called `window.claude.use('artifact')`; host id
-`claude` still asks for `artifact` and `comments`. Not run: a browser, the assistant template mounted, Sites.
+Live evidence for these handles is under "Verified, and how" (send, reply, ask and publish on the probe). Not run: the assistant template or the inbox on a Sites page by this author; that is the Sites owner's.
 
 **Outside this surface:** `kit/store.js` is the adp/1 board store. It connects only through `window.claude.use('db')`
 and `('user')` and says "Open this page on claude.ai" when that is absent, so a board built on it is Claude-only; it
 is not part of the adp/2 host contract and is left unchanged. `kit/templates/tester.js` is a Claude capability tester
-and is Claude-only by design.
+and is Claude-only by design, as are `claude-lane.js` and the catalog page's `parts/catalog.js`.
 
 ## Agent side
 
@@ -191,6 +186,8 @@ existing doc is refused unless pinned, which is what makes an unpinned create sa
 so `parse_receipt` never reports part of one as applied. The adapter needs no
 separate readback: the batch result is the authority. Claude's page files are not part of the shell (use
 `adp.py files` plus a publish).
+
+`adp.py work --host claude` (the work planner, `skill/scripts/adp_work.py`) prints one guarded `set` for a request claim, progress, checkpoint, block or completion. On a Claude artifact its claim, a reclaim after the lease expired and a completion with a receipt were each executed as one pinned `ArtifactData` batch and read back. Put a large planned document in a file and reference it with `file_path` in the batch rather than pasting it.
 
 Mapped to the contract's
 operations by reading the existing `adp-edit` protocol: Discover/Read = `Artifact read` + ArtifactData reads

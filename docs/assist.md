@@ -30,14 +30,14 @@ Two entry points, one engine.
 | Send to a session | The engine writes `requests/<rid>` and sends a comment (`comments.sendToClaude`) that wakes the Claude Code sessions watching the artifact. A session moves the request forward in the db. | `db`, `comments` |
 | Ask now | The engine asks Claude through the `sample` capability, streams the answer, and stores the conversation in `conversations/`. The page cannot change; the framing text tells Claude so. | `sample` |
 
-The engine is `Kit.assist.start({db, user, comments, sample, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed})` in `assist.js`. It draws nothing. The views are `Kit.assistPanel` (composer and feed), `Kit.requestCard` (one request), `Kit.presence` (the "is a session watching" line) and `Kit.blockPicker` (the picker), each built over the engine's API.
+The engine is `Kit.assist.start({db, user, agent, sample, config, page, project, now, titles, manifest, words, frame, onPick, shortcut, pingTimeout, seed})` in `assist.js`. `agent` is the host's agent handle (`ADP.agent()`: `label`, `canSend`, `send`, `anchorFor`) and `sample` the `ADP.ask()` handle; both default to the page's host. The old `comments` option (a Claude `sendToClaude` object) is gone: a Claude-shaped object is no longer taken for an agent. The engine also answers `delivery(rid)` (`queued`, `accepted`, `unknown` or empty: what the host said when it took the request; `unknown` keeps the saved request and is never retried), `agentLabel()` (the name the UI shows, `Agent` without a handle) and `agentWhere()` (where a person starts the agent, `your agent` without one). It draws nothing. The views are `Kit.assistPanel` (composer and feed), `Kit.requestCard` (one request), `Kit.presence` (the "is a session watching" line) and `Kit.blockPicker` (the picker), each built over the engine's API.
 
 ### People side
 
 1. Open the pane (the "Work with Claude" button in the template, id `assistBtn`) or press the shortcut (section 9).
 2. Pick a block. `engine.pick()` resolves `{id, label, hash, quote, el}` or `null`. `quote` is the block text, whitespace collapsed, at most 600 characters. Without a block the request is about the whole page (`scope.kind` `page`).
 3. Choose a lane (section 3), write the words (the textarea has `maxLength` 3000), send with the button or Ctrl or Cmd plus Enter.
-4. Follow the request as a card: four stations, Queued, Seen, Working, Done (`request-card.js`). Once Claude has answered, the card shows a reply box; a reply reopens the request.
+4. Follow the request as a card: four stations, Queued, Seen, Working, Done (`request-card.js`). Once the agent has answered, the card shows a reply box (also on a host whose `can().send` is `queued`; not when it is `off` or `no_session`); a reply reopens the request.
 
 ### Session side
 
@@ -131,7 +131,7 @@ If `sample` fails with `not_granted`, `sampling_disabled`, `not_declared`, `capa
 
 `can().ask` is true when a `sample` function was obtained, it has not died, `assist.enabled` is not `false`, and `assist.ask-now` is not `false`. It does not need a watching session or `comments`.
 
-In the panel, after an Ask now answer, a button "Send this to a session" appears when `can().send` is `available`; it sends the last user question as a `task`.
+In the panel, after an Ask now answer, a button "Send this to a session" appears when `can().send` is `available` or `queued`; it sends the last user question as a `task`.
 
 ### Send to a session (the queue)
 
@@ -145,17 +145,20 @@ In the panel, after an Ask now answer, a button "Send this to a session" appears
 
 The comment text is `<Word>: <text>`, then `> <quote>` when there is one, then a blank line, the `instruction()` sentence, and a last trailer line `· adp request {<rid>} · lane <lane> · scope part:<id>` (`scope page` for a page scope). The whole text is at most 4000 bytes: the head and quote are cut with an ellipsis to fit, the instruction and trailer are never cut. The request doc keeps the full text. A `ping` instruction replaces the normal one.
 
-Replying (`engine.reply(rid, text)`): runs `gate()`, writes the next `turns/<n>`, sets the request `status` `'open'`, `state` `null`, then sends a comment (into the remembered thread when it has one, else a new anchored comment) headed `Reply <n> on <lane> request <rid>: <text>` with the instruction and trailer after it. On failure it deletes the turn and restores the previous `status` and `state`.
+Replying (`engine.reply(rid, text)`): runs `gate()`, writes the next `turns/<n>`, sets the request `status` `'open'`, `state` `null`, then sends a comment (into the remembered thread when it has one, else a new anchored comment) headed `Reply <n> on <lane> request <rid>: <text>` with the instruction and trailer after it. On failure it deletes the turn and restores the previous `status` and `state`. When an agent has claimed the request (`execution`, see `adp.py work` below), the reply also clears the claim and bumps `workGeneration`, so a lease from before the reply cannot go on working; a failed send restores both.
 
 `can().send` (re-checked every 30 s, on a config change, and before every send):
 
 | Value | Where it comes from |
 | --- | --- |
-| `available` | `canSendToClaude()` said so, and `assist.enabled` is not `false` |
-| `writers_only` | `canSendToClaude()` said so; the panel says "Only people who can edit this artifact can send to a session." |
-| `no_session` | `canSendToClaude()` said so; "No Claude Code session is listening, so the request cannot be sent yet. Start one (see above), then send." |
-| `off` | `canSendToClaude()` said so, returned any other value, or threw; or `assist.enabled` is `false`. "Sending to a session is turned off for this artifact." |
-| `none` | no `comments` handle, or it has no `canSendToClaude`. "This page cannot reach a session." |
+| `available` | the agent handle's `canSend()` said so (on Claude: a session is watching), and `assist.enabled` is not `false` |
+| `queued` | `canSend()` said so: the host keeps the request durably for an agent that picks it up later (Sites). Sending, replying and "Send this to a session" work as for `available`; a send may resolve delivery `unknown`, which the panel says as "saved, delivery not confirmed" |
+| `writers_only` | `canSend()` said so; the panel says "Only people who can edit this artifact can send to a session." |
+| `no_session` | `canSend()` said so; "No <agent> session is listening, so the request cannot be sent yet. Start one (see above), then send." |
+| `off` | `canSend()` said so, returned any other value, or threw; or `assist.enabled` is `false`. "Sending to a session is turned off for this artifact." |
+| `none` | no agent handle (or one without `canSend` and `send`). "This page cannot reach a session." |
+
+The agent's name in these texts is the handle's `label` ("Claude" on Claude, "Codex" on Sites, "Agent" without a handle): the panel, request cards, inbox and template fill it in, and `words` can still override them.
 
 ### The header line
 
@@ -197,6 +200,8 @@ adp.py requests DUMP.json [--ack RID --by NAME | --progress RID --text T [--by N
 Only one of `--ack`, `--progress`, `--done` per call; a missing id or a `RID` not in the dump exits with an error. `--by` defaults to `agent`.
 
 Every write action prints a `batches` list of ArtifactData writes (each doc is also saved as a file under `--out`, default `requests/` in the `.adp/` the log uses: the project's, else `~/.adp/`) and `{request, state}`. Each batch is the request update, then `set` of `presence/<NAME>` with `{at, doing, session: NAME}`.
+
+`adp.py requests` rows also show `resolved` and, for a request an agent has claimed, `lease` (`{actor, state, until, attempt, host}`; the token is never printed). For hosts that need a guarded claim, `adp.py work DOCS.json --host claude|sites --artifact ID --path requests/ID --action claim|progress|checkpoint|block|complete --by NAME` prints one guarded write (a lease with a token, `attempt`, `inputHash`, a lease of 30 to 7200 seconds; `complete` needs `--receipt` with passing checks and `--token`). It reclaims a lease only after it expires, and a reply from the page ends a claim. Run on a Claude artifact: claim, reclaim after expiry and completion each committed as one pinned `ArtifactData` batch and read back (the probe's request `r-work-probe-1`). It plans only; the agent runs the printed call.
 
 Pinning: the request update carries `if_version` when the dump gave that doc a version, or when `--pins P.json` names `requests/<rid>` (a pin passed in `--pins` is used; the dump's version is only a default). If neither supplies a version, the write has no `if_version` and the output carries `needs_pin: ['requests/<rid>']`: read the doc's version and pass `--pins`. The `presence` write is a `set` and is not pinned.
 
@@ -249,7 +254,7 @@ The same rules are in the `adp:db-rules` meta tag of `index.html.txt`. The level
 | --- | --- | --- |
 | `db` | engine, inbox | The engine keeps everything in a memory store (`Kit.assist.memory`, optionally seeded with `seed`); nothing leaves the page and nothing is logged. A request written there is never seen by a session. The inbox says "The inbox needs the database." |
 | `user` | engine (`uid`), inbox (`canEdit`, `id`) | `by` is `'page'`; `me()` is `''`. The inbox reads as no editor (read-only). |
-| `comments` (`customAnchors: true`) | engine: `canSendToClaude`, `anchorFor`, `sendToClaude`; inbox: wake-up | `can().send` is `none`: sending is refused with code `none`; the panel says "This page cannot reach a session." Ask now still works. What the runtime does without `customAnchors` is not in this repo; the engine calls `anchorFor(el)` and, if that throws, the send fails with `upstream_error` and the request doc is deleted. |
+| `comments` (`customAnchors: true`) | on Claude it is what the agent handle is built from (`canSend`, `anchorFor`, `send` over `canSendToClaude`, `anchorFor`, `sendToClaude`); inbox: wake-up | `can().send` is `none`: sending is refused with code `none`; the panel says "This page cannot reach a session." Ask now still works. What the runtime does without `customAnchors` is not in this repo; the engine calls `anchorFor(el)` and, if that throws, the send fails with `upstream_error` and the request doc is deleted. |
 | `sample` | engine: Ask now | `can().ask` is false; "Ask now is not available on this page." |
 | `artifact` | inbox: `Apply` (`artifact.publish`) | Apply is disabled with "Apply needs the artifact capability, which this page does not declare." |
 
@@ -302,7 +307,7 @@ Chunked files (text over 200 KiB in bytes): `incoming/<pid>/chunks/<i>` with `{p
 
 ## 11. Contract 5: what the page does with a proposal
 
-`Kit.inbox.mount(root, {db, user, artifact, config, url, comments, classify, debounce, autoApply, onAutoApplied})`, in the template's Settings view under "Incoming" (`settings.inbox`). `autoApply: true` (default false) makes the page apply every proposal that classifies as merged itself, one at a time, and `onAutoApplied(n)` is called once when none is left open: the packed catalog ships its kit folders as proposals and reloads there.
+`Kit.inbox.mount(root, {db, user, artifact, agent, config, url, classify, debounce, autoApply, onAutoApplied})` (`artifact` is a publish handle or `{publish}`, `agent` the agent handle; both default to `ADP.publish()` and `ADP.agent()`), in the template's Settings view under "Incoming" (`settings.inbox`). `autoApply: true` (default false) makes the page apply every proposal that classifies as merged itself, one at a time, and `onAutoApplied(n)` is called once when none is left open: the packed catalog ships its kit folders as proposals and reloads there.
 
 ### Statuses
 
@@ -354,7 +359,7 @@ Classifying, picking, Apply and Decline write only for an editor (`user.canEdit`
 
 The `assistant` template (and `default`, which repeats its take list) shows how a request is made by sending real ones. `mountExamples()` in `skill/templates/assistant/parts/app.js.txt` draws the `home.examples` part: the `EXAMPLES` list (a drag and drop board, a calendar, a drafting board, a canvas, a mind map, rearranging, changing, adopting) and a table of `LANGUAGES` with a flag each. A button calls `engine.send({lane: 'task', scope: null, text})`, so the request is the ordinary `requests/<rid>` document of section 3, about the whole page, and the page then opens the Requests view. Replies to it are turns, as in section 5.
 
-- The buttons are disabled unless `engine.can().send` is `available`; the line under the table says why when it is not (no engine, `writers_only`, `no_session`, or off). The check repeats every 30 seconds.
+- The buttons are disabled unless `engine.can().send` is `available` or `queued`; the line under the table says why when it is not (no engine, `writers_only`, `no_session`, or off). The check repeats every 30 seconds.
 - Each prompt is written to fit the comment that wakes the session (4000 bytes with its instruction and trailer); `tests/test_assistant_template.py` checks the length and that every catalog id a prompt names exists.
 - The prompts that build something say to check the catalog first and take what exists. The page does not know what the catalog has; the instruction and the catalog entry `pattern.mindmap` are what make a session take it.
 - Translating is a request like the others. Its text asks for the whole page to be translated with every part id and class kept, then for the `page.language` switch (a text setting, default English, declared in `starter` and `assistant`) to be set to that language. Nothing in the page reads `page.language` yet; it records what Claude did.
