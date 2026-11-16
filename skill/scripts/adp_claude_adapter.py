@@ -42,7 +42,7 @@ def parse_receipt(raw):
     out = []
     for r in raw:
         text = r['result']; done = {f'{c}/{i}': int(v) for _, c, i, v in re.findall(r'- (\w+) "([^"]+)"/"([^"]+)" \(version (\d+)\)', text)}
-        bad = re.search(r'db write failed[^\n]*|nothing was written[^\n]*', text)
+        bad = re.search(r'db (?:batch )?write failed[^\n]*|nothing was written[^\n]*', text)
         for k in r['call']['keys']:
             c, i = k.rsplit('/', 1)
             out.append({'collection': c, 'id': i, 'outcome': 'applied' if k in done else 'rejected' if bad else 'unknown', 'revision': done.get(k), 'error': bad.group(0) if bad and k not in done else None})

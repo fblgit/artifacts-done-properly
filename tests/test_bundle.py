@@ -56,6 +56,7 @@ class BundleTests(Cmd):
         self.assertEqual((rc, ack['failed'][0]['outcome'], ack['applied']), (2, 'rejected', 0))      # a failed replace of an already-recorded key is not counted applied
         self.assertEqual(['changes' in w['collection'] for w in ack['record'][0]['args']['writes']], [False])      # and leaves no history entry
         self.assertEqual(ack['record'][0]['args']['writes'][0]['data']['records'][key], rec['data']['records'][key])
+        self.assertEqual(self.ack(plan, 'db batch write failed (version_mismatch)')[1]['failed'][0]['outcome'], 'rejected')      # the batch tool's own wording, as seen live
         rc, plan = self.plan('b1', edit(tgt, 'target'))      # the target changed, the source did not: kept
         self.assertEqual((rc, plan['counts']['skip'], next(o['class'] for o in plan['ops'] if o['key'] == key)), (0, n, 'theirs'))
         rc, plan = self.plan('b2', edit(tgt, 'target'))      # both changed: held, nothing to write

@@ -29,9 +29,11 @@ The rows above run against fakes. Separately, on 2026-11-16 a private disposable
 `{id: "claude", status: "connected", records: true, comments: true, seedFiles: true}`, `canEdit` was
 `true`, the part was painted from `content/intro`, and it repainted about a second after an agent
 (ArtifactData) edit. Not exercised live: whether the comment anchors registered, a reader or logged-out
-session with the adapter, and a reload from a fresh tab. One synthetic seed-pack was moved Claude to OpenAI
-Site to Claude by two agents through PR comments (each applying it with its own host's guards); that is an
-agent-mediated transfer, not an export/import feature, and no automatic cross-host sync exists.
+session with the adapter, and a reload from a fresh tab. A first synthetic seed-pack was moved Claude to OpenAI
+Site to Claude by two agents through PR comments, before any shell existed. Later runs used the shared records
+shell (`adp.py bundle`, `import-plan`, `import-ack`; see `docs/adp-export-import.md`) with this repo's
+Claude and Sites adapters. Applying is still done by an agent running the printed calls, and no automatic
+cross-host sync exists.
 
 ## Not supported by the contract (gaps, proposals)
 
@@ -119,9 +121,20 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   that is not an editor. (A write attempted `as_level: view` is blocked by the agent tool before it is sent,
   so it proves nothing; the second-account run above is the server evidence.)
 
-## Agent side (not implemented here)
+## Agent side
 
-`adp.py` prints Artifact and ArtifactData calls; nothing here changes it. Mapped to the contract's
+`skill/scripts/adp_claude_adapter.py` is the Claude half of the shared records shell. It prints ArtifactData
+`list` calls to read, one atomic `batch` (at most 50 writes, 1 MiB) to write, and parses the result text the agent
+saves, wrapped as `[{call, result}]`. Observed live and relied on: a collection `list` shows each doc's native
+`version`; a batch result names every committed doc with its new version; a refused batch starts "db batch
+write failed (version_mismatch)", says nothing was written and names the first stale entry; an update that
+rewrites the same text still bumps the version. Documented by the tool but not triggered here: a `set` over an
+existing doc is refused unless pinned, which is what makes an unpinned create safe. A batch is all or nothing,
+so `parse_receipt` never reports part of one as applied. The adapter needs no
+separate readback: the batch result is the authority. Claude's page files are not part of the shell (use
+`adp.py files` plus a publish).
+
+Mapped to the contract's
 operations by reading the existing `adp-edit` protocol: Discover/Read = `Artifact read` + ArtifactData reads
 (each carries `version`); Propose = `adp.py propose` (`incoming/`); Publish = `Artifact publish` to the same
 url plus pinned ArtifactData writes; Verify = re-read; Acknowledge = `adp.py record`.
