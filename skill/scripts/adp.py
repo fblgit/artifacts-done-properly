@@ -60,6 +60,13 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
   adp.py propose DIR --by NAME --summary S [--retire ID --reason R ...]   (every deleted part id needs its own --retire ID --reason R pair, paired in order)
                                                     local-to-remote incoming: the incoming/<pid> doc and its one ArtifactData batch;
                                                     exit 2 with the list when anything is held, a part is deleted unretired, or no export
+  adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections c,ns/x/y] [--raw]
+                                                    records export (docs/adp-export-import.md): DOCS.json = what the source's reads returned; without it the reads
+                                                    to run (exit 2). OUT_DIR = adp-seed/2 seed.json + seed/ plus `source` and `revisions`; host adapters: adp_<host>_adapter.py
+  adp.py import-plan BUNDLE_DIR [TARGET_DOCS.json] --host H --artifact ID [--out PLAN.json] [--raw]
+                                                    each bundle record against the target's fresh read (classify3: base = the last import's hash): create / replace /
+                                                    skip / hold, the guarded write calls, exit 2 with the reads to run, or with anything held (nothing to write)
+  adp.py import-ack PLAN.json RESULTS.json --host H [--raw]   the host's receipts -> the imports/<source> record, from confirmed outcomes only; exit 2 when one failed
   adp.py ack DIR [--result FILE | stdin] [--proposal PID]
                                                     a publish or batch result into state.json; --proposal: an applied one moves base
   adp.py gate [--input FILE | stdin]                the PreToolUse hook decision: deny while the inbox holds anything or a pin is stale
@@ -1394,12 +1401,12 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop, adp_dev, adp_lib
-adp_loop.A = adp_dev.A = sys.modules[__name__]
+import adp_loop, adp_dev, adp_lib, adp_bundle
+adp_loop.A = adp_dev.A = adp_bundle.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'export': adp_loop.export, 'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
+    cmds = {'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):
