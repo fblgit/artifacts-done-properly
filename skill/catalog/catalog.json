@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T13:09:03Z",
+ "built": "2026-11-16T14:08:36Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -2453,7 +2453,7 @@
     "presence"
    ],
    "status": "new",
-   "version": "0.2.2",
+   "version": "0.2.3",
    "requires": [
     "kit.tokens",
     "kit.dom"
@@ -2467,8 +2467,8 @@
     {
      "path": "kit/patterns/inbox.js",
      "role": "script",
-     "sha256": "c1aabfe0c1d3ca2df964d483129ebf196b3c74949bdcabe63d687c374d3e441d",
-     "bytes": 29865
+     "sha256": "d62a6cfe803f237a89a1c8fab784adcfab43bc1bf7af476887f891d88d2470d0",
+     "bytes": 31389
     },
     {
      "path": "kit/patterns/inbox.css",
@@ -2483,7 +2483,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "5a98386e6488"
+   "hash": "94f686e73c4f"
   },
   {
    "id": "pattern.integrity",

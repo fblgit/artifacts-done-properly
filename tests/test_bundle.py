@@ -1,5 +1,5 @@
 """`bundle`, `import-plan`, `import-ack` with the Claude adapter, on the seed docs of a real `new` project (no hand-made records). No network."""
-import glob, json, os, signal, subprocess, sys
+import glob, hashlib, json, os, signal, subprocess, sys
 
 from test_commands import Cmd, URL
 
@@ -90,3 +90,45 @@ class BundleTests(Cmd):
         rc, plan = self.plan('b1', gone, 'sites', 'roundtrip')      # each create carries its own absent snapshot's native revision, never zero
         self.assertEqual((rc, {o['guard'] for o in plan['ops']}, {c['args']['expectedRevision'] for c in plan['calls']}), (0, {7}, {7}))
         self.assertEqual(self.plan('b1', gone[1:], 'sites', 'roundtrip')[0], 1)      # one read missing: refused, not planned
+
+    def test_work_claim_progress_and_evidence_gate(self):
+        row = {'collection':'requests','id':'r-work','revision':1,'data':{'text':'Review intro','scope':{'kind':'part','id':'intro'},'status':'open','opaque':{'keep':True}}}
+        def work(action, record, *extra):
+            r = self.run_adp('work', self.write_json('work-read.json', [record]), '--host','sites','--artifact','work-fixture','--path','requests/r-work','--action',action,'--by','codex',*extra)
+            return r, json.loads(r.stdout or '{}')
+        r, claimed = work('claim',row)
+        self.assertEqual(r.returncode,0,r.stderr)
+        call = claimed['calls'][0]['args']; token = claimed['leaseToken']
+        self.assertEqual((call['expectedRevision'],call['data']['state'],call['data']['opaque']),(1,'working',{'keep':True}))
+        active = {**row,'revision':2,'data':call['data']}
+        self.assertNotEqual(work('claim',active)[0].returncode,0)
+        r, progress = work('progress',active,'--token',token,'--text','Checking deployed source')
+        self.assertEqual(progress['calls'][0]['args']['data']['progress'][-1]['text'],'Checking deployed source')
+        self.assertNotEqual(work('complete',active,'--token',token,'--text','Done')[0].returncode,0)
+        receipt = self.write_json('work-evidence.json',{'checks':[{'name':'Readback','passed':True,'evidence':'Native content revision2 matches requested text'}]})
+        r, done = work('complete',active,'--token',token,'--text','Verified intro','--receipt',receipt)
+        self.assertEqual((r.returncode,done['calls'][0]['args']['data']['status']),(0,'done'))
+        checkpoint = self.write_json('checkpoint.json',{'deploymentId':'dep-pending','stage':'deploying'})
+        _, saved = work('checkpoint',active,'--token',token,'--text','Deployment submitted','--checkpoint',checkpoint)
+        self.assertEqual(saved['calls'][0]['args']['data']['execution']['checkpoint']['deploymentId'],'dep-pending')
+        reopened = {**active,'data':{**active['data'],'response':'Earlier answer'}}
+        reply = {'checks':[{'name':'Reply readback','passed':True,'evidence':'Native turn1'}],'reply':{'path':'requests/r-work/turns/0001','exists':True,'revision':1,'data':{'by':'codex','text':'Follow-up answer','at':active['data']['execution']['claimedAt']}}}
+        r, done = work('complete',reopened,'--token',token,'--text','Follow-up answer','--receipt',self.write_json('reply.json',reply))
+        self.assertEqual((r.returncode,done['calls'][0]['args']['data']['response']),(0,'Earlier answer'))
+        expired = {**active,'data':{**active['data'],'execution':{**active['data']['execution'],'leaseUntil':'2000-01-01T00:00:00Z'}}}
+        self.assertEqual(work('claim',expired)[0].returncode,0)
+
+    def test_publication_work_requires_approval_and_matching_receipts(self):
+        data = {'status':'merged','files':[{'path':'index.html','content':'Published'}],'parts':[],'base':{'version':'old'}}
+        row = {'collection':'incoming','id':'p-work','revision':1,'data':data}
+        def run(action, record, *extra):
+            return self.run_adp('work',self.write_json('publish-read.json',[record]),'--host','sites','--artifact','work-fixture','--path','incoming/p-work','--by','codex','--action',action,*extra)
+        self.assertNotEqual(run('claim',row).returncode,0)
+        data['publishRequest'] = {'by':'owner','inputHash':'sha256:'+hashlib.sha256(json.dumps({k:data[k] for k in ('files','parts','base')},sort_keys=True,separators=(',',':')).encode()).hexdigest()}
+        claimed = json.loads(run('claim',row).stdout); active = {**row,'revision':2,'data':claimed['calls'][0]['args']['data']}; token=claimed['leaseToken']
+        sha = hashlib.sha256(b'Published').hexdigest()
+        receipt = {'checks':[{'name':'Deployed bytes','passed':True,'evidence':'Native readback'}], 'deployment':{'id':'dep-1','status':'succeeded','version_id':'v1','project_id':'site'},'source':{'commit_sha':'a'*40,'project_id':'site','version_id':'v1','shas':{'index.html':sha}},'readback':{'shas':{'index.html':sha}},'manifest':{'exists':True,'revision':2,'data':{'version':'dep-1','files':{'index.html':sha[:12]}}},'change':{'exists':True,'revision':1,'data':{'version':'dep-1'}}}
+        bad = {**receipt,'deployment':{**receipt['deployment'],'status':'pending'}}
+        self.assertNotEqual(run('complete',active,'--token',token,'--text','Published','--receipt',self.write_json('bad.json',bad)).returncode,0)
+        result = run('complete',active,'--token',token,'--text','Published and verified','--receipt',self.write_json('verified.json',receipt))
+        self.assertEqual((result.returncode,json.loads(result.stdout)['calls'][0]['args']['data']['status']),(0,'applied'))

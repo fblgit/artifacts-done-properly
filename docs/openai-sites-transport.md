@@ -169,7 +169,50 @@ reread the affected records and reconcile without republishing blindly. A lost
 deployment response likewise requires inspecting the saved version/deployment.
 The inbox's disabled Apply button is not a successful publication receipt.
 
-## Evidence
+## Agent feedback and publication
+
+`adp.py work` operates on existing `requests/ID` and `incoming/ID` records through
+the selected native adapter. With no read file it prints the reads to perform;
+pass their envelopes with `--raw`. It emits guarded calls, never executes them:
+
+```sh
+python3 -I skill/scripts/adp.py work --host sites --artifact ART --path requests/RID
+python3 -I skill/scripts/adp.py work reads.json --raw --host sites --artifact ART \
+  --path requests/RID --action claim --by SESSION
+# Execute the call and read it back before beginning work. Retain leaseToken.
+# Use --action progress --token TOKEN --text MESSAGE to renew the lease.
+# Use --action checkpoint --token TOKEN --text MESSAGE --checkpoint FILE.json
+# before/after external operations; --action block records a reason and releases it.
+```
+
+Claims use native revisions and expire after five minutes by default. A fresh
+claim preserves checkpoints so a replacement executor can inspect an existing
+deployment instead of submitting another. Active leases, changed input and closed
+work are refused. Blocked work waits for new user input; a new feedback reply
+invalidates the old execution. These are cooperative execution leases, not a new
+authorization boundary: the native adapter still enforces membership.
+
+The Sites comments controller exposes `requestPublication(id)`. Pass it as the
+existing inbox's `requestPublish` option. The button records editor approval bound
+to the proposal's files, parts and base; it does not claim publication succeeded.
+An incoming work claim requires that approval to match the current proposal.
+Progress and blocked/recovery states are rendered in the existing UI.
+
+Completion requires `--receipt FILE --text RESULT`. Every check has a name,
+`passed: true` and evidence. Publication additionally requires a successful native
+deployment, matching source project/version/commit, source and deployed hashes
+matching the proposed bytes, and native manifest/change readbacks naming that
+deployment. A reopened request preserves its original response and requires the
+new reply turn's native readback. These are executor-supplied receipts, not an
+independent server attestation. The agent must genuinely perform and verify each
+operation; it must not manufacture evidence merely to satisfy the planner.
+
+A scheduled agent can consume this workflow using the connected Site tools and
+the source lifecycle above. A queued record alone does not start an agent. The
+runner needs a verified authenticated connection, an authorized scope and a live
+schedule; a local thread heartbeat depends on that local agent environment.
+
+## Verification evidence
 
 `test_openai_sites_bridge.py` tests browser transport behavior and polling.
 `test_openai_sites_server.py` runs the actual SQL against Node SQLite, the actual

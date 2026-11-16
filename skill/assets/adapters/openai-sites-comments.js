@@ -43,7 +43,30 @@
         throw error;
       }
     }
+    function workLabel(data) {
+      const work = data.execution;
+      if (!work) return data.status === 'done' ? 'Completed' : 'Queued for an agent';
+      if (work.state === 'done') return 'Completed by ' + work.actor;
+      if (work.state === 'blocked') return 'Blocked: ' + (work.reason || 'agent needs input');
+      if (Date.parse(work.leaseUntil) <= Date.now()) return 'Waiting for agent recovery';
+      return 'Working · ' + work.actor;
+    }
     const api = {
+      async requestPublication(id) {
+        const by = await editor();
+        request(id); // Reuse the same safe document-ID validation.
+        const ref = db.doc('incoming/' + id), before = await ref.get();
+        if (!before.exists) throw new Error('Proposal no longer exists');
+        const data = before.data();
+        if (data.status !== 'merged' || data.conflict) throw new Error('Resolve proposal conflicts before requesting publication');
+        const input = Object.fromEntries(['files','parts','base'].map(k => [k,data[k] ?? null]));
+        const digest = await root.crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(canonical(input))));
+        const inputHash = 'sha256:' + [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2,'0')).join('');
+        if (data.publishRequest?.inputHash === inputHash && data.execution?.state !== 'blocked') return id;
+        const execution = data.execution?.state === 'blocked' ? {...data.execution,state:'queued',leaseUntil:new Date().toISOString(),reason:''} : null;
+        await save(ref,{...data,publishRequest:{by,at:new Date().toISOString(),inputHash},execution},before.revision);
+        return id;
+      },
       async create(anchor, message, options = {}) {
         const by = await editor();
         if (typeof anchor !== 'string' || !/^[A-Za-z][A-Za-z0-9_.-]*(?::[^\s]{1,200})?$/.test(anchor)) throw new TypeError('Invalid part anchor');
@@ -68,7 +91,7 @@
         const turn = {by,at:new Date().toISOString(),text:text(message)};
         await save(turns.doc(tid), turn, 0);
         try {
-          await save(ref, {...before.data(),status:'open',state:null,resolved:false,delivery:'queued'}, before.revision);
+          await save(ref, {...before.data(),status:'open',state:null,resolved:false,delivery:'queued',execution:null,workGeneration:(before.data().workGeneration || 0)+1}, before.revision);
         } catch (error) {
           const partial = new Error('Reply saved as turn ' + tid + '; reopening request unconfirmed: ' + error.message);
           partial.inspect = async () => {
@@ -130,6 +153,8 @@
           if (!record.exists) throw new Error('Request no longer exists');
           const data = record.data();
           transcript.append(element('p', data.text));
+          transcript.append(element('p',workLabel(data)));
+          if (data.progress?.length) transcript.append(element('p',data.progress.at(-1).text));
           if (data.response) transcript.append(element('p', data.response));
           turns.docs.sort((a,b) => a.id.localeCompare(b.id)).forEach(t => transcript.append(element('p', t.data().text)));
           resolve.textContent = data.resolved ? 'Reopen thread' : 'Resolve thread';
@@ -176,7 +201,7 @@
             disconnected = false;
             if (!uncertain && !busy) status.textContent = 'Comments reconnected; stored threads are current.';
           }
-          const threads = snapshot.docs.map(d => ({...d.data(),id:d.id})).filter(d => d.anchor || d.scope?.kind === 'part');
+          const threads = snapshot.docs.map(d => ({...d.data(),id:d.id,workLabel:workLabel(d.data())})).filter(d => d.anchor || d.scope?.kind === 'part');
           const signature = JSON.stringify(threads);
           // Stable nodes preserve focus while unchanged polls still report recovery.
           if (signature === threadSignature) return;
@@ -189,6 +214,7 @@
             button.onclick = () => show(thread.id).catch(report); list.append(button);
           });
           callbacks.threads?.(threads.filter(t => !t.resolved));
+          if (selected && !busy) void show(selected).catch(report);
         }, error => { disconnected = true; status.textContent = 'Comments unavailable: ' + error.message; });
         return {
           async compose(value, target, options = {}) {

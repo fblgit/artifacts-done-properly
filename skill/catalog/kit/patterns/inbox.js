@@ -19,6 +19,7 @@
  *     config    ADP.config (assist.presence-minutes)      url   the artifact's claude.ai url for the handoff line (optional; the line says "this artifact" without it)
  *     comments  the comments capability handle, or a promise of it (default ADP.claude('comments'), Claude hosts only); without sendToClaude on it, no wake-up is sent
  *     classify  (base, live, incoming) => classes (default ADP.classify)      debounce  ms Apply waits for a second press to fold into one call (default 600)
+ *     requestPublish(pid) optional agent executor route when native publish is absent; queues approval only, never marks applied
  *     autoApply  true applies every proposal that classifies as merged, one at a time (editors, with the artifact capability): a page that ships its own files as proposals; default false, an editor presses Apply
  *     onAutoApplied  (n) => void, called once when that queue has applied n proposals and none is left open, failed or held (a failed one is retried once, then the panel warns): the page can reload to use the files
  * The proposal's live_files {path: sha256} is the live listing the agent exported; Apply records it, so a record-only proposal (no files) still trues manifest.files.
@@ -28,7 +29,7 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.2.2
+ * @version   0.2.3
  * @updated   2026-11-16
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
@@ -285,11 +286,27 @@ function mount(root, opts) {
     if (notes[p.pid]) { const n = el('p', B + 'note', notes[p.pid]); n.setAttribute('role', 'status'); c.append(n); }
     if (canEdit()) {
       const act = el('div', B + 'act'), unpicked = held.filter(x => !picks[x.id]).length;
-      const ap = el('button', B + 'btn ' + B + 'primary', 'Apply'); ap.type = 'button';
-      ap.disabled = !art || !!busy[p.pid] || st === 'new' || !!unpicked || !!p.conflict;
-      const why = !art ? artWhy : busy[p.pid] ? '' : st === 'new' ? 'Classifying the proposal against the live record…' : unpicked ? 'Pick Keep live or Take the proposal for every held part first.' : p.conflict ? 'The files moved under this proposal; the agent must export and propose again.' : '';
+      const agentRoute = !art && typeof o.requestPublish === 'function';
+      const requested = agentRoute && p.execution && p.execution.state === 'working' && Date.parse(p.execution.leaseUntil) > Date.now();
+      const ap = el('button', B + 'btn ' + B + 'primary', agentRoute ? 'Request publication' : 'Apply'); ap.type = 'button';
+      ap.disabled = (!art && !agentRoute) || requested || !!busy[p.pid] || st === 'new' || !!unpicked || !!p.conflict;
+      const why = requested ? 'Publication requested; the agent must verify deployment before this proposal is applied.' : !art && !agentRoute ? artWhy : busy[p.pid] ? '' : st === 'new' ? 'Classifying the proposal against the live record…' : unpicked ? 'Pick Keep live or Take the proposal for every held part first.' : p.conflict ? 'The files moved under this proposal; the agent must export and propose again.' : '';
       ap.title = why;
-      ap.addEventListener('click', () => apply(p));
+      if (agentRoute && artWhy) act.append(el('p', B + 'meta', artWhy));
+      ap.addEventListener('click', async () => {
+        if (!agentRoute) return apply(p);
+        if (ap.disabled) return;
+        busy[p.pid] = true; notes[p.pid] = 'Saving publication request…'; draw();
+        try { await o.requestPublish(p.pid); notes[p.pid] = 'Publication requested. Awaiting agent acknowledgement.'; }
+        catch (error) { notes[p.pid] = 'Request unconfirmed: ' + (error.message || error) + '. Inspect the stored proposal before retrying.'; }
+        finally { delete busy[p.pid]; draw(); }
+      });
+      if (agentRoute && p.execution) {
+        const work = p.execution;
+        const state = work.state === 'blocked' ? 'Blocked: ' + (work.reason || 'needs input') : Date.parse(work.leaseUntil) <= Date.now() ? 'Waiting for agent recovery' : 'Working · ' + work.actor;
+        act.append(el('p', B + 'meta', state));
+        if (p.progress && p.progress.length) act.append(el('p', B + 'meta', p.progress[p.progress.length - 1].text));
+      }
       const dc = el('button', B + 'btn', 'Decline'); dc.type = 'button';
       dc.addEventListener('click', () => {
         const f = el('form', B + 'decline'), inp = el('input'); inp.required = true; inp.placeholder = 'Why (the agent reads this)'; inp.setAttribute('aria-label', 'Reason for declining');

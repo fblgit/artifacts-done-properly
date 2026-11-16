@@ -69,6 +69,8 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
                                                     --base: a return trip (this bundle is the other host's export of records you exported): the bundle it came from is the base
                                                     --only: plan just those collections (first path segment, so requests also covers requests/<rid>/turns); the rest is
                                                     the other host's own (its manifest, parts, history, proposals) and is neither planned nor held; the plan and the import record name it
+  adp.py work [READS.json] --host H --artifact ID --path requests/ID|incoming/ID [--raw] [--action claim|progress|checkpoint|block|complete] --by NAME
+                                                    guarded agent lease/progress plans; --token TOKEN continues work; --text T, --checkpoint FILE, --receipt FILE carry progress/evidence
   adp.py import-ack PLAN.json RESULTS.json --host H [--raw]   the host's receipts -> the imports/<source> record, from confirmed outcomes only; exit 2 when one failed
   adp.py ack DIR [--result FILE | stdin] [--proposal PID]
                                                     a publish or batch result into state.json; --proposal: an applied one moves base
@@ -1404,12 +1406,12 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop, adp_dev, adp_lib, adp_bundle
-adp_loop.A = adp_dev.A = adp_bundle.A = sys.modules[__name__]
+import adp_loop, adp_dev, adp_lib, adp_bundle, adp_work
+adp_loop.A = adp_dev.A = adp_bundle.A = adp_work.A = sys.modules[__name__]
 
 
 def main(a):
-    cmds = {'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
+    cmds = {'work': adp_work.work, 'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):
