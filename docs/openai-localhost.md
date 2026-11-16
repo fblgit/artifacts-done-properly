@@ -74,7 +74,7 @@ curl http://127.0.0.1:8788/mcp -H 'Content-Type: application/json' -d '{
 }'
 ```
 
-Use `tools/list` to see the three record tools. Writes require the current revision
+Use `tools/list` to see the identity and three record tools. Writes require the current revision
 from a read. This localhost endpoint is usable by a local agent's HTTP tooling;
 it does not automatically install a Codex plugin or claim native tool discovery.
 Hosted Sites uses its native private plugin publication/connection flow.

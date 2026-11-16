@@ -68,6 +68,7 @@ async function write(db, artifact, args) {
   fail(409,'Concurrent write; reread before retry');
 }
 const tools = [
+  {name:'adp_session',description:'Return this authenticated caller’s Site-scoped ID and editor status for membership setup. This grants no record access.',inputSchema:{type:'object',properties:{},additionalProperties:false}},
   {name:'adp_read',description:'Read one ADP record and its revision.',inputSchema:{type:'object',properties:{artifact:{type:'string'},path:{type:'string'}},required:['artifact','path'],additionalProperties:false}},
   {name:'adp_query',description:'Read a bounded collection of ADP records.',inputSchema:{type:'object',properties:{artifact:{type:'string'},path:{type:'string'}},required:['artifact','path'],additionalProperties:false}},
   {name:'adp_write',description:'Write one ADP record using an expected revision from adp_read. This does not publish Site source or wake another agent.',inputSchema:{type:'object',properties:{artifact:{type:'string'},path:{type:'string'},mode:{type:'string',enum:['set','update','delete']},data:{type:'object'},expectedRevision:{type:'integer',minimum:0}},required:['artifact','path','mode','expectedRevision'],additionalProperties:false}}
@@ -81,6 +82,8 @@ async function mcp(request,env,user) {
   try {
     const args=rpc.params?.arguments, name=rpc.params?.name;
     if(!object(args))fail(400,'Arguments required');
+    if(name==='adp_session')return response({content:[{type:'text',text:JSON.stringify(user)}],isError:false});
+    access(request,env); // Discovering tool schemas/own identity never grants record access.
     const artifact=path(args.artifact); if(artifact.includes('/'))fail(400,'Invalid artifact');
     let result;
     if(name==='adp_read')result=await read(env.DB,artifact,path(args.path,true));
@@ -95,7 +98,7 @@ export default {
     try {
       const url=new URL(request.url), match=url.pathname.match(/^\/api\/adp\/([A-Za-z0-9_-]+)\/(session|read|query|write)$/);
       if(!match && url.pathname!=='/mcp')return new Response('Not found',{status:404});
-      const user=access(request,env,match?.[2]==='session');
+      const user=access(request,env,match?.[2]==='session' || url.pathname==='/mcp');
       const origin=request.headers.get('origin');
       if(origin && origin!==url.origin)fail(403,'Cross-origin request denied');
       if(url.pathname==='/mcp'){if(request.method!=='POST')fail(405,'POST required');return await mcp(request,env,user);}

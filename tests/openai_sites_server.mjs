@@ -55,7 +55,11 @@ async function mcp(method,params,user='editor') {
  return res.json();
 }
 assert.deepEqual((await mcp('server/discover')).result.supportedVersions,['2026-07-28']);
-assert.equal((await mcp('tools/list')).result.tools.length,3);
+assert.equal((await mcp('tools/list')).result.tools.length,4);
+assert.equal((await mcp('tools/list',undefined,'stranger')).result.tools.length,4);
+const ownSession=await mcp('tools/call',{name:'adp_session',arguments:{}},'stranger');
+assert.deepEqual(JSON.parse(ownSession.result.content[0].text),{id:'stranger',canEdit:false});
+assert.equal((await mcp('tools/call',{name:'adp_read',arguments:{artifact:'demo',path:'config/current'}},'stranger')).result.isError,true);
 assert.equal((await mcp('tools/call',{name:'adp_write',arguments:{artifact:'demo',path:'config/current',mode:'set',data:{},expectedRevision:5}},'reader')).result.isError,true);
 assert.equal((await mcp('tools/call',{name:'adp_write',arguments:{artifact:'demo',path:'config/current',mode:'set',data:{},expectedRevision:5}})).result.isError,false);
 assert.equal((await mcp('tools/call',{name:'adp_read',arguments:{artifact:'demo',path:'config/current'}})).result.isError,false);

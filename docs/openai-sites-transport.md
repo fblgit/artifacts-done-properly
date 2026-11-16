@@ -12,7 +12,7 @@ For a ready-to-run local server, see [Codex/Sites localhost](openai-localhost.md
   the runtime document/query interface, with serialized snapshot polling (2s default,
   configurable >=1s), change events, unsubscribe and explicit transport errors.
 - `skill/assets/hosts/openai-sites/worker.mjs`: Worker handler for the HTTP API and
-  three Site MCP tools (`adp_read`, `adp_query`, `adp_write`).
+  Site MCP tools (`adp_session`, `adp_read`, `adp_query`, `adp_write`).
 - `schema.sql`: bounded, schema-only D1 migration. Records are keyed by artifact
   and path, preserving nested `ns/<name>/...` namespaces.
 - `fixture.html` and `tools/build_sites_fixture.py`: disposable browser fixture,
@@ -43,7 +43,7 @@ It is a local storage namespace, not a global cross-host identity.
    the D1 resource. Existing Sites must preserve their migrations and bindings.
 3. Configure `ADP_EDITORS` and optionally `ADP_READERS` as comma-separated, exact
    **Site-scoped user IDs** in server runtime configuration. Empty lists deny all.
-   The authenticated `session` endpoint returns the caller's own ID for setup,
+   The authenticated `session` endpoint and `adp_session` tool return the caller's own ID for setup,
    but grants no record access before membership is configured.
    These members can access every artifact namespace in this Site. Use separate
    Sites or add narrower membership rules if artifacts need different audiences.
@@ -74,6 +74,7 @@ is not evidence that production authentication passed. No development identity
 bypass is included. A service access token is not a user identity and alone does
 not grant access to these endpoints.
 
+Authenticated tool discovery and own-ID lookup work before membership; neither grants data access.
 Every record operation checks membership server-side. Readers cannot write even to
 `status/integrity`. Browser requests pin the connection's identity with
 `x-adp-user`; a changed session is rejected until reload. JSON requests are bounded
