@@ -1,5 +1,6 @@
 """Claude host adapter for the shared records shell (adp_bundle.py): prints ArtifactData calls and parses the result text the agent saves. No network.
-Raw reads: [{"collection": c, "text": <ArtifactData list result>}]. Raw receipts: [{"keys": [...], "text": <ArtifactData batch result or error>}]."""
+Raw results are the shared envelope [{call: <the call descriptor printed>, result: <ArtifactData result text or error>}]; Claude needs no readback (a batch
+result names every committed doc and its new version)."""
 import json, re
 
 HOST = 'claude'
@@ -11,14 +12,16 @@ def read_calls(artifact, collections):
 
 
 def parse_reads(raw):
-    """-> {docs: [{collection, id, data, revision}], complete, warnings}; `revision` is the doc's native version. More pages than one is incomplete."""
-    docs, warn = [], []
+    """-> {docs: [{collection, id, data, revision}], covered: [collections read], complete, warnings}; `revision` is the doc's native version. A collection listing
+    is the only way absence shows, so the core checks `covered`; more pages than one is incomplete."""
+    docs, warn, covered = [], [], set()
     for r in raw:
-        for line in r['text'].splitlines():
+        c, text = r['call']['collection'], r['result']; covered.add(c)
+        for line in text.splitlines():
             if line.startswith('{"id":'):
-                d = json.loads(line); docs.append({'collection': r['collection'], 'id': d['id'], 'data': d['data'], 'revision': d.get('version')})
-        if 'next_cursor' in r['text']: warn.append(f"{r['collection']}: more pages (next_cursor)")
-    return {'docs': docs, 'complete': not warn, 'warnings': warn}
+                d = json.loads(line); docs.append({'collection': c, 'id': d['id'], 'data': d['data'], 'revision': d.get('version')})
+        if 'next_cursor' in text: warn.append(f'{c}: more pages (next_cursor)')
+    return {'docs': docs, 'covered': sorted(covered), 'complete': bool(raw) and not warn, 'warnings': warn or ([] if raw else ['no read results'])}
 
 
 def write_calls(artifact, ops):
@@ -38,9 +41,9 @@ def parse_receipt(raw):
     """A batch is all or nothing: its lines name what committed (with the new version); an error says nothing was written; anything else is unknown."""
     out = []
     for r in raw:
-        done = {f'{c}/{i}': int(v) for _, c, i, v in re.findall(r'- (\w+) "([^"]+)"/"([^"]+)" \(version (\d+)\)', r['text'])}
-        bad = re.search(r'db write failed[^\n]*|nothing was written[^\n]*', r['text'])
-        for k in r['keys']:
+        text = r['result']; done = {f'{c}/{i}': int(v) for _, c, i, v in re.findall(r'- (\w+) "([^"]+)"/"([^"]+)" \(version (\d+)\)', text)}
+        bad = re.search(r'db write failed[^\n]*|nothing was written[^\n]*', text)
+        for k in r['call']['keys']:
             c, i = k.rsplit('/', 1)
             out.append({'collection': c, 'id': i, 'outcome': 'applied' if k in done else 'rejected' if bad else 'unknown', 'revision': done.get(k), 'error': bad.group(0) if bad and k not in done else None})
     return out

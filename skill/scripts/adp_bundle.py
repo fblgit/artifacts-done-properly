@@ -19,26 +19,33 @@ def adapter(a):
     except ImportError: sys.exit(f'no adapter for host {host!r}: adp_{host}_adapter.py')
 
 
-def docs_in(a, path):
-    """[{collection, id, data, revision?}] from a normalized file, or from raw host results with --raw (an incomplete read is refused)."""
-    f = json.load(open(path, encoding='utf-8'))
+def reads_in(a, path):
+    """-> ({key: doc}, {key: native revision of an explicit absent snapshot}, collections the read covered or None) from a normalized file, or from
+    raw envelopes [{call, result}] with --raw (an incomplete read is refused). A doc is {collection, id, data, revision?}; an absent one has exists: false."""
+    f, cov = json.load(open(path, encoding='utf-8')), None
     if '--raw' in a:
-        f = adapter(a).parse_reads(f)
+        f = adapter(a).parse_reads(f); cov = set(f.get('covered') or [])
         if not f.get('complete'): sys.exit(f'{path}: the read is incomplete ({"; ".join(f.get("warnings") or []) or "no detail"}): read again before planning')
-    return [x for x in (f.get('docs') if isinstance(f, dict) else f) or [] if isinstance(x.get('collection'), str) and isinstance(x.get('id'), str) and isinstance(x.get('data'), dict)]
+    docs, gone = {}, {}
+    for x in (f.get('docs') if isinstance(f, dict) else f) or []:
+        if isinstance(x.get('collection'), str) and isinstance(x.get('id'), str):
+            k = f"{x['collection']}/{x['id']}"
+            if x.get('exists') is False: gone[k] = x.get('revision')
+            elif isinstance(x.get('data'), dict): docs[k] = x
+    return docs, gone, cov
 
 
-def reads(a, ad, artifact, collections):
-    print(json.dumps({'reads': ad.read_calls(artifact, collections)}, indent=1)); return 2
+def reads(calls):
+    print(json.dumps({'reads': calls}, indent=1)); return 2
 
 
 def bundle(a):
     """adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections c,ns/x/y] [--raw]: DOCS.json is what the source's
     reads returned; without it, print the reads to run (exit 2). OUT_DIR gets an adp-seed/2 seed.json + seed/ with `source` and `revisions` added."""
     pos, ad, art = A.bare(a[1:]), adapter(a), A.opt(a, '--artifact') or sys.exit('--artifact names the source artifact')
-    if not pos: return reads(a, ad, art, list(READ[:-1]) + (A.opt(a, '--collections') or '').split(',') * bool(A.opt(a, '--collections')))
+    if not pos: return reads(ad.read_calls(art, list(READ[:-1]) + (A.opt(a, '--collections') or '').split(',') * bool(A.opt(a, '--collections'))))
     if len(pos) != 2: sys.exit('usage: adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections ...] [--raw]')
-    docs = sorted((x for x in docs_in(a, pos[0]) if x['collection'].split('/')[0] not in SKIP), key=lambda x: (x['collection'], x['id']))
+    docs = sorted((x for x in reads_in(a, pos[0])[0].values() if x['collection'].split('/')[0] not in SKIP), key=lambda x: (x['collection'], x['id']))
     at, counts, packs, cur, size = A.opt(a, '--at') or A.now(), {}, [], [], 0
     bid = 'b-' + chash([[x['collection'], x['id'], x['data']] for x in docs])[7:19]
     for x in docs:
@@ -65,8 +72,12 @@ def plan(a):
     if not pos: sys.exit('usage: adp.py import-plan BUNDLE_DIR [TARGET_DOCS.json] --host H --artifact ID [--out PLAN.json] [--raw]')
     idx, inc = A.read_seed(pos[0])
     if idx.get('schema') != 'adp-seed/2' or not idx.get('source'): sys.exit(f'{pos[0]} is not a bundle (adp.py bundle writes one)')
-    if len(pos) < 2: return reads(a, ad, art, sorted(set(idx.get('collections') or {}) | {'imports'}))
-    tgt = {f"{x['collection']}/{x['id']}": x for x in docs_in(a, pos[1])}; sk = re.sub(r'[^A-Za-z0-9_.~:@+-]+', '-', f"{idx['source']['host']}-{idx['source']['artifact']}")[:120]
+    sk = re.sub(r'[^A-Za-z0-9_.~:@+-]+', '-', f"{idx['source']['host']}-{idx['source']['artifact']}")[:120]
+    keys, colls = [f'{c}/{i}' for c, i, _ in inc] + [f'imports/{sk}'], sorted(set(idx.get('collections') or {}) | {'imports'})
+    if len(pos) < 2: return reads(ad.read_doc_calls(art, keys) if hasattr(ad, 'read_doc_calls') else ad.read_calls(art, colls))      # named records: absence is then authoritative
+    tgt, gone, cov = reads_in(a, pos[1])
+    miss = [k for k in keys if k not in tgt and k not in gone] if hasattr(ad, 'read_doc_calls') else [c for c in colls if cov is not None and c not in cov]
+    if miss: sys.exit(f'the read does not cover {", ".join(miss[:5])}{" ..." * (len(miss) > 5)}: read them again before planning')
     prior = tgt.get(f'imports/{sk}') or {}; base = (prior.get('data') or {}).get('records') or {}; ops, held = [], []
     for c, i, data in sorted(inc):
         k, live = f'{c}/{i}', tgt.get(f'{c}/{i}'); ih, lh, bh = chash(data), chash(live['data']) if live else None, (base.get(f'{c}/{i}') or {}).get('hash')
@@ -74,13 +85,13 @@ def plan(a):
         act = {'new': 'create', 'ours': 'replace', 'applied': 'skip', 'theirs': 'skip'}.get(cls, 'hold')
         why = 'target has no revision to guard the write with' if act == 'replace' and (live or {}).get('revision') is None else ''
         if why: act = 'hold'
-        op = {'key': k, 'class': cls, 'action': act, 'baseHash': bh, 'liveHash': lh, 'incomingHash': ih, 'guard': (live or {}).get('revision')}
+        op = {'key': k, 'class': cls, 'action': act, 'baseHash': bh, 'liveHash': lh, 'incomingHash': ih, 'guard': live['revision'] if live and 'revision' in live else gone.get(k)}
         if act in ('create', 'replace'): op.update({'op': act, 'collection': c, 'id': i, 'data': data})
         if act == 'hold': held.append(k); op['why'] = why or 'both sides changed, or the target differs and no import was recorded'
         ops.append(op)
     out = {'schema': PLAN, 'bundle': {'id': idx['source']['id'], 'schema': idx['schema'], 'docs': len(inc), 'source': idx['source']}, 'target': {'host': ad.HOST, 'artifact': art, 'readAt': A.now()},
            'ops': ops, 'held': held, 'counts': {n: sum(o['action'] == n for o in ops) for n in ('create', 'replace', 'skip', 'hold')},
-           'provenance': {'collection': 'imports', 'id': sk, 'guard': prior.get('revision'), 'exists': bool(prior), 'records': base}}
+           'provenance': {'collection': 'imports', 'id': sk, 'guard': prior['revision'] if prior else gone.get(f'imports/{sk}'), 'exists': bool(prior), 'records': base}}
     if not held: out['calls'] = ad.write_calls(art, [o for o in ops if o['action'] in ('create', 'replace')]) if out['counts']['create'] + out['counts']['replace'] else []
     text = json.dumps(out, indent=1, ensure_ascii=False)
     if A.opt(a, '--out'): open(A.opt(a, '--out'), 'w', encoding='utf-8').write(text)
