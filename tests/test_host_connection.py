@@ -155,11 +155,13 @@ const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts });
     await run({ comments: { canSendToClaude: async () => 'available', sendToClaude: async () => ({}), anchorFor: async () => 'p' } }), await run({}), sent.map(m => /^r-/.test(m.requestId))]));
   const e = w.Kit.assist.start({ seed: {}, agent: mk('queued', 'Codex') }); await e.ready; await sleep(); const rid = await e.send({ text: 'hi' }); await e.reply(rid, 'again'); const m = sent[sent.length - 1];
   console.log(JSON.stringify([m.requestId === rid, m.threadId, m.turnId]));
+  const u = w.Kit.assist.start({ seed: {}, agent: { ...mk('queued', 'Codex'), send: async () => ({ threadId: 't', delivery: 'unknown' }) } }); await u.ready; await sleep(); const ur = await u.send({ text: 'hi' }); await sleep(); console.log(JSON.stringify([u.delivery(ur), u.requests({}).get().length]));
   process.exit(0);
 })();'''
         run = run_node(['-e', script, str(ROOT)])
         out = [json.loads(x) for x in run.stdout.splitlines()]
         self.assertEqual(out[0], ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'ok', 'none: This page cannot send to Claude here.', [True, True]], run.stderr)      # queued is sendable; words from the label; default from the page's host; a legacy comments handle still works; the stored request id goes with the send
+        self.assertEqual(out[2], ['unknown', 1])      # an unconfirmed handoff is shown and the saved request stays
         self.assertEqual(out[1], [True, 't', '0001'])      # a reply names its stored turn, so a host with its own record does not add a second
 
     def test_a_reply_ends_an_agents_claim_only_where_there_is_one(self):

@@ -157,7 +157,7 @@ function start(o) {
   o = o || {};
   const page = o.page || null;
   const H = { db: null, user: null, agent: null, sample: null, config: o.config || (page && page.config) || null, memory: false };
-  const offs = [], timers = [], lives = new Set(), cache = {}, tids = {}, watchers = new Set();
+  const offs = [], timers = [], lives = new Set(), cache = {}, tids = {}, deliveries = {}, watchers = new Set();
   let dead = false, canSend = 'none', askDead = false, uid = '', reqs = [], pres = [], convs = [], picking = null, closePick = null;
   const clock = () => { const n = typeof o.now === 'function' ? o.now() : o.now; const t = n == null ? Date.now() : new Date(n).getTime(); return isNaN(t) ? Date.now() : t; };
   const iso = () => new Date(clock()).toISOString();
@@ -263,6 +263,7 @@ function start(o) {
     if (H.memory || cfg('log.data-changes', true) === false) return Promise.resolve();
     return H.db.doc('changes/d-' + Date.now()).set({ version: '', at: iso(), by: by(), summary, parts: [], threads: [], data: docs.map(d => ({ doc: d })) }).catch(() => {});
   }
+  const who = () => H.agent && H.agent.label || 'Claude';
   const word = l => (o.words && o.words[l]) || WORDS[l] || l;
   const lanes = () => { const v = cfg('assist.lanes', LANES); return Array.isArray(v) && v.length ? v.slice() : LANES.slice(); };
   const scopeOf = s => { s = s || {}; const id = squash(s.id, 200); return { kind: s.kind || (id ? 'part' : 'page'), id, label: squash(s.label, 120), hash: String(s.hash || '') }; };
@@ -299,12 +300,14 @@ function start(o) {
     try {
       const r = await H.agent.send({ anchor: await anchorOf(s, a.scope && a.scope.el), text: commentText(word(lane) + ': ' + text, quote, rid, lane, s, project), requestId: rid });      // requestId: the request is already stored; a host that keeps its own record must not create another
       if (r && r.threadId) tids[rid] = r.threadId;
+      if (r && r.delivery) deliveries[rid] = r.delivery;      // 'unknown': the host kept the request but could not confirm the handoff; the record stays, nothing is retried
     } catch (e) {
       ref.delete().catch(() => {});
       if (e && e.code === 'claude_unavailable') recheck();
       throw asErr(e);
     }
-    log('Request ' + rid + ' sent', ['requests/' + rid]);
+    log('Request ' + rid + (deliveries[rid] === 'unknown' ? ' saved; delivery to ' + who() + ' unconfirmed' : ' sent'), ['requests/' + rid]);
+    if (deliveries[rid] === 'unknown') notify();
     return rid;
   }
   async function reply(rid, text) {
@@ -440,7 +443,7 @@ function start(o) {
     document.removeEventListener('keydown', onShortcut); if (closePick) closePick(); watchers.clear(); lives.clear();
   }
   return {
-    ready, can, me: () => uid, watch: fn => { watchers.add(fn); return () => watchers.delete(fn); }, pick, send, reply, ask, ping,
+    ready, can, delivery: rid => deliveries[rid] || '', me: () => uid, watch: fn => { watchers.add(fn); return () => watchers.delete(fn); }, pick, send, reply, ask, ping,
     requests, conversations, messages, presence, thread, state, lanes, word, destroy
   };
 }
