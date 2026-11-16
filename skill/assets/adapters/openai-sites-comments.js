@@ -248,14 +248,21 @@
       async send(message = {}) {
         await editor();
         let id = message.requestId || message.threadId;
+        async function observed(ref) {
+          try { return await ref.get(); }
+          catch (error) {
+            if (!error.status || error.status >= 500) error.notificationUnknown = true;
+            throw error;
+          }
+        }
         try {
           if (message.requestId) {
             // Shared kit already persisted the request/turn: never duplicate it.
-            const ref = request(id), before = await ref.get();
+            const ref = request(id), before = await observed(ref);
             if (!before.exists) throw new Error('Request no longer exists');
             if (message.turnId) {
               if (!/^[0-9]+$/.test(message.turnId)) throw new TypeError('Invalid reply turn ID');
-              if (!(await ref.collection('turns').doc(message.turnId).get()).exists) throw new Error('Reply is not stored');
+              if (!(await observed(ref.collection('turns').doc(message.turnId))).exists) throw new Error('Reply is not stored');
             }
             if (before.data().status !== 'open') throw new Error('Only open requests can be queued');
             await save(ref, {...before.data(),delivery:'queued'}, before.revision);
@@ -264,10 +271,10 @@
           return {threadId:id,delivery:'queued'};
         } catch (error) {
           id ||= error.requestId;
-          if (!id || typeof error.inspect !== 'function') throw error;
+          if (!id || (typeof error.inspect !== 'function' && !error.notificationUnknown)) throw error;
           // Reconcile the original ID; an unknown outcome must not create a retry.
           try {
-            if (!error.recoveryMessage && await error.inspect()) return {threadId:id,delivery:'queued'};
+            if (!error.recoveryMessage && typeof error.inspect === 'function' && await error.inspect()) return {threadId:id,delivery:'queued'};
           } catch (_) { /* The original outcome remains unknown. */ }
           return {threadId:id,delivery:'unknown'};
         }

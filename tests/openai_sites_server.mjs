@@ -139,6 +139,9 @@ globalThis.fetch=async(...args)=>{if(agentWrote && args[0].endsWith('/read'))thr
 const uncertain=await withComments.agent.send({anchor:'intro',text:'Retain this unknown request ID'});
 assert.equal(uncertain.delivery,'unknown');globalThis.fetch=transport;
 assert.equal((await second.db.doc('requests/'+uncertain.threadId).get()).data().text,'Retain this unknown request ID');
+globalThis.fetch=async(...args)=>{if(args[0].endsWith('/read'))throw Error('notification read offline');return transport(...args);};
+try {assert.deepEqual(await withComments.agent.send({requestId:thread,text:'Already stored'}),{threadId:thread,delivery:'unknown'});}
+finally {globalThis.fetch=transport;}
 let wrote=false;
 globalThis.fetch=async(...args)=>{if(wrote && args[0].endsWith('/read')){wrote=false;throw Error('readback offline');}const response=await transport(...args);if(args[0].endsWith('/write'))wrote=true;return response;};
 try{await feedback.create('intro','Readback recovery probe');}catch(error){unknown=error;}
