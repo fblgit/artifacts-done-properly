@@ -1155,7 +1155,7 @@ def requests_cmd(a):
         rows = [{'id': k, 'lane': d.get('lane', ''), 'state': rstate(d), 'scope': d.get('scope') or {}, 'project': d.get('project', ''),
                  'text': d.get('text', ''), 'quote': d.get('quote', ''), 'by': d.get('by', ''), 'at': d.get('at', ''),
                  'last_progress': ((d.get('progress') or [{}])[-1] or {}).get('text', ''), 'reopened': bool(d.get('response') or d.get('doneAt')), 'resolved': d.get('resolved') is True,      # a thread a person resolved (Sites): shown beside state, never turned into done
-                 'lease': {k: (d.get('execution') or {}).get(s) for k, s in (('actor', 'actor'), ('state', 'state'), ('until', 'leaseUntil'), ('attempt', 'attempt'))} if d.get('execution') else None}      # an agent's claim as recorded, not judged live: clocks and hosts differ
+                 'lease': {k: (d.get('execution') or {}).get(s) for k, s in (('actor', 'actor'), ('state', 'state'), ('until', 'leaseUntil'), ('attempt', 'attempt'))} | {'host': ((d.get('execution') or {}).get('origin') or {}).get('host')} if d.get('execution') else None}      # an agent's claim as recorded, not judged live: clocks and hosts differ; host is where it was made (a claim from another host is a copy)
                 for k, (d, _) in docs.items() if d.get('status') != 'done']
         rows.sort(key=lambda r: r['at'])
         return emit({'open': rows, 'count': len(rows), 'trailer': '· adp request {<rid>} · lane <lane> · scope part:<id>|page'})
