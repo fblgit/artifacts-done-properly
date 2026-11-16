@@ -34,8 +34,10 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
   adp.py catalog [URL]                              the user's catalog: URL saves it (~/.adp/config.json); prints the Artifact read that
                                                     fetches its catalog.json into ~/.adp/catalog/ (My Own Kit), then the reads (256 paths at most
                                                     each) for every file the index lists; `complete` says the whole kit is local. Or ver and built
-  adp.py take CATALOG ID ... [--url URL] [--config C.json]
-                                                    a files map taking catalog entries by reference, requires first. CATALOG is the catalog
+  adp.py take CATALOG ID ... [--url URL] [--config C.json] [--materialize DIR]
+                                                    Claude: native file references. Sites: authenticated HTTPS read plans, then --materialize DIR
+                                                    verifies cached file hashes and copies bytes without overwriting different files. Requires first.
+                                                    CATALOG is the catalog
                                                     url (its fetched index is the live one), `-` for the saved catalog, or a local catalog.json
                                                     (the repo's build: not the live catalog, so the output carries a warning)
   adp.py seed DIR [--by NAME] [--version V] [--data FILE|DIR ...] [--summary S] [--role R] [--batches] [--dry-run]
@@ -266,19 +268,55 @@ def tmeta(name):
 
 
 ADP_HOME = os.environ.get('ADP_HOME') or os.path.join(os.path.expanduser('~'), '.adp')
-CAT_URL = re.compile(r'https://claude\.ai/(?:code/)?artifact/[A-Za-z0-9-]+/?$')
+SITES_URL = re.compile(r'https://[a-z0-9-]+(?:\.[a-z0-9-]+)*\.chatgpt\.site/?$')
+CAT_URL = re.compile(r'https://(?:claude\.ai/(?:code/)?artifact/[A-Za-z0-9-]+|[a-z0-9-]+(?:\.[a-z0-9-]+)*\.chatgpt\.site)/?$')
 
 
 def cat_dir(url):
     """Where the user's own kit sits on disk: ~/.adp/catalog (My Own Kit). A copy an older adp.py fetched into ~/.adp/catalogs/<id>/ is still
     used while the new folder has no index yet, so nothing already fetched is lost."""
+    if SITES_URL.fullmatch(url): return os.path.join(ADP_HOME, 'catalogs', url.split('/')[2])
     new, old = os.path.join(ADP_HOME, 'catalog'), os.path.join(ADP_HOME, 'catalogs', url.rstrip('/').rsplit('/', 1)[-1])
     return old if os.path.isfile(os.path.join(old, 'catalog.json')) and not os.path.isfile(os.path.join(new, 'catalog.json')) else new
 
 
 def fetch_call(url):
     """The Artifact read that brings a catalog's live index to disk, where `take` and `catalog` find it; `adp.py catalog` then lists the reads for the rest of the kit."""
+    if SITES_URL.fullmatch(url): return site_reads(url, cat_dir(url), ['catalog.json'])[0]
     return {'tool': 'Artifact', 'action': 'read', 'url': url, 'path': 'catalog.json', 'out_dir': cat_dir(url), 'then': 'run `adp.py catalog` again: it lists the reads for the whole kit (My Own Kit)'}
+
+
+def site_reads(url, root, paths):
+    """Offline HTTP plan; the executing agent supplies private-Site authentication."""
+    return [{'transport': 'https', 'method': 'GET', 'url': url.rstrip('/') + '/' + p,
+             'out_file': os.path.join(root, p), 'authentication': 'authorized Sites session; never store tokens in this plan',
+             'then': 'save the exact response bytes, then rerun the command'} for p in paths]
+
+
+def materialize_sites(url, root, destination, files, hashes):
+    """Verify every selected file before writing; never overwrite a different destination."""
+    planned = []
+    for name in files:
+        if not name or name.startswith('/') or '\\' in name or any(x in ('', '.', '..') for x in name.split('/')):
+            sys.exit('take: unsafe file path ' + name)
+        source, target = os.path.join(root, name), os.path.join(destination, name)
+        for base, path in ((root, source), (destination, target)):
+            if os.path.commonpath([os.path.realpath(base), os.path.realpath(path)]) != os.path.realpath(base):
+                sys.exit('take: file escapes its directory: ' + name)
+        digest = hashes.get(name)
+        if not isinstance(digest, str) or not re.fullmatch(r'[a-f0-9]{64}', digest):
+            sys.exit('take: full sha256 required for ' + name)
+        if not os.path.isfile(source) or adp_lib.sha256(source) != digest:
+            sys.exit('take: missing file or sha256 mismatch: ' + name)
+        if os.path.exists(target) and (not os.path.isfile(target) or adp_lib.sha256(target) != digest):
+            sys.exit('take: destination differs; refusing overwrite: ' + name)
+        planned.append((source, target))
+    for source, target in planned:
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        if os.path.realpath(source) != os.path.realpath(target): shutil.copyfile(source, target)
+    return {'materialized': list(files), 'directory': os.path.abspath(destination),
+            'provenance': {'catalog': url, 'index_sha256': adp_lib.sha256(os.path.join(root, 'catalog.json')), 'sha256': hashes},
+            'next': 'Use adp.py files DIR for the destination host publish payload; load the dependency scripts/styles in entries order and verify destination hashes.'}
 
 
 def kit_missing(root, cat):
@@ -295,6 +333,7 @@ def kit_missing(root, cat):
 
 def kit_reads(url, root, paths):
     """The `read` calls that fetch paths: folders in order, a folder is never split while the call has room, at most adp_lib.READ_MAX paths each."""
+    if SITES_URL.fullmatch(url): return site_reads(url, root, paths)
     n, calls, cur, folders = adp_lib.READ_MAX, [], [], {}
     for p in sorted(paths): folders.setdefault(p.rsplit('/', 1)[0] if '/' in p else '', []).append(p)
     for group in folders.values():
@@ -313,7 +352,7 @@ def saved_catalog():
 def catalog_cmd(a):
     pos = bare(a[1:])
     if pos:
-        if not CAT_URL.match(pos[0]): sys.exit('catalog: a claude.ai artifact url (https://claude.ai/artifact/<id>)')
+        if not CAT_URL.match(pos[0]): sys.exit('catalog: use a Claude artifact URL or an HTTPS *.chatgpt.site catalog URL')
         p = os.path.join(ADP_HOME, 'config.json'); os.makedirs(ADP_HOME, exist_ok=True)
         cfg = json.load(open(p)) if os.path.isfile(p) else {}; cfg['catalog'] = pos[0].rstrip('/')
         json.dump(cfg, open(p, 'w'), indent=1)
@@ -674,7 +713,7 @@ def new(a):
 
 def take(a):
     pos = bare(a[1:])
-    if len(pos) < 2: sys.exit('usage: adp.py take CATALOG ID ... [--url URL] [--config C.json]   CATALOG: the catalog url, - (saved), or a local catalog.json')
+    if len(pos) < 2: sys.exit('usage: adp.py take CATALOG ID ... [--url URL] [--config C.json] [--materialize DIR]   CATALOG: the catalog url, - (saved), or a local catalog.json')
     src = pos[0]
     if src == '-': src = saved_catalog() or sys.exit('take: no saved catalog; adp.py catalog <url> saves one')
     live = bool(CAT_URL.match(src))
@@ -715,6 +754,17 @@ def take(a):
     if own: out['samples'] = own        # the keys an entry asked for owns in its bundle (@samples), as path#key: the bundle file is in the map, the output names only these
     if want and live: out['fetch_headers'] = calls
     fonts = {i: by[i]['fonts'] for i in order if by[i].get('fonts')}
+    if SITES_URL.fullmatch(url):
+        root = os.path.dirname(os.path.abspath(idx))
+        if cat.get('url', '').rstrip('/') != url.rstrip('/'):
+            sys.exit('take: fetched index belongs to a different catalog; refresh catalog.json')
+        del out['files']
+        destination = opt(a, '--materialize')
+        if not destination:
+            out.update(error='Sites files need authenticated reads and --materialize DIR; native Claude references are not emitted',
+                       reads=site_reads(url, root, list(m)))
+            emit(out); return 2
+        out.update(materialize_sites(url, root, destination, m, out['sha256']))
     if fonts: out['fonts'] = fonts      # a theme's web fonts: the page links each url in its head, or the theme's families fall back to system fonts
     return emit(out)
 
@@ -748,6 +798,7 @@ def read_headers(src, entries):
         else: want.append(m)
     n = adp_lib.READ_MAX
     calls = [{'tool': 'Artifact', 'action': 'read', 'url': url, 'paths': want[i:i + n], 'out_dir': root, 'then': 'run the command again'} for i in range(0, len(want), n)] if url else []
+    if url and SITES_URL.fullmatch(url): calls = site_reads(url, root, want)
     return heads, want, calls
 
 
