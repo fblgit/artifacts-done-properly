@@ -1,8 +1,8 @@
 {
  "schema": "kit-catalog/2",
- "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
+ "url": "",
  "ver": "",
- "built": "2026-11-16T16:10:59Z",
+ "built": "2026-11-16T16:11:48Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -2988,7 +2988,7 @@
     "assist"
    ],
    "status": "new",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "requires": [
     "kit.tokens",
     "kit.vocab",
@@ -3003,8 +3003,8 @@
     {
      "path": "kit/patterns/presence.js",
      "role": "script",
-     "sha256": "5f656732bafcaf80d79c70b3d12e93ca2f8a120a2a845a440f315678502e11b1",
-     "bytes": 11965
+     "sha256": "f32d2192af53a4a5756cbed6b538b2176b603732a2ff7d58c2870341c0559bfb",
+     "bytes": 11994
     },
     {
      "path": "kit/patterns/presence.css",
@@ -3019,7 +3019,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "b2eeb687929f"
+   "hash": "11cb84e11e79"
   },
   {
    "id": "pattern.prototype",

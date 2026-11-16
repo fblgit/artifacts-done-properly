@@ -174,7 +174,7 @@ const mk = tag => { const a = {}, h = {}, t = { tag, h, attrs: a, addEventListen
 const doc = { createElement: tag => { const e = mk(tag); made.push(e); return e; }, createTextNode: mk, getElementById: () => null, head: mk(), body: mk(), addEventListener: noop, removeEventListener: noop };
 const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, document: doc, addEventListener: noop, TextEncoder }; w.window = w; vm.createContext(w);
 for (const f of ['dom.js', 'patterns/assist-panel.js']) vm.runInContext(fs.readFileSync(K + f, 'utf8'), w);
-const view = () => ({ get: () => [], on: () => noop }), eng = s => ({ can: () => ({ ask: false, send: s }), requests: view, conversations: view, watch: () => noop, lanes: () => ['task'], word: l => l, presence: () => ({}), me: () => 'u', agentLabel: () => 'Codex' });
+const view = () => ({ get: () => [], on: () => noop }), eng = s => ({ can: () => ({ ask: false, send: s }), requests: view, conversations: view, watch: () => noop, lanes: () => ['task'], word: l => l, presence: () => ({on:()=>noop,get:()=>null}), me: () => 'u', agentLabel: () => 'Codex' });
 console.log(JSON.stringify(['available', 'queued', 'no_session', 'off'].map(s => { made.length = 0; w.Kit.assistPanel.mount(mk(), { engine: eng(s) }); return made.find(e => e.attrs['aria-disabled'] !== undefined).attrs['aria-disabled'] + made.some(e => e.textContent === 'Work with Codex'); })));
 doc.createElementNS = (_, tag) => doc.createElement(tag);
 vm.runInContext(fs.readFileSync(K + 'vocab.js', 'utf8'), w); vm.runInContext(fs.readFileSync(K + 'patterns/request-card.js', 'utf8'), w);
@@ -182,12 +182,16 @@ console.log(JSON.stringify(['queued','available','off','no_session'].map(state =
   made.length=0; const card=w.Kit.requestCard.mount(mk(),{engine:eng(state),request:{id:'r',status:'done',text:'Hi',response:'Answer'}});
   const result=[made.some(e=>e.tag==='textarea'),made.some(e=>e.textContent==='Codex')];card.destroy();return result;
 })));
+vm.runInContext(fs.readFileSync(K + 'patterns/presence.js', 'utf8'), w);
+made.length=0; const presence=w.Kit.presence.mount(mk(),{engine:{...eng('queued'),presence:()=>({on:()=>noop,get:()=>null})},canPing:false});
+console.log(JSON.stringify(made.some(e=>e.textContent.startsWith('Requests you send now wait'))));presence.destroy();
 const sendWith = async d => { made.length = 0; w.Kit.assistPanel.mount(mk(), { engine: { ...eng('queued'), send: async () => 'r1', delivery: () => d } }); made.find(e => e.tag === 'textarea').value = 'hi';
   made.find(e => e.h.submit).h.submit({ preventDefault: noop }); await new Promise(r => setTimeout(r, 20)); return made.find(e => e.className === 'kit-ap-live').textContent; };
 (async () => { console.log(JSON.stringify([await sendWith('unknown'), await sendWith('queued')])); process.exit(0); })();"""
         run = run_node(['-e', script, str(ROOT)])
         self.assertEqual(run.returncode, 0, run.stderr)
-        gate, cards, said = [json.loads(x) for x in run.stdout.splitlines()]
+        gate, cards, queued_hint, said = [json.loads(x) for x in run.stdout.splitlines()]
+        self.assertTrue(queued_hint)
         self.assertEqual(cards, [[True, True], [True, True], [False, True], [False, True]], run.stderr)
         self.assertEqual(gate, ['falsetrue', 'falsetrue', 'truetrue', 'truetrue'], run.stderr)      # queued enables Send, as available does; no_session and off still block; the title names the host's agent
         self.assertEqual([x.startswith(p) for x, p in zip(said, ['Task saved. Delivery to Codex is not confirmed', 'Task sent. It waits'])], [True, True], said)      # unknown delivery is said as saved, not sent

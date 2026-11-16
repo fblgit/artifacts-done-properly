@@ -23,7 +23,7 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.1
+ * @version   0.1.2
  * @updated   2026-11-14
  * @summary   Whether an agent session is watching the artifact, a Ping that proves it with the time it took, and the nudge that says how to start one: tell Claude Code to watch the artifact, with a Copy button.
  * @tags      presence, session, claude code, ping, nudge, watching, online, assist
@@ -38,7 +38,7 @@
  * @source    Catalog batch 16, 2026-10-26 | the same board's nudge | the copyable watch the artifact line
  * @preview   {"render": "pattern.presence", "samples": ["kit/samples/patterns.json#presence"]}
  * @samples   presence
- * @changed   One view with a compact form for a panel header.
+ * @changed   Queued hosts show the queue guidance, including while no session is watching.
  */
 (function () {
 'use strict';
