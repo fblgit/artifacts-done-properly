@@ -135,8 +135,39 @@ the calling agent still follows its user's authorized scope.
 - Native Sites comments and automatic agent wakeups are not provided by this
   transport. Anchored requests use the application-owned controller above.
   Record import/export is implemented by the shared shell. Source publication
-  and remaining kit portability are tracked separately in PR #81's expanded
-  compliance work; native Space Pages remain a separate host.
+  uses the agent workflow below; native Space Pages remain a separate host.
+
+## Source lifecycle through an agent
+
+The browser cannot publish Site source. An authorized agent uses the same ADP
+export, hold, propose, record and ack commands with native Sites publication:
+
+1. Open the existing Site source through the Sites source helper. Read deployed
+   files and native records. Normalize Sites `revision` to the shared shell's
+   `version` field without treating it as a publication version. Keep raw reads.
+2. Compare deployed files with the pinned source checkout. Sites may append a
+   script to HTML: retain the raw response and normalize only a verified host
+   addition around the exact source bytes. Never trim arbitrary differing HTML
+   merely to make hashes match. Feed the verified source listing and records to
+   `adp.py export`; reconcile conflicts before editing.
+3. Read affected part and agent revisions, generate holds, and apply each through
+   the native revision guard. Read them back and ack their new revisions. Propose
+   the source change through `incoming`, retaining its base hashes and history.
+4. Run `adp.py files` to refresh seed hashes. Package and publish the exact source
+   through the native Sites source helper and deployment tools. This path uses
+   source-repository guards; a record revision cannot guard a source deployment.
+5. Read deployed bytes back before `record`. Use the successful deployment ID as
+   the publication version, native record revisions as write pins, and record the
+   source commit in the change summary. Apply the generated writes with the
+   manifest last, read back every result, then ack and mark the proposal applied.
+6. Export again and ack the applied proposal before beginning the next edit, so
+   the shared shell's base includes the publication it just verified.
+
+These are sequential native operations, not one transaction across source and
+records. If publication succeeds but recording fails, report that partial state;
+reread the affected records and reconcile without republishing blindly. A lost
+deployment response likewise requires inspecting the saved version/deployment.
+The inbox's disabled Apply button is not a successful publication receipt.
 
 ## Evidence
 
