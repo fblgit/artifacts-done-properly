@@ -102,7 +102,11 @@ with manifest, parts, history, guarded writes and readback. Sites verified repea
 no-op and stale-destination rejection; Claude's receipt reports the corresponding
 return-side checks passed too. Claude's live phase durations were not recorded.
 The earlier OpenAI browser/agent/browser receipt
-is separate from this record-store shell run. Fresh browser rendering after the
-return and source-file/hash integrity are not established by these receipts.
+is separate from this record-store shell run. The deployed Sites shell now renders
+the imported records, context, provenance and history. Direct browser observations
+in PR comments 6914883927 and 6914915590 verify the owner's subsequent intro edit
+at revision 3 and its persistence after reload. That newer edit has not been
+returned to Claude. Claude browser rendering after the return and source-file/hash
+integrity are not established by these receipts.
 Local tests are not live-host certification. PR #81 remains draft until its
 agreed acceptance gate is met.
