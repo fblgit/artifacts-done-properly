@@ -86,3 +86,23 @@ const agentRead=await mcp('tools/call',{name:'adp_read',arguments:{artifact:'int
 assert.equal(JSON.parse(agentRead.result.content[0].text).data.feedback,'Agent should see this');
 globalThis.fetch=savedFetch;
 console.log('Node-executed browser bridge -> Worker handler -> SQLite -> new connection -> MCP read passed');
+
+// Claude live receipt claude-r1: preserve nested fields, replace arrays/scalars,
+// store null and literal dotted keys, delete only explicit marker fields.
+await request('write',{path:'parity/current',mode:'set',data:{a:{x:1,y:2},arr:[1,2],gone:{x:1},unchanged:{keep:true}}});
+await request('write',{path:'parity/current',mode:'update',data:{a:{y:9,z:3},arr:[3],nil:null,gone:{__delete__:true},'a.x':7}});
+assert.deepEqual((await request('read',{path:'parity/current'})).data,{a:{x:1,y:9,z:3},arr:[3],nil:null,'a.x':7,unchanged:{keep:true}});
+assert.equal((await request('write',{path:'parity/current',mode:'update',data:{a:{__delete__:true,extra:1}}})).status,400);
+const pollution=JSON.parse('{"__proto__":{"polluted":true}}');
+await request('write',{path:'parity/current',mode:'update',data:pollution});
+assert.equal({}.polluted,undefined);
+assert.deepEqual((await request('read',{path:'parity/current'})).data.__proto__,{polluted:true});
+
+assert.equal((await request('read',{path:'odd'})).status,400);
+assert.equal((await request('read',{path:'ns/name/odd'})).status,400);
+assert.equal((await request('query',{path:'even/path'})).status,400);
+
+assert.equal((await request('write',{path:'kitfiles/samples~hello.txt',mode:'set',data:{text:'seed-pack id'}})).status,200);
+assert.equal((await request('read',{path:'kitfiles/samples~hello.txt'})).data.text,'seed-pack id');
+
+assert.equal((await mcp('tools/call',{name:'adp_read',arguments:{artifact:'bad@name',path:'config/current'}})).result.isError,true);

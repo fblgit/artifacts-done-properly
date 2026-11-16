@@ -94,8 +94,16 @@ the calling agent still follows its user's authorized scope.
   delete/recreate cannot reset a revision and admit an old write.
 - Existing runtime writes that do not pass a guard remain last-writer-wins. This
   does **not** upgrade ADP's overall configuration editing to conflict-safe.
-- `update()` shallow-merges top-level fields, preserves explicit nulls and fails
-  for a missing document. No dotted-field mutation syntax or atomic batch writes.
+- `update()` recursively merges objects, replaces arrays/scalars, preserves explicit
+  nulls and treats dotted keys literally, matching Claude's live `claude-r1` receipt
+  in PR #81. A nested `{__delete__: true}` removes that field. Marker objects with
+  additional keys are rejected until their live semantics are established. Updating
+  a missing document fails. No atomic batch writes. Sites keeps its explicit HTTP
+  error codes; it does not pretend to be Claude's native API.
+- Document paths have even segment counts and collection paths odd counts. The
+  adapter accepts the ASCII record-ID punctuation used by ADP seed packs, including
+  `~`, `:`, `@` and `+`, with a 512-character path limit. This does not certify every
+  native Claude path/limit.
 - Equality filters support JSON scalar operands; ordered fields should have
   consistent scalar types. Queries fail explicitly if a collection exceeds 1,000
   live records or 1MiB of stored JSON; no silent truncation of the source collection. Partition large

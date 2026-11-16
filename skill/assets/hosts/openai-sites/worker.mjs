@@ -4,7 +4,7 @@ const fail = (status, message) => { throw Object.assign(new Error(message), {sta
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 const json = (body, status = 200) => Response.json(body, {status, headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 function path(value, document = false) {
-  if (typeof value !== 'string' || value.length > 512 || !/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)*$/.test(value) || value.split('/').some(p => p === '.' || p === '..') || (document && !value.includes('/'))) fail(400, 'Invalid path');
+  if (typeof value !== 'string' || value.length > 512 || !/^[A-Za-z0-9_.~:@+-]+(?:\/[A-Za-z0-9_.~:@+-]+)*$/.test(value) || value.split('/').some(p => p === '.' || p === '..') || (document && value.split('/').length % 2 !== 0)) fail(400, 'Invalid path');
   return value;
 }
 function access(request, env, sessionOnly = false) {
@@ -34,6 +34,7 @@ const field = (value, key) => key.split('.').reduce((v,k) => object(v) && Object
 function scalar(value) {return value === null || ['string','number','boolean'].includes(typeof value);}
 async function query(db, artifact, args) {
   const p = path(args.path), where = args.where || [], order = args.orderBy || [];
+  if(p.split('/').length % 2 !== 1)fail(400,'Collection path needs an odd number of segments');
   if (!Array.isArray(where) || where.length > 10 || !Array.isArray(order) || order.length > 5) fail(400,'Invalid query');
   for (const clause of [...where,...order]) if (!Array.isArray(clause) || typeof clause[0] !== 'string' || !/^[\w.-]+$/.test(clause[0])) fail(400,'Invalid field');
   if (where.some(x => x.length !== 3 || x[1] !== '==' || !scalar(x[2])) || order.some(x => x.length !== 2 || !['asc','desc'].includes(x[1]))) fail(400,'Unsupported query');
@@ -47,6 +48,19 @@ async function query(db, artifact, args) {
   docs.sort((a,b)=>{for(const [k,dir] of order){const x=field(a.data,k), y=field(b.data,k); if(x!==y)return (x<y?-1:1)*(dir==='desc'?-1:1);}return a.id<b.id?-1:a.id>b.id?1:0;});
   return {docs:docs.slice(0,args.limit || MAX_DOCS)};
 }
+// Measured Claude browser/agent update semantics (PR #81, claude-r1):
+// recursive objects, replacing arrays/scalars, stored null, literal dotted keys.
+function mergeUpdate(current, patch, depth = 0) {
+  if(depth>64)fail(400,'Document nesting too deep');
+  const result=Object.assign(Object.create(null),object(current)?current:{});
+  for(const [key,value] of Object.entries(patch)) {
+    if(object(value) && value.__delete__===true) {
+      if(Object.keys(value).length!==1)fail(400,'Ambiguous delete marker');
+      delete result[key];
+    } else result[key]=object(value)?mergeUpdate(result[key],value,depth+1):value;
+  }
+  return result;
+}
 async function write(db, artifact, args) {
   const p=path(args.path,true), collection=p.slice(0,p.lastIndexOf('/'));
   if (!['set','update','delete'].includes(args.mode)) fail(400,'Invalid write mode');
@@ -57,7 +71,7 @@ async function write(db, artifact, args) {
     const before=await read(db,artifact,p);
     if(args.expectedRevision != null && args.expectedRevision !== before.revision) fail(409,'Revision conflict');
     if(args.mode==='update' && !before.exists) fail(404,'Document does not exist');
-    const data=args.mode==='delete'?null:JSON.stringify(args.mode==='update'?{...before.data,...args.data}:args.data);
+    const data=args.mode==='delete'?null:JSON.stringify(args.mode==='update'?mergeUpdate(before.data,args.data):args.data);
     if(data !== null && new TextEncoder().encode(data).byteLength>MAX_BODY)fail(413,'Document too large');
     const revision=before.revision+1;
     let result;
@@ -84,7 +98,7 @@ async function mcp(request,env,user) {
     if(!object(args))fail(400,'Arguments required');
     if(name==='adp_session')return response({content:[{type:'text',text:JSON.stringify(user)}],isError:false});
     access(request,env); // Discovering tool schemas/own identity never grants record access.
-    const artifact=path(args.artifact); if(artifact.includes('/'))fail(400,'Invalid artifact');
+    const artifact=path(args.artifact); if(!/^[A-Za-z0-9_-]+$/.test(artifact))fail(400,'Invalid artifact');
     let result;
     if(name==='adp_read')result=await read(env.DB,artifact,path(args.path,true));
     else if(name==='adp_query')result=await query(env.DB,artifact,args);

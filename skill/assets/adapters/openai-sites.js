@@ -13,7 +13,7 @@
     const interval = options.pollIntervalMs === undefined ? 2000 : options.pollIntervalMs;
     if (!Number.isInteger(interval) || interval < 1000) throw new TypeError('Polling interval must be at least 1000ms');
     function path(value) {
-      if (typeof value !== 'string' || !value || value.length > 512 || value.split('/').some(s => !/^[A-Za-z0-9_.-]+$/.test(s) || s === '.' || s === '..')) {
+      if (typeof value !== 'string' || !value || value.length > 512 || value.split('/').some(s => !/^[A-Za-z0-9_.~:@+-]+$/.test(s) || s === '.' || s === '..')) {
         throw new TypeError('Invalid document or collection path');
       }
       return value;
@@ -60,6 +60,7 @@
     }
     function doc(value) {
       value = path(value);
+      if(value.split('/').length % 2 !== 0)throw new TypeError('Document path needs an even number of segments');
       const id = value.split('/').pop();
       async function get() { return documentSnapshot(id, await request('read', {path: value})); }
       async function write(mode, data, options = {}) {
@@ -80,6 +81,7 @@
     }
     function query(value, filters = [], ordering = [], count) {
       value = path(value);
+      if(value.split('/').length % 2 !== 1)throw new TypeError('Collection path needs an odd number of segments');
       async function get() {
         const response = await request('query', {path: value, where: filters, orderBy: ordering,
           ...(count === undefined ? {} : {limit: count})});
