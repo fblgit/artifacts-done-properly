@@ -47,6 +47,11 @@ const q=await request('query',{path:'ns/test/decisions',where:[['status','==','a
 assert.deepEqual(q.docs.map(d=>d.id),['c']);
 assert.equal((await request('query',{path:'ns/test/decisions',where:[['rank','>',0]]})).status,400);
 assert.equal((await request('query',{path:'ns/test/decisions',limit:1001})).status,400);
+for(const [id,data] of [['one',{n:1}],['two',{n:2}],['null',{n:null}],['missing',{}]]) await request('write',{path:'ordering/'+id,mode:'set',data});
+for(const [direction,expected] of [['asc',['null','one','two','missing']],['desc',['two','one','null','missing']]]) {
+ const ordered=await request('query',{path:'ordering',orderBy:[['n',direction]]});
+ assert.deepEqual(ordered.docs.map(d=>d.id),expected);
+}
 assert.equal((await request('write',{path:'config/current',mode:'set',data:{x:'x'.repeat(262144)}})).status,413);
 const wrongArtifact=await worker.fetch(new Request('https://test.example/api/adp/other/read',{method:'POST',headers:{'content-type':'application/json','oai-authenticated-user-id':'editor'},body:JSON.stringify({path:'config/current'})}),env);
 assert.equal((await wrongArtifact.json()).exists,false);
@@ -92,7 +97,9 @@ console.log('Node-executed browser bridge -> Worker handler -> SQLite -> new con
 await request('write',{path:'parity/current',mode:'set',data:{a:{x:1,y:2},arr:[1,2],gone:{x:1},unchanged:{keep:true}}});
 await request('write',{path:'parity/current',mode:'update',data:{a:{y:9,z:3},arr:[3],nil:null,gone:{__delete__:true},'a.x':7}});
 assert.deepEqual((await request('read',{path:'parity/current'})).data,{a:{x:1,y:9,z:3},arr:[3],nil:null,'a.x':7,unchanged:{keep:true}});
+const beforeInvalid=await request('read',{path:'parity/current'});
 assert.equal((await request('write',{path:'parity/current',mode:'update',data:{a:{__delete__:true,extra:1}}})).status,400);
+assert.deepEqual(await request('read',{path:'parity/current'}),beforeInvalid);
 const pollution=JSON.parse('{"__proto__":{"polluted":true}}');
 await request('write',{path:'parity/current',mode:'update',data:pollution});
 assert.equal({}.polluted,undefined);

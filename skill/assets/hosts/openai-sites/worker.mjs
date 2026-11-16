@@ -44,8 +44,18 @@ async function query(db, artifact, args) {
   const result=await db.prepare('SELECT path, data, revision FROM adp_records WHERE artifact = ? AND collection = ? AND data IS NOT NULL LIMIT ?').bind(artifact,p,MAX_DOCS+1).all();
   if (result.results.length > MAX_DOCS) fail(413,'Collection too large; partition it');
   let docs=result.results.map(r=>({id:r.path.slice(p.length+1),data:JSON.parse(r.data),revision:r.revision}));
-  docs=docs.filter(d=>where.every(([k,,v])=>field(d.data,k)===v) && order.every(([k])=>field(d.data,k)!==undefined));
-  docs.sort((a,b)=>{for(const [k,dir] of order){const x=field(a.data,k), y=field(b.data,k); if(x!==y)return (x<y?-1:1)*(dir==='desc'?-1:1);}return a.id<b.id?-1:a.id>b.id?1:0;});
+  docs=docs.filter(d=>where.every(([k,,v])=>field(d.data,k)===v));
+  docs.sort((a,b)=>{
+    for(const [k,dir] of order) {
+      const x=field(a.data,k), y=field(b.data,k);
+      if(x===y)continue;
+      // Claude live receipt #6911951483: absent fields last in either direction.
+      if(x===undefined || y===undefined)return x===undefined?1:-1;
+      const comparison=x===null?-1:y===null?1:x<y?-1:1;
+      return comparison*(dir==='desc'?-1:1);
+    }
+    return a.id<b.id?-1:a.id>b.id?1:0;
+  });
   return {docs:docs.slice(0,args.limit || MAX_DOCS)};
 }
 // Measured Claude browser/agent update semantics (PR #81, claude-r1):
