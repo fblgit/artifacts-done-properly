@@ -44,14 +44,20 @@
       return Object.freeze({id, exists: record.exists, revision: record.revision, metadata, data: () => copy(data)});
     }
     // Serialized poll scheduling prevents an older response overtaking a newer one.
-    function subscribe(read, next, error) {
+    function subscribe(read, next, error, signature) {
       if (typeof next !== 'function') throw new TypeError('Snapshot callback required');
-      let active = true, timer;
+      let active = true, timer, previous, failed = false;
       async function poll() {
         try {
+          // Hidden pages retain their last snapshot and resume on the next visible poll.
+          if (root.document?.hidden) return;
           const snapshot = await read();
-          if (active) next(snapshot);
+          const current = signature?.(snapshot);
+          if (active && (!signature || current !== previous || failed)) next(snapshot);
+          previous = current;
+          failed = false;
         } catch (failure) {
+          failed = true;
           if (active && typeof error === 'function') error(failure);
         } finally {
           if (active) timer = root.setTimeout(poll, interval);
@@ -83,7 +89,7 @@
           if (typeof name !== 'string' || name.includes('/')) throw new TypeError('Invalid collection ID');
           return query(value + '/' + path(name));
         },
-        onSnapshot: (next, error) => subscribe(get, next, error)});
+        onSnapshot: (next, error) => subscribe(get, next, error, s => JSON.stringify([s.exists, s.revision, s.data()]))});
     }
     function query(value, filters = [], ordering = [], count) {
       value = path(value);
@@ -158,7 +164,11 @@
       if (options.comments === true && !root.ADPOpenAISitesComments) throw new Error('Load the Sites comments adapter before connecting');
       const comments = options.comments === true ? root.ADPOpenAISitesComments.create({db,user}) : null;
       return Object.freeze({db,user,comments,agent:comments?.agent || null});
-      })();
+      })().catch(error => {
+        connection = undefined;
+        identity = null;
+        throw error;
+      });
       return connection;
     }});
   }

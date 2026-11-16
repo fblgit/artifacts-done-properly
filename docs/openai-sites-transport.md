@@ -128,9 +128,16 @@ the calling agent still follows its user's authorized scope.
 - Equality filters support JSON scalar operands; ordered fields should have
   consistent scalar types. Queries fail explicitly if a collection exceeds 1,000
   live records or 1MiB of stored JSON; no silent truncation of the source collection. Partition large
-  collections before using this experimental profile at scale.
-- Polling is not real-time push. Failure callbacks are delivered, polling resumes,
-  and subscriptions can be canceled. Writes with an unknown response must be read
+  collections before using this experimental profile at scale. This also applies to
+  `changes/`: the history panel reports “Changes could not be read” above the bound;
+  `.limit(10)` does not bypass the collection budget. Automatic archival and
+  server-side pagination are not implemented.
+- Polling is not real-time push. Each visible subscription polls independently
+  (2s default); ten listeners can make roughly five reads per second per tab.
+  Hidden pages skip reads until visible again. Unchanged document snapshots are
+  suppressed, but the first successful read after an error is delivered. Failure
+  callbacks are delivered and subscriptions can be canceled. A failed connection
+  can be retried by calling `connect()` again; page boot does not retry itself. Writes with an unknown response must be read
   back before retrying; automatic mutation retries are not implemented.
 - Native Sites comments and automatic agent wakeups are not provided by this
   transport. Anchored requests use the application-owned controller above.

@@ -214,7 +214,7 @@
             button.onclick = () => show(thread.id).catch(report); list.append(button);
           });
           callbacks.threads?.(threads.filter(t => !t.resolved));
-          if (selected && !busy) void show(selected).catch(report);
+          if (mode && selected && !busy) void show(selected).catch(report);
         }, error => { disconnected = true; status.textContent = 'Comments unavailable: ' + error.message; });
         return {
           async compose(value, target, options = {}) {
@@ -238,7 +238,10 @@
     };
     api.agent = Object.freeze({
       label: 'Codex',
-      canSend: async () => await user.id() && await user.canEdit() === true ? 'queued' : 'off',
+      async canSend() {
+        if (!await user.id()) return 'off';
+        return await user.canEdit() === true ? 'queued' : 'writers_only';
+      },
       async anchorFor(el) {
         const part = el?.closest?.('[data-part]');
         if (el?.closest?.('[data-uncommentable]')) throw new Error('This part does not accept feedback');
