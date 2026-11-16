@@ -171,6 +171,13 @@ try {
   const rid=await engine.send({text:'One kit request only',scope:{kind:'part',id:'page.header',el:part}});
   assert.equal((await second.db.collection('requests').get()).docs.length,before+1,'Kit send must not duplicate requests');
   await engine.reply(rid,'One kit reply only');assert.equal((await second.db.doc('requests/'+rid).collection('turns').get()).docs.length,1);
+  const send=withComments.agent.send;
+  const uncertainAgent={...withComments.agent,send:async message=>{globalThis.fetch=async(...args)=>{if(args[0].endsWith('/read'))throw Error('notification offline');return transport(...args);};try{return await send(message);}finally{globalThis.fetch=transport;}}};
+  const uncertainEngine=Kit.assist.start({db:second.db,user:second.user,agent:uncertainAgent,shortcut:false});await uncertainEngine.ready;
+  const unknown=await uncertainEngine.send({text:'Keep uncertain kit request',scope:{kind:'part',id:'page.header',el:part}});
+  assert.equal(uncertainEngine.delivery(unknown),'unknown');assert.equal((await second.db.doc('requests/'+unknown).get()).exists,true);
+  assert.equal((await second.db.collection('requests').get()).docs.length,before+2);
+  uncertainEngine.destroy();
 } finally {engine.destroy();}
 delete globalThis.window;delete globalThis.Kit;delete globalThis.document;
 assert.equal((await second.db.doc('decisions/keep').get()).data().intent,'Portable understanding');
