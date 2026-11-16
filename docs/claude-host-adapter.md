@@ -44,9 +44,10 @@ expressed by it today; the proposals are for the contract owners and are **not**
    `ADP.host.comments` is `true` even if the viewer later grants none (anchoring then reports
    `not registered: unavailable`). *Proposal:* let `comments` be a promise, or add a settled-later status.
 4. **Db profile is narrower than use.** The kit's assist pattern calls `doc.delete()`; the contract profile
-   lists only `get/set/update/onSnapshot` plus queries. Real Claude db operations beyond the fake and the
-   `adp.py dev` shim are UNVERIFIED. *Proposal:* list the exact operations and run one conformance suite
-   against the dev shim.
+   lists only `get/set/update/onSnapshot` plus queries. The live 0.2.96 types also give `doc.collection`,
+   `collection.add`, `query.get` and `doc.acquire` (a lease: `{holder, ttlMs, data}` to `{acquired, version,
+   expiresAt, holder}`). Nothing in this repo calls `acquire`. *Proposal:* list the exact operations and run
+   one conformance suite against the dev shim.
 5. **Kit bypasses `ADP.host`.** `store.js`, `inbox.js`, `assist.js`, `claude-lane.js`, `catalog.js`, the assistant
    template and `tester.js` call `window.claude` directly. With an explicit non-Claude provider and
    `window.claude` both present they would still reach Claude, against the no-fallback rule.
@@ -58,8 +59,26 @@ expressed by it today; the proposals are for the contract owners and are **not**
    tell which host wrote a change. *Proposal:* an additive `host` field (schema decision, not a bug fix).
 
 Two behaviour changes sit in the shared runtime on the existing Claude path, not in this adapter:
-`canEdit` now requires literal `true` (it accepted any truthy value; the real viewer's return type is
-UNVERIFIED here), and `anchors()` starts only after `db` and `user` resolve (before, in parallel).
+`canEdit` now requires literal `true` (it accepted any truthy value; the live type is `Promise<boolean>`,
+so the strict check matches the contract, though no live call was observed), and `anchors()` starts only
+after `db` and `user` resolve (before, in parallel).
+
+## Test interfaces against the live types
+
+Compared by reading the platform's `window.claude` type definitions (runtime contract 0.2.96), **not by
+calling a live viewer**. Differences in `skill/scripts/adp_dev.js` / `adp_dev.py`, the stand-in the tests
+and `adp.py dev` use:
+
+- Matches: `canSendToClaude` resolves the `available|writers_only|no_session|off` strings; publish conflicts
+  carry `paths: [{path, expected, actual}]`; `{version, shas}` results; snapshot `id/exists/data/metadata`.
+- Missing: `doc.acquire`, `artifact.publish(html)`, `artifact.edit/sync/metadata`, `PublishResult.changed`,
+  `comments.openComposer`, `user.isOwner/me/profiles`. Wrong: publish reports `invalid_argument`, which is
+  not a live error code.
+- The fakes in `tests/test_host_connection.py` are shape stubs (`doc()`/`collection()` entry points and
+  canned snapshots), deliberately not behavioural. The adapter test passes a non-boolean `canEdit` to prove
+  no coercion; the live type is boolean.
+- Behaviour the types cannot show (consent prompts, 10 s `use()` timeout, rate limits, live reload after
+  publish, snapshot ordering) is UNVERIFIED until a live viewer run.
 
 ## Agent side (not implemented here)
 
