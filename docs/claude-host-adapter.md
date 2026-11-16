@@ -84,7 +84,15 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 - Observed, errors: `db.doc()` with an odd segment count throws synchronously with no `code`; an invalid query
   operator rejects `invalid_argument`. Not observed: the stand-in's `invalid_argument` from publish; the types
   do not list it as a publish code.
-- Observed, timing: the db capability took 1.3 s to resolve; `use()` of an unknown name resolved `null` at once.
+- Observed, `doc.update` (browser and ArtifactData agree): nested objects merge recursively
+  (`{a:{x:1,y:2}}` + `{a:{y:9,z:3}}` gives `{a:{x:1,y:9,z:3}}`); arrays and scalars replace; an explicit
+  `null` is stored as `null`; `{a:{__delete__:true}}` removes `a`; a dotted key such as `'a.x'` is stored as a
+  literal key, not a path; updating a missing document rejects `invalid_argument`; `set` drops an `undefined`
+  field. `orderBy('n')` also returned a document with no `n`, so a fake must not assume Firestore's exclusion.
+- Observed, a reload's first snapshot is `fromCache: true` and can still hold documents deleted since;
+  `removed` changes correct it a moment later. `adp.js` handles `removed` for `content/` (line 141); the other
+  listeners were not checked.
+- Observed, timing: the db capability took 1.3 s to resolve cold and 4 ms warm; `use()` of an unknown name resolved `null` at once.
 - The fakes in `tests/test_host_connection.py` are shape stubs (`doc()`/`collection()` entry points and
   canned snapshots), deliberately not behavioural, and do not reproduce the snapshot sequence above.
 - Still UNVERIFIED: consent prompts, the 10 s `use()` timeout, rate limits, live reload after a successful
