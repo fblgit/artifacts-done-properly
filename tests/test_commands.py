@@ -410,6 +410,17 @@ class ProposeAckTests(Cmd):
         self.assertEqual(out['nothing'], 'work equals live')
         self.assertEqual(glob.glob(d + '.adp/propose-*'), [])
 
+    def test_a_stale_fallback_copy_does_not_revert_live_content(self):
+        d = self.exported()
+        ik = sorted(glob.glob(d + '.adp/incoming/content/*.html'))
+        self.assertTrue(ik)
+        open(ik[0], 'w').write('<p>edited natively after content.js was written</p>')      # the live content/ doc moved; DIR's fallback copy did not
+        self.edit(d)
+        kinds = lambda out: [x['id'] for x in json.load(open(out['doc']))['parts'] if x.get('kind') == 'content']
+        self.assertEqual(kinds(self.ok('propose', d, '--by', 'me', '--summary', 's')), [])
+        st = self.state(d); del st['src_copy']; self.save_state(d, st)      # an export made before the snapshot existed keeps the old behaviour
+        self.assertEqual(len(kinds(self.ok('propose', d, '--by', 'me', '--summary', 's2'))), 1)
+
     def test_proposal_doc_and_batch(self):
         d = self.exported()
         self.edit(d)

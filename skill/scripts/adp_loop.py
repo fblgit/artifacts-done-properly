@@ -293,6 +293,7 @@ def export(a):
              'live': {'version': version, 'at': A.now()},
              'docs': {f'{c}/{k}': v for c, ds in docs.items() for k, (_, v) in ds.items() if isinstance(v, int)},
              'files': {f['path']: f['sha256'] for f in files if not f['ref']}, 'refs': refs, 'base': base, 'exported_at': A.now(),
+             'src_copy': {k: A.H(h) for k, h in fragments(d).items()},      # the copy as the work tree had it at this export: propose sends only what is edited after it
              'catalog': prev.get('catalog') or {'url': A.saved_catalog() or '', 'vermap': {}},
              'incoming': {'held': [h['id'] for h in rep['held']], 'unacked': unacked, 'pending_replies': pending, 'proposed': proposed, 'acked': acked},
              'commits': {'live': lsha, 'work': merged or git(repo, 'rev-parse', 'work').stdout.strip()}}
@@ -346,6 +347,7 @@ def propose(a):
         lp = os.path.join(ad, 'incoming', 'content', k + '.html')
         lh = open(lp, encoding='utf-8').read() if os.path.isfile(lp) else None
         if lh == h or (lh is None and 'content.js' not in send): continue
+        if (st.get('src_copy') or {}).get(k) == A.H(h): continue          # not edited since the export: a stale fallback copy must not revert the live content/ doc
         parts.append({'id': k, 'kind': 'content', 'from': A.H(lh) if lh is not None else None, 'to': A.H(h), 'html': h, 'retired': False, 'reason': ''})
     files, chunks = [], []
     for x in send + rep['retired']:
@@ -425,7 +427,7 @@ def ack(a):
         if status == 'applied' and prop:
             git(repo_init(d), 'branch', '-f', 'base', prop['work'])
             v = json.load(open(pdoc)).get('applied', {}).get('version', '')
-            st['base'] = {'version': v, 'manifest': prop['manifest']}
+            st['base'] = {'version': v, 'manifest': prop['manifest']}; st['src_copy'] = {k: A.H(h) for k, h in fragments(d).items()}
             if v: st['live']['version'] = v
         inc['unacked'] = [x for x in inc.get('unacked', []) if x != pid]
         inc['acked'] = sorted(set(inc.get('acked', [])) | {pid}); done.append(f'incoming/{pid} {status}')
