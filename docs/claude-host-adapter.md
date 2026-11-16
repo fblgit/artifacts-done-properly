@@ -111,10 +111,15 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   (`none` size 0, `+new` pending, `none` pending, `~new` settled, no trailing empty snapshot inside 3 s). The
   trace pressed again straight after (run C) first replayed the earlier probe, already deleted, `fromCache` true,
   then `+new` cache and pending, then `-stale` as a server correction, `none` pending, `~new` settled. The
-  stand-in's echo and acknowledgement flags match A only, so for an empty collection it is wrong. All three
-  fit "`fromCache` is true while the viewer holds cached documents for the query", but that is three samples
-  and A's first snapshot (settled, not cache) already strains it. It is not modelled until a controlled
-  measurement separates the cases.
+  stand-in's echo and acknowledgement flags match A only, so for an empty collection it is wrong. Run D, the
+  controlled measurement (one document, `keep-1`, written to the collection first, then the trace pressed
+  once): `+C-probe` size 1 `fromCache` true, `+new` size 2 cache and pending, `-C-probe +keep-1` size 2 pending
+  (not cache), `none` pending, `~new` settled. It **refutes** "a non-empty collection gives cache-flagged echo
+  rows": D's collection was not empty and its rows after the correction were all `fromCache` false. What D and
+  C share with the earlier reload recording is that the first snapshot of a new listener is the viewer's last
+  cached result for the query (it holds documents deleted since and lacks `keep-1`, added since), corrected by
+  the server's answer one snapshot later. A's `fromCache` rows 3 and 4 remain unexplained. Four samples, one
+  per shape, so none of it is modelled beyond run A and the reload.
   **Not modelled, not measured:** updates, deletes, document-level `onSnapshot` (settled only), concurrent
   writers, the extra pending/echo steps a reload shows around the first write, and query listeners the viewer
   already has open when a write lands. The stand-in's persisted result is not the viewer's cache: it survives
