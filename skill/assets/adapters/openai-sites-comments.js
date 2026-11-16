@@ -3,6 +3,12 @@
  */
 (function (root) {
   'use strict';
+  function canonical(value) {
+    if (Array.isArray(value)) return value.map(canonical);
+    if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().map(key => [key,canonical(value[key])]));
+    return value;
+  }
+  const equal = (a,b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
   function create({db, user}) {
     const request = id => {
       if (typeof id !== 'string' || !/^[A-Za-z0-9_-]+$/.test(id)) throw new TypeError('Invalid request ID');
@@ -21,7 +27,7 @@
       try {
         const ack = await ref.set(data, {expectedRevision});
         const readback = await ref.get();
-        if (!readback.exists || readback.revision !== ack.revision || JSON.stringify(readback.data()) !== JSON.stringify(data)) {
+        if (!readback.exists || readback.revision !== ack.revision || !equal(readback.data(),data)) {
           throw new Error('Save unconfirmed');
         }
         return readback;
@@ -31,19 +37,24 @@
           error.message = 'Save outcome unknown; inspect the stored request before retrying';
           error.inspect = async () => {
             const observed = await ref.get();
-            return observed.exists && observed.revision === expectedRevision + 1 && JSON.stringify(observed.data()) === JSON.stringify(data);
+            return observed.exists && observed.revision === expectedRevision + 1 && equal(observed.data(),data);
           };
         }
         throw error;
       }
     }
     const api = {
-      async create(anchor, message) {
+      async create(anchor, message, options = {}) {
         const by = await editor();
         if (typeof anchor !== 'string' || !/^[A-Za-z][A-Za-z0-9_-]*(?::[^\s]{1,200})?$/.test(anchor)) throw new TypeError('Invalid part anchor');
         const id = 'r-' + root.crypto.randomUUID(), part = anchor.split(':')[0];
-        try { await save(request(id), {lane:'request',scope:{kind:'part',id:part},project:'',text:text(message),quote:'',by,
+        const manifest = await db.doc('manifest/current').get();
+        const hash = manifest.exists ? manifest.data().parts?.[part] : null;
+        const scope = {kind:'part',id:part,label:options.label || part};
+        if (typeof hash === 'string') scope.hash = hash;
+        try { await save(request(id), {lane:'task',scope,project:'',text:text(message),quote:'',by,
           at:new Date().toISOString(),status:'open',state:null,ackBy:'',ackAt:'',progress:[],
+          response:'',doneAt:'',changed:[],version:'',estimate:null,actual:null,
           anchor,kind:'comment',resolved:false,delivery:'queued'}, 0); }
         catch (error) { error.requestId = id; throw error; }
         return id;
@@ -62,7 +73,7 @@
           const partial = new Error('Reply saved as turn ' + tid + '; reopening request unconfirmed: ' + error.message);
           partial.inspect = async () => {
             const observed = await turns.doc(tid).get();
-            return observed.exists && JSON.stringify(observed.data()) === JSON.stringify(turn);
+            return observed.exists && equal(observed.data(),turn);
           };
           partial.recoveryMessage = 'Reply is stored; request reopening remains unconfirmed. No duplicate reply was sent.';
           throw partial;
@@ -99,13 +110,15 @@
         status.setAttribute('role', 'status');
         panel.append(heading,choose,list,transcript,label,draft,send,resolve,inspect,status);
         document.body.append(toggle,panel);
-        let mode = false, selected = null, anchor = null, busy = false, generation = 0, uncertain = null;
+        let mode = false, selected = null, anchor = null, anchorLabel = '', busy = false, generation = 0, uncertain = null;
+        let threadSignature = '', currentThreads = [];
         const pins = new Map();
         const canEdit = await user.canEdit() === true;
         send.disabled = !canEdit; resolve.disabled = !canEdit; choose.disabled = !canEdit;
         function setMode(value) {
           mode = value; panel.hidden = !mode; toggle.setAttribute('aria-expanded', String(mode));
           callbacks.mode?.(mode);
+          if (mode) callbacks.threads?.(currentThreads.filter(t => !t.resolved));
           if (!mode) { pins.forEach(p => p.remove()); pins.clear(); }
         }
         async function show(id) {
@@ -132,7 +145,7 @@
           busy = true; send.disabled = true;
           try {
             if (selected) await api.reply(selected, draft.value);
-            else if (anchor) selected = await api.create(anchor, draft.value);
+            else if (anchor) selected = await api.create(anchor, draft.value, {label:anchorLabel});
             else throw new Error('Choose a part first');
             draft.value = ''; await show(selected);
             status.textContent = 'Saved and read back. Queued for an agent; delivery is not confirmed.';
@@ -160,17 +173,22 @@
         };
         const stop = db.collection('requests').onSnapshot(snapshot => {
           const threads = snapshot.docs.map(d => ({...d.data(),id:d.id})).filter(d => d.anchor || d.scope?.kind === 'part');
+          const signature = JSON.stringify(threads);
+          // Stable nodes preserve focus while unchanged polls still report recovery.
+          if (signature === threadSignature) return;
+          threadSignature = signature;
+          threads.forEach(thread => { thread.anchor ||= thread.scope.id; });
+          currentThreads = threads;
           list.replaceChildren();
           threads.forEach(thread => {
-            thread.anchor ||= thread.scope.id;
             const button = element('button', (thread.resolved ? '✓ ' : '') + thread.anchor + ': ' + String(thread.text || '').slice(0,60));
             button.onclick = () => show(thread.id).catch(report); list.append(button);
           });
-          callbacks.threads?.(threads);
+          callbacks.threads?.(threads.filter(t => !t.resolved));
         }, error => { status.textContent = 'Comments unavailable: ' + error.message; });
         return {
           async compose(value, target, options = {}) {
-            anchor = value; selected = null; setMode(true);
+            anchor = value; anchorLabel = options.label || value; selected = null; setMode(true);
             transcript.replaceChildren(element('p', 'Part: ' + (options.label || value)));
             send.textContent = 'Save feedback'; status.textContent = 'Feedback stays attached to this part.';
             callbacks.composing?.(value); draft.focus();

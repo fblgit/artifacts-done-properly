@@ -17,6 +17,7 @@ def main():
         "/adp.js": ("skill/assets/adp.js", "text/javascript; charset=utf-8"),
         "/openai.js": ("skill/assets/adapters/openai.js", "text/javascript; charset=utf-8"),
         "/openai-sites.js": ("skill/assets/adapters/openai-sites.js", "text/javascript; charset=utf-8"),
+        "/openai-sites-comments.js": ("skill/assets/adapters/openai-sites-comments.js", "text/javascript; charset=utf-8"),
     }
     assets = {url: [mime, (ROOT / filename).read_text()] for url, (filename, mime) in files.items()}
     source = (ROOT / "skill/assets/hosts/openai-sites/worker.mjs").read_text()

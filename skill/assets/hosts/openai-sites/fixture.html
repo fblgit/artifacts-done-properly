@@ -3,9 +3,9 @@
 <h1>ADP · Sites host check</h1><p>This is a disposable transport fixture, not a production artifact editor.</p>
 <p data-part="intro">Test intent, decisions and feedback across browser and agent sessions.</p>
 <button id="read">Read saved record</button><button id="write" disabled>Save next revision</button><button id="stale" disabled>Test stale-write rejection</button>
-<pre id="output" role="status" aria-live="polite">Connecting…</pre><small>No credentials are stored in this page. Native anchored comments and cross-host import are not implemented.</small>
-<script src="/openai.js"></script><script src="/openai-sites.js"></script>
-<script>window.ADP_HOST=ADPOpenAIHost.create({profile:'sites',bridge:ADPOpenAISites.create({endpoint:'/api/adp/host-check'})});</script>
+<pre id="output" role="status" aria-live="polite">Connecting…</pre><small>Comments save anchored ADP requests here. Saving does not automatically deliver a request to an agent.</small>
+<script src="/openai.js"></script><script src="/openai-sites.js"></script><script src="/openai-sites-comments.js"></script>
+<script>window.ADP_HOST=ADPOpenAIHost.create({profile:'sites',bridge:ADPOpenAISites.create({endpoint:'/api/adp/host-check',comments:true})});</script>
 <script src="/adp.js"></script>
 <script>
 (async()=>{

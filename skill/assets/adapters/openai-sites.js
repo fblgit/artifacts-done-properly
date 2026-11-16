@@ -75,7 +75,7 @@
         }
         return request('write', payload);
       }
-      return Object.freeze({id, get, set: (data, options) => write('set', data, options),
+      return Object.freeze({id, path:value, get, set: (data, options) => write('set', data, options),
         update: (data, options) => write('update', data, options), delete: options => write('delete', undefined, options),
         collection: name => {
           if (typeof name !== 'string' || name.includes('/')) throw new TypeError('Invalid collection ID');
@@ -119,7 +119,7 @@
           await ref.set(data, {expectedRevision: 0});
           return ref;
         },
-        doc: id => { if (typeof id !== 'string' || id.includes('/')) throw new TypeError('Invalid document ID'); return doc(value + '/' + path(id)); },
+        doc: (id = root.crypto.randomUUID()) => { if (typeof id !== 'string' || id.includes('/')) throw new TypeError('Invalid document ID'); return doc(value + '/' + path(id)); },
         where(field, operator, operand) {
           if (typeof field !== 'string' || !field || operator !== '==') throw new TypeError('Only equality filters are supported');
           return query(value, [...filters, [field, operator, copy(operand)]], ordering, count);
