@@ -7,6 +7,8 @@ import copy
 import json
 import re
 
+HOST = 'sites'
+
 
 def location(artifact, path):
     if not isinstance(artifact, str) or not re.fullmatch(r'[A-Za-z0-9_-]+', artifact):
@@ -73,3 +75,78 @@ def verify(call, reply, readback):
     matched = observed['exists'] and observed['revision'] == revision and observed.get('data') == args['data']
     return {**receipt, 'status': 'verified' if matched else 'conflict',
             'revision': revision, 'observedRevision': observed['revision']}
+
+
+def read_calls(artifact, collections):
+    calls = []
+    for collection in collections:
+        location(artifact, collection + '/_')
+        calls.append({'tool': 'adp_query', 'args': {'artifact': artifact, 'path': collection}, 'collection': collection})
+    return calls
+
+
+def read_doc_calls(artifact, keys):
+    calls = []
+    for key in keys:
+        call = read_call(artifact, key)
+        calls.append({'tool': call['name'], 'args': call['arguments'], 'collection': key.rsplit('/', 1)[0], 'keys': [key]})
+    return calls
+
+
+def parse_reads(raw_results):
+    """Parse supplied read envelopes; caller must also check every requested call returned."""
+    docs, warnings = [], []
+    for envelope in raw_results:
+        call = envelope.get('call', {})
+        result = decode(envelope.get('result'))
+        collection = call.get('collection')
+        try:
+            if not collection or result.get('error') or result.get('isError'):
+                raise ValueError(result.get('error') or 'Missing read context')
+            if call.get('tool') == 'adp_read':
+                if type(result.get('exists')) is not bool:
+                    raise ValueError('Missing record existence')
+                rows = [{**result, 'id': call['args']['path'].rsplit('/', 1)[1]}]
+            elif call.get('tool') == 'adp_query' and isinstance(result.get('docs'), list):
+                rows = [{**row, 'exists': True} for row in result['docs']]
+            else:
+                raise ValueError('Incomplete Sites read')
+            batch = []
+            for row in rows:
+                location(call['args']['artifact'], collection + '/' + row['id'])
+                if type(row.get('revision')) is not int or row['revision'] < 0 or (row['exists'] and not isinstance(row.get('data'), dict)):
+                    raise ValueError('Invalid native snapshot')
+                batch.append({'collection': collection, 'id': row['id'], 'data': row.get('data'),
+                              'revision': row['revision'], 'exists': row['exists']})
+            docs.extend(batch)
+        except (ValueError, TypeError, KeyError) as error:
+            warnings.append(str(error))
+    return {'docs': docs, 'complete': bool(raw_results) and not warnings, 'warnings': warnings}
+
+
+def write_calls(artifact, ops):
+    calls = []
+    for op in ops:
+        if op.get('op') not in ('create', 'replace'):
+            raise ValueError('Sites import supports create or replace only')
+        key = op['collection'] + '/' + op['id']
+        guard = op.get('guard')
+        if op['op'] == 'create' and guard is None:
+            guard = 0  # A tombstone refuses this guard; reread it instead of resetting it.
+        native = write_call(artifact, key, op['data'], {'exists': op['op'] == 'replace', 'revision': guard})
+        calls.append({'tool': native['name'], 'args': native['arguments'], 'keys': [key], 'atomic': False,
+                      'readback': read_doc_calls(artifact, [key])[0]})
+    return calls
+
+
+def parse_receipt(raw_results):
+    receipts = []
+    for envelope in raw_results:
+        call = envelope['call']
+        args = call['args']
+        result = verify({'arguments': args}, envelope.get('result'), envelope.get('readback'))
+        collection, doc_id = args['path'].rsplit('/', 1)
+        outcome = {'verified': 'applied', 'conflict': 'rejected', 'failed': 'rejected'}.get(result['status'], 'unknown')
+        receipts.append({'collection': collection, 'id': doc_id, 'outcome': outcome,
+                         'revision': result.get('revision'), 'error': result.get('error'), 'evidence': result})
+    return receipts
