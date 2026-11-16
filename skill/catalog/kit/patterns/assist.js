@@ -37,8 +37,8 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.1.2
- * @updated   2026-11-14
+ * @version   0.1.3
+ * @updated   2026-11-16
  * @summary   The engine of a page that works with Claude: pick a block, send it as a request a watching Claude Code session does and reports on, or ask Claude at once; requests, turns, conversations and presence live in the db.
  * @tags      assist, claude, requests, sendtoclaude, sample, chat, presence, ping, block picker, shortcut, engine
  * @requires  kit.tokens, kit.dom
@@ -310,14 +310,14 @@ function start(o) {
     if (!snap.exists) throw fail('not_found', 'No request ' + rid);
     const req = snap.data() || {}, tid = nextId(rows(await ref.collection('turns').get())), tref = ref.collection('turns').doc(tid);
     await tref.set({ by: by(), at: iso(), text });
-    await ref.update({ status: 'open', state: null });
+    await ref.update({ status: 'open', state: null, ...(req.execution ? { execution: null, workGeneration: (req.workGeneration || 0) + 1 } : {}) });      // a reply ends an agent's claim (Sites' reply does the same)
     try {
       const head = 'Reply ' + parseInt(tid, 10) + ' on ' + word(req.lane).toLowerCase() + ' request ' + rid + ': ' + text + '\n\nRead the whole conversation on requests/' + rid + ' (text, response, then turns).';
       const body = commentText(head, '', rid, req.lane, req.scope, req.project);
       await H.comments.sendToClaude(tids[rid] ? { threadId: tids[rid], text: body } : { anchor: await anchorOf(req.scope), text: body });
     } catch (e) {
       tref.delete().catch(() => {});
-      ref.update({ status: req.status || 'open', state: req.state == null ? null : req.state }).catch(() => {});
+      ref.update({ status: req.status || 'open', state: req.state == null ? null : req.state, ...(req.execution ? { execution: req.execution, workGeneration: req.workGeneration == null ? null : req.workGeneration } : {}) }).catch(() => {});
       throw asErr(e);
     }
     log('Reply on ' + rid, ['requests/' + rid, 'requests/' + rid + '/turns/' + tid]);

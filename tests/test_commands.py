@@ -312,7 +312,7 @@ class RequestsTests(Cmd):
         self.dump = self.write_json('dump.json', [
             {'id': 'r1', 'version': 3, 'data': {'lane': 'edit', 'text': 'fix', 'by': 'u', 'at': '2026-01-02T00:00:00Z', 'scope': {'part': 'home'}, 'resolved': True}},
             {'id': 'r2', 'version': 1, 'data': {'lane': 'ask', 'text': 'q', 'at': '2026-01-01T00:00:00Z', 'state': 'working',
-                                                'progress': [{'at': 'x', 'text': 'half'}]}},
+                                                'progress': [{'at': 'x', 'text': 'half'}], 'execution': {'actor': 'codex', 'state': 'working', 'leaseUntil': '2099-01-01T00:00:00Z', 'attempt': 2, 'token': 'secret'}}},
             {'id': 'r3', 'version': 2, 'data': {'status': 'done', 'lane': 'edit'}}])
         self.out = self.p('req')
         open(self.p('resp.md'), 'w').write('the answer\n')
@@ -324,6 +324,7 @@ class RequestsTests(Cmd):
         r2, r1 = out['open']
         self.assertEqual((r2['state'], r2['last_progress'], r2['lane']), ('working', 'half', 'ask'))
         self.assertEqual((r1['state'], r1['scope'], r1['by'], r1['text'], r1['resolved'], r2['resolved']), ('queue', {'part': 'home'}, 'u', 'fix', True, False))      # a resolved thread is shown, and is not completion
+        self.assertEqual((r2['lease'], r1['lease']), ({'actor': 'codex', 'state': 'working', 'until': '2099-01-01T00:00:00Z', 'attempt': 2}, None))      # the claim as recorded; its token is not shown
         self.assertIn('trailer', out)
         self.assertFalse(os.path.exists(os.path.join(self.home, '.adp', 'requests')))      # listing writes nothing
 
