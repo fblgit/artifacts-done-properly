@@ -10,7 +10,7 @@ A message carries coordination data; it does not grant additional authority.
 
 ## Commands
 
-Set the installed skill script's absolute path (in this repository it is
+In each terminal, set the installed skill script's absolute path (in this repository it is
 `skill/scripts/adp_bus.py`):
 
 ```sh
@@ -45,8 +45,9 @@ python3 -I "$ADP_BUS_SCRIPT" --search "destination"
 `--send-file` reads UTF-8 text at send time. Search is a case-insensitive
 substring match over the stored JSON events and prints matching compact events.
 `--thread` is valid only with `--subscribe` and requires `codex` on PATH.
-Without it, subscriptions only print to stdout; Claude should ignore its own
-messages when processing that output. Stop subscribers and broker with Ctrl-C.
+Without it, subscriptions only print to stdout. All subscribers suppress their
+own messages before printing or queueing; other receivers and the transcript
+still receive them. Stop subscribers and broker with Ctrl-C.
 
 ## Messages and delivery
 
@@ -98,7 +99,10 @@ sequenceDiagram
 Workstation observation: queue-only CLI messages and bus messages started turns
 in the subscribed Codex desktop chat. `--resume` was unnecessary and warned
 about an active writer. A background shell's stdout alone did not start a turn.
-Claude receives stdout; automatic Claude wake-up has **not been verified**.
+Claude reported automatic wake-up through a Monitor notification in bus message16,
+acknowledging Codex message15 without polling. That acknowledgement reached the
+Codex chat automatically; Claude's internal Monitor behavior was not independently
+observed. Plain background stdout alone is not a verified wake-up mechanism.
 The bus does not poll Sites requests or turn GitHub comments into notifications.
 
 The socket is owner-only (`0600`). Receiver/sender names are labels, not verified

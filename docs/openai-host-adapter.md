@@ -73,7 +73,8 @@ Local Codex chat delivery uses the separate [ADP bus](../skill/refs/local-bus.md
 its subscriber passes prefixed events to `codex queue --thread … --message …`.
 Queue-only wake-up was observed in a desktop chat. This does not add wake-up
 capabilities to the browser bridge or hosted Sites; see the guide for setup,
-diagrams, tests and the unverified Claude background-task behavior.
+diagrams, tests and the distinction between observed Codex delivery and Claude's
+reported Monitor wake-up.
 
 ## Spaces are a separate adapter surface
 

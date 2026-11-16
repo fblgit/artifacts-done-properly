@@ -7,7 +7,8 @@ Run only on disposable data; no production migrations, public deployment or merg
 
 Agents on one workstation can use the [local bus](../skill/refs/local-bus.md)
 for timely coordination while keeping authoritative results in the PR. Codex
-queue delivery has been observed; Claude background-task wake-up is unverified.
+queue delivery has been observed; Claude reported automatic Monitor wake-up in
+a bus acknowledgement. The guide distinguishes those evidence sources.
 
 ## Claim a run
 
