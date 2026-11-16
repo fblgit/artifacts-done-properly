@@ -166,9 +166,9 @@ function start(o) {
   if (H.config && typeof H.config.define === 'function') {
     try {
       H.config.define('assist', {
-        enabled: { type: 'bool', default: true, label: 'Assist', help: 'The lane to Claude exists on the page: button, shortcut, panel.' },
+        enabled: { type: 'bool', default: true, label: 'Assist', help: 'The lane to the agent exists on the page: button, shortcut, panel.' },
         lanes: { type: 'list', default: LANES.slice(), label: 'Lanes', help: 'Which lanes the composer offers.' },
-        'ask-now': { type: 'bool', default: true, label: 'Ask now', help: 'Offer an immediate answer from Claude when the page may ask it.' },
+        'ask-now': { type: 'bool', default: true, label: 'Ask now', help: 'Offer an immediate answer from the model when the page may ask it.' },
         'presence-minutes': { type: 'enum', options: ['2', '5', '15'], default: '5', label: 'Watching window (minutes)', help: 'How fresh a session’s presence doc must be to read watching.' },
         shortcut: { type: 'text', default: 'Mod+Shift+K', label: 'Picker shortcut', help: 'The key combination that opens the block picker.' }
       });
@@ -262,7 +262,7 @@ function start(o) {
     if (H.memory || cfg('log.data-changes', true) === false) return Promise.resolve();
     return H.db.doc('changes/d-' + Date.now()).set({ version: '', at: iso(), by: by(), summary, parts: [], threads: [], data: docs.map(d => ({ doc: d })) }).catch(() => {});
   }
-  const who = () => H.agent && H.agent.label || 'Claude';
+  const who = () => H.agent && H.agent.label || 'Agent';
   const word = l => (o.words && o.words[l]) || WORDS[l] || l;
   const lanes = () => { const v = cfg('assist.lanes', LANES); return Array.isArray(v) && v.length ? v.slice() : LANES.slice(); };
   const scopeOf = s => { s = s || {}; const id = squash(s.id, 200); return { kind: s.kind || (id ? 'part' : 'page'), id, label: squash(s.label, 120), hash: String(s.hash || '') }; };
@@ -284,7 +284,7 @@ function start(o) {
   async function gate() {
     await ready;
     const v = await recheck();
-    const who = H.agent && H.agent.label || 'Claude';
+    const who = H.agent && H.agent.label || 'Agent';
     if (v !== 'available' && v !== 'queued') throw fail(v, v === 'none' ? 'This page cannot send to ' + who + ' here.' : 'Sending to ' + who + ' is not possible right now: ' + v + '.');
   }
   async function send(a) {

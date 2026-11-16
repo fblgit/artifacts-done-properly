@@ -160,7 +160,7 @@ const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts });
 })();'''
         run = run_node(['-e', script, str(ROOT)])
         out = [json.loads(x) for x in run.stdout.splitlines()]
-        self.assertEqual(out[0], ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'none: This page cannot send to Claude here.', 'none: This page cannot send to Claude here.', [True, True]], run.stderr)      # queued is sendable; words from the label; default from the page's host; a Claude-shaped comments handle is no longer taken for an agent; the stored request id goes with the send
+        self.assertEqual(out[0], ['ok', 'no_session: Sending to Codex is not possible right now: no_session.', 'ok', 'none: This page cannot send to Agent here.', 'none: This page cannot send to Agent here.', [True, True]], run.stderr)      # queued is sendable; words from the label; default from the page's host; a Claude-shaped comments handle is no longer taken for an agent; the stored request id goes with the send
         self.assertEqual(out[2], ['unknown', 1])      # an unconfirmed handoff is shown and the saved request stays
         self.assertEqual(out[1], [True, 't', '0001'])      # a reply names its stored turn, so a host with its own record does not add a second
 
@@ -172,11 +172,11 @@ const mk = () => { const a = {}, t = { attrs: a, dataset: {}, style: {}, classLi
 const doc = { createElement: () => { const e = mk(); made.push(e); return e; }, createTextNode: mk, getElementById: () => null, head: mk(), body: mk(), addEventListener: noop, removeEventListener: noop };
 const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, document: doc, addEventListener: noop, TextEncoder }; w.window = w; vm.createContext(w);
 for (const f of ['dom.js', 'patterns/assist-panel.js']) vm.runInContext(fs.readFileSync(K + f, 'utf8'), w);
-const view = () => ({ get: () => [], on: () => noop }), eng = s => ({ can: () => ({ ask: false, send: s }), requests: view, conversations: view, watch: () => noop, lanes: () => ['task'], word: l => l, presence: () => ({}), me: () => 'u' });
-console.log(JSON.stringify(['available', 'queued', 'no_session', 'off'].map(s => { made.length = 0; w.Kit.assistPanel.mount(mk(), { engine: eng(s) }); return made.find(e => e.attrs['aria-disabled'] !== undefined).attrs['aria-disabled']; })));
+const view = () => ({ get: () => [], on: () => noop }), eng = s => ({ can: () => ({ ask: false, send: s }), requests: view, conversations: view, watch: () => noop, lanes: () => ['task'], word: l => l, presence: () => ({}), me: () => 'u', agentLabel: () => 'Codex' });
+console.log(JSON.stringify(['available', 'queued', 'no_session', 'off'].map(s => { made.length = 0; w.Kit.assistPanel.mount(mk(), { engine: eng(s) }); return made.find(e => e.attrs['aria-disabled'] !== undefined).attrs['aria-disabled'] + made.some(e => e.textContent === 'Work with Codex'); })));
 process.exit(0);"""
         run = run_node(['-e', script, str(ROOT)])
-        self.assertEqual(json.loads(run.stdout), ['false', 'false', 'true', 'true'], run.stderr)      # queued enables Send, as available does; no_session and off still block
+        self.assertEqual(json.loads(run.stdout), ['falsetrue', 'falsetrue', 'truetrue', 'truetrue'], run.stderr)      # queued enables Send, as available does; no_session and off still block; the title names the host's agent
 
     def test_a_reply_ends_an_agents_claim_only_where_there_is_one(self):
         script = ASSIST_ENV + r'''

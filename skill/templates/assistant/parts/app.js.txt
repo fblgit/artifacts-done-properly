@@ -65,7 +65,7 @@ const VIEWS = {
   },
   /* /part:settings */
 };
-const TITLES = {'page.header': 'Header', 'page.lead': 'Lead', 'page.tabs': 'Views', 'page.changes': 'What changed', 'page.assist': 'Work with Claude',
+const TITLES = {'page.header': 'Header', 'page.lead': 'Lead', 'page.tabs': 'Views', 'page.changes': 'What changed', 'page.assist': 'Work with the agent',
   requests: 'Requests', 'requests.intro': 'Requests intro', 'requests.list': 'Request list',
   canvas: 'Canvas', 'canvas.intro': 'Canvas intro', 'canvas.board': 'Canvas board',
   mycatalog: 'My catalog', 'mycatalog.intro': 'My catalog intro', 'mycatalog.list': 'My catalog list',
@@ -85,6 +85,7 @@ if (window.ADP && ADP.config) {
 }
 
 let view = '', mounted = [], engine = null, panel = null;
+const WHO = () => engine && engine.agentLabel ? engine.agentLabel() : 'Agent';      // the host's agent name; Claude on Claude, Codex on Sites
 /* Assist: the engine starts once the config is read; the panel lives in page.assist (a side pane on a wide screen, a sheet on a phone). */
 const Kit0 = window.Kit || {}, A = $('#assist'), B = $('#assistBtn'), L = $('#layout'), S = $('#assistScrim');
 const hasAssist = !!(window.ADP && Kit0.assist && Kit0.assistPanel);
@@ -133,7 +134,7 @@ function mountRequests(){
   if (!box) return;
   if (!engine || !Kit.requestCard) { box.innerHTML = '<p class="muted card">' + (engine ? 'The request card kit is not installed.' : 'Requests need the assist kit, and it is not available on this page.') + '</p>'; return; }
   const cards = new Map(), empty = document.createElement('p');
-  empty.className = 'muted card'; empty.textContent = 'Nothing has been sent yet. Open Work with Claude, pick a block and say what you want.';
+  empty.className = 'muted card'; empty.textContent = 'Nothing has been sent yet. Open Work with ' + WHO() + ', pick a block and say what you want.';
   const list = engine.requests({});
   const paint = rows => {
     const ids = new Set(rows.map(r => r.id));
@@ -180,7 +181,7 @@ function mountMyCatalog(){
     if (sh) { reveal(sh.dataset.show); return; }
     if (!wk) return;
     const note = box.querySelector('.mc-note'), id = wk.dataset.work, el = document.querySelector('[data-part="' + id + '"]');
-    if (!panel) { if (note) note.textContent = 'Work with Claude is not available on this page.'; return; }
+    if (!panel) { if (note) note.textContent = 'Work with ' + WHO() + ' is not available on this page.'; return; }
     setOpen(true);
     panel.setScope({id, label: TITLES[id] || id, hash: '', quote: el ? String(el.innerText || '').trim().slice(0, 600) : ''}, true);
   });
@@ -270,13 +271,13 @@ function mountExamples(){
   let lang = (LANGS.find(l => l[2].toLowerCase() === BROWSER.code) || LANGS[0])[1];
   let cat = 'rec';
   const inCat = x => cat === 'rec' ? !!x.rec : x.cat === cat;
-  box.innerHTML = '<header class="ex-head"><h3>Try it: ask Claude</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
+  box.innerHTML = '<header class="ex-head"><h3>Try it: ask ' + WHO() + '</h3><p class="muted">Pick an idea. Its request opens in the box, ready to change: add your own details, then send.</p></header>'
     + '<div class="ex-cats" role="group" aria-label="Kinds of idea">' + CATS.map(c => `<button type="button" class="ex-cat" data-cat="${c[0]}" aria-pressed="${c[0] === cat}">${esc(c[1])}</button>`).join('') + '<button type="button" class="ex-new" data-new aria-pressed="false"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New</span></button></div>'
     + '<div class="ex-split"><ul class="ex-ideas">'
     + '</ul><form class="ex-composer"><div class="ex-ch"><span class="ex-ico"></span><b class="ex-ct"></b>'
     + '</div><div class="ex-langs" role="group" aria-label="Language" hidden>' + LANGS.map(l => `<button type="button" class="ex-lang" data-lang="${esc(l[1])}" title="${esc(l[1])}" aria-pressed="${l[1] === lang}"><span class="ex-flag" aria-hidden="true">${l[0]}</span><b>${esc(l[2])}</b></button>`).join('') + '</div>'
-    + '<label class="ex-sr" for="exText">Your request to Claude</label><textarea id="exText" maxlength="1500" rows="6"></textarea>'
-    + '<div class="ex-foot"><span class="muted ex-count"></span><span class="ex-acts"><button type="button" class="btn ex-ghost" data-reset>Start again</button><button type="submit" class="btn primary">Send to Claude</button></span></div></form></div>'
+    + '<label class="ex-sr" for="exText">Your request to ' + WHO() + '</label><textarea id="exText" maxlength="1500" rows="6"></textarea>'
+    + '<div class="ex-foot"><span class="muted ex-count"></span><span class="ex-acts"><button type="button" class="btn ex-ghost" data-reset>Start again</button><button type="submit" class="btn primary">Send to ' + WHO() + '</button></span></div></form></div>'
     + '<p class="ex-note muted" role="status" aria-live="polite"></p>';
   const note = box.querySelector('.ex-note'), form = box.querySelector('.ex-composer'), ta = form.querySelector('textarea'), cnt = form.querySelector('.ex-count'), submit = form.querySelector('button[type="submit"]');
   const ico = form.querySelector('.ex-ico'), ttl = form.querySelector('.ex-ct'), sel = form.querySelector('.ex-langs');
@@ -291,13 +292,13 @@ function mountExamples(){
     cur = id === 'new' ? NEW : IDEAS.find(x => x.id === id); if (!cur) return;
     box.querySelectorAll('.ex-idea').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
     box.querySelector('[data-new]').setAttribute('aria-pressed', String(id === 'new'));
-    ta.placeholder = id === 'new' ? 'Say what you want Claude to do: a new view, a change to a block, a fix or a question.' : '';
+    ta.placeholder = id === 'new' ? 'Say what you want ' + WHO() + ' to do: a new view, a change to a block, a fix or a question.' : '';
     ico.innerHTML = icon(cur.icon); ttl.textContent = cur.title; sel.hidden = id !== 'translate';
     original = textFor(); ta.value = original; grow(); count();
     ta.style.animation = 'none'; void ta.offsetWidth; ta.style.animation = '';
   };
-  const gate = () => { const c = engine ? engine.can() : null; ok = !!c && (c.send === 'available' || c.send === 'queued'); count();
-    note.textContent = ok ? '' : !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to Claude is not possible here right now.'; };
+  const gate = () => { const c = engine ? engine.can() : null; submit.textContent = 'Send to ' + WHO(); ok = !!c && (c.send === 'available' || c.send === 'queued'); count();
+    note.textContent = ok ? '' : !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c.send === 'no_session' ? 'Nobody is watching yet. Open Claude Code and say: watch the artifact, then this page\'s link.' : 'Sending to ' + WHO() + ' is not possible here right now.'; };
   ready.then(gate);
   const t = setInterval(() => { if (!box.isConnected) clearInterval(t); else gate(); }, 30000);
   box.addEventListener('click', e => {

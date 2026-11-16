@@ -244,7 +244,7 @@ function mount(root, opts) {
     const fresh = presence.filter(x => now - Date.parse(x.last_seen || x.at || 0) < mins * 60000);
     const line = el('div', B + 'presence');
     if (fresh.length) { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, (fresh[0].name || fresh[0].id) + ' is watching')); return line; }
-    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'A Claude session is listening: it is woken when a proposal is held or declined here.')); return line; }
+    if (canSend === 'available') { line.append(el('span', B + 'dot ' + B + 'on'), el('span', null, 'An agent session is listening: it is woken when a proposal is held or declined here.')); return line; }
     const handoff = 'watch the artifact ' + (o.url || '(this artifact\'s link)') + (requests.length ? ' — open requests: ' + requests.join(', ') : '');
     const b = el('button', B + 'btn', 'Copy the handoff'); b.type = 'button';
     b.addEventListener('click', () => { (navigator.clipboard ? navigator.clipboard.writeText(handoff) : Promise.reject()).then(() => { b.textContent = 'Copied'; }, () => { b.textContent = 'Select and copy below'; }); });

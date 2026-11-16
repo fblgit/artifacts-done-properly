@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T15:40:20Z",
+ "built": "2026-11-16T15:45:07Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -1414,8 +1414,8 @@
     {
      "path": "kit/patterns/assist-panel.js",
      "role": "script",
-     "sha256": "aac6ceb0e9a661b75c9d141be37bb6b9c3892cb73f12cd03be5acb8720b8776f",
-     "bytes": 21504
+     "sha256": "9fb4b6aca2e7985dbeb42b92ad9e8933faa2521ac6c96754a5dcda47b4572cc1",
+     "bytes": 21648
     },
     {
      "path": "kit/patterns/assist-panel.css",
@@ -1430,7 +1430,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "eb23e98beee2"
+   "hash": "6999847f7ce9"
   },
   {
    "id": "pattern.assist",
@@ -1470,8 +1470,8 @@
     {
      "path": "kit/patterns/assist.js",
      "role": "script",
-     "sha256": "fc781cfc05c43a645bd997e31ccb64d83f0fdb518a3b31953f680a2e20b4d0a6",
-     "bytes": 36155
+     "sha256": "33ca2b5bcddd9731fa1f32526d3fffae52351969449449c32b660840b36bd929",
+     "bytes": 36159
     },
     {
      "path": "kit/samples/patterns.json",
@@ -1480,7 +1480,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "0b6da1c92244"
+   "hash": "5549da571e83"
   },
   {
    "id": "pattern.attention-list",
@@ -2470,7 +2470,7 @@
     {
      "path": "kit/patterns/inbox.js",
      "role": "script",
-     "sha256": "696f2d377b5fb72dca4657780ff53aa394251718bd52db385e03c62fac8583ee",
+     "sha256": "b4a00b68af6fb735949409bd02f0ad4b70abc7d763dcfcd6df7d421fd79c7d0d",
      "bytes": 31420
     },
     {
@@ -2486,7 +2486,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "02e31d5ea45c"
+   "hash": "14d8567fcb1b"
   },
   {
    "id": "pattern.integrity",
