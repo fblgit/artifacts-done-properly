@@ -82,6 +82,10 @@ def plan(a):
     miss = [k for k in keys if k not in tgt and k not in gone] if hasattr(ad, 'read_doc_calls') else [c for c in colls if cov is not None and c not in cov]
     if miss: sys.exit(f'the read does not cover {", ".join(miss[:5])}{" ..." * (len(miss) > 5)}: read them again before planning')
     prior = tgt.get(f'imports/{sk}') or {}; base = (prior.get('data') or {}).get('records') or {}; ops, held = [], []
+    if A.opt(a, '--base'):      # a return trip: the bundle this one was derived from is the common ancestor; an import already recorded for this source wins
+        bi, bd = A.read_seed(A.opt(a, '--base'))
+        if bi.get('schema') != 'adp-seed/2': sys.exit(f"--base {A.opt(a, '--base')} is not a bundle")
+        base = {**{f'{c}/{i}': {'hash': chash(d)} for c, i, d in bd}, **base}
     for c, i, data in sorted(inc, key=lambda x: (x[:2] == ('manifest', 'current'), x[:2])):      # manifest/current is the truth marker: last, as the seed loader writes it
         k, live = f'{c}/{i}', tgt.get(f'{c}/{i}'); ih, lh, bh = chash(data), chash(live['data']) if live else None, (base.get(f'{c}/{i}') or {}).get('hash')
         cls = adp_loop.classify3(bh, lh, ih) or 'applied'

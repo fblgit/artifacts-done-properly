@@ -26,8 +26,8 @@ class BundleTests(Cmd):
 
     def ack(self, plan, text=None):      # the envelope the agent saves after running the plan's calls
         got = [{'call': c, 'result': text or ''.join(f'- set "{k.rsplit("/", 1)[0]}"/"{k.rsplit("/", 1)[1]}" (version 1)\n' for k in c['keys'])} for c in plan['calls']]
-        r = self.run_adp('import-ack', self.write_json('p.json', plan), self.write_json('r.json', got), '--host', 'claude', '--raw')
-        return r.returncode, json.loads(r.stdout)
+        r = self.run_adp('import-ack', self.write_json('p.json', plan), self.write_json('r.json', got), '--host', 'claude', '--raw', '--by', 'tester')      # --raw takes no value: what follows it is still read
+        return r.returncode, json.loads(r.stdout or '{}')
 
     def test_create_repeat_edit_conflict_and_rejected_write(self):
         src = self.src(); n = self.bundle(src, 'b1')['docs']
@@ -43,7 +43,7 @@ class BundleTests(Cmd):
         rec = ack['record'][0]['args']['writes'][0]
         self.assertEqual((rc, ack['failed'], rec['collection'], len(rec['data']['records']), ack['applied']), (0, [], 'imports', n, n))
         hist = ack['record'][0]['args']['writes'][1]      # the confirmed import also leaves one changes/ entry naming its records
-        self.assertEqual((hist['collection'], hist['doc_id'][:2], len(hist['data']['data']) - 1), ('changes', 'd-', n))
+        self.assertEqual((hist['collection'], hist['doc_id'][:2], len(hist['data']['data']) - 1, hist['data']['by']), ('changes', 'd-', n, 'tester'))
         tgt = [dict(x) for x in src] + [{'collection': 'imports', 'id': rec['doc_id'], 'data': rec['data'], 'revision': 1}]
         rc, plan = self.plan('b1', tgt)      # repeat: nothing to write
         self.assertEqual((rc, plan['counts']['skip'], plan['calls']), (0, n, []))
@@ -60,6 +60,16 @@ class BundleTests(Cmd):
         self.assertEqual((rc, plan['counts']['skip'], next(o['class'] for o in plan['ops'] if o['key'] == key)), (0, n, 'theirs'))
         rc, plan = self.plan('b2', edit(tgt, 'target'))      # both changed: held, nothing to write
         self.assertEqual((rc, plan['held'], 'calls' in plan), (2, [key], False))
+
+    def test_a_return_trip_uses_the_bundle_it_came_from_as_its_base(self):
+        src = self.src(); self.bundle(src, 'b1'); key = f"{src[0]['collection']}/{src[0]['id']}"
+        edit = [{**x, 'data': {**x['data'], 'edited': 'on sites'}} if i == 0 else x for i, x in enumerate(src)]
+        self.ok('bundle', self.write_json('e.json', edit), self.p('b2'), '--host', 'sites', '--artifact', 'shell', '--version', '4')      # the other host's export of the same records
+        rc, plan = self.plan('b2', src)      # this target never imported from that host: no base, so the changed record is held, not guessed
+        self.assertEqual((rc, plan['held']), (2, [key]))
+        r = self.run_adp('import-plan', self.p('b2'), self.p('t.json'), '--host', 'claude', '--artifact', URL, '--base', self.p('b1'))
+        plan = json.loads(r.stdout)      # with the bundle it came from as the base the edit is ours to apply: one pinned replace, the rest skipped
+        self.assertEqual((r.returncode, plan['counts']['replace'], plan['counts']['skip'], plan['calls'][0]['args']['writes'][0]['if_version']), (0, 1, plan['bundle']['docs'] - 1, 1))
 
     def test_reads_must_cover_the_plan_and_an_absent_snapshot_guards_the_create(self):
         src = self.src(); n = self.bundle(src, 'b1')['docs']
