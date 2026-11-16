@@ -69,6 +69,12 @@ revision, deployed version, and record revision independently. A merged proposal
 is not proof of deployment; a deployment failure is not proof that no data or
 schema change occurred. Reconcile uncertain outcomes before retrying.
 
+Local Codex chat delivery uses the separate [ADP bus](../skill/refs/local-bus.md):
+its subscriber passes prefixed events to `codex queue --thread … --message …`.
+Queue-only wake-up was observed in a desktop chat. This does not add wake-up
+capabilities to the browser bridge or hosted Sites; see the guide for setup,
+diagrams, tests and the unverified Claude background-task behavior.
+
 ## Spaces are a separate adapter surface
 
 Native text Pages have their own identity, block/comment anchors, guarded edits,

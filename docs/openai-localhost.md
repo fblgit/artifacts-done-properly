@@ -81,6 +81,11 @@ from a read. This localhost endpoint is usable by a local agent's HTTP tooling;
 it does not automatically install a Codex plugin or claim native tool discovery.
 Hosted Sites uses its native private plugin publication/connection flow.
 
+For local agent-to-agent coordination and delivery to an existing Codex chat,
+use the separate [local bus guide](../skill/refs/local-bus.md). It owns the
+commands, diagrams and tests. The bus does not replace this record server or
+automatically watch its records.
+
 ## Automated evidence
 
 `tests/openai_sites_localhost.mjs` starts real HTTP servers, writes through the
