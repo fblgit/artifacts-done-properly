@@ -1,7 +1,7 @@
 """`adp.py dev`: the server a page runs against, and the session side: watch (messages in) and send (batches out)."""
 import glob, hashlib, json, os, subprocess, sys, time, urllib.error, urllib.request
 
-from test_host_connection import HARNESS
+from test_host_connection import HARNESS, run_node
 from test_setup import Base
 
 SEQUENCES = r'''
@@ -93,8 +93,7 @@ class DevTests(Base):
 
     def test_stand_in_sends_the_measured_snapshot_sequences_and_the_real_consumer_converges(self):      # live traces and their limits: docs/claude-host-adapter.md
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        r = subprocess.run(['node', '-e', HARNESS.split('const mode')[0] + SEQUENCES, os.path.join(root, 'skill/assets/adp.js'), os.path.join(root, 'skill/scripts/adp_dev.js')],
-                           capture_output=True, text=True, timeout=8, start_new_session=True)
+        r = run_node(['-e', HARNESS.split('const mode')[0] + SEQUENCES, os.path.join(root, 'skill/assets/adp.js'), os.path.join(root, 'skill/scripts/adp_dev.js')])
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
     def test_update_marker_removes_a_field_and_one_with_other_keys_is_refused(self):      # both as measured on the live viewer

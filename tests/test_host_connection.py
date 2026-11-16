@@ -1,11 +1,23 @@
 """Runtime boundary tests in Node; no network or native host is assumed."""
 import json
+import os
 import shutil
+import signal
 import subprocess
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def run_node(args, cwd=None, timeout=8):
+    """node in a process group of its own: after the deadline the whole group is killed and reaped, children included"""
+    p = subprocess.Popen(['node', *args], cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
+    try: out, err = p.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(p.pid, signal.SIGKILL); p.communicate(); raise
+    return subprocess.CompletedProcess(p.args, p.returncode, out, err)
+
 HARNESS = r'''
 const fs = require('fs'), vm = require('vm');
 const calls = [], noop = () => {};
@@ -46,7 +58,7 @@ console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,
 @unittest.skipUnless(shutil.which('node'), 'node required')
 class HostConnection(unittest.TestCase):
     def run_case(self, mode):
-        run = subprocess.run(['node', '-e', HARNESS, mode, str(ROOT / 'skill/assets/adp.js')], capture_output=True, text=True, timeout=8, start_new_session=True)      # its own session, killed after 8 s
+        run = run_node(['-e', HARNESS, mode, str(ROOT / 'skill/assets/adp.js')])
         self.assertEqual(run.returncode, 0, run.stderr)
         return json.loads(run.stdout)
 
@@ -99,7 +111,7 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
   await assert.rejects((await host.connect()).comments.customAnchors({}), e => e.code === 'unavailable');
 })().catch(e => { console.error(e); process.exitCode = 1; });
 '''
-        run = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True, timeout=8, start_new_session=True)
+        run = run_node(['-e', script], cwd=ROOT)
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
 
     def test_absent_store_and_denied_user(self):
