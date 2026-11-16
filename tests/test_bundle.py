@@ -71,6 +71,8 @@ class BundleTests(Cmd):
         r = self.run_adp('import-plan', self.p('b2'), self.p('t.json'), '--host', 'claude', '--artifact', URL, '--base', self.p('b1'))
         plan = json.loads(r.stdout)      # with the bundle it came from as the base the edit is ours to apply: one pinned replace, the rest skipped
         self.assertEqual((r.returncode, plan['counts']['replace'], plan['counts']['skip'], plan['calls'][0]['args']['writes'][0]['if_version']), (0, 1, plan['bundle']['docs'] - 1, 1))
+        r = self.run_adp('import-plan', self.p('b1'), self.write_json('e.json', []), '--host', 'claude', '--artifact', URL, '--only', 'parts')      # a selective import: the rest is the other host's own, planned and held on nothing
+        self.assertEqual(({o['key'].split('/')[0] for o in json.loads(r.stdout)['ops']}, json.loads(r.stdout)['only']), ({'parts'}, ['parts']))
 
     def test_reads_must_cover_the_plan_and_an_absent_snapshot_guards_the_create(self):
         src = self.src(); n = self.bundle(src, 'b1')['docs']

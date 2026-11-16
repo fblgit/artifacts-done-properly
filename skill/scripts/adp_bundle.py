@@ -79,7 +79,9 @@ def plan(a):
     idx, inc = A.read_seed(pos[0])
     if idx.get('schema') != 'adp-seed/2' or not idx.get('source'): sys.exit(f'{pos[0]} is not a bundle (adp.py bundle writes one)')
     sk = re.sub(r'[^A-Za-z0-9_.~:@+-]+', '-', f"{idx['source']['host']}-{idx['source']['artifact']}")[:120]
-    keys, colls = [f'{c}/{i}' for c, i, _ in inc] + [f'imports/{sk}'], sorted(set(idx.get('collections') or {}) | {'imports'})
+    only = [c for c in (A.opt(a, '--only') or '').split(',') if c]      # a selective import: just these collections (first path segment); the rest stays the other host's own
+    if only: inc = [x for x in inc if x[0].split('/')[0] in only]
+    keys, colls = [f'{c}/{i}' for c, i, _ in inc] + [f'imports/{sk}'], sorted({c for c, _, _ in inc} | {'imports'})
     if len(pos) < 2: return reads(ad.read_doc_calls(art, keys) if hasattr(ad, 'read_doc_calls') else ad.read_calls(art, colls))      # named records: absence is then authoritative
     tgt, gone, cov = reads_in(a, pos[1])
     miss = [k for k in keys if k not in tgt and k not in gone] if hasattr(ad, 'read_doc_calls') else [c for c in colls if cov is not None and c not in cov]
@@ -100,7 +102,7 @@ def plan(a):
         if act == 'hold': held.append(k); op['why'] = why or 'both sides changed, or the target differs and no import was recorded'
         ops.append(op)
     out = {'schema': PLAN, 'bundle': {'id': idx['source']['id'], 'schema': idx['schema'], 'docs': len(inc), 'source': idx['source']}, 'target': {'host': ad.HOST, 'artifact': art, 'readAt': A.now()},
-           'ops': ops, 'held': held, 'counts': {n: sum(o['action'] == n for o in ops) for n in ('create', 'replace', 'skip', 'hold')},
+           'only': only, 'ops': ops, 'held': held, 'counts': {n: sum(o['action'] == n for o in ops) for n in ('create', 'replace', 'skip', 'hold')},
            'provenance': {'collection': 'imports', 'id': sk, 'guard': prior['revision'] if prior else gone.get(f'imports/{sk}'), 'exists': bool(prior), 'records': base}}
     if any(o['key'] == 'manifest/current' and o['action'] in ('create', 'replace') for o in ops):
         out['order'] = {'last': 'manifest/current', 'rule': 'run the calls in order; if an earlier call is rejected or unknown, do not run the call that writes manifest/current'}
@@ -124,7 +126,7 @@ def ack(a):
             if r and r['outcome'] == 'applied': recs[o['key']] = {'hash': o['incomingHash'], 'revision': r.get('revision')}; done.append(o['key'])
             else: failed.append({'key': o['key'], 'outcome': (r or {}).get('outcome', 'unknown'), 'error': (r or {}).get('error')})
         elif o['class'] == 'applied': recs[o['key']] = {'hash': o['incomingHash'], 'revision': None}      # observed equal at read time, not written
-    doc = {'schema': 'adp-import/1', 'source': p['bundle']['source'], 'bundle': p['bundle']['id'], 'at': A.now(), 'target': p['target'], 'records': recs}
+    doc = {'schema': 'adp-import/1', 'source': p['bundle']['source'], 'bundle': p['bundle']['id'], 'at': A.now(), 'target': p['target'], 'records': recs, **({'only': p['only']} if p.get('only') else {})}
     ops = [{'op': 'replace' if pv['exists'] else 'create', 'collection': pv['collection'], 'id': pv['id'], 'data': doc, 'guard': pv['guard']}]
     if done:      # the page's What changed panel shows it; a data change is d-<ms> (config set writes the same shape)
         ops.append({'op': 'create', 'collection': 'changes', 'id': f'd-{int(time.time() * 1000)}', 'guard': None, 'data': {'version': '', 'at': doc['at'], 'by': A.opt(a, '--by', 'adp'),

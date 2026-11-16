@@ -63,10 +63,12 @@ The loop (docs/architecture.md "The loop"; each reads what the model fetched, fr
   adp.py bundle [DOCS.json OUT_DIR] --host H --artifact ID [--version V] [--by NAME] [--collections c,ns/x/y] [--raw]
                                                     records export (docs/adp-export-import.md): DOCS.json = what the source's reads returned; without it the reads
                                                     to run (exit 2). OUT_DIR = adp-seed/2 seed.json + seed/ plus `source` and `revisions`; host adapters: adp_<host>_adapter.py
-  adp.py import-plan BUNDLE_DIR [TARGET_DOCS.json] --host H --artifact ID [--out PLAN.json] [--raw] [--base ORIGINAL_BUNDLE_DIR]
+  adp.py import-plan BUNDLE_DIR [TARGET_DOCS.json] --host H --artifact ID [--out PLAN.json] [--raw] [--base ORIGINAL_BUNDLE_DIR] [--only COLLECTION,..]
                                                     each bundle record against the target's fresh read (classify3: base = the last import's hash): create / replace /
                                                     skip / hold, the guarded write calls, exit 2 with the reads to run, or with anything held (nothing to write).
                                                     --base: a return trip (this bundle is the other host's export of records you exported): the bundle it came from is the base
+                                                    --only: plan just those collections (first path segment, so requests also covers requests/<rid>/turns); the rest is
+                                                    the other host's own (its manifest, parts, history, proposals) and is neither planned nor held; the plan and the import record name it
   adp.py import-ack PLAN.json RESULTS.json --host H [--raw]   the host's receipts -> the imports/<source> record, from confirmed outcomes only; exit 2 when one failed
   adp.py ack DIR [--result FILE | stdin] [--proposal PID]
                                                     a publish or batch result into state.json; --proposal: an applied one moves base
