@@ -93,7 +93,26 @@ controller contract: callbacks `mode`, `threads`, `reveal`, `composing`; control
 Logical `data-part` IDs remain the anchors; host-native block IDs are separate
 locators. A missing/failed comments capability disables anchoring, not the page.
 Saving a request is not equivalent to waking an agent, delivering it, or having
-it read. There is no implicit `sendToClaude`/OpenAI equivalent in this seam.
+it read. Delivery to an agent is the separate `agent` handle below, not part of `comments`.
+
+### Agent, publish and ask (optional handles)
+
+A provider may return `agent`, `publish` and `ask`, each a handle or a promise of one. A page reaches them with
+`await ADP.agent()`, `await ADP.publish()` and `await ADP.ask()`: the handle, or `null` when the host gave none, its
+shape is wrong or (on Claude) the viewer did not grant the capability. `ADP.host.agent`, `.publish` and `.ask` report
+which exist. The accessors return promises because a host may bind a capability late; shared code never probes
+`window.claude` for them.
+
+| Handle | Shape | Meaning |
+| --- | --- | --- |
+| `agent` | `{label, canSend(), send({anchor\|threadId, text}), anchorFor(el)}` | Hand a request to an agent. `label` is the name the UI shows ("Claude", "Codex"). `canSend()` answers `available` (a session is watching), `queued` (the host keeps it durably for an agent that picks it up later), `writers_only`, `no_session` or `off`. `send()` resolves `{threadId, delivery}`: `queued` (kept, read back), `accepted` (the native host took the handoff: **not** that the agent ran or finished it) or `unknown` (reconcile the same id before sending again) |
+| `publish` | `{files(files, opts)}` | The immediate native file publish (`{version, shas}`). Absent where the host has none; asynchronous approval is not forced into it |
+| `ask` | `(messages, opts) => {text, …}` | An immediate model answer from the page. Separate from `agent`: a queued agent answer is not browser sampling |
+
+Claude maps these from `comments.sendToClaude`/`canSendToClaude`/`anchorFor`, `artifact.publish` and `sample` (the adapter
+and the built-in default); a Sites adapter supplies its own `agent` and leaves `publish` and `ask` out. `ADP.claude(name)`
+and the older `comments`/`artifact`/`sample` options of `Kit.assist` and `Kit.inbox` keep working. A wake-up from the
+inbox is sent only when `canSend()` answers `available`.
 
 ## Agent-host handoff contract (design, not implemented)
 

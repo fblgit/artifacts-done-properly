@@ -41,12 +41,13 @@ The adapter stays inside `adp-host/1` as written. These Claude behaviours cannot
 expressed by it today; the proposals are for the contract owners and are **not** applied.
 
 1. **`artifact.publish`** (files map, `ifMatch`, `null` delete, all-or-nothing, `{version, shas}`,
-   `conflict` rejection with paths): no connection slot. Used by the inbox Apply, the tester
-   template and docs-to-files. *Proposal:* optional `publish` capability with a receipt of
-   source version and per-path outcomes.
-2. **Request delivery** (`comments.canSendToClaude`, `sendToClaude`, `anchorFor`): the contract has only
-   `customAnchors`, and rightly says saving is not waking an agent. Assist, inbox and
-   `claude-lane` need it. *Proposal:* optional host-neutral `notify` with delivered/queued/unknown states.
+   `conflict` rejection with paths): **now the optional `publish.files(files, opts)` handle** (`ADP.publish()`), used by
+   the inbox Apply. Still Claude-only: the tester template and docs-to-files call `claude.use('artifact')` directly.
+   A per-path receipt beyond `{version, shas}` is not in the contract.
+2. **Request delivery** (`comments.canSendToClaude`, `sendToClaude`, `anchorFor`): **now the optional `agent` handle**
+   (`ADP.agent()`: `label`, `canSend`, `send` → `{threadId, delivery}`, `anchorFor`), used by `Kit.assist` and
+   `Kit.inbox`; `sample` is the separate `ask` handle. `claude-lane` still reaches the comments handle through
+   `kit/store.js` and stays Claude-only. See `docs/host-adapters.md`.
 3. **Late-bound capabilities.** `connect()` must settle but Claude's `comments` can be slow; the runtime
    solves this with an undocumented `legacyComments` field. The adapter uses a lazy wrapper, so
    `ADP.host.comments` is `true` even if the viewer later grants none (anchoring then reports
@@ -157,11 +158,13 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 ## Claude-only handles in shared code
 
 `db` and `user` reach the kit through `ADP.db` and `ADP.user`, so an explicit host (Sites included) is honoured.
-Three handles are outside `adp-host/1` on purpose: `artifact` (publish), `comments.sendToClaude` /
-`canSendToClaude` / `anchorFor`, and `sample`. `ADP.claude(name)` is the one way shared code asks for them: it waits
-for the connection and calls `window.claude.use(name)` **only when the connected host's id is `claude`**; on any other
-host it resolves `null` without touching `window.claude`. `Kit.inbox` (its `artifact` and `comments` defaults) and the
-assistant template (`comments`, `sample`) use it; a runtime older than this accessor keeps the old direct probe. On a
+Claude's `artifact.publish`, `comments.sendToClaude` / `canSendToClaude` / `anchorFor` and `sample` reach shared
+code as the host-neutral `agent`, `publish` and `ask` handles (`ADP.agent()`, `ADP.publish()`, `ADP.ask()`; see
+`docs/host-adapters.md`): `Kit.assist`, `Kit.inbox` and the assistant template use them, and the Claude adapter and
+built-in default are the only places those Claude names are mapped. `ADP.claude(name)` stays for pages that already
+call it: it waits for the connection and calls `window.claude.use(name)` **only when the connected host's id is
+`claude`**; on any other host it resolves `null` without touching `window.claude`. The text below describes that
+accessor as first delivered; a runtime older than the new accessors keeps the old direct probe. On a
 non-Claude host the inbox disables Apply and says "Apply publishes this page's files, which only a Claude host can
 do; this host does not provide it." (it used to blame the page: "does not declare"). The assistant panel already
 says "This page cannot reach a session." and "Ask now is not available on this page."
