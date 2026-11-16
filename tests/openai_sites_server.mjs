@@ -121,13 +121,14 @@ globalThis.fetch=async(...args)=>{if(wrote && args[0].endsWith('/read')){wrote=f
 try{await feedback.create('intro','Readback recovery probe');}catch(error){unknown=error;}
 assert.equal(typeof unknown.inspect,'function');assert.equal(await unknown.inspect(),true);
 globalThis.fetch=transport;
-let notify;const nodes=[];
+let notify,notifyError;const nodes=[];
 globalThis.document={body:{append(){}},createElement(tag){const node={tag,style:{},dataset:{},children:[],setAttribute(){},append(...n){this.children.push(...n);},replaceChildren(...n){this.children=n;},remove(){},focus(){}};nodes.push(node);return node;}};
-const ui=ADPOpenAISitesComments.create({db:{...second.db,collection(){return {onSnapshot(fn){notify=fn;return ()=>{};}};}},user:second.user});
+const ui=ADPOpenAISitesComments.create({db:{...second.db,collection(){return {onSnapshot(fn,error){notify=fn;notifyError=error;return ()=>{};}};}},user:second.user});
 const controller=await ui.customAnchors({});
 const snapshot=await second.db.collection('requests').get();notify(snapshot);
 const firstButton=nodes.find(n=>n.tag==='button' && n.textContent?.includes('Keep the portable intent'));
 notify(snapshot);assert.equal(nodes.filter(n=>n.tag==='button' && n.textContent===firstButton.textContent).length,1);
+notifyError(Error('offline'));notify(snapshot);assert.ok(nodes.some(n=>n.textContent==='Comments reconnected; stored threads are current.'));
 controller.destroy();delete globalThis.document;
 assert.equal((await second.db.doc('decisions/keep').get()).data().intent,'Portable understanding');
 assert.equal((await second.db.collection('decisions').where('status','==','active').get()).docs.length,1);

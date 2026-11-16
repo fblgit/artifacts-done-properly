@@ -111,7 +111,7 @@
         panel.append(heading,choose,list,transcript,label,draft,send,resolve,inspect,status);
         document.body.append(toggle,panel);
         let mode = false, selected = null, anchor = null, anchorLabel = '', busy = false, generation = 0, uncertain = null;
-        let threadSignature = '', currentThreads = [];
+        let threadSignature = '', currentThreads = [], disconnected = false;
         const pins = new Map();
         const canEdit = await user.canEdit() === true;
         send.disabled = !canEdit; resolve.disabled = !canEdit; choose.disabled = !canEdit;
@@ -172,6 +172,10 @@
           catch (error) { report(error); }
         };
         const stop = db.collection('requests').onSnapshot(snapshot => {
+          if (disconnected) {
+            disconnected = false;
+            if (!uncertain && !busy) status.textContent = 'Comments reconnected; stored threads are current.';
+          }
           const threads = snapshot.docs.map(d => ({...d.data(),id:d.id})).filter(d => d.anchor || d.scope?.kind === 'part');
           const signature = JSON.stringify(threads);
           // Stable nodes preserve focus while unchanged polls still report recovery.
@@ -185,7 +189,7 @@
             button.onclick = () => show(thread.id).catch(report); list.append(button);
           });
           callbacks.threads?.(threads.filter(t => !t.resolved));
-        }, error => { status.textContent = 'Comments unavailable: ' + error.message; });
+        }, error => { disconnected = true; status.textContent = 'Comments unavailable: ' + error.message; });
         return {
           async compose(value, target, options = {}) {
             anchor = value; anchorLabel = options.label || value; selected = null; setMode(true);
