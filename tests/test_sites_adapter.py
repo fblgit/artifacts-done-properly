@@ -55,6 +55,7 @@ finally{await host.close();await rm(state,{recursive:true});}
         reads = adapter.read_calls('fixture', ['content'])
         result = adapter.parse_reads([{'call': reads[0], 'result': {'docs': [{'id': 'intro', 'data': {'html': 'old'}, 'revision': 7}]}}])
         self.assertTrue(result['complete'])
+        self.assertEqual(result['covered'], ['content'])
         self.assertEqual(result['docs'][0]['collection'], 'content')
         call = adapter.write_calls('fixture', [{'op': 'replace', 'collection': 'content', 'id': 'intro', 'data': {'html': 'new'}, 'guard': 7}])[0]
         self.assertFalse(call['atomic'])

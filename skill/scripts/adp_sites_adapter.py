@@ -95,7 +95,7 @@ def read_doc_calls(artifact, keys):
 
 def parse_reads(raw_results):
     """Parse supplied read envelopes; caller must also check every requested call returned."""
-    docs, warnings = [], []
+    docs, warnings, covered = [], [], []
     for envelope in raw_results:
         call = envelope.get('call', {})
         result = decode(envelope.get('result'))
@@ -119,9 +119,10 @@ def parse_reads(raw_results):
                 batch.append({'collection': collection, 'id': row['id'], 'data': row.get('data'),
                               'revision': row['revision'], 'exists': row['exists']})
             docs.extend(batch)
+            covered.extend(call.get('keys') or [collection])
         except (ValueError, TypeError, KeyError) as error:
             warnings.append(str(error))
-    return {'docs': docs, 'complete': bool(raw_results) and not warnings, 'warnings': warnings}
+    return {'docs': docs, 'complete': bool(raw_results) and not warnings, 'warnings': warnings, 'covered': covered}
 
 
 def write_calls(artifact, ops):
