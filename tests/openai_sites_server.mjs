@@ -86,6 +86,10 @@ const connect=()=>ADPOpenAIHost.create({profile:'sites',bridge:ADPOpenAISites.cr
 const first=await connect(), ref=first.db.doc('decisions/keep');
 await ref.set({intent:'Portable understanding',status:'active'},{expectedRevision:0});
 const second=await connect();
+const turns=second.db.doc('requests/r1').collection('turns');
+const added=await turns.add({text:'Portable reply'});
+assert.equal((await added.get()).data().text,'Portable reply');
+assert.equal((await turns.get()).docs[0].id,added.id);
 assert.equal((await second.db.doc('decisions/keep').get()).data().intent,'Portable understanding');
 assert.equal((await second.db.collection('decisions').where('status','==','active').get()).docs.length,1);
 const revision=(await ref.get()).revision;

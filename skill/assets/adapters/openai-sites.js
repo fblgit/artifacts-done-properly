@@ -77,6 +77,10 @@
       }
       return Object.freeze({id, get, set: (data, options) => write('set', data, options),
         update: (data, options) => write('update', data, options), delete: options => write('delete', undefined, options),
+        collection: name => {
+          if (typeof name !== 'string' || name.includes('/')) throw new TypeError('Invalid collection ID');
+          return query(value + '/' + path(name));
+        },
         onSnapshot: (next, error) => subscribe(get, next, error)});
     }
     function query(value, filters = [], ordering = [], count) {
@@ -109,6 +113,12 @@
         }, next, error);
       }
       return Object.freeze({get, onSnapshot,
+        async add(data) {
+          // A fresh ID still uses an absence guard: collisions never overwrite a record.
+          const ref = doc(value + '/' + root.crypto.randomUUID());
+          await ref.set(data, {expectedRevision: 0});
+          return ref;
+        },
         doc: id => { if (typeof id !== 'string' || id.includes('/')) throw new TypeError('Invalid document ID'); return doc(value + '/' + path(id)); },
         where(field, operator, operand) {
           if (typeof field !== 'string' || !field || operator !== '==') throw new TypeError('Only equality filters are supported');
