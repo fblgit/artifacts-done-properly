@@ -42,6 +42,7 @@ const HANDLE_OK = {agent: o => !!o && typeof o.canSend === 'function' && typeof 
 let handles = {};
 const claudeAgent = c => c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? Object.freeze({label: 'Claude', where: 'Claude Code', canSend: () => Promise.resolve(c.canSendToClaude()),
   send: async m => { const r = await c.sendToClaude(m && m.threadId ? {threadId: m.threadId, text: m.text} : {anchor: m && m.anchor, text: m && m.text}); return {threadId: (r && r.threadId) || (m && m.threadId) || '', delivery: 'accepted'}; }, anchorFor: el => Promise.resolve(c.anchorFor(el))}) : null;
+const claudeUser = u => u && typeof u.canEdit === 'function' ? Object.freeze({canEdit: () => u.canEdit(), id: () => typeof u.id === 'function' ? u.id() : '', can: n => typeof u.can === 'function' ? u.can(n) : null}) : null;      // Claude's user has id() only when the page declares the user capability
 const claudePublish = a => a && typeof a.publish === 'function' ? Object.freeze({files: (files, opts) => Promise.resolve(a.publish(files, opts))}) : null;
 const claudeAsk = s => typeof s === 'function' ? (messages, opts) => s(messages, opts) : null;      // the built-in Claude default's own copy of what adapters/claude.js builds
 async function connectHost(){
@@ -54,7 +55,7 @@ async function connectHost(){
   } else if (window.claude && typeof window.claude.use === 'function') {
     const use = name => Promise.resolve().then(() => window.claude.use(name)).catch(() => null);
     const comments = use('comments');
-    const [db, user] = await Promise.all(['db', 'user'].map(use));
+    const [db, rawUser] = await Promise.all(['db', 'user'].map(use)), user = claudeUser(rawUser);
     connection = {id: 'claude', db, user, commentsReady: comments, seedFiles: true, agent: comments.then(claudeAgent), publish: use('artifact').then(claudePublish), ask: use('sample').then(claudeAsk)};
   } else return {id: 'static'};
   if (!connection || typeof connection.id !== 'string' || !connection.id.trim()) throw new Error('Host connection needs an id');

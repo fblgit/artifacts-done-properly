@@ -17,14 +17,15 @@
         if (!claude || typeof claude.use !== 'function') throw new TypeError('Claude ADP host needs window.claude.use');
         const use = name => Promise.resolve().then(() => claude.use(name)).catch(() => null);
         const comments = use('comments');
-        const [db, user] = await Promise.all([use('db'), use('user')]);
+        const [db, rawUser] = await Promise.all([use('db'), use('user')]);
+        // Claude's user has id() only when the page declares the user capability; canEdit stays the viewer's own answer (the runtime requires literal true).
+        const user = rawUser && typeof rawUser.canEdit === 'function' ? Object.freeze({canEdit: () => rawUser.canEdit(), id: () => typeof rawUser.id === 'function' ? rawUser.id() : '', can: n => typeof rawUser.can === 'function' ? rawUser.can(n) : null}) : null;
         // connect() must settle and comments can be slow: bind them late, as the built-in default does.
         // ADP.host.comments therefore reports the interface, not that the viewer granted it.
         const late = Object.freeze({customAnchors: callbacks => comments.then(c => {
           if (!c || typeof c.customAnchors !== 'function') throw Object.assign(new Error('comments unavailable'), {code: 'unavailable'});
           return c.customAnchors(callbacks);
         })});
-        // user is passed through unchanged: canEdit stays the viewer's own answer (runtime requires literal true).
         // agent, publish and ask are the host-neutral names for comments.sendToClaude, artifact.publish and sample; each is null when the viewer did not grant that capability.
         const agent = comments.then(c => c && typeof c.sendToClaude === 'function' && typeof c.canSendToClaude === 'function' ? Object.freeze({
           label: 'Claude', where: 'Claude Code', canSend: () => Promise.resolve(c.canSendToClaude()),

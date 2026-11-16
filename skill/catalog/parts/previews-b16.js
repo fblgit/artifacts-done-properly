@@ -219,7 +219,7 @@ P['pattern.assist-panel'] = ({ samples }) => {
     const sample = (msgs, opt) => new Promise(res => { const t = d.answer; let n = 0;
       const step = () => { n = Math.min(t.length, n + 18); if (opt && opt.onText) opt.onText(t.slice(0, n)); if (n < t.length) timers.push(setTimeout(step, 40)); else res({ text: t }); }; timers.push(setTimeout(step, 400)); });
     let panel = null;
-    const engine = K().assist.start({ db: mem, user: { id: d.me }, comments: session(mem, timers), sample, titles: d.titles, shortcut: false, onPick: p => panel && panel.setScope(p, true) });
+    const engine = K().assist.start({ db: mem, user: { id: d.me }, agent: ((s) => ({ label: 'Claude', canSend: () => s.canSendToClaude(), send: m => s.sendToClaude(m), anchorFor: e => s.anchorFor(e) }))(session(mem, timers)), sample, titles: d.titles, shortcut: false, onPick: p => panel && panel.setScope(p, true) });
     panel = K().assistPanel.mount(el, { engine, titles: d.titles, me: d.me, artifactUrl: d.artifactUrl, onReveal: id => setSaid('onReveal asked to show ' + id + '.') });
     return { destroy() { timers.forEach(t => { clearTimeout(t); clearInterval(t); }); panel.destroy(); engine.destroy(); } };
   }, [d]);

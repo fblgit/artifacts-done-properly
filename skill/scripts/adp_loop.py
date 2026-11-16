@@ -293,7 +293,7 @@ def export(a):
              'live': {'version': version, 'at': A.now()},
              'docs': {f'{c}/{k}': v for c, ds in docs.items() for k, (_, v) in ds.items() if isinstance(v, int)},
              'files': {f['path']: f['sha256'] for f in files if not f['ref']}, 'refs': refs, 'base': base, 'exported_at': A.now(),
-             'src_copy': {k: A.H(h) for k, h in fragments(d).items()},      # the copy as the work tree had it at this export: propose sends only what is edited after it
+             'src_copy': {**{k: A.H(h) for k, h in fragments(d).items()}, **(prev.get('src_copy') or {})},      # the copy as the work tree first had it: propose sends only what is edited after it, so a re-export does not swallow a pending edit
              'catalog': prev.get('catalog') or {'url': A.saved_catalog() or '', 'vermap': {}},
              'incoming': {'held': [h['id'] for h in rep['held']], 'unacked': unacked, 'pending_replies': pending, 'proposed': proposed, 'acked': acked},
              'commits': {'live': lsha, 'work': merged or git(repo, 'rev-parse', 'work').stdout.strip()}}
@@ -375,7 +375,7 @@ def propose(a):
     b.w.append({'op': 'set', 'collection': 'incoming', 'doc_id': pid, 'file_path': os.path.abspath(p)})
     b.put('set', 'changes', f'd-{ms}', {'version': '', 'at': at, 'by': by, 'summary': f'Proposal {pid}: {summary}', 'parts': [], 'threads': [],
                                          'data': [{'doc': f'incoming/{pid}'}]})
-    st.setdefault('incoming', {}).setdefault('proposed', {})[pid] = {'work': wsha, 'manifest': {k: wman[k] for k in ('parts', 'files', 'parents')}}
+    st.setdefault('incoming', {}).setdefault('proposed', {})[pid] = {'work': wsha, 'manifest': {k: wman[k] for k in ('parts', 'files', 'parents')}, 'src_copy': {k: A.H(h) for k, h in frag.items()}}      # the copy as proposed: what ack makes the baseline
     save_state(d, st)
     return b.emit((), {'proposal': pid, 'doc': os.path.abspath(p), 'parts': len(parts), 'files': len(files), 'chunks': len(chunks),
                        'next': 'run the ArtifactData batch, then adp.py ack with its result; an editor applies it on the page'})
@@ -427,7 +427,7 @@ def ack(a):
         if status == 'applied' and prop:
             git(repo_init(d), 'branch', '-f', 'base', prop['work'])
             v = json.load(open(pdoc)).get('applied', {}).get('version', '')
-            st['base'] = {'version': v, 'manifest': prop['manifest']}; st['src_copy'] = {k: A.H(h) for k, h in fragments(d).items()}
+            st['base'] = {'version': v, 'manifest': prop['manifest']}; st['src_copy'] = prop.get('src_copy') or {k: A.H(h) for k, h in fragments(d).items()}      # edits made after the propose stay unsent
             if v: st['live']['version'] = v
         inc['unacked'] = [x for x in inc.get('unacked', []) if x != pid]
         inc['acked'] = sorted(set(inc.get('acked', [])) | {pid}); done.append(f'incoming/{pid} {status}')

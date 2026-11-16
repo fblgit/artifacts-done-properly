@@ -319,7 +319,7 @@ function mountExamples(){
     original = textFor(); ta.value = original; grow(); count();
     ta.style.animation = 'none'; void ta.offsetWidth; ta.style.animation = '';
   };
-  const gate = () => { const c = engine ? engine.can() : null; submit.textContent = 'Send to ' + WHO(); ok = !!c && (c.send === 'available' || c.send === 'queued'); count();
+  const gate = () => { const c = engine ? engine.can() : null; submit.textContent = 'Send to ' + WHO(); box.querySelector('.ex-head h3').textContent = 'Try it: ask ' + WHO(); box.querySelector('label.ex-sr').textContent = 'Your request to ' + WHO();      // the name is known only once the engine is up ok = !!c && (c.send === 'available' || c.send === 'queued'); count();
     note.textContent = ok ? '' : !engine ? 'Sending needs the assist kit, and it is not available on this page.' : c.send === 'writers_only' ? 'Only people who can edit this page can send a request.' : c.send === 'no_session' ? 'Nobody is watching yet. Open ' + (engine && engine.agentWhere ? engine.agentWhere() : 'your agent') + ' and say: watch the artifact, then this page\'s link.' : 'Sending to ' + WHO() + ' is not possible here right now.'; };
   ready.then(gate);
   const t = setInterval(() => { if (!box.isConnected) clearInterval(t); else gate(); }, 30000);

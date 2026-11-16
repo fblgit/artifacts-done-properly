@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T16:37:22Z",
+ "built": "2026-11-16T18:08:12Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -52,11 +52,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "de7c6796d072bf84de917e4410d0b4f6a5cdd8ecce4063972996ee48febe9d3f",
-     "bytes": 45066
+     "sha256": "253cc7d9b462773ca00a4a13f29f2120c9b57bfd743c03af5b22a5a821f112a6",
+     "bytes": 45400
     }
    ],
-   "hash": "3c53fe28adba"
+   "hash": "9f0eea375f3a"
   },
   {
    "id": "kit.callout-refusal",
@@ -259,7 +259,7 @@
    "id": "kit.claude-lane",
    "kind": "component",
    "group": "Board kit",
-   "name": "Claude lane (Claude-only: it calls comments.sendToClaude itself. A page that must also run on another host uses pattern.assist, which sends through the host's agent handle.)",
+   "name": "Claude lane",
    "summary": "Sends a request to the Claude Code session that has the page open, queues it on the board when nobody listens, and shows each request’s answer state: queued, acknowledged, working, answered.",
    "tags": [
     "claude",
@@ -289,8 +289,8 @@
     {
      "path": "kit/claude-lane.js",
      "role": "script",
-     "sha256": "a9ffed22ba77a3d90a732269bf2c11f3d689cdf32688860c29e5d73d15e29797",
-     "bytes": 12250
+     "sha256": "09a92fd4e751a344635db122bd247b76a5f8b4207e02f7fcfa099c0526f14f44",
+     "bytes": 12248
     },
     {
      "path": "kit/claude-lane.css",
@@ -305,7 +305,7 @@
      "bytes": 33634
     }
    ],
-   "hash": "c4e647d3b812"
+   "hash": "e3d9608618f0"
   },
   {
    "id": "kit.code-gate",

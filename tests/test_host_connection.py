@@ -32,6 +32,7 @@ const win = {addEventListener:noop, document:{querySelector:()=>null,getElementB
 win.window=win; win.self=win;
 const mode = process.argv[1];
 const connection = {id:'test',db,user};
+if(/user-no-id/.test(mode)) delete user.id;
 if(mode==='bad-ref') connection.db={doc:()=>({}),collection:()=>({})};
 if(mode==='no-db') delete connection.db;
 if(mode==='reject-user') connection.user={canEdit:async()=>{throw Error('no');},id:async()=>{throw Error('no');}};
@@ -39,8 +40,8 @@ if(mode==='truthy-user') connection.user={canEdit:()=> 'true',id:()=> 'viewer'};
 if(mode==='comments-error') connection.comments={customAnchors:async()=>{throw Error('no');}};
 if(mode==='handles'){connection.agent=Promise.resolve({label:'X',canSend:async()=>'queued',send:async()=>({})});connection.publish={};connection.user.can=async n=>n==='data.write';}
 const adapter=mode.startsWith('adapter');
-if(mode!=='legacy' && mode!=='legacy-slow-comments' && mode!=='static' && !adapter) win.ADP_HOST={protocol:mode==='bad-protocol'?'wrong':'adp-host/1',connect:async()=>{calls.push('explicit');if(mode==='reject')throw Error('no');return connection;}};
-if(mode==='legacy'||mode==='legacy-slow-comments'||mode==='both'||mode==='reject'||(adapter&&mode!=='adapter-no-claude'))win.claude={use:async name=>{calls.push('claude:'+name);if(/slow-comments/.test(mode)&&name==='comments')return new Promise(()=>{});return name==='db'?db:name==='user'?user:null;}};
+if(!mode.startsWith('legacy') && mode!=='static' && !adapter) win.ADP_HOST={protocol:mode==='bad-protocol'?'wrong':'adp-host/1',connect:async()=>{calls.push('explicit');if(mode==='reject')throw Error('no');return connection;}};
+if(mode.startsWith('legacy')||mode==='both'||mode==='reject'||(adapter&&mode!=='adapter-no-claude'))win.claude={use:async name=>{calls.push('claude:'+name);if(/slow-comments/.test(mode)&&name==='comments')return new Promise(()=>{});return name==='db'?db:name==='user'?user:null;}};
 vm.createContext(win);
 if(adapter){vm.runInContext(fs.readFileSync(process.argv[2].replace(/adp\.js$/, 'adapters/claude.js'),'utf8'),win);win.ADP_HOST=win.ADPClaudeHost.create();}
 if(mode==='openai'){
@@ -105,6 +106,10 @@ class HostConnection(unittest.TestCase):
         self.assertEqual(result['host']['id'], 'static')
         self.assertFalse(result['db'] or result['ns'])
 
+    def test_a_claude_user_without_id_still_connects(self):
+        for mode in ('legacy-user-no-id', 'adapter-user-no-id'):      # id() exists only when the page declares the user capability
+            self.assertEqual(self.run_case(mode)['host']['status'], 'connected', mode)
+
     def test_claude_adapter_matches_builtin_default(self):
         strip = lambda r: {**r, 'h': 0, 'calls': sorted(r['calls']), 'host': {k: v for k, v in r['host'].items() if k != 'comments'}}
         raw = self.run_case('legacy'); legacy = strip(raw)
@@ -123,7 +128,7 @@ const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id:
   let release; const slow = new Promise(r => { release = r; }), ctl = {}, cb = {};
   claude = {use: async n => n === 'db' ? db : n === 'user' ? user : slow};
   const c = await host.connect();                        // slow comments do not hold connect()
-  assert.deepEqual([c.id, c.db, c.user, c.seedFiles], ['claude', db, user, true]);
+  assert.deepEqual([c.id, c.db, await c.user.id(), c.seedFiles], ['claude', db, await user.id(), true]);      // the viewer's user is wrapped: id() falls back to '' when the page did not declare it
   assert.equal(await c.user.canEdit(), 'yes');           // never coerced into a permission
   const got = c.comments.customAnchors(cb); release({customAnchors: async x => (assert.equal(x, cb), ctl)});
   assert.equal(await got, ctl);

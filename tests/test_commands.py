@@ -421,6 +421,13 @@ class ProposeAckTests(Cmd):
         st = self.state(d); del st['src_copy']; self.save_state(d, st)      # an export made before the snapshot existed keeps the old behaviour
         self.assertEqual(len(kinds(self.ok('propose', d, '--by', 'me', '--summary', 's2'))), 1)
 
+    def test_a_pending_copy_edit_survives_a_re_export(self):
+        d = self.exported(); cj = os.path.join(d, 'content.js'); txt = open(cj).read()
+        open(cj, 'w').write(txt.replace('Replace this line', 'Replace this line NOW', 1))
+        self.ok('export', d, '--url', URL)      # a re-export before the propose must not make the edit the baseline
+        parts = json.load(open(self.ok('propose', d, '--by', 'me', '--summary', 's')['doc']))['parts']
+        self.assertIn('page.lead', [x['id'] for x in parts if x.get('kind') == 'content'])
+
     def test_proposal_doc_and_batch(self):
         d = self.exported()
         self.edit(d)
