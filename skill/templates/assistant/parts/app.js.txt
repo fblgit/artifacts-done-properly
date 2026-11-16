@@ -7,6 +7,25 @@
 const $ = s => document.querySelector(s);
 const copy = id => window.ADP ? window.ADP.content(id) : '';
 
+function mountPublishedStatus(node, db) {
+  const unavailable = () => { node.textContent = 'Last published: unavailable'; };
+  if (!db) return unavailable();
+  try {
+    return db.collection('manifest').doc('current').onSnapshot(snap => {
+      const manifest = snap.exists ? snap.data() : null;
+      const version = manifest && typeof manifest.version === 'string' ? manifest.version.trim() : '';
+      node.textContent = 'Last published: ' + (version || 'not recorded');
+    }, unavailable);
+  } catch (_) {
+    unavailable();
+  }
+}
+const published = $('#lastPublished');
+if (published && window.ADP && ADP.config) {
+  ADP.config.ready.then(() => mountPublishedStatus(published, ADP.db))
+    .catch(() => { published.textContent = 'Last published: unavailable'; });
+}
+
 const VIEWS = {
   /* part:home */
   home: {

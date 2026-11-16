@@ -111,6 +111,7 @@
     </div>
     <!-- part:page.lead --><p class="lead" data-part="page.lead" data-comment-target></p><!-- /part:page.lead -->
     <div class="top-presence" id="presence" data-assist-ui></div>
+    <p class="muted" id="lastPublished" role="status" style="overflow-wrap:anywhere">Last published: loading…</p>
   </div>
 </header>
 <!-- /part:page.header -->
