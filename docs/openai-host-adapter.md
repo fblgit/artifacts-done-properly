@@ -47,8 +47,9 @@ files packaged for the current runtime. Options are captured at creation.
 ## Sites implementation boundary
 
 A server-backed Site can supply an authenticated HTTP bridge and implement the
-record profile using durable storage. This PR does **not** include that server,
-its schema, query engine, snapshot delivery, or deployment wiring. The server
+record profile using durable storage. The factory itself does **not** include that server. The separate
+[Sites transport](openai-sites-transport.md) supplies the Worker, schema, query
+engine and polling; Site provisioning and deployment remain explicit steps. The server
 must authorize every operation, including writes attempted by read-only pages.
 The JavaScript `canEdit` result is UI gating, not a security boundary.
 
@@ -82,6 +83,8 @@ pretending that the HTML runtime's record API maps to native Page operations.
 Run `python3 -m unittest discover -s tests -p test_openai_host_adapter.py -v`.
 Coverage includes explicit setup, missing/malformed sessions, anonymous and
 strict edit permission, optional capabilities, error propagation, and profile
-selection. A real bridge still needs integration tests for server authorization,
+selection. The concrete [Sites transport](openai-sites-transport.md) now supplies a Worker/D1
+implementation and local integration tests. Live deployment remains unverified.
+A deployed bridge still needs integration tests for server authorization,
 query/snapshot behavior, identity scoping, disconnect/reconnect, concurrency,
 comment anchoring, and publication receipts before claiming production support.
