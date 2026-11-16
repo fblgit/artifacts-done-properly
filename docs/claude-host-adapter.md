@@ -154,6 +154,28 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   that is not an editor. (A write attempted `as_level: view` is blocked by the agent tool before it is sent,
   so it proves nothing; the second-account run above is the server evidence.)
 
+## Claude-only handles in shared code
+
+`db` and `user` reach the kit through `ADP.db` and `ADP.user`, so an explicit host (Sites included) is honoured.
+Three handles are outside `adp-host/1` on purpose: `artifact` (publish), `comments.sendToClaude` /
+`canSendToClaude` / `anchorFor`, and `sample`. `ADP.claude(name)` is the one way shared code asks for them: it waits
+for the connection and calls `window.claude.use(name)` **only when the connected host's id is `claude`**; on any other
+host it resolves `null` without touching `window.claude`. `Kit.inbox` (its `artifact` and `comments` defaults) and the
+assistant template (`comments`, `sample`) use it; a runtime older than this accessor keeps the old direct probe. On a
+non-Claude host the inbox disables Apply and says "Apply publishes this page's files, which only a Claude host can
+do; this host does not provide it." (it used to blame the page: "does not declare"). The assistant panel already
+says "This page cannot reach a session." and "Ask now is not available on this page."
+
+Observed with the real `adp.js` and `inbox.js` in Node on an explicit host with a `window.claude` that throws when
+touched (a throwaway script, not committed): host id `openai-sites` gave a disabled Apply row, the message above and
+no `window.claude` call; the committed code on the same host called `window.claude.use('artifact')`; host id
+`claude` still asks for `artifact` and `comments`. Not run: a browser, the assistant template mounted, Sites.
+
+**Outside this surface:** `kit/store.js` is the adp/1 board store. It connects only through `window.claude.use('db')`
+and `('user')` and says "Open this page on claude.ai" when that is absent, so a board built on it is Claude-only; it
+is not part of the adp/2 host contract and is left unchanged. `kit/templates/tester.js` is a Claude capability tester
+and is Claude-only by design.
+
 ## Agent side
 
 `skill/scripts/adp_claude_adapter.py` is the Claude half of the shared records shell. It prints ArtifactData

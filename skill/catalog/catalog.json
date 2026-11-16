@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-15T11:34:16Z",
+ "built": "2026-11-16T13:05:31Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -34,6 +34,7 @@
     "window.ADP.config",
     "window.ADP.user",
     "window.ADP.ns",
+    "window.ADP.claude",
     "window.ADP.classify",
     "window.ADP.hash",
     "window.ADP.build",
@@ -48,11 +49,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "f2bc86c97e7563e2d81bb430692fd32e953afceda823f6367f871ba52bd68b87",
-     "bytes": 42261
+     "sha256": "cc71ebc4328782e60f0526951b91f3442e97b56b98060f0b7e99edd19b958854",
+     "bytes": 42608
     }
    ],
-   "hash": "0c6e4a6f3ad8"
+   "hash": "ec1e8b118706"
   },
   {
    "id": "kit.callout-refusal",
@@ -2452,7 +2453,7 @@
     "presence"
    ],
    "status": "new",
-   "version": "0.2.1",
+   "version": "0.2.2",
    "requires": [
     "kit.tokens",
     "kit.dom"
@@ -2466,8 +2467,8 @@
     {
      "path": "kit/patterns/inbox.js",
      "role": "script",
-     "sha256": "5b8d6d9ca3f06a7b21ee77250639710142fcd33ec55ad761b6bbe5b7e1214799",
-     "bytes": 29532
+     "sha256": "c1aabfe0c1d3ca2df964d483129ebf196b3c74949bdcabe63d687c374d3e441d",
+     "bytes": 29865
     },
     {
      "path": "kit/patterns/inbox.css",
@@ -2482,7 +2483,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "3a2e4b403489"
+   "hash": "5a98386e6488"
   },
   {
    "id": "pattern.integrity",

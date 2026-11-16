@@ -38,7 +38,8 @@ vm.runInContext(fs.readFileSync(process.argv[2],'utf8'),win);
 (async()=>{await Promise.race([win.ADP.config.ready,new Promise((_,reject)=>setTimeout(()=>reject(Error('ready hung')),100))]);
 await new Promise(resolve=>setImmediate(resolve));
 let ns=false;try{ns=!!win.ADP.ns('app').doc('x');}catch(e){}
-console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,calls}));})().catch(e=>{console.error(e);process.exitCode=1;});
+const acc=typeof win.ADP.claude; if(acc==='function') await win.ADP.claude('artifact');
+console.log(JSON.stringify({host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,acc,calls}));})().catch(e=>{console.error(e);process.exitCode=1;});
 '''
 
 
@@ -54,8 +55,8 @@ class HostConnection(unittest.TestCase):
             result = self.run_case(mode)
             self.assertEqual(result['host']['status'], 'connected')
             self.assertTrue(result['db'] and result['ns'])
-            self.assertFalse(any(x.startswith('claude:') for x in result['calls']))
-            self.assertNotIn('write', result['calls'])
+            self.assertFalse(any(x.startswith('claude:') for x in result['calls']))      # ADP.claude('artifact') on a non-Claude host never reaches window.claude
+            self.assertEqual(result['acc'], 'function'); self.assertNotIn('write', result['calls'])
 
     def test_failed_provider_is_closed_and_ready(self):
         for mode in ('reject', 'bad-protocol', 'bad-ref'):
@@ -67,7 +68,7 @@ class HostConnection(unittest.TestCase):
     def test_legacy_and_static(self):
         result = self.run_case('legacy')
         self.assertEqual(result['host']['id'], 'claude')
-        self.assertEqual(sorted(result['calls']), ['claude:comments', 'claude:db', 'claude:user'])
+        self.assertEqual(sorted(result['calls']), ['claude:artifact', 'claude:comments', 'claude:db', 'claude:user'])      # on a Claude host the same accessor does ask
         self.assertEqual(self.run_case('legacy-slow-comments')['host']['status'], 'connected')
         result = self.run_case('static')
         self.assertEqual(result['host']['id'], 'static')

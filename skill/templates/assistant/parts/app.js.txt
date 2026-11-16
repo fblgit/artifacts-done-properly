@@ -95,7 +95,7 @@ function setOpen(on, focus){
   try { sessionStorage.setItem('assist-open', on ? '1' : ''); } catch (e) {}
   if (on && focus && panel) panel.focus(); else if (!on && focus) B.focus();
 }
-const claudeUse = n => (window.claude && claude.use ? Promise.resolve(claude.use(n)).catch(() => null) : Promise.resolve(null));
+const claudeUse = n => window.ADP && ADP.claude ? ADP.claude(n) : (window.claude && claude.use ? Promise.resolve(claude.use(n)).catch(() => null) : Promise.resolve(null));      // Claude-only handles: asked of window.claude only on a Claude host
 const ready = hasAssist ? ADP.config.ready.then(() => {
   engine = Kit0.assist.start({
     page: window.ADP, config: ADP.config, titles: TITLES,

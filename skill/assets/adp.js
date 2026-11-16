@@ -14,7 +14,7 @@
  * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
  * @requires  none
  * @files     none
- * @provides  window.ADP.host, window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
+ * @provides  window.ADP.host, window.ADP.page, window.ADP.content, window.ADP.config, window.ADP.user, window.ADP.ns, window.ADP.claude, window.ADP.classify, window.ADP.hash, window.ADP.build, window.ADP.integrity, window.ADP.seeded, window.ADP.db, window.ADP_CHECK, window.ADP_SEED
  * @config    <meta name="adp:build"> | the build number, before the script
  * @config    window.ADP_CONTENT | content.js: the baseline copy of the parts
  * @config    page.header, page.tabs, page.changes | parts the page must render; #wc, #wcN, #wcChanges, #wcDecisions for the panel
@@ -537,5 +537,6 @@ addEventListener('resize', () => { place(); later(); });
 
 const config = Object.freeze({define, get, all, on, set, reset, ready: readyP, get doc(){ return cdoc; }});
 const ns = name => { if (!db) throw new Error('ADP.ns needs a database'); const b = 'ns/' + name + '/'; return {doc: p => db.doc(b + p), collection: p => db.collection(b + p)}; };
-window.ADP = Object.freeze({get host(){ return host; }, build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, get db(){ return db; }});
+const claude = name => readyP.then(() => host.id === 'claude' && window.claude && typeof window.claude.use === 'function' ? window.claude.use(name) : null).catch(() => null);      // a Claude-only handle (artifact, comments.sendToClaude, sample): asked of window.claude only once the connected host is Claude, else null
+window.ADP = Object.freeze({get host(){ return host; }, build: BUILD, content, page: cfg => { PAGE = cfg; later(); }, config, user, ns, claude, classify, hash: hashText, get integrity(){ return integrity; }, get seeded(){ return seeded; }, get db(){ return db; }});
 })();
