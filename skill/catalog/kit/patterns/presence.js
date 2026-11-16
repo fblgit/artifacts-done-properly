@@ -89,7 +89,7 @@ function mount(box, opts) {
       try { navigator.clipboard.writeText(line).then(() => { live.textContent = fill(w.copied); b.textContent = 'Copied'; setTimeout(() => { b.textContent = w.copy; }, 2000); }, sel); } catch (_) { sel(); }
     });
     r.append(code, b); n.append(r);
-    if (o.engine ? o.engine.can().send === 'available' : o.queued !== false) n.append(el('p', 'kit-pr-sm', w.queued));
+    if (o.engine ? ['available', 'queued'].includes(o.engine.can().send) : o.queued !== false) n.append(el('p', 'kit-pr-sm', w.queued));
     if (o.ask) n.append(el('p', 'kit-pr-sm', w.askStill));
     return n;
   }

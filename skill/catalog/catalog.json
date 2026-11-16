@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu",
  "ver": "",
- "built": "2026-11-16T16:05:56Z",
+ "built": "2026-11-16T16:10:59Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -3003,8 +3003,8 @@
     {
      "path": "kit/patterns/presence.js",
      "role": "script",
-     "sha256": "4d8325e57d9d44b1b726f74c257ec95d42a6cee1cd98fb56d6770b8e1988b5c9",
-     "bytes": 11947
+     "sha256": "5f656732bafcaf80d79c70b3d12e93ca2f8a120a2a845a440f315678502e11b1",
+     "bytes": 11965
     },
     {
      "path": "kit/patterns/presence.css",
@@ -3019,7 +3019,7 @@
      "bytes": 148330
     }
    ],
-   "hash": "d64ecf9380b7"
+   "hash": "b2eeb687929f"
   },
   {
    "id": "pattern.prototype",
