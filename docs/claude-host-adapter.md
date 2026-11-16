@@ -96,9 +96,9 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   `hasPendingWrites: true`, then an empty-changes snapshot (`fromCache: true`), then a `modified` change for
   the doc it just added, then a settled snapshot; after a reload the first snapshot is `fromCache: true` and may
   hold documents deleted since, which later `removed` changes correct.
-  **Stand-in, modelled (query `onSnapshot` only):** a document newly `set` through the stand-in produces exactly
-  the five snapshots recorded live (`+existing`, `+new` pending, empty cache echo, `~new` from cache, settled
-  empty), and a reload produces the persisted result first (`fromCache`, stale documents included) and then the
+  **Stand-in, modelled (query `onSnapshot` only), one case:** a document newly `set` through the stand-in produces
+  exactly the five snapshots of **run A**, recorded live on a collection that already held two documents
+  (`+existing`, `+new` pending, empty cache echo, `~new` from cache, settled empty), and a reload produces the persisted result first (`fromCache`, stale documents included) and then the
   corrected one with `removed`/`added`. The persisted result is the page's `localStorage`, standing in for the
   viewer's cache, keyed by the artifact: the server sends a store identity (a hash of the folder it serves) with
   the shim, so another artifact on the same localhost origin never sees it; without an identity nothing is kept. `tests/test_dev.py` runs the real shim in Node and asserts both traces.
@@ -106,6 +106,15 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   `-b`, empty, `+b ~a`, which includes another client's churn) is fed to the real `adp.js` content watcher through
   the host contract; the part texts follow it (stale removed, `b` dropped and back). A mutation that ignores
   `removed` fails that check.
+  **Recorded later, contradicts the stand-in's flags (spec page, owner's viewer, 2026-11-16):** the same write
+  against an **empty** collection (run B) gave four snapshots and `fromCache` false throughout
+  (`none` size 0, `+new` pending, `none` pending, `~new` settled, no trailing empty snapshot inside 3 s). The
+  trace pressed again straight after (run C) first replayed the earlier probe, already deleted, `fromCache` true,
+  then `+new` cache and pending, then `-stale` as a server correction, `none` pending, `~new` settled. The
+  stand-in's echo and acknowledgement flags match A only, so for an empty collection it is wrong. All three
+  fit "`fromCache` is true while the viewer holds cached documents for the query", but that is three samples
+  and A's first snapshot (settled, not cache) already strains it. It is not modelled until a controlled
+  measurement separates the cases.
   **Not modelled, not measured:** updates, deletes, document-level `onSnapshot` (settled only), concurrent
   writers, the extra pending/echo steps a reload shows around the first write, and query listeners the viewer
   already has open when a write lands. The stand-in's persisted result is not the viewer's cache: it survives
