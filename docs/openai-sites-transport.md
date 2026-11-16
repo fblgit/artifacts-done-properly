@@ -217,6 +217,20 @@ new reply turn's native readback. These are executor-supplied receipts, not an
 independent server attestation. The agent must genuinely perform and verify each
 operation; it must not manufacture evidence merely to satisfy the planner.
 
+The shared assistant is reproducible from this repository:
+`python3 tools/build_sites_fixture.py /tmp/adp-sites-assistant --assistant --namespace sites-assistant`.
+The output directory must be empty. This builds the current branch's template,
+catalog and adapters at `/assistant/`, with the native publication-request callback;
+Site registration, storage migration and deployment remain separate hosting steps.
+
+An executor must read both `requests` and `incoming` successfully before renewing
+`presence/<executor-id>` through the authenticated adapter. Read its revision,
+write `{session, at, doing}` with that guard, then read back. `at` is the actual
+check time; `doing` names real active work and is empty when idle. Refresh presence
+and the work lease during long operations, and clear `doing` on completion.
+Never renew on a failed queue check. The existing assistant expires presence using
+`assist.presence-minutes`; do not substitute a permanent availability label.
+
 A scheduled agent can consume this workflow using the connected Site tools and
 the source lifecycle above. A queued record alone does not start an agent. The
 runner needs a verified authenticated connection, an authorized scope and a live

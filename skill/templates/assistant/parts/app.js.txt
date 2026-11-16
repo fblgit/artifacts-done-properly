@@ -104,6 +104,10 @@ const ready = hasAssist ? ADP.config.ready.then(() => {
   });
   return engine.ready;
 }).then(() => {
+  const label = 'Work with ' + WHO();
+  B.querySelector('span').textContent = label;
+  A.setAttribute('aria-label', label);
+  $('#assistClose').setAttribute('aria-label', 'Close ' + label);
   const body = $('#assistBody');
   panel = Kit0.assistPanel.mount(body, {engine, titles: TITLES, me: engine.me(), onReveal: reveal});
   Kit0.presence.mount($('#presence'), {engine, compact: true, canPing: false, ask: engine.can().ask});

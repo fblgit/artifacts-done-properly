@@ -5,6 +5,8 @@ from pathlib import Path
 import shutil
 import subprocess
 import unittest
+import tempfile
+import sys
 
 spec = importlib.util.spec_from_file_location('sites_adapter', Path(__file__).resolve().parents[1] / 'skill/scripts/adp_sites_adapter.py')
 adapter = importlib.util.module_from_spec(spec)
@@ -12,6 +14,17 @@ spec.loader.exec_module(adapter)
 
 
 class SitesAdapter(unittest.TestCase):
+    def test_assistant_fixture_uses_shared_kit_and_native_sites_routes(self):
+        with tempfile.TemporaryDirectory() as output:
+            root = Path(__file__).resolve().parents[1]
+            subprocess.run([sys.executable, str(root / 'tools/build_sites_fixture.py'), output, '--assistant', '--namespace', 'assistant-test'], check=True, capture_output=True, timeout=8)
+            worker = (Path(output) / 'dist/server/index.js').read_text()
+            assets = json.loads(worker.split('const assets = ', 1)[1].split(';\n', 1)[0])
+            self.assertEqual(assets['/assistant/'], assets['/assistant/index.html'])
+            self.assertIn('/api/adp/assistant-test', assets['/assistant/'][1])
+            self.assertEqual(assets['/assistant/kit/patterns/request-card.js'][1], (root / 'skill/catalog/kit/patterns/request-card.js').read_text())
+            self.assertIn('host.comments.requestPublication(pid)', assets['/assistant/parts/app.js'][1])
+
     @unittest.skipUnless(shutil.which('node'), 'Node SQLite required')
     def test_calls_through_real_localhost_worker(self):
         call = adapter.write_calls('fixture', [{'op': 'create', 'collection': 'content', 'id': 'intro', 'data': {'html': 'portable', 'opaque': [1, 2]}, 'guard': None}])[0]
