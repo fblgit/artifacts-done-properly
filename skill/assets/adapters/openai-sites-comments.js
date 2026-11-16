@@ -236,6 +236,43 @@
         };
       }
     };
+    api.agent = Object.freeze({
+      label: 'Codex',
+      canSend: async () => await user.id() && await user.canEdit() === true ? 'queued' : 'off',
+      async anchorFor(el) {
+        const part = el?.closest?.('[data-part]');
+        if (el?.closest?.('[data-uncommentable]')) throw new Error('This part does not accept feedback');
+        const key = el?.closest?.('[data-part-key]');
+        return part ? part.dataset.part + (key && part.contains(key) ? ':' + key.dataset.partKey : '') : 'page';
+      },
+      async send(message = {}) {
+        await editor();
+        let id = message.requestId || message.threadId;
+        try {
+          if (message.requestId) {
+            // Shared kit already persisted the request/turn: never duplicate it.
+            const ref = request(id), before = await ref.get();
+            if (!before.exists) throw new Error('Request no longer exists');
+            if (message.turnId) {
+              if (!/^[0-9]+$/.test(message.turnId)) throw new TypeError('Invalid reply turn ID');
+              if (!(await ref.collection('turns').doc(message.turnId).get()).exists) throw new Error('Reply is not stored');
+            }
+            if (before.data().status !== 'open') throw new Error('Only open requests can be queued');
+            await save(ref, {...before.data(),delivery:'queued'}, before.revision);
+          } else if (id) await api.reply(id, message.text);
+          else id = await api.create(message.anchor, message.text);
+          return {threadId:id,delivery:'queued'};
+        } catch (error) {
+          id ||= error.requestId;
+          if (!id || typeof error.inspect !== 'function') throw error;
+          // Reconcile the original ID; an unknown outcome must not create a retry.
+          try {
+            if (!error.recoveryMessage && await error.inspect()) return {threadId:id,delivery:'queued'};
+          } catch (_) { /* The original outcome remains unknown. */ }
+          return {threadId:id,delivery:'unknown'};
+        }
+      }
+    });
     return Object.freeze(api);
   }
   root.ADPOpenAISitesComments = Object.freeze({create});

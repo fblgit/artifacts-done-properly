@@ -171,6 +171,16 @@ The inbox's disabled Apply button is not a successful publication receipt.
 
 ## Agent feedback and publication
 
+With comments enabled, the Sites bridge supplies a host-neutral agent handle:
+`label: 'Codex'`, `canSend()` returns `queued` for editors and `off` otherwise,
+and `send()` reuses anchored request/reply writes with authoritative readback.
+It returns `{threadId, delivery: 'queued'|'unknown'}`; unknown outcomes retain
+the original ID for inspection. Optional `requestId`/`turnId` identify work the
+shared kit already persisted, so notification never creates a duplicate request
+or reply. Immediate `publish` and `ask` handles remain absent. These handle
+paths have local Worker/SQLite evidence; live deployment verification follows
+the shared runtime/kit integration.
+
 `adp.py work` operates on existing `requests/ID` and `incoming/ID` records through
 the selected native adapter. With no read file it prints the reads to perform;
 pass their envelopes with `--raw`. It emits guarded calls, never executes them:

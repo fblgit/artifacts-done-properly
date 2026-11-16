@@ -67,6 +67,7 @@
         });
         return Object.freeze({id: 'openai-' + profile, db: db || null, user,
           comments: comments || null,
+          agent: session.agent || null,
           // Native Page visualizations cannot fetch seed packs. Sites/preview
           // may opt in only when the integrator packaged same-origin files.
           seedFiles});

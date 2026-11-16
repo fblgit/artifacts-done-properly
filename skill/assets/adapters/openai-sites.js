@@ -157,7 +157,7 @@
         });
       if (options.comments === true && !root.ADPOpenAISitesComments) throw new Error('Load the Sites comments adapter before connecting');
       const comments = options.comments === true ? root.ADPOpenAISitesComments.create({db,user}) : null;
-      return Object.freeze({db,user,comments});
+      return Object.freeze({db,user,comments,agent:comments?.agent || null});
       })();
       return connection;
     }});
