@@ -5,6 +5,8 @@ The iteration ends. The value stays.
 
 Your next project starts further ahead.
 
+**Try it:** [ADP: Catalog v2.1.1](https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ) · [ADP: Assistant v2.1.1](https://claude.ai/artifact/F42c7ZcRDKptdaTA5TAqZB) (claude.ai artifacts; the owner shares them for view).
+
 ## 01 / Bring it in: give good work a home
 
 Bring interfaces, records, and artifacts into a project with your agents. Make the useful parts discoverable instead of burying them in a chat.
