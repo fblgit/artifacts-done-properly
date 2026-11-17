@@ -49,7 +49,7 @@ assert.equal((await req('/api/adp/demo/read','POST')).status,401);"""
                 self.assertNotEqual(run(*args).returncode,0)
             (assets / 'escape.txt').symlink_to(manifest)
             self.assertNotEqual(run('--host','sites','--out',str(project)).returncode,0)
-            builder_spec = importlib.util.spec_from_file_location('sites_build', cli.with_name('adp_sites_build.py'))
+            builder_spec = importlib.util.spec_from_file_location('sites_build', cli.with_name('adp_host_build.py'))
             builder = importlib.util.module_from_spec(builder_spec); builder_spec.loader.exec_module(builder)
             for files in [{'kit/x.js': {'url':'catalog','path':'x.js'}}, {'../secret.txt':'../secret.txt'}]:
                 with self.assertRaises(ValueError): builder.build(assets, project, {'files':files})

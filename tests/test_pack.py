@@ -1,4 +1,4 @@
-"""`adp.py pack` / `unpack`: one self-contained index.html that unpacks byte for byte."""
+"""`adp.py files --host single` / `unpack`: one self-contained index.html that unpacks byte for byte."""
 import json, os, re, subprocess, sys, tempfile, unittest
 
 ADP = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill', 'scripts', 'adp.py')
@@ -22,7 +22,7 @@ class Pack(unittest.TestCase):
 
     def pack(self, *flags):
         out = os.path.join(self.t.name, 'one.html')
-        r = self.run_adp('pack', self.src, '--out', out, *flags); self.assertEqual(r.returncode, 0, r.stderr)
+        r = self.run_adp('files', self.src, '--host', 'single', '--out', out, *flags); self.assertEqual(r.returncode, 0, r.stderr)
         with open(out, encoding='utf-8', newline='') as f: return out, f.read(), json.loads(r.stdout)
 
     def test_round_trip_is_byte_identical(self):

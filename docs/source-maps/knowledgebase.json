@@ -103,7 +103,7 @@
         "skill/scripts/adp_sites_dev.mjs",
         "tools/package.py",
         "skill/scripts/adp_bus.py",
-        "skill/scripts/adp_sites_build.py",
+        "skill/scripts/adp_host_build.py",
         "skill/scripts/adp_dev.py",
         "skill/scripts/adp_dev.js",
         "docs/assist.md",

@@ -15,7 +15,8 @@
   adp.py source-drift MAP.json --repo DIR [--head REF] [--format json|markdown|coverage] [--out FILE] [--strict]
                                                     committed source changes grouped by mapped sections; no network or model calls,
                                                     exit 1 on invalid/unavailable evidence; --strict exits 2 when review is needed
-  adp.py pack DIR [--out index.html] [--fragment]   DIR as ONE self-contained index.html: every file embedded; relative scripts, styles and fetches served by a small shim
+  adp.py files DIR --host single [--out index.html] [--fragment]
+                                                    DIR as ONE self-contained index.html: every file embedded; relative scripts, styles and fetches served by a small shim
                                                     (no blob:, eval or modules); --fragment omits doctype/html/head/body, for the Artifact tool (it adds them)
   adp.py unpack index.html DEST                     the files back, byte for byte (sha256 checked); DEST must be new or empty
 
@@ -1466,18 +1467,15 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop, adp_dev, adp_lib, adp_bundle, adp_work
+import adp_loop, adp_dev, adp_lib, adp_bundle, adp_work, adp_host_build
 adp_loop.A = adp_dev.A = adp_bundle.A = adp_work.A = sys.modules[__name__]
 
 
 def main(a):
-    if a[:1] in (['pack'], ['unpack']):
-        import adp_pack
-        return adp_pack.main(a)
     if a[:1] == ['source-drift']:
         import adp_source_drift
         return adp_source_drift.main(a)
-    cmds = {'work': adp_work.work, 'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
+    cmds = {'work': adp_work.work, 'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main, 'unpack': adp_host_build.unpack_cmd}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):
@@ -1485,13 +1483,13 @@ def main(a):
         return 0
     if len(a) >= 2 and a[0] == 'files':
         host = opt(a, '--host', 'claude')
-        if host not in ('claude', 'sites'): raise ValueError('Unknown files host: ' + host)
+        if host not in ('claude', 'sites', 'single'): raise ValueError('Unknown files host: ' + host)
+        if host == 'single': return emit(adp_host_build.pack_cmd(a[1], opt(a, '--out'), '--fragment' in a))
         if host == 'sites':
-            import adp_sites_build
             where = opt(a, '--out')
             if not where or '--since' in a or '--batch' in a:
                 raise ValueError('Sites requires --out PROJECT_DIR and a full snapshot (no --since/--batch)')
-            return emit(adp_sites_build.build(a[1], where, add_kit_refs(publish_args(a[1]), a[1])))
+            return emit(adp_host_build.build(a[1], where, add_kit_refs(publish_args(a[1]), a[1])))
         since = opt(a, '--since'); n = int(opt(a, '--batch', LIMIT)); where = opt(a, '--out', a[1].rstrip('/') + '.adp')
         fresh = os.path.isfile(os.path.join(a[1], SEED)) and seed_file(a[1])    # edits after `new` change the hashes the seed carries
         if not since: return emit(batched(add_kit_refs(publish_args(a[1]), a[1]), a[1], n, where))
