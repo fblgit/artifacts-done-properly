@@ -10,6 +10,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / 'skill/scripts'))
+from adp_sites_build import render_worker
 
 
 def assistant(output, namespace):
@@ -41,7 +43,7 @@ def assistant(output, namespace):
             'Kit.inbox.mount(ib, {requestPublish: pid => window.ADP_HOST.connect().then(host => host.comments.requestPublication(pid))})'))
         subprocess.run(command + ["seed", str(directory), "--by", "sites-builder"], env=env, check=True, capture_output=True)
     assets = {"/assistant/" + p.relative_to(directory).as_posix():
-              [mimetypes.guess_type(p.name)[0] or "text/plain", p.read_text()]
+              [mimetypes.guess_type(p.name)[0] or "text/plain", p.read_bytes()]
               for p in directory.rglob("*") if p.is_file()}
     assets["/assistant/"] = assets["/assistant/index.html"]
     return assets
@@ -64,21 +66,12 @@ def main():
         "/openai-sites.js": ("skill/assets/adapters/openai-sites.js", "text/javascript; charset=utf-8"),
         "/openai-sites-comments.js": ("skill/assets/adapters/openai-sites-comments.js", "text/javascript; charset=utf-8"),
     }
-    assets = {url: [mime, (ROOT / filename).read_text()] for url, (filename, mime) in files.items()}
+    assets = {url: [mime, (ROOT / filename).read_bytes()] for url, (filename, mime) in files.items()}
     if args.assistant:
         assets.update(assistant(args.output, args.namespace))
-    source = (ROOT / "skill/assets/hosts/openai-sites/worker.mjs").read_text()
-    source = source.replace("export default {", "const api = {")
-    source += "\nconst assets = " + json.dumps(assets) + ";\n"
-    source += """export default {async fetch(request, env) {
- const asset=assets[new URL(request.url).pathname];
- if(asset && request.method==='GET')return new Response(asset[1],{headers:{'Content-Type':asset[0],'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
- return api.fetch(request,env);
-}};
-"""
     target = args.output / "dist/server/index.js"
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(source)
+    target.write_text(render_worker(assets))
     (args.output / "schema.sql").write_text((ROOT / "skill/assets/hosts/openai-sites/schema.sql").read_text())
     print(target)
 

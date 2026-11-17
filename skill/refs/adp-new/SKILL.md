@@ -1,11 +1,15 @@
 ---
 name: adp-new
-description: Create a brand new claude.ai Artifact on ADP (adp/2): a page, board, tracker, assistant or record page that people and Claude will keep editing. Load it whenever the user asks for a new artifact that should be shared, commented on, built from catalog parts or edited by more than one agent, before writing any HTML. Covers the starter and assistant templates, taking a theme from the catalog, the first publish, and the one-time editor open that seeds the database.
+description: Create a brand new Claude Artifact or Sites page on ADP (adp/2): a page, board, tracker, assistant or record page that people and Claude will keep editing. Load it whenever the user asks for a new artifact that should be shared, commented on, built from catalog parts or edited by more than one agent, before writing any HTML. Covers the starter and assistant templates, taking a theme from the catalog, the first publish, and the one-time editor open that seeds the database.
 metadata:
   version: "2.0.0"
 ---
 
 # New ADP artifact
+
+**Sites host:** read the base ADP skill's `refs/sites.md` first. Use the shared
+scaffolds and catalog below, then that guide's native Sites build/publication and
+record workflow instead of the Claude-only publish/seeding steps here.
 
 Start on adp/2, not a single index.html: a one-file page cannot give per-file hashes, content as data or part-id comment anchors.
 
