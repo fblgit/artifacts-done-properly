@@ -88,7 +88,7 @@ It ranks entries by how well they match on tags, name, summary and what they pro
 
 **Refinement becomes an investment.** When a component has been through rounds of refinement, that work does not have to stay in one page. Once it is in the catalog, the next page takes it by reference and starts from your best version, across pages and projects.
 
-Not there yet: the full template tier (`adp.py new --tier full`) and a command to add catalog entries. For now, an entry is added by editing files under `catalog/kit/` and then running `adp_catalog.py build`.
+Not there yet: `adp.py new --tier full`, the tier meant to start a page from the published catalog (it exits with "not available yet"), and a command to add catalog entries. For now, an entry is added by editing files under `catalog/kit/` and then running `adp_catalog.py build`.
 
 ## Journeys
 
