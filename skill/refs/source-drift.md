@@ -67,20 +67,23 @@ deployment evidence. The report retains the map's `basis` qualification.
 
 ## Coverage payload for a page
 
-`--format coverage` emits `adp-source-coverage/1`: section IDs/titles, reviewed and
-checked commits, per-source paths/statuses/changes, summary counts and unmapped
-files. Serve this as a normal JSON asset. A last-page coverage map can render it
+`--format coverage` emits `adp-source-coverage/1`: the full tracked-file inventory,
+chapter mappings, reviewed/checked commits, per-source statuses/changes, file and
+chapter counts, and every unmapped file, including unchanged files. Serve it as a
+normal JSON asset. A last-page coverage map can render it
 with the catalog's `pattern.expand-card` using custom states and one dimension.
 
-- **Healthy:** mapped sources exist and are unchanged from the review pin.
-- **Stale:** mapped sources changed; the chapter needs review.
-- **Missing:** a source/mapping or review evidence is absent/unavailable. Changed
-  files with no chapter mapping appear in a separate missing-coverage list.
+- **Healthy:** a tracked file has a chapter mapping and is unchanged from its review pin.
+- **Stale:** a mapped source changed; its chapter needs review. A removed mapped
+  source makes the chapter stale because its documentation still refers to it.
+- **Missing:** a tracked repository file has no chapter mapping, whether or not it changed.
 
-Missing outranks stale, then healthy. Coverage mode keeps missing section pins and
-dependencies visible instead of aborting the whole section map; malformed inputs
-or unavailable global history emit a missing/error payload and exit 1. An absent
-or invalid fetched payload must display missing, never healthy. The payload is a
+`files[]` carries path, status and owning chapter IDs; `missingFiles` lists every
+uncovered tracked path. `summary` counts files; `chapterSummary` counts chapters.
+Missing outranks stale, then healthy. Invalid mappings or unavailable review
+history emit an error payload and exit 1: unavailable evidence is an error,
+not missing KB coverage. An absent/invalid fetched payload must show an unavailable
+message and no healthy verdict. The payload is a
 snapshot of its checked commit; republish or refresh it after repository updates
 to change the Site's display. CI emits `*.coverage.json` beside the drift report;
 deployment uses the Site's existing guarded source-publication workflow.

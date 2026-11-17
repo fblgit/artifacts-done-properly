@@ -95,25 +95,37 @@ def report(mapping, repo, head, coverage=False):
 
 
 def coverage_payload(data, repo):
-    """Portable page data: missing outranks stale, which outranks healthy."""
+    """Coverage of the entire tracked inventory, not just changed files."""
     if data['status'] == 'error':
-        return {**data, 'schema': 'adp-source-coverage/1', 'status': 'missing', 'sections': []}
+        return {**data, 'schema': 'adp-source-coverage/1', 'sections': []}
     files = git(repo, 'ls-tree', '-r', '-z', '--name-only', data['head']).rstrip('\0').split('\0')
     sections = []
     for section in data['sections']:
+        if section.get('reason') or not section['sources']:
+            raise ValueError(section.get('reason') or 'Section has no review mapping: ' + section['id'])
         sources = []
         for path in section['sources']:
             changed = [c for c in section['changes'] if matches(c['path'], [path])]
-            absent = section.get('reason') or path in section.get('missingSources', []) or not any(matches(p, [path]) for p in files)
-            state = 'missing' if absent else 'stale' if changed else 'healthy'
+            exists = any(matches(p, [path]) for p in files)
+            if path in section.get('missingSources', []) and not exists:
+                raise ValueError('Mapped source exists in neither snapshot: ' + path)
+            state = 'stale' if changed or not exists else 'healthy'
             sources.append({'path': path, 'status': state, 'changes': changed})
-        state = 'missing' if not sources or any(s['status'] == 'missing' for s in sources) else 'stale' if any(s['status'] == 'stale' for s in sources) else 'healthy'
+        state = 'stale' if any(s['status'] == 'stale' for s in sources) else 'healthy'
         sections.append({**section, 'status': state, 'sources': sources})
-    counts = {state: sum(s['status'] == state for s in sections) for state in ('healthy', 'stale', 'missing')}
-    missing = [{**c, 'status': 'missing', 'changeType': c['status'], 'reason': 'No section source mapping'} for c in data['unmappedChanges']]
-    state = 'missing' if counts['missing'] or missing else 'stale' if counts['stale'] else 'healthy'
+    inventory = []
+    for path in sorted(files):
+        owners = [s for s in data['sections'] if matches(path, s['sources'])]
+        changes = [c for s in owners for c in s['changes'] if c['path'] == path]
+        state = 'missing' if not owners else 'stale' if changes else 'healthy'
+        inventory.append({'path': path, 'status': state, 'chapters': [s['id'] for s in owners],
+                          'changes': [{'status': status, 'path': name} for status, name in sorted({(c['status'], c['path']) for c in changes})]})
+    counts = {state: sum(f['status'] == state for f in inventory) for state in ('healthy', 'stale', 'missing')}
+    chapter_counts = {state: sum(s['status'] == state for s in sections) for state in ('healthy', 'stale')}
+    state = 'missing' if counts['missing'] else 'stale' if chapter_counts['stale'] else 'healthy'
     return {**data, 'schema': 'adp-source-coverage/1', 'status': state, 'sections': sections,
-            'summary': {**counts, 'unmapped': len(missing)}, 'unmappedChanges': missing}
+            'summary': {**counts, 'total': len(inventory)}, 'chapterSummary': chapter_counts,
+            'files': inventory, 'missingFiles': [f['path'] for f in inventory if f['status'] == 'missing']}
 
 
 def markdown(data):

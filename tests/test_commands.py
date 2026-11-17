@@ -148,23 +148,27 @@ class SourceDriftTests(Cmd):
 
     def test_source_coverage_payload_distinguishes_healthy_stale_missing(self):
         git, base, mapping = self.history()
+        mapping['sections']=mapping['sections'][:2]
+        initial=self.ok('source-drift','-','--repo',self.cwd,'--format','coverage',stdin=json.dumps(mapping))
+        self.assertEqual(initial['missingFiles'],['unchanged.txt'])
+        self.assertEqual(initial['summary'],{'healthy':2,'stale':0,'missing':1,'total':3})
         with open(self.p('source.txt'),'w') as stream: stream.write('after')
         git('rm','dir/old.txt'); git('add','source.txt'); git('commit','-qm','changes')
         args=('source-drift','-','--repo',self.cwd,'--format','coverage')
         payload=self.ok(*args,stdin=json.dumps(mapping))
         self.assertEqual(payload['schema'],'adp-source-coverage/1')
-        self.assertEqual([s['status'] for s in payload['sections']],['stale','missing','healthy'])
-        self.assertEqual(payload['summary'],{'healthy':1,'stale':1,'missing':1,'unmapped':0})
+        self.assertEqual([s['status'] for s in payload['sections']],['stale','stale'])
+        self.assertEqual(payload['summary'],{'healthy':0,'stale':1,'missing':1,'total':2})
+        self.assertEqual(payload['missingFiles'],['unchanged.txt'])
+        self.assertEqual(payload['files'][0]['chapters'],['intro'])
         self.assertEqual(payload['sections'][0]['sources'][0]['changes'],[{'status':'M','path':'source.txt'}])
         mapping['sections'][0]['sourceCommit']='0'*40
-        self.assertEqual(self.ok(*args,stdin=json.dumps(mapping))['sections'][0]['status'],'missing')
-        mapping['sections'][0]['sourceCommit']=base; mapping['sections'][0]['sources']=[]
-        payload=self.ok(*args,stdin=json.dumps(mapping))
-        self.assertEqual(payload['sections'][0]['status'],'missing')
-        self.assertEqual(payload['unmappedChanges'][0]['path'],'source.txt')
+        unavailable=self.run_adp(*args,stdin=json.dumps(mapping))
+        self.assertEqual(unavailable.returncode,1); self.assertEqual(json.loads(unavailable.stdout)['status'],'error')
+        mapping['sections'][0]['sourceCommit']=base
         mapping['sourceCommit']='0'*40
         failed=self.run_adp(*args,stdin=json.dumps(mapping))
-        self.assertEqual(failed.returncode,1); self.assertEqual(json.loads(failed.stdout)['status'],'missing')
+        self.assertEqual(failed.returncode,1); self.assertEqual(json.loads(failed.stdout)['status'],'error')
 
 
 class SeedTests(Cmd):
