@@ -40,6 +40,7 @@ baseline for reporting unmapped changes across the repository.
 ```sh
 python3 -I <adp skill folder>/scripts/adp.py source-drift sources.json --repo PROJECT --head origin/main --out report.json
 python3 -I <adp skill folder>/scripts/adp.py source-drift sources.json --repo PROJECT --head origin/main --format markdown --out report.md
+python3 -I <adp skill folder>/scripts/adp.py source-drift sources.json --repo PROJECT --head origin/main --format coverage --out SITE_ASSETS/coverage.json
 ```
 
 `-` instead of a map filename reads JSON from stdin. Fetch refs separately when
@@ -63,6 +64,26 @@ unmapped changes make omissions visible. Review affected claims before moving a
 section pin. For a report about a deployed KB, promote the reviewed map only with
 the verified publication receipt; a local build or a stale context record is not
 deployment evidence. The report retains the map's `basis` qualification.
+
+## Coverage payload for a page
+
+`--format coverage` emits `adp-source-coverage/1`: section IDs/titles, reviewed and
+checked commits, per-source paths/statuses/changes, summary counts and unmapped
+files. Serve this as a normal JSON asset. A last-page coverage map can render it
+with the catalog's `pattern.expand-card` using custom states and one dimension.
+
+- **Healthy:** mapped sources exist and are unchanged from the review pin.
+- **Stale:** mapped sources changed; the chapter needs review.
+- **Missing:** a source/mapping or review evidence is absent/unavailable. Changed
+  files with no chapter mapping appear in a separate missing-coverage list.
+
+Missing outranks stale, then healthy. Coverage mode keeps missing section pins and
+dependencies visible instead of aborting the whole section map; malformed inputs
+or unavailable global history emit a missing/error payload and exit 1. An absent
+or invalid fetched payload must display missing, never healthy. The payload is a
+snapshot of its checked commit; republish or refresh it after repository updates
+to change the Site's display. CI emits `*.coverage.json` beside the drift report;
+deployment uses the Site's existing guarded source-publication workflow.
 
 ## GitHub detection
 

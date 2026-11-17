@@ -33,7 +33,7 @@ def matches(path, sources):
     return any(path.startswith(s) if s.endswith('/') else path == s for s in sources)
 
 
-def report(mapping, repo, head):
+def report(mapping, repo, head, coverage=False):
     if not isinstance(mapping, dict) or mapping.get('schema') != 'adp-source-map/1':
         raise ValueError('Expected schema adp-source-map/1')
     sections = mapping.get('sections')
@@ -65,16 +65,25 @@ def report(mapping, repo, head):
             raise ValueError('Duplicate section id: ' + sid)
         ids.add(sid)
         values = section.get('sources')
-        if not isinstance(values, list) or not values:
+        if not isinstance(values, list) or (not values and not coverage):
             raise ValueError('Section has no source mapping: ' + sid)
         sources = sorted(set(source_path(v) for v in values))
-        base = snapshot(section.get('sourceCommit', baseline))
+        base = section.get('sourceCommit', baseline)
+        try:
+            base = snapshot(base)
+        except ValueError as error:
+            if not coverage: raise
+            results.append({'id': sid, 'title': str(section.get('title') or sid), 'reviewedCommit': base,
+                            'status': 'missing', 'sources': sources, 'changes': [], 'reason': str(error)})
+            all_sources.extend(sources)
+            continue
         missing = [s for s in sources if not any(matches(p, [s]) for p in trees[base])]
-        if missing:
+        if missing and not coverage:
             raise ValueError('Sources absent at reviewed commit for ' + sid + ': ' + ', '.join(missing))
         changes = [c for c in diffs[base] if matches(c['path'], sources)]
+        state = 'missing' if missing or not sources else 'needs_review' if changes else 'current'
         results.append({'id': sid, 'title': str(section.get('title') or sid), 'reviewedCommit': base,
-                        'status': 'needs_review' if changes else 'current', 'sources': sources, 'changes': changes})
+                        'status': state, 'sources': sources, 'changes': changes, 'missingSources': missing})
         all_sources.extend(sources)
     unmapped = [c for c in diffs[baseline] if not matches(c['path'], all_sources)]
     needs_review = any(s['status'] == 'needs_review' for s in results) or bool(unmapped)
@@ -83,6 +92,28 @@ def report(mapping, repo, head):
             'basis': str(mapping.get('basis') or 'Declared source review map; deployment not verified'),
             'scope': 'Committed Git snapshots only; no worktree, remote fetch or deployed-state check',
             'sections': results, 'changedFiles': diffs[baseline], 'unmappedChanges': unmapped}
+
+
+def coverage_payload(data, repo):
+    """Portable page data: missing outranks stale, which outranks healthy."""
+    if data['status'] == 'error':
+        return {**data, 'schema': 'adp-source-coverage/1', 'status': 'missing', 'sections': []}
+    files = git(repo, 'ls-tree', '-r', '-z', '--name-only', data['head']).rstrip('\0').split('\0')
+    sections = []
+    for section in data['sections']:
+        sources = []
+        for path in section['sources']:
+            changed = [c for c in section['changes'] if matches(c['path'], [path])]
+            absent = section.get('reason') or path in section.get('missingSources', []) or not any(matches(p, [path]) for p in files)
+            state = 'missing' if absent else 'stale' if changed else 'healthy'
+            sources.append({'path': path, 'status': state, 'changes': changed})
+        state = 'missing' if not sources or any(s['status'] == 'missing' for s in sources) else 'stale' if any(s['status'] == 'stale' for s in sources) else 'healthy'
+        sections.append({**section, 'status': state, 'sources': sources})
+    counts = {state: sum(s['status'] == state for s in sections) for state in ('healthy', 'stale', 'missing')}
+    missing = [{**c, 'status': 'missing', 'changeType': c['status'], 'reason': 'No section source mapping'} for c in data['unmappedChanges']]
+    state = 'missing' if counts['missing'] or missing else 'stale' if counts['stale'] else 'healthy'
+    return {**data, 'schema': 'adp-source-coverage/1', 'status': state, 'sections': sections,
+            'summary': {**counts, 'unmapped': len(missing)}, 'unmappedChanges': missing}
 
 
 def markdown(data):
@@ -117,7 +148,7 @@ def main(argv):
     parser.add_argument('map', help='adp-source-map/1 JSON, or - for stdin')
     parser.add_argument('--repo', required=True, help='Local repository root; fetch separately if needed')
     parser.add_argument('--head', default='HEAD', help='Committed target ref (resolved to an immutable ID)')
-    parser.add_argument('--format', choices=('json', 'markdown'), default='json')
+    parser.add_argument('--format', choices=('json', 'markdown', 'coverage'), default='json')
     parser.add_argument('--out', type=Path, help='Also save the report; never advances review pins')
     parser.add_argument('--strict', action='store_true', help='Exit 2 when review or mapping work is needed')
     args = parser.parse_args(argv[1:])
@@ -130,13 +161,19 @@ def main(argv):
             mapping = json.loads(Path(args.map).read_text(encoding='utf-8'))
         # Paths in the map are relative to the repository root, never a cwd prefix.
         root = Path(git(args.repo, 'rev-parse', '--show-toplevel').strip())
-        data = report(mapping, root, args.head)
-        code = 2 if args.strict and data['status'] == 'needs_review' else 0
+        data = report(mapping, root, args.head, coverage=args.format == 'coverage')
+        if args.format == 'coverage': data = coverage_payload(data, root)
+        code = 2 if args.strict and data['status'] not in ('healthy', 'current') else 0
     except (OSError, ValueError, subprocess.TimeoutExpired) as error:
         data, code = {'schema': 'adp-source-drift/1', 'status': 'error', 'error': str(error)}, 1
+        if args.format == 'coverage': data = coverage_payload(data, args.repo)
     output = markdown(data) if args.format == 'markdown' else json.dumps(data, indent=2) + '\n'
     if args.out and not (args.map != '-' and args.out.resolve() == Path(args.map).resolve()):
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(output, encoding='utf-8')
     print(output, end='')
     return code
+
+
+if __name__ == '__main__':
+    sys.exit(main(['source-drift', *sys.argv[1:]]))

@@ -12,7 +12,7 @@
   adp.py manifest PAGE|DIR [--file NAME=PATH ...]   manifest JSON on stdout (schema, page_hash, parts, files, parents)
   adp.py diff     OLD.json NEW.json                 added / removed / changed parts, deepest first, own elements +/-
   adp.py diff-pages OLD NEW [--file NAME=PATH ...]  the same from two pages (or two DIRs), plus the added/removed lines per deepest part
-  adp.py source-drift MAP.json --repo DIR [--head REF] [--format json|markdown] [--out FILE] [--strict]
+  adp.py source-drift MAP.json --repo DIR [--head REF] [--format json|markdown|coverage] [--out FILE] [--strict]
                                                     committed source changes grouped by mapped sections; no network or model calls,
                                                     exit 1 on invalid/unavailable evidence; --strict exits 2 when review is needed
 

@@ -25,7 +25,7 @@ jobs:
           import os, pathlib, subprocess, sys
           failed = False
           for source in sorted(pathlib.Path('docs/source-maps').glob('*.json')):
-              for fmt, suffix in [('json', 'json'), ('markdown', 'md')]:
+              for fmt, suffix in [('json', 'json'), ('markdown', 'md'), ('coverage', 'coverage.json')]:
                   target = pathlib.Path('source-drift-reports') / (source.stem + '.' + suffix)
                   result = subprocess.run([sys.executable, '-I', 'skill/scripts/adp.py', 'source-drift', str(source), '--repo', '.', '--head', os.environ['GITHUB_SHA'], '--format', fmt, '--out', str(target)], capture_output=True, text=True)
                   failed |= result.returncode != 0

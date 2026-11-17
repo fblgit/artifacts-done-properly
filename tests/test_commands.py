@@ -146,6 +146,26 @@ class SourceDriftTests(Cmd):
         self.assertEqual(result.returncode,1)
         self.assertIn('ancestor',json.loads(result.stdout)['error'])
 
+    def test_source_coverage_payload_distinguishes_healthy_stale_missing(self):
+        git, base, mapping = self.history()
+        with open(self.p('source.txt'),'w') as stream: stream.write('after')
+        git('rm','dir/old.txt'); git('add','source.txt'); git('commit','-qm','changes')
+        args=('source-drift','-','--repo',self.cwd,'--format','coverage')
+        payload=self.ok(*args,stdin=json.dumps(mapping))
+        self.assertEqual(payload['schema'],'adp-source-coverage/1')
+        self.assertEqual([s['status'] for s in payload['sections']],['stale','missing','healthy'])
+        self.assertEqual(payload['summary'],{'healthy':1,'stale':1,'missing':1,'unmapped':0})
+        self.assertEqual(payload['sections'][0]['sources'][0]['changes'],[{'status':'M','path':'source.txt'}])
+        mapping['sections'][0]['sourceCommit']='0'*40
+        self.assertEqual(self.ok(*args,stdin=json.dumps(mapping))['sections'][0]['status'],'missing')
+        mapping['sections'][0]['sourceCommit']=base; mapping['sections'][0]['sources']=[]
+        payload=self.ok(*args,stdin=json.dumps(mapping))
+        self.assertEqual(payload['sections'][0]['status'],'missing')
+        self.assertEqual(payload['unmappedChanges'][0]['path'],'source.txt')
+        mapping['sourceCommit']='0'*40
+        failed=self.run_adp(*args,stdin=json.dumps(mapping))
+        self.assertEqual(failed.returncode,1); self.assertEqual(json.loads(failed.stdout)['status'],'missing')
+
 
 class SeedTests(Cmd):
     def test_usage_without_dir(self):
