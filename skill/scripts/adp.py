@@ -15,6 +15,9 @@
   adp.py source-drift MAP.json --repo DIR [--head REF] [--format json|markdown|coverage] [--out FILE] [--strict]
                                                     committed source changes grouped by mapped sections; no network or model calls,
                                                     exit 1 on invalid/unavailable evidence; --strict exits 2 when review is needed
+  adp.py pack DIR [--out index.html] [--fragment]   DIR as ONE self-contained index.html: every file embedded; relative scripts, styles and fetches served by a small shim
+                                                    (no blob:, eval or modules); --fragment omits doctype/html/head/body, for the Artifact tool (it adds them)
+  adp.py unpack index.html DEST                     the files back, byte for byte (sha256 checked); DEST must be new or empty
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
@@ -1468,6 +1471,9 @@ adp_loop.A = adp_dev.A = adp_bundle.A = adp_work.A = sys.modules[__name__]
 
 
 def main(a):
+    if a[:1] in (['pack'], ['unpack']):
+        import adp_pack
+        return adp_pack.main(a)
     if a[:1] == ['source-drift']:
         import adp_source_drift
         return adp_source_drift.main(a)
