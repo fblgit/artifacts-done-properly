@@ -5,7 +5,19 @@ The iteration ends. The value stays.
 
 Your next project starts further ahead.
 
-**Try it:** [ADP: Catalog v2.1.1](https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ) · [ADP: Assistant v2.1.1](https://claude.ai/artifact/F42c7ZcRDKptdaTA5TAqZB) (claude.ai artifacts; the owner shares them for view).
+**Try it:** [ADP: Catalog v2.1.1](https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ) · [ADP: Assistant v2.1.1](https://claude.ai/artifact/F42c7ZcRDKptdaTA5TAqZB) (claude.ai artifacts).
+
+**KnowledgeBase:** [ADP: KnowledgeBase v2.1.1](https://claude.ai/artifact/RTYshZxMp1x97a7paUGBX1) · [codex version](https://adp-knowledgebase.primmaple1.chatgpt.site/).
+
+**Get it now!**: Install the plugin, your AI agent will take care of it.
+
+```
+/plugin marketplace add fblgit/fblgit-claude-marketplace
+/plugin install artifacts-done-properly@fblgit-claude-marketplace
+/adp setup
+```
+
+Once is setup, we suggest that you publish the catalog under your own account. After that, a good starting point is the `assistant` template. It includes agent capabilities that allow you to build your app or artifact from the inside, adopt existing artifacts or websites. It is the ideal starting point for a web-application and is the reccomended path. 
 
 ## What ADP is
 
