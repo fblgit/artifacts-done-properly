@@ -44,6 +44,7 @@
         "skill/assets/adapters/openai.js",
         "docs/openai-sites-transport.md",
         "skill/assets/hosts/openai-sites/worker.mjs",
+        "skill/assets/hosts/single/shim.js",
         "skill/assets/adapters/openai-sites-comments.js",
         "skill/refs/sites.md",
         "skill/assets/adapters/claude.js",
@@ -156,7 +157,8 @@
         "docs/openai-sites-transport.md",
         "docs/openai-host-adapter.md",
         "docs/architecture.md",
-        "tests/test_sites_adapter.py"
+        "tests/test_sites_adapter.py",
+        "tests/test_pack.py"
       ]
     }
   ]

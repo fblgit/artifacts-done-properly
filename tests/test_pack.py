@@ -53,6 +53,13 @@ class Pack(unittest.TestCase):
         _, page, _ = self.pack('--fragment')
         self.assertIn('ADPPACK.js("a.js")', page); self.assertIn('<p>hi</p>', page)
 
+    def test_unpack_reads_a_catalog_pack_too(self):
+        pack = os.path.join(self.t.name, 'catalog-pack-01.json'); dest = os.path.join(self.t.name, 'cat')
+        with open(pack, 'w', encoding='utf-8') as f: json.dump({'schema': 'adp-catalog-pack/1', 'files': {'kit/a.js': 'A', '../evil': 'x'}}, f)
+        self.assertEqual(self.run_adp('unpack', pack, dest).returncode, 0)
+        with open(os.path.join(dest, 'kit', 'a.js')) as f: self.assertEqual(f.read(), 'A')
+        self.assertFalse(os.path.exists(os.path.join(self.t.name, 'evil')))
+
     def test_unpack_refuses_tampering_and_a_used_folder(self):
         out, page, _ = self.pack()
         bad = os.path.join(self.t.name, 'bad.html')

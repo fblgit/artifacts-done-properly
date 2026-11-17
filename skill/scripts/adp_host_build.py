@@ -182,20 +182,42 @@ def pack_cmd(directory, out=None, fragment=False):
     return {'host': 'single', 'out': out, 'files': len(files), 'bytes': len(page.encode('utf-8')), 'fragment': fragment}
 
 
+def read_pack(text):
+    """{relative path: bytes} of a pack: a packed page (embedded blocks, sha256 checked) or a catalog-pack-NN.json (adp-catalog-pack/1)."""
+    if not text.lstrip().startswith('{'):
+        return unpack(text)
+    pack = json.loads(text)
+    if not isinstance(pack, dict) or pack.get('schema') != 'adp-catalog-pack/1' or not isinstance(pack.get('files'), dict):
+        raise ValueError('Not an ADP pack')
+    return {k: v.encode('utf-8') for k, v in pack['files'].items() if isinstance(v, str) and not os.path.isabs(k) and '..' not in k.split('/')}
+
+
+def write_files(files, dest, keep=False):
+    """Write {path: bytes} under dest and return the paths written; keep leaves a file that is already there."""
+    written = []
+    for path, data in files.items():
+        if os.path.isabs(path) or '..' in path.split('/'):
+            raise ValueError('Unsafe path: ' + path)
+        full = os.path.join(dest, *path.split('/'))
+        if keep and os.path.isfile(full):
+            continue
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        with open(full, 'wb') as stream:
+            stream.write(data)
+        written.append(path)
+    return written
+
+
 def unpack_cmd(a):
-    """`adp.py unpack index.html DEST`: the files back; DEST must be new or empty."""
+    """`adp.py unpack PACK DEST`: PACK is a packed index.html or a catalog-pack-NN.json; DEST must be new or empty."""
     if len(a) != 3:
-        raise SystemExit('usage: adp.py unpack index.html DEST')
+        raise SystemExit('usage: adp.py unpack PACK DEST')
     try:
         if os.path.isdir(a[2]) and os.listdir(a[2]):
             raise ValueError('Destination is not empty: ' + a[2])
         with open(a[1], encoding='utf-8', newline='') as stream:
-            got = unpack(stream.read())
-        for path, data in got.items():
-            full = os.path.join(a[2], *path.split('/'))
-            os.makedirs(os.path.dirname(full), exist_ok=True)
-            with open(full, 'wb') as stream:
-                stream.write(data)
+            got = read_pack(stream.read())
+        write_files(got, a[2])
     except (OSError, ValueError) as error:
         raise SystemExit('adp.py unpack: %s' % error)
     print(json.dumps({'dest': a[2], 'files': len(got), 'bytes': sum(map(len, got.values()))}))

@@ -18,7 +18,7 @@
   adp.py files DIR --host single [--out index.html] [--fragment]
                                                     DIR as ONE self-contained index.html: every file embedded; relative scripts, styles and fetches served by a small shim
                                                     (no blob:, eval or modules); --fragment omits doctype/html/head/body, for the Artifact tool (it adds them)
-  adp.py unpack index.html DEST                     the files back, byte for byte (sha256 checked); DEST must be new or empty
+  adp.py unpack PACK DEST                           the files back, byte for byte: PACK is a packed index.html (sha256 checked) or a catalog-pack-NN.json; DEST must be new or empty
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
@@ -1392,10 +1392,9 @@ def shipped_catalog():
         return {k.replace(os.sep, '/'): v for k, v in tree_files(d).items() if not k.endswith('.pyc')}
     out = {}
     for n in sorted(x for x in os.listdir(HERE) if re.fullmatch(r'catalog-pack-\d+\.json', x)):
-        try: pack = json.load(open(os.path.join(HERE, n), encoding='utf-8'))
+        try:
+            with open(os.path.join(HERE, n), encoding='utf-8') as f: out.update(adp_host_build.read_pack(f.read()))
         except (OSError, ValueError): continue
-        if not isinstance(pack, dict) or pack.get('schema') != 'adp-catalog-pack/1' or not isinstance(pack.get('files'), dict): continue
-        out.update({k: v.encode('utf-8') for k, v in pack['files'].items() if isinstance(v, str) and not os.path.isabs(k) and '..' not in k.split('/')})
     return out
 
 
@@ -1404,10 +1403,7 @@ def unpack_catalog(dry):
     files = shipped_catalog()
     dest = os.path.join(ADP_HOME, 'catalog')
     new = [k for k in files if not os.path.isfile(os.path.join(dest, k))]
-    if not dry:
-        for k in new:
-            p = os.path.join(dest, k); os.makedirs(os.path.dirname(p), exist_ok=True)
-            with open(p, 'wb') as f: f.write(files[k])
+    if not dry: adp_host_build.write_files(files, dest, keep=True)
     return len(files), len(new)
 
 
