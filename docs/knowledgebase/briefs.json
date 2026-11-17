@@ -1,0 +1,129 @@
+[
+  {
+    "id": "kb.brief.catalog",
+    "chapter": "skills",
+    "title": "How a catalog entry becomes reusable",
+    "sources": [
+      "docs/catalog-header.md",
+      "skill/catalog/catalog.json",
+      "skill/scripts/adp_catalog.py",
+      "skill/scripts/publish_catalog.py",
+      "skill/scripts/welcome.html"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.catalog\" data-comment-target><h2>How a catalog entry becomes reusable</h2><p>Each entry keeps its contract in the main file’s header: its ID, summary, files and dependencies. <code>adp_catalog.py build</code> turns those headers into <code>catalog.json</code>; <code>drift</code> checks header/index agreement. <code>publish_catalog.py</code> stages publication plans and an About page through <code>welcome.html</code>; it does not publish by itself. Read the entry’s API before taking it, then verify its files actually load in the destination.</p></section>"
+  },
+  {
+    "id": "kb.brief.templates",
+    "chapter": "skills",
+    "title": "Templates are recipes, not deployed pages",
+    "sources": [
+      "skill/templates/"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.templates\" data-comment-target><h2>Templates are recipes, not deployed pages</h2><p><code>template.json</code> declares inheritance and the starting files. Starter supplies a shell, content, a part script and page styles. Assistant builds on it with an agent pane and canvas styles; Default inherits Assistant and adds its own entrypoint and kit selection. The HTML, CSS and JavaScript recipes ship with a <code>.txt</code> suffix, removed by <code>adp.py new</code>. The generated page still needs its host’s publication and record workflow.</p></section>"
+  },
+  {
+    "id": "kb.brief.emulators",
+    "chapter": "scripts",
+    "title": "What the local emulators stand in for",
+    "sources": [
+      "skill/scripts/adp_dev.py",
+      "skill/scripts/adp_dev.js",
+      "docs/assist.md",
+      "docs/openai-localhost.md",
+      "skill/scripts/adp_sites_dev.mjs"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.emulators\" data-comment-target><h2>What the local emulators stand in for</h2><p><code>adp_dev.py</code> serves a local Claude-like viewer; <code>adp_dev.js</code> supplies its browser shim. Records, queued messages and heartbeat files live under <code>.adp-dev/</code>. An agent uses <code>dev watch</code> and <code>dev send</code> to exercise the loop. The Sites localhost server is separate and exercises its Worker with local SQLite. A passing harness does not establish hosted access, durability or an unattended CLI connection.</p></section>"
+  },
+  {
+    "id": "kb.brief.portability",
+    "chapter": "protocol",
+    "title": "Moving records does not move source",
+    "sources": [
+      "docs/adp-export-import.md",
+      "skill/scripts/adp_bundle.py"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.portability\" data-comment-target><h2>Moving records does not move source</h2><p>An export bundle contains seed packs, source metadata and native revisions. <code>import-plan</code> compares those records with fresh destination reads and classifies create, replace, skip or hold. Source revisions remain evidence; destination revisions guard writes. <code>import-ack</code> records confirmed outcomes. These commands do not automatically synchronize hosts or deploy a Site’s source.</p></section>"
+  },
+  {
+    "id": "kb.brief.storage",
+    "chapter": "adapters",
+    "title": "Two adapter layers, one native authority",
+    "sources": [
+      "skill/assets/adapters/claude.js",
+      "skill/assets/adapters/openai-sites.js",
+      "skill/scripts/adp_claude_adapter.py",
+      "docs/claude-host-adapter.md",
+      "skill/assets/hosts/openai-sites/schema.sql",
+      "skill/assets/hosts/openai-sites/fixture.html"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.storage\" data-comment-target><h2>Two adapter layers, one native authority</h2><p>Browser adapters such as <code>adapters/claude.js</code> and <code>openai-sites.js</code> connect page code to a host. Offline adapters such as <code>adp_claude_adapter.py</code> translate the planner’s read/write plans and receipts. The Sites Worker stores records in D1 using the shipped SQL schema. Its fixture is a test page, not production membership setup. Access and revision checks stay on the server.</p></section>"
+  },
+  {
+    "id": "kb.brief.repository-roots",
+    "chapter": "repository",
+    "title": "Root files: purpose, policy and provenance",
+    "sources": [
+      "README.md",
+      "CONTRIBUTING.md",
+      "SECURITY.md",
+      "CODE_OF_CONDUCT.md",
+      "LICENSE",
+      "NOTICE",
+      "CITATION.cff",
+      ".gitignore",
+      "ruff.toml",
+      ".gitleaks.toml",
+      ".pre-commit-config.yaml"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.repository-roots\" data-comment-target><h2>Root files: purpose, policy and provenance</h2><p><code>README.md</code> is the entrypoint; <code>CONTRIBUTING.md</code> explains setup and checks. <code>SECURITY.md</code> routes vulnerability reports privately, while <code>CODE_OF_CONDUCT.md</code> sets participation standards. <code>LICENSE</code>, <code>NOTICE</code> and <code>CITATION.cff</code> retain licensing and attribution. <code>.gitignore</code> keeps generated/local state out; <code>ruff.toml</code>, <code>.gitleaks.toml</code> and <code>.pre-commit-config.yaml</code> configure lint, secret scanning and local hooks.</p></section>"
+  },
+  {
+    "id": "kb.brief.repository-plugin",
+    "chapter": "repository",
+    "title": "Plugin updates and bundle releases are different",
+    "sources": [
+      ".claude-plugin/",
+      "skill/SKILL.md",
+      "tests/test_plugin.py"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.repository-plugin\" data-comment-target><h2>Plugin updates and bundle releases are different</h2><p><code>.claude-plugin/plugin.json</code> names the plugin and points discovery at the base skill and road skills. It deliberately has no <code>version</code>: plugin installs follow the repository commit. The separately packaged <code>adp.skill</code> release uses the base skill’s <code>metadata.version</code>. A plugin manifest change and a tagged bundle release are separate operations.</p></section>"
+  },
+  {
+    "id": "kb.brief.repository-ci",
+    "chapter": "repository",
+    "title": "What GitHub and local hooks actually run",
+    "sources": [
+      ".github/",
+      ".pre-commit-config.yaml",
+      "CONTRIBUTING.md"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.repository-ci\" data-comment-target><h2>What GitHub and local hooks actually run</h2><p>On pushes and pull requests, <code>ci.yml</code> checks secrets, Ruff, the unittest suite, skill packaging, catalog consistency and the catalog roundtrip. Local pre-commit/pre-push hooks configure related checks; their presence does not prove installation or execution. Issue/PR templates collect change and check details. Dependabot proposes GitHub Actions dependency updates weekly. The tag-triggered release workflow has its own checks and publishing permission.</p></section>"
+  },
+  {
+    "id": "kb.brief.repository-tests",
+    "chapter": "repository",
+    "title": "Tests describe verification boundaries",
+    "sources": [
+      "tests/",
+      "tools/roundtrip.py",
+      "tests/test_commands.py",
+      "tests/test_bundle.py",
+      "tests/test_plugin.py",
+      "tests/test_roundtrip.py"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.repository-tests\" data-comment-target><h2>Tests describe verification boundaries</h2><p><code>tests/</code> covers command plans, setup and packaging, templates, catalog/hash parity, record transfer, host adapters and local Worker/bridge fixtures. <code>tools/roundtrip.py</code> checks the catalog’s build/take/seed/preview path; CI runs it separately. Passing a fixture is evidence for that fixture, not every production host, browser or authenticated agent. Record the actual run and keep unobserved behavior explicit.</p></section>"
+  },
+  {
+    "id": "kb.brief.repository-release",
+    "chapter": "repository",
+    "title": "Release procedure versus historical release notes",
+    "sources": [
+      "docs/RELEASING.md",
+      "docs/RELEASE-CHECKLIST.md",
+      "docs/RELEASE-NOTES-v2.0.0.md",
+      ".github/workflows/release.yml",
+      "tools/package.py"
+    ],
+    "html": "<section class=\"kb-brief\" data-part=\"kb.brief.repository-release\" data-comment-target><h2>Release procedure versus historical release notes</h2><p><code>RELEASING.md</code> describes the bundle build, tag/version match and checksum verification. A <code>v*</code> tag triggers <code>release.yml</code>, which checks, builds and creates a release with <code>adp.skill</code> and its checksum. The checklist and v2.0.0 draft notes are historical working documents: they still contain old file counts and claims such as a missing license. Compare those claims with the current tree and CI; do not copy them into a current release receipt.</p></section>"
+  }
+]

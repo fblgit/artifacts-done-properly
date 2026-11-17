@@ -253,7 +253,7 @@ The catalog is a published artifact whose files are kit entries, indexed by `ski
 | `skill/assets/adp.js` | the page runtime |
 | `skill/templates/{starter,assistant,default}/` | the templates `adp.py new` builds from |
 | `skill/catalog/` | the catalog: `catalog.json`, its own page files, `adp.js` (a copy), and `kit/` (components, patterns, layouts, themes, viz, guides, samples) |
-| `tools/` | `package.py` (validate and build), `publish_catalog.py.broken` (the old batch planner, not used), `roundtrip.py` (the catalog roundtrip, 8 checks: CI and pre-push) |
+| `tools/` | `package.py` (validate and build), `roundtrip.py` (the catalog roundtrip, 8 checks: CI and pre-push) |
 | `tests/` | `unittest` suites for the commands, tiers, templates, packaging, setup and catalog tooling |
 | `docs/` | this document, `assist.md`, `config.md`, `catalog-header.md`, `themes.md`, and the release documents (`RELEASING.md`, `RELEASE-CHECKLIST.md`, `RELEASE-NOTES-v2.0.0.md`) |
 | `.github/workflows/` | `ci.yml`, `release.yml`, `source-drift.yml` (reports for tracked source maps in job summaries and artifacts) |
