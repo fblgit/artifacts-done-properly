@@ -4,7 +4,7 @@ the seed packs that `new` writes."""
 import glob, hashlib, json, os, shutil, subprocess, sys, unittest
 
 from test_setup import Base
-from unittest.mock import patch
+from unittest.mock import patch as patch_env
 
 URL = 'https://claude.ai/artifact/test-artifact'
 EDIT_FROM = 'data-part="home.welcome" data-comment-target>'
@@ -181,7 +181,7 @@ class SourceDriftTests(Cmd):
         from pathlib import Path
         subprocess.run(['git','clone','-q','--filter=tree:0','--no-checkout',Path(self.cwd).as_uri(),filtered],check=True,capture_output=True,timeout=3)
         path=self.write_json('map.json',mapping)
-        with patch.dict(os.environ,{'GIT_TRACE':trace}):
+        with patch_env.dict(os.environ,{'GIT_TRACE':trace}):
             result=self.run_adp('source-drift',path,'--repo',filtered)
         self.assertEqual(result.returncode,1,result.stderr)
         self.assertEqual(json.loads(result.stdout)['status'],'error')
