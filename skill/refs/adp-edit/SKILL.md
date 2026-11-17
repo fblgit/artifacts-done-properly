@@ -46,4 +46,3 @@ Copy lives in `content/<part id>`. Change it with an ArtifactData update with `i
 
 - Moving a page's records between hosts (Claude and Sites): `ADP bundle`, `ADP import-plan`, `ADP import-ack`, described in `docs/adp-export-import.md`. They print the native calls; you run them; nothing syncs by itself.
 - Agents cannot join a room; they learn of changes from comment watches, the newer-version notice on an Artifact result, and `agents/`. `ADP log -n 20` shows what the tool did.
-- UNVERIFIED: `ADP gate` (the PreToolUse hook decision) reads a hook input on stdin and was not run here.

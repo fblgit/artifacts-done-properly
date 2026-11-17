@@ -2,9 +2,7 @@
 
 This implements the OpenAI side using **Sites' existing Worker + D1 hosting**.
 It does not require a separately purchased backend or invent an OpenAI browser SDK.
-It has local integration coverage and observed hosted owner flows, recorded in
-[PR #81](https://github.com/fblgit/artifacts-done-properly/pull/81), now merged.
-It remains experimental: those receipts do not certify every role, failure mode
+It remains experimental: it does not certify every role, failure mode
 or newly created Site's agent connection.
 
 For a ready-to-run local server, see [Codex/Sites localhost](openai-localhost.md).
@@ -27,7 +25,7 @@ Unavailable profile fields are empty/null. The Worker continues to enforce
 membership and editor writes independently of these UI hints. Nested
 `doc.collection` and guarded `collection.add` support the existing kit's turns.
 
-These capabilities are undergoing live verification on PR #81; application-owned
+Application-owned
 feedback must not be described as a native Sites comment service.
 
 ## Components
@@ -119,8 +117,7 @@ the calling agent still follows its user's authorized scope.
 - Existing runtime writes that do not pass a guard remain last-writer-wins. This
   does **not** upgrade ADP's overall configuration editing to conflict-safe.
 - `update()` recursively merges objects, replaces arrays/scalars, preserves explicit
-  nulls and treats dotted keys literally, matching Claude's live `claude-r1` receipt
-  in PR #81. A nested `{__delete__: true}` removes that field. Marker objects with
+  nulls and treats dotted keys literally, matching Claude's live `claude-r1` receipt. A nested `{__delete__: true}` removes that field. Marker objects with
   additional keys are rejected until their live semantics are established. Updating
   a missing document fails. No atomic batch writes. Sites keeps its explicit HTTP
   error codes; it does not pretend to be Claude's native API.

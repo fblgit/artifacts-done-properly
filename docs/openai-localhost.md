@@ -44,9 +44,8 @@ The D1 methods consumed by the Worker match the documented
 parameter binding, first-row reads, `results` arrays, and `meta.changes` for writes.
 The local adapter is not a complete D1 emulator and does not reproduce all D1
 metadata, failure modes or distributed behavior. Passing localhost tests cannot
-certify production D1 or Sites Dispatch. PR #81 records live shell import,
-repeat no-op, stale-write rejection and return in comment 6914306430, and live
-browser editing/reload persistence in comments 6914883927 and 6914915590.
+certify production D1 or Sites Dispatch. Live runs cover shell import,
+repeat no-op, stale-write rejection and return, and browser editing/reload persistence.
 These establish those scenarios, not complete platform parity.
 
 ## Local security boundaries

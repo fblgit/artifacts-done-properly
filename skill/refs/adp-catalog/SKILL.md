@@ -66,7 +66,7 @@ An HTTPS `*.chatgpt.site` catalog uses authenticated HTTP reads, not Claude serv
 
 - Templates and files an artifact does not serve are kept with a `.txt` suffix; HTML cannot be copied server-side. Read such a file and write it to your project without the `.txt`.
 - Never copy a kit file by retyping it; take it.
-- UNVERIFIED: no sha256 check command exists in `adp.py`; `scripts/adp_catalog.py` (next to `adp.py`; run `python3 -I <adp skill folder>/scripts/adp_catalog.py [catalog dir]`) verifies sizes and hashes of the local catalog build only, and also checks the headers.
+- `adp.py` has no sha256 check command; `scripts/adp_catalog.py` (next to `adp.py`; run `python3 -I <adp skill folder>/scripts/adp_catalog.py [catalog dir]`) verifies sizes and hashes of the local catalog build only, and also checks the headers.
 
 ## Add or update entries
 

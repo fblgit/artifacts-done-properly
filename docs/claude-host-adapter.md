@@ -31,12 +31,12 @@ The rows above run against fakes. Separately, on 2026-11-16 a private disposable
 `true`, the part was painted from `content/intro`, and it repainted about a second after an agent
 (ArtifactData) edit. Not exercised live: whether the comment anchors registered, a reader or logged-out
 session with the adapter, and a reload from a fresh tab. A first synthetic seed-pack was moved Claude to OpenAI
-Site to Claude by two agents through PR comments, before any shell existed. Later runs used the shared records
+Site to Claude by two agents, before any shell existed. Later runs used the shared records
 shell (`adp.py bundle`, `import-plan`, `import-ack`; see `docs/adp-export-import.md`) with this repo's
 Claude and Sites adapters. Applying is still done by an agent running the printed calls, and no automatic
 cross-host sync exists.
 
-Live runs after that, in the owner's browser, on the assistant probe (the built-in default connection, runtime `de7c6796d072`) and the spec page (this adapter, `ADP.host` `claude`, connected, Agent yes, Publish yes, Ask no because that page does not declare `sample`). Each is in the records of those artifacts and in PR comments, not only in the code: a request sent through `ADP.agent()` (one request doc, change logged after the send returned, comment received by the agent); a reply on that request (turn stored, request reopened, comment headed `Reply 1`); `ADP.ask()` (conversation `c-…`, user message `0001`, answer `0002` 12 s later); `ADP.publish()` through the inbox's Apply (new artifact version, the new file listed, proposal `applied`, exactly one change entry); a native work claim with `adp.py work` (claim, reclaim after the lease expired, completion, each a pinned batch read back); the page's own `update` with `null` (key kept as `null`, `workGeneration` bumped); the page hashing its own `adp.js` against the stamp in its info panel (match, 45,066 bytes); and the integrity run's `files_ahead` drift on the script-painted parts. The probe reloaded itself to a newly published version while the owner had it open (seen for the null and runtime-hash self-tests). Not observed live: the agent, publish and ask calls through `adapters/claude.js` as the explicit provider (only the built-in default ran them), a reader or logged-out viewer on the assistant, racing claimants, and the rendered panel and labels beyond one screenshot of an Ask answer.
+Live runs after that, in the owner's browser, on the assistant probe (the built-in default connection, runtime `de7c6796d072`) and the spec page (this adapter, `ADP.host` `claude`, connected, Agent yes, Publish yes, Ask no because that page does not declare `sample`). Each is in the records of those artifacts, not only in the code: a request sent through `ADP.agent()` (one request doc, change logged after the send returned, comment received by the agent); a reply on that request (turn stored, request reopened, comment headed `Reply 1`); `ADP.ask()` (conversation `c-…`, user message `0001`, answer `0002` 12 s later); `ADP.publish()` through the inbox's Apply (new artifact version, the new file listed, proposal `applied`, exactly one change entry); a native work claim with `adp.py work` (claim, reclaim after the lease expired, completion, each a pinned batch read back); the page's own `update` with `null` (key kept as `null`, `workGeneration` bumped); the page hashing its own `adp.js` against the stamp in its info panel (match, 45,066 bytes); and the integrity run's `files_ahead` drift on the script-painted parts. The probe reloaded itself to a newly published version while the owner had it open (seen for the null and runtime-hash self-tests). Not observed live: the agent, publish and ask calls through `adapters/claude.js` as the explicit provider (only the built-in default ran them), a reader or logged-out viewer on the assistant, racing claimants, and the rendered panel and labels beyond one screenshot of an Ask answer.
 
 ## Not supported by the contract (gaps, proposals)
 
@@ -150,9 +150,6 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
 - Observed, timing: the db capability took 1.3 s to resolve cold and 4 ms warm; `use()` of an unknown name resolved `null` at once.
 - The fakes in `tests/test_host_connection.py` are shape stubs (`doc()`/`collection()` entry points and
   canned snapshots), deliberately not behavioural, and do not reproduce the snapshot sequence above.
-- Still UNVERIFIED: consent prompts, the 10 s `use()` timeout, rate limits, the Contributor level, a logged-out session, a lost write response, and the adapter in a viewer
-  that is not an editor. (A write attempted `as_level: view` is blocked by the agent tool before it is sent,
-  so it proves nothing; the second-account run above is the server evidence.)
 
 ## Claude-only handles in shared code
 

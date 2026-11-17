@@ -163,8 +163,8 @@ returned success for a different operation.
   arbitrary runtime fetches or subscriptions. Native spreadsheets/slides require
   their own document profile.
 
-The unit harness validates no live host. Live runs on Claude and Sites are recorded as receipts on PR #81 (summarised in
-`docs/claude-host-adapter.md` and `docs/openai-sites-transport.md`); no Space installation has been validated.
+The unit harness validates no live host. Live runs on Claude and Sites are summarised in
+`docs/claude-host-adapter.md` and `docs/openai-sites-transport.md`; no Space installation has been validated.
 The release gates for each host are: fresh and existing artifact, anonymous and
 editor access, stale version rejection, concurrent writes, interrupted/repeated
 publish, readback/receipt reconciliation, missing capabilities, and reopening in

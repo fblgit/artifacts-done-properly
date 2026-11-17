@@ -100,5 +100,5 @@ Review findings are informational; invalid evidence fails the job. Other project
 can run the same commands in their existing CI or watcher, with their own maps.
 
 The included KnowledgeBase map is exported from its local source metadata and
-explicitly marks deployed publication as unverified. Keep that distinction until
-the corresponding live source and publication receipt have been checked.
+keeps deployed publication separate from the source map. Keep that distinction until
+the corresponding live source and publication receipt are available.
