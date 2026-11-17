@@ -9,7 +9,7 @@ authors:
     orcid: "https://orcid.org/0009-0003-1898-6701"
     website: "https://github.com/fblgit"
 repository-code: "https://github.com/fblgit/artifacts-done-properly"
-version: 2.0.0
+version: 2.1.0
 license: Apache-2.0
 keywords:
   - claude artifacts

@@ -2,7 +2,7 @@
 name: adp-catalog
 description: Find, use and add components, themes, layouts and guides from the ADP catalog (the shared library of reusable artifact parts). Load it whenever an artifact needs a component, theme, layout or pattern that may already exist, when the user says take, reuse, catalog, kit or theme, or when a new reusable piece should be added. Covers search, taking entries by reference with the files map, and the catalog rules. Also load it when the user wants their own, a separate or a private copy of the catalog.
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
 ---
 
 # ADP catalog
