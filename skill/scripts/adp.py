@@ -15,6 +15,10 @@
   adp.py source-drift MAP.json --repo DIR [--head REF] [--format json|markdown|coverage] [--out FILE] [--strict]
                                                     committed source changes grouped by mapped sections; no network or model calls,
                                                     exit 1 on invalid/unavailable evidence; --strict exits 2 when review is needed
+  adp.py files DIR --host single [--out index.html] [--fragment]
+                                                    DIR as ONE self-contained index.html: every file embedded; relative scripts, styles and fetches served by a small shim
+                                                    (no blob:, eval or modules); --fragment omits doctype/html/head/body, for the Artifact tool (it adds them)
+  adp.py unpack PACK DEST                           the files back, byte for byte: PACK is a packed index.html (sha256 checked) or a catalog-pack-NN.json; DEST must be new or empty
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
@@ -1388,10 +1392,9 @@ def shipped_catalog():
         return {k.replace(os.sep, '/'): v for k, v in tree_files(d).items() if not k.endswith('.pyc')}
     out = {}
     for n in sorted(x for x in os.listdir(HERE) if re.fullmatch(r'catalog-pack-\d+\.json', x)):
-        try: pack = json.load(open(os.path.join(HERE, n), encoding='utf-8'))
+        try:
+            with open(os.path.join(HERE, n), encoding='utf-8') as f: out.update(adp_host_build.read_pack(f.read()))
         except (OSError, ValueError): continue
-        if not isinstance(pack, dict) or pack.get('schema') != 'adp-catalog-pack/1' or not isinstance(pack.get('files'), dict): continue
-        out.update({k: v.encode('utf-8') for k, v in pack['files'].items() if isinstance(v, str) and not os.path.isabs(k) and '..' not in k.split('/')})
     return out
 
 
@@ -1400,10 +1403,7 @@ def unpack_catalog(dry):
     files = shipped_catalog()
     dest = os.path.join(ADP_HOME, 'catalog')
     new = [k for k in files if not os.path.isfile(os.path.join(dest, k))]
-    if not dry:
-        for k in new:
-            p = os.path.join(dest, k); os.makedirs(os.path.dirname(p), exist_ok=True)
-            with open(p, 'wb') as f: f.write(files[k])
+    if not dry: adp_host_build.write_files(files, dest, keep=True)
     return len(files), len(new)
 
 
@@ -1463,7 +1463,7 @@ def setup_cmd(a):
 
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import adp_loop, adp_dev, adp_lib, adp_bundle, adp_work
+import adp_loop, adp_dev, adp_lib, adp_bundle, adp_work, adp_host_build
 adp_loop.A = adp_dev.A = adp_bundle.A = adp_work.A = sys.modules[__name__]
 
 
@@ -1471,7 +1471,7 @@ def main(a):
     if a[:1] == ['source-drift']:
         import adp_source_drift
         return adp_source_drift.main(a)
-    cmds = {'work': adp_work.work, 'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
+    cmds = {'work': adp_work.work, 'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main, 'unpack': adp_host_build.unpack_cmd}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:
         for t in sorted(os.listdir(TPL)):
@@ -1479,13 +1479,13 @@ def main(a):
         return 0
     if len(a) >= 2 and a[0] == 'files':
         host = opt(a, '--host', 'claude')
-        if host not in ('claude', 'sites'): raise ValueError('Unknown files host: ' + host)
+        if host not in ('claude', 'sites', 'single'): raise ValueError('Unknown files host: ' + host)
+        if host == 'single': return emit(adp_host_build.pack_cmd(a[1], opt(a, '--out'), '--fragment' in a))
         if host == 'sites':
-            import adp_sites_build
             where = opt(a, '--out')
             if not where or '--since' in a or '--batch' in a:
                 raise ValueError('Sites requires --out PROJECT_DIR and a full snapshot (no --since/--batch)')
-            return emit(adp_sites_build.build(a[1], where, add_kit_refs(publish_args(a[1]), a[1])))
+            return emit(adp_host_build.build(a[1], where, add_kit_refs(publish_args(a[1]), a[1])))
         since = opt(a, '--since'); n = int(opt(a, '--batch', LIMIT)); where = opt(a, '--out', a[1].rstrip('/') + '.adp')
         fresh = os.path.isfile(os.path.join(a[1], SEED)) and seed_file(a[1])    # edits after `new` change the hashes the seed carries
         if not since: return emit(batched(add_kit_refs(publish_args(a[1]), a[1]), a[1], n, where))

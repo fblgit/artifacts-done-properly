@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'skill/scripts'))
-from adp_sites_build import render_worker
+from adp_host_build import render_worker
 
 
 def assistant(output, namespace):
