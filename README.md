@@ -107,8 +107,8 @@ Eight real runs with Claude, from setting up ADP to remaking an existing artifac
 
 ADP comes in two forms:
 
-- **The plugin `artifacts-done-properly`**, for Claude Code: the CLI, and the Code tab of the
-  desktop app. A marketplace installs it and brings its updates.
+- **The plugin `artifacts-done-properly`** (recommended), for Claude Code: the CLI, and the Code tab
+  of the desktop app. A marketplace installs it and brings its updates.
 - **`adp.skill`**, a zip, for the Claude desktop app's skill library or a manual install.
 
 ### Requirements
@@ -140,17 +140,8 @@ On Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows) or the
    and the four road skills `artifacts-done-properly:adp-new`, `artifacts-done-properly:adp-catalog`,
    `artifacts-done-properly:adp-edit` and `artifacts-done-properly:adp-adopt`.
    If not, run `/reload-plugins` or start a new session and check again.
-3. Go to "First run" below.
-
-The marketplace route (install and updates) is UNVERIFIED end to end: the listing is not published
-yet. If the install does not find the plugin, load it from a clone instead, with no marketplace:
-
-    claude --plugin-dir /path/to/artifacts-done-properly
-
-That loads the plugin for that session only.
-
-The Code tab of the desktop app reads the same settings as the CLI, so a plugin installed for your
-user in one shows in the other. That is from the Claude Code docs and UNVERIFIED here.
+3. Type `/adp setup` and answer the scope question (`user`, `project` or `local`). In the plugin,
+   `setup` copies no skills (the plugin serves them) and writes the config. See "First run" below.
 
 Updates come through the marketplace. The plugin sets no version, so Claude Code takes the commit
 as the version: an update brings whatever is on the repository's default branch.
