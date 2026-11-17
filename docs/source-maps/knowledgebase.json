@@ -44,7 +44,6 @@
         "skill/assets/adapters/openai.js",
         "docs/openai-sites-transport.md",
         "skill/assets/hosts/openai-sites/worker.mjs",
-        "skill/assets/hosts/single/shim.js",
         "skill/assets/adapters/openai-sites-comments.js",
         "skill/refs/sites.md",
         "skill/assets/adapters/claude.js",
@@ -104,7 +103,7 @@
         "skill/scripts/adp_sites_dev.mjs",
         "tools/package.py",
         "skill/scripts/adp_bus.py",
-        "skill/scripts/adp_host_build.py",
+        "skill/scripts/adp_sites_build.py",
         "skill/scripts/adp_dev.py",
         "skill/scripts/adp_dev.js",
         "docs/assist.md",
@@ -157,8 +156,7 @@
         "docs/openai-sites-transport.md",
         "docs/openai-host-adapter.md",
         "docs/architecture.md",
-        "tests/test_sites_adapter.py",
-        "tests/test_pack.py"
+        "tests/test_sites_adapter.py"
       ]
     }
   ]
