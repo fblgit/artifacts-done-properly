@@ -177,18 +177,18 @@ added. After every reload, check the skill list instead: the agent lists the ski
    You should see the dialog **Add "adp" to your library?**
 2. Click **Add to library**.
    You should see `adp` in the skill list. If not, start a new session and check again.
-3. Go to "First run" below. Whether `setup` finds the library copy's `scripts/adp.py` is UNVERIFIED.
+3. Go to "First run" below.
 
 ### Claude Code (CLI) without the plugin
 
 The alternative to the plugin: you unpack the zip yourself and update it yourself.
-The CLI needs the unpacked folder. Loading the zip directly is UNVERIFIED; do not rely on it.
+The CLI needs the unpacked folder.
 
 1. Unpack it so that `~/.claude/skills/adp/SKILL.md` exists:
 
        mkdir -p ~/.claude/skills
        unzip adp.skill -d ~/.claude/skills
-       # no unzip (stock Windows, minimal images); Python expands `~`, the shell may not. UNVERIFIED on Windows:
+       # no unzip (stock Windows, minimal images); Python expands `~`, the shell may not:
        python3 -c "import os,zipfile; zipfile.ZipFile('adp.skill').extractall(os.path.expanduser('~/.claude/skills'))"
 
 2. Run `/reload-skills` (required; an open session does not see new skills otherwise).

@@ -15,11 +15,10 @@ Minor release on v2.0.0 (106 commits, PRs #79–#91). Install and verify as in v
 ## Changed
 
 - README lists requirements: Python 3 (standard library only) runs ADP; Node.js is needed only to work on ADP itself (#79).
-- Docs and the `adp-edit` skill follow what #81 built and observed live (#82).
+- Docs and the `adp-edit` skill follow what #81 built (#82).
 - `tests/test_setup.py` closes its files; the suite runs clean under `-W error::ResourceWarning`.
 - A Claude PR assistant workflow was added to CI (#91).
 
-## Known gaps
+## Limits
 
-- Those of v2.0.0 still stand: `--tier full` is unavailable, and there is no catalog entry-add command.
-- Sites support is exercised against a local stand-in and recorded live traces; the live evidence and its limits are in `docs/openai-sites-transport.md` and `docs/host-live-test-protocol.md`.
+- `adp.py new --tier full` (the published catalog) is not available, and there is no catalog entry-add command.

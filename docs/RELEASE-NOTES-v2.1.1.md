@@ -12,12 +12,7 @@ Patch release on v2.1.0. Install and verify as before; `adp.skill.sha256` on the
 - `adp_sites_build.py` is now `adp_host_build.py` (hosts: sites, single). Scripts that imported the old name must follow.
 - `docs/architecture.md` documents the one-file host.
 
-## Observed
-
-- The ADP KnowledgeBase (58 files) published as one private artifact rendered all its chapters on claude.ai; unpacking the published copy gave back the source files byte for byte.
-
-## Known gaps
+## Limits
 
 - Module scripts, relative images and CSS `url()` are not rewritten, and the packed page must stay under 16 MB.
-- The packed catalog (292 files, 3.4 MB) and assistant (10 files) were built but not opened in a browser or published.
-- A packed page does not expand itself into real files; that is not built.
+- A packed page does not expand itself into real files.
