@@ -10,7 +10,7 @@ It also holds exactly one `SKILL.md` (claude.ai refuses more): the road skills g
 
 ## Cut a release
 
-1. Set `metadata.version` in `skill/SKILL.md` (for example `"1.2.0"`) and merge to `main`.
+1. Set `metadata.version` in `skill/SKILL.md` (for example `"1.2.0"`), add the version's section to `CHANGELOG.md`, and merge to `main`.
 2. Tag the merge commit with `v` plus that version and push the tag:
    `git tag v1.2.0 && git push origin v1.2.0`
 3. The `release` workflow builds the bundle and publishes a GitHub release with
