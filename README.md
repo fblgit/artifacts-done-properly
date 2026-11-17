@@ -179,22 +179,6 @@ added. After every reload, check the skill list instead: the agent lists the ski
    You should see `adp` in the skill list. If not, start a new session and check again.
 3. Go to "First run" below.
 
-### Claude Code (CLI) without the plugin
-
-The alternative to the plugin: you unpack the zip yourself and update it yourself.
-The CLI needs the unpacked folder.
-
-1. Unpack it so that `~/.claude/skills/adp/SKILL.md` exists:
-
-       mkdir -p ~/.claude/skills
-       unzip adp.skill -d ~/.claude/skills
-       # no unzip (stock Windows, minimal images); Python expands `~`, the shell may not:
-       python3 -c "import os,zipfile; zipfile.ZipFile('adp.skill').extractall(os.path.expanduser('~/.claude/skills'))"
-
-2. Run `/reload-skills` (required; an open session does not see new skills otherwise).
-   You should see `adp` in the skill list.
-3. Go to "First run" below.
-
 ### First run (all routes)
 
 1. Ask your agent to set ADP up. It runs `python3 -I <skill folder>/scripts/adp.py setup --dry-run`
@@ -260,6 +244,5 @@ existing `adp/2` records from runtime host capabilities: records, viewer, commen
 other hosts require an explicit adapter, and OpenAI Sites has one ([docs/openai-host-adapter.md](docs/openai-host-adapter.md)).
 A page's records move between Claude and Sites with the shared records shell
 (`adp.py bundle`, `import-plan`, `import-ack`; [docs/adp-export-import.md](docs/adp-export-import.md)): it prints the
-native calls and an authorized agent runs them, nothing syncs by itself. Live runs on both hosts are recorded on PR #81;
-native Space Page integration is not implemented. The opt-in
-[Claude adapter](docs/claude-host-adapter.md) lists what it does, what was observed live and what it does not cover.
+native calls and an authorized agent runs them, nothing syncs by itself. The opt-in
+[Claude adapter](docs/claude-host-adapter.md) lists what it does and what it does not cover.

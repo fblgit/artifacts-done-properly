@@ -1,6 +1,6 @@
 # Shared ADP shell and host adapters
 
-PR #81 implements one host-neutral record export/import shell in `adp.py`, with
+`adp.py` has one host-neutral record export/import shell, with
 Claude and Sites adapters. The shell owns bundles, classification and provenance;
 adapters translate native reads, guarded writes and receipts. Agents execute the
 emitted calls with their authorized host tools. There is no automatic sync.
@@ -106,12 +106,7 @@ return-side checks passed too. Claude's live phase durations were not recorded.
 The earlier OpenAI browser/agent/browser receipt
 is separate from this record-store shell run. The deployed Sites shell now renders
 the imported records, context, provenance and history. Direct browser observations
-in PR comments 6914883927 and 6914915590 verify the owner's subsequent intro edit
+verify the owner's subsequent intro edit
 at revision 3 and its persistence after reload. That newer edit has not been
 returned to Claude. Claude browser rendering after the return and source-file/hash
 integrity are not established by these receipts.
-Local tests are not live-host certification. [PR #81](https://github.com/fblgit/artifacts-done-properly/pull/81)
-is merged for its documented experimental scope; that merge does not expand what
-these record-transfer receipts establish. The [final Sites acceptance receipt](https://github.com/fblgit/artifacts-done-properly/pull/81#issuecomment-6926240289)
-separately records deployment, served-source checks, guarded record readback and
-browser reload verification.

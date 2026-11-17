@@ -15,7 +15,7 @@ from adp_host_build import render_worker
 
 
 def assistant(output, namespace):
-    """Use the shared assistant and current PR catalog, with the Sites adapter."""
+    """Use the shared assistant and current catalog, with the Sites adapter."""
     directory = output / "assistant"
     with tempfile.TemporaryDirectory(prefix="adp-sites-build-") as home:
         env = {**os.environ, "ADP_HOME": home}

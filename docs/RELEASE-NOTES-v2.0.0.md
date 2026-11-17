@@ -16,7 +16,7 @@ First public release of Artifacts Done Properly (ADP): a Claude skill for claude
 
 ## Install
 
-Claude Code: install the plugin, and its marketplace brings the updates. Run `/plugin marketplace add fblgit/fblgit-claude-marketplace`, then `/plugin install artifacts-done-properly@fblgit-claude-marketplace`, then follow "First run" in the README. In the plugin, `setup` copies no road skill, because the plugin serves them. UNVERIFIED end to end until the marketplace listing is published.
+Claude Code: install the plugin, and its marketplace brings the updates. Run `/plugin marketplace add fblgit/fblgit-claude-marketplace`, then `/plugin install artifacts-done-properly@fblgit-claude-marketplace`, then follow "First run" in the README. In the plugin, `setup` copies no road skill, because the plugin serves them.
 
 The Claude desktop app's skill library, or a manual install:
 

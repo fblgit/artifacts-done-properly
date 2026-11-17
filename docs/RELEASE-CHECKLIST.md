@@ -2,7 +2,6 @@
 
 Owner = needs the repository owner. Claude = can be done by Claude on request.
 `skill/SKILL.md` and the four `skill/refs/*/SKILL.md` already have `metadata.version: "2.0.0"`, so no version bump is needed.
-PRs #1 to #6 are merged into `main`.
 
 - [ ] 1. [Owner] Choose a license (common options: MIT, Apache-2.0, BSD-3-Clause, MPL-2.0, GPL-3.0, AGPL-3.0). Also decide the licensing of the catalog content. **Release blocker**: the repository has no `LICENSE` file.
 - [ ] 2. [Claude] Add `LICENSE` and the license line in `README.md` once the owner has chosen. Optionally add SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, issue and PR templates, dependabot config (none exist today).
