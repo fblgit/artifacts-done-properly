@@ -4,6 +4,7 @@ the seed packs that `new` writes."""
 import glob, hashlib, json, os, shutil, subprocess, sys, unittest
 
 from test_setup import Base
+from unittest.mock import patch
 
 URL = 'https://claude.ai/artifact/test-artifact'
 EDIT_FROM = 'data-part="home.welcome" data-comment-target>'
@@ -172,6 +173,19 @@ class SourceDriftTests(Cmd):
         mapping['sourceCommit']='0'*40
         failed=self.run_adp(*args,stdin=json.dumps(mapping))
         self.assertEqual(failed.returncode,1); self.assertEqual(json.loads(failed.stdout)['status'],'error')
+
+    def test_source_drift_does_not_fetch_missing_partial_clone_objects(self):
+        git, base, mapping = self.history()
+        git('config','uploadpack.allowFilter','true')
+        filtered=self.p('filtered');trace=self.p('git-trace')
+        from pathlib import Path
+        subprocess.run(['git','clone','-q','--filter=tree:0','--no-checkout',Path(self.cwd).as_uri(),filtered],check=True,capture_output=True,timeout=3)
+        path=self.write_json('map.json',mapping)
+        with patch.dict(os.environ,{'GIT_TRACE':trace}):
+            result=self.run_adp('source-drift',path,'--repo',filtered)
+        self.assertEqual(result.returncode,1,result.stderr)
+        self.assertEqual(json.loads(result.stdout)['status'],'error')
+        with open(trace) as stream:self.assertFalse(any(' fetch ' in line for line in stream))
 
 
 class SeedTests(Cmd):

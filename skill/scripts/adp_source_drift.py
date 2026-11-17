@@ -9,7 +9,7 @@ import sys
 
 
 def git(repo, *args):
-    result = subprocess.run(['git', '-C', str(repo), *args], capture_output=True, timeout=20)
+    result = subprocess.run(['git', '--no-lazy-fetch', '-C', str(repo), *args], capture_output=True, timeout=20)
     if result.returncode:
         detail = result.stderr.decode('utf-8', errors='replace').strip()
         raise ValueError(detail or 'Git ' + args[0] + ' failed; reviewed commit must be an ancestor of the checked commit')

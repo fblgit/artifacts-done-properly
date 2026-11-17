@@ -46,6 +46,8 @@ python3 -I <adp skill folder>/scripts/adp.py source-drift sources.json --repo PR
 `-` instead of a map filename reads JSON from stdin. Fetch refs separately when
 needed; the command never fetches or inspects uncommitted work. It resolves the
 checked ref to a commit and requires review commits to be available ancestors.
+Git must support [`--no-lazy-fetch`](https://git-scm.com/docs/git): missing partial-clone
+objects produce an error instead of an implicit remote fetch.
 Use a full-history CI checkout. Missing/shallow history, unknown pins and invalid
 maps produce `status: error`, exit 1. Valid reports exit 0; `--strict` exits 2 if
 sections or unmapped changes need review. No review pin is written or advanced.
