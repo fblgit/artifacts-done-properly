@@ -71,9 +71,10 @@ def pack(src, fragment=False):
     if 'index.html' not in files: raise ValueError('The folder needs an index.html')
     page = files['index.html'].decode('utf-8')
     parts = {k: re.search(r'<%s\b([^>]*)>(.*)</%s\s*>' % (k, k), page, re.S | re.I) for k in ('head', 'body')}
-    if not all(parts.values()): raise ValueError('index.html needs <head> and <body>')
     htm = re.search(r'<html\b([^>]*)>', page, re.I)
-    head, deferred = parts['head'].group(2), []
+    # an index.html that is already a fragment (no <head>/<body>, as the starter and assistant templates are) is all body
+    hd, bd, battrs = (parts['head'].group(2), parts['body'].group(2), parts['body'].group(1)) if all(parts.values()) else ('', page, '')
+    head, deferred = hd, []
 
     def script(m):
         a = attrs(m.group(1)); p = local(a.get('src'), files)
@@ -86,13 +87,13 @@ def pack(src, fragment=False):
         return '<script>ADPPACK.css(%s)</script>' % json.dumps(p) if p and a.get('rel', '').lower() == 'stylesheet' else m.group(0)
     def rewrite(html): return re.sub(r'<link\b([^>]*)>', link, re.sub(r'<script\b([^>]*)>\s*</script>', script, html, flags=re.I), flags=re.I)
 
-    head, body = rewrite(head), rewrite(parts['body'].group(2))
+    head, body = rewrite(head), rewrite(bd)
     title = re.search(r'<title>.*?</title>', head, re.S | re.I)
     head = re.sub(r'<title>.*?</title>|<meta\s+charset[^>]*>', '', head, flags=re.S | re.I)
     top = (title.group(0) if title else '<title>Page</title>') + ''.join(block(p, files[p]) for p in files) + SHIM + head
     tail = body + ''.join(deferred)
     out = top + tail if fragment else '<!doctype html>\n<html%s><head><meta charset="utf-8">%s</head><body%s>%s</body></html>\n' % (
-        htm.group(1) if htm else '', top, parts['body'].group(1), tail)
+        htm.group(1) if htm else '', top, battrs, tail)
     if len(out.encode('utf-8')) > LIMIT: raise ValueError('The packed page is over the 16 MB page limit')
     return out, files
 

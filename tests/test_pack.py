@@ -48,6 +48,11 @@ class Pack(unittest.TestCase):
         self.assertTrue(page.startswith('<title>T</title>'))
         self.assertFalse(re.search(r'<!doctype|<html|<head|<body', page, re.I))
 
+    def test_a_page_that_is_already_a_fragment_packs_as_all_body(self):
+        with open(os.path.join(self.src, 'index.html'), 'w') as f: f.write('<p>hi</p><script src="a.js"></script>')
+        _, page, _ = self.pack('--fragment')
+        self.assertIn('ADPPACK.js("a.js")', page); self.assertIn('<p>hi</p>', page)
+
     def test_unpack_refuses_tampering_and_a_used_folder(self):
         out, page, _ = self.pack()
         bad = os.path.join(self.t.name, 'bad.html')
