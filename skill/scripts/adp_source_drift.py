@@ -164,9 +164,13 @@ def main(argv):
     parser.add_argument('--out', type=Path, help='Also save the report; never advances review pins')
     parser.add_argument('--strict', action='store_true', help='Exit 2 when review or mapping work is needed')
     args = parser.parse_args(argv[1:])
+    protected = False
     try:
-        if args.out and args.map != '-' and args.out.resolve() == Path(args.map).resolve():
-            raise ValueError('Report output must not overwrite the source map')
+        if args.out and args.map != '-':
+            source = Path(args.map)
+            protected = args.out.resolve() == source.resolve() or (
+                args.out.exists() and source.exists() and args.out.samefile(source))
+            if protected: raise ValueError('Report output must not overwrite the source map')
         if args.map == '-':
             mapping = json.load(sys.stdin)
         else:
@@ -180,7 +184,7 @@ def main(argv):
         data, code = {'schema': 'adp-source-drift/1', 'status': 'error', 'error': str(error)}, 1
         if args.format == 'coverage': data = coverage_payload(data, args.repo)
     output = markdown(data) if args.format == 'markdown' else json.dumps(data, indent=2) + '\n'
-    if args.out and not (args.map != '-' and args.out.resolve() == Path(args.map).resolve()):
+    if args.out and not protected:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(output, encoding='utf-8')
     print(output, end='')
