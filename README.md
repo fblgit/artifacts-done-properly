@@ -153,10 +153,12 @@ overwrites a value in an existing config: it only adds the keys the config lacks
 
 The kit catalog is a published claude.ai artifact: 141 entries (components, themes, page templates,
 guides), each with a preview, what it needs and the exact line to take it. Its page, About ADP, is
-at <https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu> (the owner shares the artifact for view;
-until then only they can open it).
+at <https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ> (ADP: Catalog v2.1.1; the owner shares the artifact
+for view; until then only they can open it). ADP: Assistant v2.1.1, a page built from the `assistant`
+template whose kit files come from that catalog, is at <https://claude.ai/artifact/F42c7ZcRDKptdaTA5TAqZB>
+(shared the same way).
 
-1. Point your ADP at it: `python3 -I <skill folder>/scripts/adp.py catalog https://claude.ai/artifact/RmnRdmAHDrr4kMsqkEt6Pu`.
+1. Point your ADP at it: `python3 -I <skill folder>/scripts/adp.py catalog https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ`.
    This saves the URL in `~/.adp/config.json`. `setup` already put the shipped kit into
    `~/.adp/catalog` (My Own Kit), so the command prints Artifact reads only for files that differ
    from the live catalog. Make those reads, then run the same command again: it says
