@@ -12,6 +12,9 @@
   adp.py manifest PAGE|DIR [--file NAME=PATH ...]   manifest JSON on stdout (schema, page_hash, parts, files, parents)
   adp.py diff     OLD.json NEW.json                 added / removed / changed parts, deepest first, own elements +/-
   adp.py diff-pages OLD NEW [--file NAME=PATH ...]  the same from two pages (or two DIRs), plus the added/removed lines per deepest part
+  adp.py source-drift MAP.json --repo DIR [--head REF] [--format json|markdown] [--out FILE] [--strict]
+                                                    committed source changes grouped by mapped sections; no network or model calls,
+                                                    exit 1 on invalid/unavailable evidence; --strict exits 2 when review is needed
 
 Build and record (each prints what the Artifact / ArtifactData call needs, so nothing is retyped):
   adp.py templates                                  the templates `new` can start from
@@ -1465,6 +1468,9 @@ adp_loop.A = adp_dev.A = adp_bundle.A = adp_work.A = sys.modules[__name__]
 
 
 def main(a):
+    if a[:1] == ['source-drift']:
+        import adp_source_drift
+        return adp_source_drift.main(a)
     cmds = {'work': adp_work.work, 'bundle': adp_bundle.bundle, 'import-plan': adp_bundle.plan, 'import-ack': adp_bundle.ack, 'export': adp_loop.export,'classify': adp_loop.classify_cmd, 'propose': adp_loop.propose, 'ack': adp_loop.ack, 'gate': adp_loop.gate, 'new': new, 'take': take, 'seed': seed, 'hold': hold, 'record': record, 'config': config_cmd, 'requests': requests_cmd, 'pins': pins, 'catalog': catalog_cmd, 'suggest': suggest, 'kit': kit, 'setup': setup_cmd, 'init': init_cmd, 'projects': projects_cmd, 'log': log_cmd, 'dev': adp_dev.main}
     if a and a[0] in cmds: return cmds[a[0]](a)
     if a[:1] == ['templates']:

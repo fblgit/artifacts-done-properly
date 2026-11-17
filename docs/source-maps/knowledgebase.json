@@ -1,0 +1,107 @@
+{
+  "schema": "adp-source-map/1",
+  "title": "ADP KnowledgeBase source review",
+  "sourceCommit": "285d2c6d40f98afe1deb944e0566194191baa8f2",
+  "basis": "Chapter metadata exported from the local KnowledgeBase checkout. Deployed source/publication not verified.",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "A shared artifact, with a memory",
+      "sources": [
+        "skill/SKILL.md",
+        "docs/architecture.md",
+        "docs/host-adapters.md"
+      ]
+    },
+    {
+      "id": "architecture",
+      "title": "One protocol, distinct boundaries",
+      "sources": [
+        "skill/assets/adp.js",
+        "docs/host-adapters.md",
+        "skill/scripts/adp.py",
+        "skill/refs/adp-catalog/SKILL.md"
+      ]
+    },
+    {
+      "id": "protocol",
+      "title": "Read before you write",
+      "sources": [
+        "skill/refs/adp-edit/SKILL.md",
+        "skill/scripts/adp_loop.py",
+        "docs/openai-sites-transport.md",
+        "skill/scripts/adp_sites_adapter.py",
+        "skill/refs/sites.md"
+      ]
+    },
+    {
+      "id": "adapters",
+      "title": "Host capability is a boundary",
+      "sources": [
+        "docs/host-adapters.md",
+        "skill/assets/adapters/openai.js",
+        "docs/openai-sites-transport.md",
+        "skill/assets/hosts/openai-sites/worker.mjs",
+        "skill/assets/adapters/openai-sites-comments.js",
+        "skill/refs/sites.md"
+      ]
+    },
+    {
+      "id": "companion",
+      "title": "Wake only for authorized work",
+      "sources": [
+        "skill/scripts/adp_work.py",
+        "docs/openai-sites-transport.md",
+        "skill/assets/adapters/openai-sites-comments.js"
+      ]
+    },
+    {
+      "id": "bus",
+      "title": "Coordination, not authority.",
+      "sources": [
+        "skill/refs/local-bus.md",
+        "skill/scripts/adp_bus.py",
+        "skill/scripts/tests/test_bus.py",
+        "tests/test_local_bus.py",
+        "skill/SKILL.md"
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "From situation to record",
+      "sources": [
+        "skill/SKILL.md",
+        "skill/refs/adp-new/SKILL.md",
+        "skill/refs/adp-edit/SKILL.md",
+        "skill/refs/adp-adopt/SKILL.md",
+        "skill/refs/adp-catalog/SKILL.md",
+        "skill/refs/sites.md"
+      ]
+    },
+    {
+      "id": "scripts",
+      "title": "Plans, native calls, verified receipts",
+      "sources": [
+        "skill/scripts/adp.py",
+        "skill/scripts/adp_loop.py",
+        "skill/scripts/adp_bundle.py",
+        "skill/scripts/adp_work.py",
+        "skill/scripts/adp_sites_dev.mjs",
+        "tools/package.py",
+        "skill/scripts/adp_bus.py",
+        "skill/scripts/adp_sites_build.py"
+      ]
+    },
+    {
+      "id": "evidence",
+      "title": "Evidence has a scope",
+      "sources": [
+        "docs/host-live-test-protocol.md",
+        "docs/openai-sites-transport.md",
+        "docs/openai-host-adapter.md",
+        "docs/architecture.md",
+        "tests/test_sites_adapter.py"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+name: source review drift
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Report source changes by section (no inference)
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, subprocess, sys
+          failed = False
+          for source in sorted(pathlib.Path('docs/source-maps').glob('*.json')):
+              for fmt, suffix in [('json', 'json'), ('markdown', 'md')]:
+                  target = pathlib.Path('source-drift-reports') / (source.stem + '.' + suffix)
+                  result = subprocess.run([sys.executable, '-I', 'skill/scripts/adp.py', 'source-drift', str(source), '--repo', '.', '--head', os.environ['GITHUB_SHA'], '--format', fmt, '--out', str(target)], capture_output=True, text=True)
+                  failed |= result.returncode != 0
+                  if fmt == 'markdown':
+                      with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+                          summary.write(result.stdout or result.stderr)
+          sys.exit(int(failed))
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: source-drift-reports
+          path: source-drift-reports/
+          if-no-files-found: error
