@@ -1,106 +1,341 @@
 {
   "schema": "adp-source-map/1",
-  "title": "ADP KnowledgeBase source review",
+  "title": "ADP KnowledgeBase coverage",
   "sourceCommit": "285d2c6d40f98afe1deb944e0566194191baa8f2",
-  "basis": "Chapter metadata exported from the local KnowledgeBase checkout. Deployed source/publication not verified.",
+  "basis": "Overview coverage from chapter citations, brief explanations and Script reference entries. Healthy means mapped source is unchanged at the checked commit, not API-by-API verification or live repository freshness.",
   "sections": [
     {
       "id": "overview",
       "title": "A shared artifact, with a memory",
       "sources": [
-        "skill/SKILL.md",
-        "docs/architecture.md",
-        "docs/host-adapters.md"
+        {
+          "label": "ADP standard",
+          "path": "skill/SKILL.md"
+        },
+        {
+          "label": "Architecture and records",
+          "path": "docs/architecture.md"
+        },
+        {
+          "label": "Host boundary",
+          "path": "docs/host-adapters.md"
+        }
       ]
     },
     {
       "id": "architecture",
       "title": "One protocol, distinct boundaries",
       "sources": [
-        "skill/assets/adp.js",
-        "docs/host-adapters.md",
-        "skill/scripts/adp.py",
-        "skill/refs/adp-catalog/SKILL.md"
+        {
+          "label": "Browser runtime",
+          "path": "skill/assets/adp.js"
+        },
+        {
+          "label": "Host contract",
+          "path": "docs/host-adapters.md"
+        },
+        {
+          "label": "Shared planner",
+          "path": "skill/scripts/adp.py"
+        },
+        {
+          "label": "Catalog transport",
+          "path": "skill/refs/adp-catalog/SKILL.md"
+        }
       ]
     },
     {
       "id": "protocol",
       "title": "Read before you write",
       "sources": [
-        "skill/refs/adp-edit/SKILL.md",
-        "skill/scripts/adp_loop.py",
-        "docs/openai-sites-transport.md",
-        "skill/scripts/adp_sites_adapter.py",
-        "skill/refs/sites.md"
+        {
+          "label": "Edit road",
+          "path": "skill/refs/adp-edit/SKILL.md"
+        },
+        {
+          "label": "Classification and export",
+          "path": "skill/scripts/adp_loop.py"
+        },
+        {
+          "label": "Sites publication sequence",
+          "path": "docs/openai-sites-transport.md"
+        },
+        {
+          "label": "Native record receipts",
+          "path": "skill/scripts/adp_sites_adapter.py"
+        },
+        {
+          "label": "ADP on Sites",
+          "path": "skill/refs/sites.md"
+        },
+        {
+          "path": "docs/adp-export-import.md",
+          "label": "adp-export-import.md"
+        },
+        {
+          "path": "skill/scripts/adp_bundle.py",
+          "label": "adp_bundle.py"
+        }
       ]
     },
     {
       "id": "adapters",
       "title": "Host capability is a boundary",
       "sources": [
-        "docs/host-adapters.md",
-        "skill/assets/adapters/openai.js",
-        "docs/openai-sites-transport.md",
-        "skill/assets/hosts/openai-sites/worker.mjs",
-        "skill/assets/adapters/openai-sites-comments.js",
-        "skill/refs/sites.md"
+        {
+          "label": "Host contract and agent handoff",
+          "path": "docs/host-adapters.md"
+        },
+        {
+          "label": "OpenAI factory",
+          "path": "skill/assets/adapters/openai.js"
+        },
+        {
+          "label": "Concrete Sites transport",
+          "path": "docs/openai-sites-transport.md"
+        },
+        {
+          "label": "Worker authorization",
+          "path": "skill/assets/hosts/openai-sites/worker.mjs"
+        },
+        {
+          "label": "Application feedback",
+          "path": "skill/assets/adapters/openai-sites-comments.js"
+        },
+        {
+          "label": "ADP on Sites (Claude and Codex)",
+          "path": "skill/refs/sites.md"
+        },
+        {
+          "path": "skill/assets/adapters/claude.js",
+          "label": "claude.js"
+        },
+        {
+          "path": "skill/assets/adapters/openai-sites.js",
+          "label": "openai-sites.js"
+        },
+        {
+          "path": "skill/scripts/adp_claude_adapter.py",
+          "label": "adp_claude_adapter.py"
+        },
+        {
+          "path": "docs/claude-host-adapter.md",
+          "label": "claude-host-adapter.md"
+        },
+        {
+          "path": "skill/assets/hosts/openai-sites/schema.sql",
+          "label": "schema.sql"
+        },
+        {
+          "path": "skill/assets/hosts/openai-sites/fixture.html",
+          "label": "fixture.html"
+        }
       ]
     },
     {
       "id": "companion",
       "title": "Wake only for authorized work",
       "sources": [
-        "skill/scripts/adp_work.py",
-        "docs/openai-sites-transport.md",
-        "skill/assets/adapters/openai-sites-comments.js"
+        {
+          "label": "Existing claims and receipt validator",
+          "path": "skill/scripts/adp_work.py"
+        },
+        {
+          "label": "Work lifecycle and source publication",
+          "path": "docs/openai-sites-transport.md"
+        },
+        {
+          "label": "Shared work UI",
+          "path": "skill/assets/adapters/openai-sites-comments.js"
+        }
       ]
     },
     {
       "id": "bus",
       "title": "Coordination, not authority.",
       "sources": [
-        "skill/refs/local-bus.md",
-        "skill/scripts/adp_bus.py",
-        "skill/scripts/tests/test_bus.py",
-        "tests/test_local_bus.py",
-        "skill/SKILL.md"
+        {
+          "label": "Local bus guide",
+          "path": "skill/refs/local-bus.md"
+        },
+        {
+          "label": "Broker and client",
+          "path": "skill/scripts/adp_bus.py"
+        },
+        {
+          "label": "Socket tests",
+          "path": "skill/scripts/tests/test_bus.py"
+        },
+        {
+          "label": "CI discovery",
+          "path": "tests/test_local_bus.py"
+        },
+        {
+          "label": "Base skill pointer",
+          "path": "skill/SKILL.md"
+        }
       ]
     },
     {
       "id": "skills",
       "title": "From situation to record",
       "sources": [
-        "skill/SKILL.md",
-        "skill/refs/adp-new/SKILL.md",
-        "skill/refs/adp-edit/SKILL.md",
-        "skill/refs/adp-adopt/SKILL.md",
-        "skill/refs/adp-catalog/SKILL.md",
-        "skill/refs/sites.md"
+        {
+          "label": "Base skill",
+          "path": "skill/SKILL.md"
+        },
+        {
+          "label": "New",
+          "path": "skill/refs/adp-new/SKILL.md"
+        },
+        {
+          "label": "Edit",
+          "path": "skill/refs/adp-edit/SKILL.md"
+        },
+        {
+          "label": "Adopt",
+          "path": "skill/refs/adp-adopt/SKILL.md"
+        },
+        {
+          "label": "Catalog",
+          "path": "skill/refs/adp-catalog/SKILL.md"
+        },
+        {
+          "label": "Sites host",
+          "path": "skill/refs/sites.md"
+        },
+        {
+          "path": "docs/catalog-header.md",
+          "label": "catalog-header.md"
+        },
+        {
+          "path": "skill/catalog/catalog.json",
+          "label": "catalog.json"
+        },
+        {
+          "path": "skill/scripts/adp_catalog.py",
+          "label": "adp_catalog.py"
+        },
+        {
+          "path": "skill/scripts/publish_catalog.py",
+          "label": "publish_catalog.py"
+        },
+        {
+          "path": "skill/scripts/welcome.html",
+          "label": "welcome.html"
+        },
+        {
+          "path": "skill/templates/",
+          "label": "templates"
+        }
       ]
     },
     {
       "id": "scripts",
       "title": "Plans, native calls, verified receipts",
       "sources": [
-        "skill/scripts/adp.py",
-        "skill/scripts/adp_loop.py",
-        "skill/scripts/adp_bundle.py",
-        "skill/scripts/adp_work.py",
-        "skill/scripts/adp_sites_dev.mjs",
-        "tools/package.py",
-        "skill/scripts/adp_bus.py",
-        "skill/scripts/adp_sites_build.py"
+        {
+          "path": "skill/scripts/adp.py",
+          "label": "adp.py"
+        },
+        {
+          "path": "skill/scripts/adp_loop.py",
+          "label": "adp_loop.py"
+        },
+        {
+          "path": "skill/scripts/adp_bundle.py",
+          "label": "adp_bundle.py"
+        },
+        {
+          "path": "skill/scripts/adp_work.py",
+          "label": "adp_work.py"
+        },
+        {
+          "path": "skill/scripts/adp_sites_dev.mjs",
+          "label": "adp_sites_dev.mjs"
+        },
+        {
+          "path": "tools/package.py",
+          "label": "package.py"
+        },
+        {
+          "path": "skill/scripts/adp_bus.py",
+          "label": "adp_bus.py"
+        },
+        {
+          "path": "skill/scripts/adp_sites_build.py",
+          "label": "adp_sites_build.py"
+        },
+        {
+          "path": "skill/scripts/adp_dev.py",
+          "label": "adp_dev.py + adp_dev.js"
+        },
+        {
+          "path": "skill/scripts/adp_dev.js",
+          "label": "adp_dev.js"
+        },
+        {
+          "path": "docs/assist.md",
+          "label": "assist.md"
+        },
+        {
+          "path": "docs/openai-localhost.md",
+          "label": "openai-localhost.md"
+        },
+        {
+          "path": "skill/scripts/adp_claude_adapter.py",
+          "label": "adp_claude_adapter.py"
+        },
+        {
+          "path": "skill/scripts/adp_sites_adapter.py",
+          "label": "adp_sites_adapter.py"
+        },
+        {
+          "path": "skill/scripts/adp_lib.py",
+          "label": "adp_lib.py"
+        },
+        {
+          "path": "skill/scripts/adp_catalog.py",
+          "label": "adp_catalog.py"
+        },
+        {
+          "path": "skill/scripts/publish_catalog.py",
+          "label": "publish_catalog.py"
+        },
+        {
+          "path": "tools/build_sites_fixture.py",
+          "label": "build_sites_fixture.py"
+        },
+        {
+          "path": "tools/roundtrip.py",
+          "label": "roundtrip.py"
+        }
       ]
     },
     {
       "id": "evidence",
       "title": "Evidence has a scope",
       "sources": [
-        "docs/host-live-test-protocol.md",
-        "docs/openai-sites-transport.md",
-        "docs/openai-host-adapter.md",
-        "docs/architecture.md",
-        "tests/test_sites_adapter.py"
+        {
+          "label": "Live test receipt protocol",
+          "path": "docs/host-live-test-protocol.md"
+        },
+        {
+          "label": "Sites evidence and limits",
+          "path": "docs/openai-sites-transport.md"
+        },
+        {
+          "label": "OpenAI factory verification",
+          "path": "docs/openai-host-adapter.md"
+        },
+        {
+          "label": "Architecture",
+          "path": "docs/architecture.md"
+        },
+        {
+          "label": "Sites build tests",
+          "path": "tests/test_sites_adapter.py"
+        }
       ]
     }
   ]
