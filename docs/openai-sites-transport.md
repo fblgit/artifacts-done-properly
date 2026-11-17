@@ -163,7 +163,13 @@ export, hold, propose, record and ack commands with native Sites publication:
 3. Read affected part and agent revisions, generate holds, and apply each through
    the native revision guard. Read them back and ack their new revisions. Propose
    the source change through `incoming`, retaining its base hashes and history.
-4. Run `adp.py files` to refresh seed hashes. Package and publish the exact source
+4. Prepare seed hashes explicitly with `adp.py seed` when needed. Run
+   `adp.py files ASSETS --host sites --out SITE_PROJECT` to package a complete,
+   materialized asset snapshot with the canonical Worker into `dist/server/index.js`.
+   It reports the required `DB` binding and schema; provisioning/migrations remain
+   native Sites operations. It preserves hosting identity and existing migrations.
+   See [the host guide](../skill/refs/sites.md) for agent routing and repository ownership.
+   Package and publish the exact source
    through the native Sites source helper and deployment tools. This path uses
    source-repository guards; a record revision cannot guard a source deployment.
 5. Read deployed bytes back before `record`. Use the successful deployment ID as

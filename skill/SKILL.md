@@ -1,6 +1,6 @@
 ---
 name: adp
-description: ADP (Artifacts Done Properly) is the standard for claude.ai Artifacts that more than one agent or session works on, that collect comments or requests from people, or that are built from shared catalog components. Load it FIRST, before writing any HTML and before calling the Artifact or ArtifactData tools, whenever the user wants a new artifact page, board, tracker, dashboard, assistant or record that will be kept, shared or edited again; wants to edit, republish or answer comments on an artifact that already exists or that another session touched; says ADP, adp.py, catalog, kit, theme, template, part id, watch the artifact, requests or presence; wants an existing artifact put on ADP; or is setting ADP up for the first time. Skipping it risks a stale copy overwriting newer versions and rebuilding by hand what the catalog already has.
+description: ADP (Artifacts Done Properly) is the standard for shared Claude Artifacts and Sites pages that collect comments or requests from people, or that are built from shared catalog components. Load it FIRST, before writing any HTML and before calling the Artifact or ArtifactData tools, whenever the user wants a new artifact page, board, tracker, dashboard, assistant or record that will be kept, shared or edited again; wants to edit, republish or answer comments on an artifact that already exists or that another session touched; says ADP, adp.py, catalog, kit, theme, template, part id, watch the artifact, requests or presence; wants an existing artifact put on ADP; or is setting ADP up for the first time. Skipping it risks a stale copy overwriting newer versions and rebuilding by hand what the catalog already has.
 license: Apache-2.0
 metadata:
   version: "2.0.0"
@@ -29,6 +29,10 @@ limits are maintained there; run the separate `scripts/adp_bus.py` helper.
 3. To onboard just a project folder, run `adp.py init [DIR]`. `init` and `setup --scope project|local` also register the project (name, scope, absolute path) in `~/.adp/projects/<name>/config.json`; `adp.py projects` lists the registered projects, so a project is found from any folder.
 
 ## Which road
+
+Choose the host as well as the road. For a Sites page, read [ADP on Sites](refs/sites.md)
+before creating, editing or publishing. That guide applies to both Claude and Codex;
+use native Sites source/record tools in place of the roads' Claude host calls.
 
 | The user wants | Load skill |
 |---|---|

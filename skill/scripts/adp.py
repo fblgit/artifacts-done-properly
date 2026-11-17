@@ -29,6 +29,8 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
                                                     Files artifacts do not serve (archives, .py: use .txt) are left out and listed under
                                                     `skipped`. Over N files (default 250; a publish takes 255) `files` becomes `batches`, each
                                                     also written to DIR.adp/publish-N.json: publish the page with the first, the rest to the url
+  adp.py files DIR --host sites --out PROJECT_DIR     full materialized asset snapshot + canonical API -> dist/server/index.js;
+                                                    prints DB binding/schema requirements; does not deploy, seed or reconcile
   adp.py pins publish-1.json=VERSION_ID ... [--out vermap.json]
                                                     {path: version id} for CAT_VERMAP from the batches and the id each publish returned
   adp.py catalog [URL]                              the user's catalog: URL saves it (~/.adp/config.json); prints the Artifact read that
@@ -1470,6 +1472,14 @@ def main(a):
             if os.path.isfile(os.path.join(TPL, t, 'template.json')): m = tmeta(t); print(f"{t:10} {m['summary']}\n{'':10} use when: {m['use_when']}")
         return 0
     if len(a) >= 2 and a[0] == 'files':
+        host = opt(a, '--host', 'claude')
+        if host not in ('claude', 'sites'): raise ValueError('Unknown files host: ' + host)
+        if host == 'sites':
+            import adp_sites_build
+            where = opt(a, '--out')
+            if not where or '--since' in a or '--batch' in a:
+                raise ValueError('Sites requires --out PROJECT_DIR and a full snapshot (no --since/--batch)')
+            return emit(adp_sites_build.build(a[1], where, add_kit_refs(publish_args(a[1]), a[1])))
         since = opt(a, '--since'); n = int(opt(a, '--batch', LIMIT)); where = opt(a, '--out', a[1].rstrip('/') + '.adp')
         fresh = os.path.isfile(os.path.join(a[1], SEED)) and seed_file(a[1])    # edits after `new` change the hashes the seed carries
         if not since: return emit(batched(add_kit_refs(publish_args(a[1]), a[1]), a[1], n, where))
