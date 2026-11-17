@@ -4,6 +4,7 @@ the seed packs that `new` writes."""
 import glob, hashlib, json, os, shutil, subprocess, sys, unittest
 
 from test_setup import Base
+from unittest.mock import patch as patch_env
 
 URL = 'https://claude.ai/artifact/test-artifact'
 EDIT_FROM = 'data-part="home.welcome" data-comment-target>'
@@ -84,6 +85,107 @@ class Cmd(Base):
 
     def save_state(self, d, st):
         json.dump(st, open(d + '.adp/state.json', 'w'))
+
+
+class SourceDriftTests(Cmd):
+    def history(self):
+        def git(*args):
+            return subprocess.check_output(['git', '-C', self.cwd, *args], text=True, stderr=subprocess.PIPE, timeout=3).strip()
+        git('init', '-q'); git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.test')
+        git('config', 'commit.gpgsign', 'false')
+        for name in ('source.txt', 'dir/old.txt', 'unchanged.txt'):
+            os.makedirs(os.path.dirname(self.p(name)), exist_ok=True)
+            with open(self.p(name), 'w') as stream: stream.write('before')
+        git('add', '.'); git('commit', '-qm', 'base'); base = git('rev-parse', 'HEAD')
+        mapping = {'schema':'adp-source-map/1', 'sourceCommit':base, 'sections':[
+            {'id':'intro','title':'Introduction','sources':[{'path':'source.txt'}]},
+            {'id':'files','title':'Files','sources':['dir/']},
+            {'id':'stable','sources':['unchanged.txt']}]}
+        return git, base, mapping
+
+    def test_source_drift_cli_reports_sections_and_unmapped_files(self):
+        git, base, mapping = self.history()
+        path = self.write_json('map.json', mapping)
+        self.assertEqual(self.ok('source-drift',path,'--repo',self.cwd)['status'],'current')
+        with open(self.p('source.txt'),'w') as stream: stream.write('after')
+        git('mv','dir/old.txt','dir/new name.txt')
+        with open(self.p('uncovered.txt'),'w') as stream: stream.write('new')
+        git('add','source.txt','dir','uncovered.txt'); git('commit','-qm','changed')
+        args = ('source-drift',path,'--repo',self.cwd)
+        result = self.ok(*args)
+        sections = {s['id']:s for s in result['sections']}
+        self.assertEqual(sections['intro']['changes'],[{'status':'M','path':'source.txt'}])
+        self.assertEqual(sections['files']['changes'],[{'status':'A','path':'dir/new name.txt'},{'status':'D','path':'dir/old.txt'}])
+        self.assertEqual(sections['stable']['status'],'current')
+        self.assertEqual(result['unmappedChanges'],[{'status':'A','path':'uncovered.txt'}])
+        self.assertEqual(self.run_adp(*args,'--strict').returncode,2)
+        output = self.p('report.md')
+        rendered = self.run_adp(*args,'--format','markdown','--out',output)
+        self.assertEqual(rendered.returncode,0,rendered.stderr)
+        with open(output) as stream: self.assertEqual(stream.read(),rendered.stdout)
+        self.assertIn('Introduction',rendered.stdout); self.assertIn('dir/new name.txt',rendered.stdout)
+        with open(path) as stream: self.assertEqual(json.load(stream)['sourceCommit'],base)
+        mapping['sections'][0]['sourceCommit'] = git('rev-parse','HEAD')
+        per_section = self.ok('source-drift','-','--repo',self.cwd,stdin=json.dumps(mapping))
+        self.assertEqual(per_section['sections'][0]['status'],'current')
+        self.assertEqual(per_section['sections'][1]['status'],'needs_review')
+
+    def test_source_drift_refuses_false_clean_evidence(self):
+        git, base, mapping = self.history()
+        for patch in [{'sourceCommit':'0'*40}, {'sourceCommit':'HEAD'}, {'sections':[]},
+                      {'sections':[{'id':'x','sources':['../outside']}]},
+                      {'sections':[{'id':'x','sources':['absent.txt']}]},
+                      {'sections':[mapping['sections'][0],mapping['sections'][0]]}]:
+            result = self.run_adp('source-drift','-','--repo',self.cwd,stdin=json.dumps({**mapping,**patch}))
+            self.assertEqual(result.returncode,1,result.stderr)
+            self.assertEqual(json.loads(result.stdout)['status'],'error')
+        path = self.write_json('map.json',mapping)
+        self.assertEqual(self.run_adp('source-drift',path,'--repo',self.cwd,'--out',path).returncode,1)
+        with open(path) as stream: self.assertEqual(json.load(stream),mapping)
+        alias=self.p('map-alias.json'); os.link(path,alias)
+        self.assertEqual(self.run_adp('source-drift',path,'--repo',self.cwd,'--out',alias).returncode,1)
+        with open(path) as stream: self.assertEqual(json.load(stream),mapping)
+        git('checkout','--orphan','other'); git('rm','-rf','.'); git('commit','--allow-empty','-qm','unrelated')
+        result = self.run_adp('source-drift','-','--repo',self.cwd,stdin=json.dumps(mapping))
+        self.assertEqual(result.returncode,1)
+        self.assertIn('ancestor',json.loads(result.stdout)['error'])
+
+    def test_source_coverage_payload_distinguishes_healthy_stale_missing(self):
+        git, base, mapping = self.history()
+        mapping['sections']=mapping['sections'][:2]
+        initial=self.ok('source-drift','-','--repo',self.cwd,'--format','coverage',stdin=json.dumps(mapping))
+        self.assertEqual(initial['missingFiles'],['unchanged.txt'])
+        self.assertEqual(initial['summary'],{'healthy':2,'stale':0,'missing':1,'total':3})
+        with open(self.p('source.txt'),'w') as stream: stream.write('after')
+        git('rm','dir/old.txt'); git('add','source.txt'); git('commit','-qm','changes')
+        args=('source-drift','-','--repo',self.cwd,'--format','coverage')
+        payload=self.ok(*args,stdin=json.dumps(mapping))
+        self.assertEqual(payload['schema'],'adp-source-coverage/1')
+        self.assertEqual([s['status'] for s in payload['sections']],['stale','stale'])
+        self.assertEqual(payload['summary'],{'healthy':0,'stale':1,'missing':1,'total':2})
+        self.assertEqual(payload['missingFiles'],['unchanged.txt'])
+        self.assertEqual(payload['files'][0]['chapters'],['intro'])
+        self.assertEqual(payload['sections'][0]['sources'][0]['changes'],[{'status':'M','path':'source.txt'}])
+        mapping['sections'][0]['sourceCommit']='0'*40
+        unavailable=self.run_adp(*args,stdin=json.dumps(mapping))
+        self.assertEqual(unavailable.returncode,1); self.assertEqual(json.loads(unavailable.stdout)['status'],'error')
+        mapping['sections'][0]['sourceCommit']=base
+        mapping['sourceCommit']='0'*40
+        failed=self.run_adp(*args,stdin=json.dumps(mapping))
+        self.assertEqual(failed.returncode,1); self.assertEqual(json.loads(failed.stdout)['status'],'error')
+
+    def test_source_drift_does_not_fetch_missing_partial_clone_objects(self):
+        git, base, mapping = self.history()
+        git('config','uploadpack.allowFilter','true')
+        filtered=self.p('filtered');trace=self.p('git-trace')
+        from pathlib import Path
+        subprocess.run(['git','clone','-q','--filter=tree:0','--no-checkout',Path(self.cwd).as_uri(),filtered],check=True,capture_output=True,timeout=3)
+        path=self.write_json('map.json',mapping)
+        with patch_env.dict(os.environ,{'GIT_TRACE':trace}):
+            result=self.run_adp('source-drift',path,'--repo',filtered)
+        self.assertEqual(result.returncode,1,result.stderr)
+        self.assertEqual(json.loads(result.stdout)['status'],'error')
+        with open(trace) as stream:self.assertFalse(any(' fetch ' in line for line in stream))
 
 
 class SeedTests(Cmd):

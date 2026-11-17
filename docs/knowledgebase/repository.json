@@ -1,0 +1,18 @@
+{
+  "id": "repository",
+  "title": "How the repository becomes a release",
+  "kicker": "CI/CD & Repository",
+  "summary": "The root files, plugin manifest, automation, tests and release documents that support ADP.",
+  "body": "<p>This is the operational side of the repository: how contributors enter, how checks run, what the plugin loads and how a release is packaged. These are concise file-purpose overviews. A configured check is not evidence that it ran, and an old checklist is not the current release state.</p>",
+  "sources": [],
+  "cards": [
+    {
+      "title": "Keep evidence attached",
+      "text": "Name the commit and the exact checks that ran. Separate fixture results from deployed-host observations."
+    },
+    {
+      "title": "Read historical numbers as history",
+      "text": "The draft release notes and checklist include old counts and claims. Verify the current tree, CI results and published checksum before a release."
+    }
+  ]
+}

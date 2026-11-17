@@ -1,0 +1,163 @@
+{
+  "schema": "adp-source-map/1",
+  "title": "ADP KnowledgeBase coverage",
+  "sourceCommit": "285d2c6d40f98afe1deb944e0566194191baa8f2",
+  "basis": "Overview coverage from chapter citations, brief explanations and Script reference entries. Healthy means mapped source is unchanged at the checked commit, not API-by-API verification or live repository freshness.",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "A shared artifact, with a memory",
+      "sources": [
+        "skill/SKILL.md",
+        "docs/architecture.md",
+        "docs/host-adapters.md"
+      ]
+    },
+    {
+      "id": "architecture",
+      "title": "One protocol, distinct boundaries",
+      "sources": [
+        "skill/assets/adp.js",
+        "docs/host-adapters.md",
+        "skill/scripts/adp.py",
+        "skill/refs/adp-catalog/SKILL.md"
+      ]
+    },
+    {
+      "id": "protocol",
+      "title": "Read before you write",
+      "sources": [
+        "skill/refs/adp-edit/SKILL.md",
+        "skill/scripts/adp_loop.py",
+        "docs/openai-sites-transport.md",
+        "skill/scripts/adp_sites_adapter.py",
+        "skill/refs/sites.md",
+        "docs/adp-export-import.md",
+        "skill/scripts/adp_bundle.py"
+      ]
+    },
+    {
+      "id": "adapters",
+      "title": "Host capability is a boundary",
+      "sources": [
+        "docs/host-adapters.md",
+        "skill/assets/adapters/openai.js",
+        "docs/openai-sites-transport.md",
+        "skill/assets/hosts/openai-sites/worker.mjs",
+        "skill/assets/adapters/openai-sites-comments.js",
+        "skill/refs/sites.md",
+        "skill/assets/adapters/claude.js",
+        "skill/assets/adapters/openai-sites.js",
+        "skill/scripts/adp_claude_adapter.py",
+        "docs/claude-host-adapter.md",
+        "skill/assets/hosts/openai-sites/schema.sql",
+        "skill/assets/hosts/openai-sites/fixture.html"
+      ]
+    },
+    {
+      "id": "companion",
+      "title": "Wake only for authorized work",
+      "sources": [
+        "skill/scripts/adp_work.py",
+        "docs/openai-sites-transport.md",
+        "skill/assets/adapters/openai-sites-comments.js"
+      ]
+    },
+    {
+      "id": "bus",
+      "title": "Coordination, not authority.",
+      "sources": [
+        "skill/refs/local-bus.md",
+        "skill/scripts/adp_bus.py",
+        "skill/scripts/tests/test_bus.py",
+        "tests/test_local_bus.py",
+        "skill/SKILL.md"
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "From situation to record",
+      "sources": [
+        "skill/SKILL.md",
+        "skill/refs/adp-new/SKILL.md",
+        "skill/refs/adp-edit/SKILL.md",
+        "skill/refs/adp-adopt/SKILL.md",
+        "skill/refs/adp-catalog/SKILL.md",
+        "skill/refs/sites.md",
+        "docs/catalog-header.md",
+        "skill/catalog/catalog.json",
+        "skill/scripts/adp_catalog.py",
+        "skill/scripts/publish_catalog.py",
+        "skill/scripts/welcome.html",
+        "skill/templates/"
+      ]
+    },
+    {
+      "id": "scripts",
+      "title": "Plans, native calls, verified receipts",
+      "sources": [
+        "skill/scripts/adp.py",
+        "skill/scripts/adp_loop.py",
+        "skill/scripts/adp_bundle.py",
+        "skill/scripts/adp_work.py",
+        "skill/scripts/adp_sites_dev.mjs",
+        "tools/package.py",
+        "skill/scripts/adp_bus.py",
+        "skill/scripts/adp_sites_build.py",
+        "skill/scripts/adp_dev.py",
+        "skill/scripts/adp_dev.js",
+        "docs/assist.md",
+        "docs/openai-localhost.md",
+        "skill/scripts/adp_claude_adapter.py",
+        "skill/scripts/adp_sites_adapter.py",
+        "skill/scripts/adp_lib.py",
+        "skill/scripts/adp_catalog.py",
+        "skill/scripts/publish_catalog.py",
+        "tools/build_sites_fixture.py",
+        "tools/roundtrip.py"
+      ]
+    },
+    {
+      "id": "repository",
+      "title": "How the repository becomes a release",
+      "sources": [
+        "README.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        "CODE_OF_CONDUCT.md",
+        "LICENSE",
+        "NOTICE",
+        "CITATION.cff",
+        ".gitignore",
+        "ruff.toml",
+        ".gitleaks.toml",
+        ".pre-commit-config.yaml",
+        ".claude-plugin/",
+        "skill/SKILL.md",
+        "tests/test_plugin.py",
+        ".github/",
+        "tests/",
+        "tools/roundtrip.py",
+        "tests/test_commands.py",
+        "tests/test_bundle.py",
+        "tests/test_roundtrip.py",
+        "docs/RELEASING.md",
+        "docs/RELEASE-CHECKLIST.md",
+        "docs/RELEASE-NOTES-v2.0.0.md",
+        ".github/workflows/release.yml",
+        "tools/package.py"
+      ]
+    },
+    {
+      "id": "evidence",
+      "title": "Evidence has a scope",
+      "sources": [
+        "docs/host-live-test-protocol.md",
+        "docs/openai-sites-transport.md",
+        "docs/openai-host-adapter.md",
+        "docs/architecture.md",
+        "tests/test_sites_adapter.py"
+      ]
+    }
+  ]
+}

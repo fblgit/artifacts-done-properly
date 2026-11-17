@@ -43,6 +43,11 @@ use native Sites source/record tools in place of the roads' Claude host calls.
 
 In a plugin install the road names carry the plugin's prefix, for example `artifacts-done-properly:adp-new`. Each road is also a plain file in this skill's folder, `refs/<road>/SKILL.md` (`refs/<road>/road.md` in a zip install; for example `refs/adp-new/SKILL.md`): when the Skill tool does not know a road, read that file; setup is not needed for it. Each road is complete on its own; the full standard is `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there; read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
 
+When a page documents a repository, [source review drift](refs/source-drift.md)
+maps committed file changes to affected chapters/parts without model calls.
+Use it to report review needs; catalog header drift and runtime integrity check
+different boundaries.
+
 ## Log
 
 Every `adp.py` command appends one JSON line to `log.jsonl`: in `./.adp/` when a project config exists, else in `~/.adp/`. Show recent lines with `adp.py log -n 20`. Read it first when asked what was done or why something failed.
