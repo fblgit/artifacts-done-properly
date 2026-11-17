@@ -2,6 +2,17 @@
 
 What each release of Artifacts Done Properly (ADP) brings, newest first. The release page of each version carries `adp.skill` and its SHA-256.
 
+## v2.1.2
+
+Patch release on v2.1.1. Install and verify as before; `adp.skill.sha256` on the release page is the authoritative hash.
+
+### Changed
+
+- **New published catalog and assistant.** ADP: Catalog v2.1.1 (`https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ`) and ADP: Assistant v2.1.1 (`https://claude.ai/artifact/F42c7ZcRDKptdaTA5TAqZB`). The shipped `catalog.json` and the catalog page carry the new catalog URL (#94).
+- **README rewritten.** What ADP is, the three beats (bring it in, make it reusable, keep the gain), the eight journeys, and the plugin as the recommended install: after the install, `/adp setup`. The CLI-without-plugin route is gone (#94).
+- **Docs and skills state what ADP does.** Status notes and pull-request references are removed from the README, the docs and the road skills (#94).
+- **`CHANGELOG.md`** replaces the per-version release notes and the v2.0.0 checklist; `docs/RELEASING.md` adds it to the release steps (#94).
+
 ## v2.1.1
 
 Patch release on v2.1.0. Install and verify as before; `adp.skill.sha256` on the release page is the authoritative hash.
