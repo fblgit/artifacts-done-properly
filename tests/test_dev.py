@@ -70,7 +70,7 @@ class DevTests(Base):
         raw = urllib.request.Request(self.url + '__adp/db', b'{not json')
         self.assertEqual(json.loads(urllib.request.urlopen(raw).read())['error']['code'], 'invalid_argument')
         with self.assertRaises(urllib.error.HTTPError) as e: self.post('/__adp/nope', {})
-        self.assertEqual(e.exception.code, 404)
+        self.assertEqual(e.exception.code, 404); e.exception.close()
         lost = os.path.join(self.cwd, 'lost'); os.makedirs(lost)      # a folder no server runs for
         r = self.run_adp('dev', 'send', lost, os.devnull)
         self.assertNotEqual(r.returncode, 0); self.assertIn('run adp.py dev serve', r.stderr)
@@ -85,7 +85,8 @@ class DevTests(Base):
         self.assertEqual((bad['code'], bad['paths'][0]['path'], bad['paths'][0]['actual']), ('conflict', 'kit/a.js', sha))
         self.assertEqual((bad['live'], bad['changed']), ('dev-1', []))      # as the live viewer: the current version id, and a changed list
         self.assertEqual(self.get('kit/a.js'), 'A')      # nothing was written, new.js either
-        with self.assertRaises(urllib.error.HTTPError): self.get('new.js')
+        with self.assertRaises(urllib.error.HTTPError) as e: self.get('new.js')
+        e.exception.close()
         self.assertEqual(self.post('/__adp/publish', {'files': {'kit/a.js': {'content': 'A2', 'ifMatch': sha}, 'b.txt': None}})['version'], 'dev-2')
         self.assertEqual(self.get('kit/a.js'), 'A2')
         self.assertEqual(self.post('/__adp/publish', {'files': {'../x': 'x'}})['error']['code'], 'invalid_argument')
@@ -113,7 +114,7 @@ class DevTests(Base):
         with open(os.path.join(self.root, 'catalog', 'kit', 'x.js'), 'w') as f: f.write('KIT')
         url = json.loads(self.spawn('serve', self.d, '--port', '0', '--no-fallback').readline())['url']
         with self.assertRaises(urllib.error.HTTPError) as e: urllib.request.urlopen(url + 'kit/x.js')
-        self.assertEqual(e.exception.code, 404)
+        self.assertEqual(e.exception.code, 404); e.exception.close()
 
     def test_request_goes_through_watch_and_its_answer_through_send(self):
         req = {'lane': 'task', 'text': 'fix', 'at': '2026-01-01T00:00:00Z', 'status': 'open'}

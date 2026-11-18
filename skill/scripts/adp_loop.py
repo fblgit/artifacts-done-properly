@@ -1,5 +1,6 @@
 """The loop (0.3.0): export, classify, propose, ack, gate. docs/architecture.md "The loop" holds the contracts (1, 2, 4, 7).
 Imported by adp.py, which sets A to itself, so the helpers (opt, bare, emit, H, manifest_dir, Batch, ...) are reused, not copied."""
+from pathlib import Path
 import base64, datetime, hashlib, json, os, random, re, shutil, subprocess, sys, time
 
 A = None      # the adp module, set by adp.py at import
@@ -56,7 +57,7 @@ def classify_cmd(a):
     if len(pos) != 3: sys.exit('usage: adp.py classify BASE.json LIVE.json INCOMING.json')
     ms = []
     for p in pos:
-        m = json.load(open(p)); ms.append(m.get('data', m) if 'parts' not in m and 'files' not in m else m)
+        m = json.loads(Path(p).read_text()); ms.append(m.get('data', m) if 'parts' not in m and 'files' not in m else m)
     return A.emit(classify(*ms))
 
 
@@ -73,7 +74,7 @@ def reg_path():
 
 def registry():
     p = reg_path()
-    return json.load(open(p)) if os.path.isfile(p) else {}
+    return json.loads(Path(p).read_text()) if os.path.isfile(p) else {}
 
 
 def register(url, d, name):
@@ -83,7 +84,7 @@ def register(url, d, name):
 
 def load_state(d):
     p = os.path.join(adir(d), 'state.json')
-    return json.load(open(p)) if os.path.isfile(p) else None
+    return json.loads(Path(p).read_text()) if os.path.isfile(p) else None
 
 
 def save_state(d, s):
@@ -113,7 +114,7 @@ def commit_tree(repo, branch, tree, msg, db_from=None):
     for p in git(repo, 'ls-files').stdout.splitlines(): os.remove(os.path.join(repo, p))
     if db_from: git(repo, 'checkout', db_from, '--', 'db', check=False)
     for p, b in tree.items():
-        f = os.path.join(repo, p); os.makedirs(os.path.dirname(f), exist_ok=True); open(f, 'wb').write(b)
+        f = os.path.join(repo, p); os.makedirs(os.path.dirname(f), exist_ok=True); Path(f).write_bytes(b)
     git(repo, 'add', '-A'); git(repo, 'commit', '-q', '--allow-empty', '-m', msg)
     return git(repo, 'rev-parse', 'HEAD').stdout.strip()
 
@@ -136,7 +137,7 @@ def strip(coll, data):
 
 def dump_docs(path):
     """D.json: {collection: [docs as ArtifactData returns them]} or {collection: {id: doc}} -> {coll: {id: (data, version)}}"""
-    raw = json.load(open(path)); out = {}
+    raw = json.loads(Path(path).read_text()); out = {}
     for coll, docs in raw.items():
         items = docs.items() if isinstance(docs, dict) else [(x.get('id') or x.get('doc_id') or '', x) for x in docs if isinstance(x, dict)]
         for k, x in items:
@@ -150,7 +151,7 @@ TEXT_ROW = re.compile(r'^- "(.+?)"\s+\S+\s+(\d+) bytes', re.M)
 
 
 def listing(path):
-    text = open(path, encoding='utf-8').read()
+    text = Path(path).read_text(encoding='utf-8')
     if text.lstrip()[:1] not in '{[':                       # the Artifact list result as the tool prints it: `- "path"  type  N bytes` rows
         raw = [{'path': m.group(1), 'bytes': int(m.group(2))} for m in TEXT_ROW.finditer(text)]
         if not raw: sys.exit(f'{path}: no file rows (`- "path"  type  N bytes`) and not JSON: save the Artifact list result as it came')
@@ -177,7 +178,7 @@ def fragments(d):
     """{part id: html}: DIR/content/<id>.html when present, else split out of content.js"""
     cd = os.path.join(d, 'content')
     if os.path.isdir(cd) and any(n.endswith('.html') for n in os.listdir(cd)):
-        return {n[:-5]: open(os.path.join(cd, n), encoding='utf-8').read() for n in sorted(os.listdir(cd)) if n.endswith('.html')}
+        return {n[:-5]: Path(os.path.join(cd, n)).read_text(encoding='utf-8') for n in sorted(os.listdir(cd)) if n.endswith('.html')}
     return {k: v.get('html', '') for k, v in A.content_of(d).items()}
 
 
@@ -185,7 +186,7 @@ def work_tree(d, refs):
     m = A.manifest_dir(d); tree = {}
     for p in A.tree(d):
         if p.startswith('.') or '/.' in p or p in refs or A.is_seed(p) or p.startswith('content/') and p.endswith('.html'): continue
-        tree['files/' + p] = open(os.path.join(d, p), 'rb').read()
+        tree['files/' + p] = Path(os.path.join(d, p)).read_bytes()
     for k, h in fragments(d).items(): tree[f'content/{k}.html'] = h.encode()
     for p in m['parts']:
         if not p.startswith(A.REST): tree[f'db/parts/{p}.json'] = jb({'hash': m['parts'][p]})
@@ -227,9 +228,9 @@ def export(a):
     for f in files:
         src = os.path.join(inc, 'files', f['path'])
         if not f['ref'] and os.path.isfile(src):
-            b = open(src, 'rb').read()
+            b = Path(src).read_bytes()
             if f['path'] == 'index.html':                          # stored and hashed bare, so it compares with the folder's
-                if unwrap(b) != b: b = unwrap(b); open(src, 'wb').write(b)
+                if unwrap(b) != b: b = unwrap(b); Path(src).write_bytes(b)
                 live_sha['index.html'] = hashlib.sha256(b).hexdigest()   # also when an earlier export already stored it bare
             live_tree['files/' + f['path']] = b
             live_sha[f['path']] = hashlib.sha256(b).hexdigest()     # a listing printed as text carries no hash
@@ -237,7 +238,7 @@ def export(a):
         for k, (data, _) in ds.items():
             if coll == 'content':
                 p = os.path.join(inc, 'content', k + '.html'); os.makedirs(os.path.dirname(p), exist_ok=True)
-                open(p, 'w', encoding='utf-8').write(data.get('html', '')); live_tree[f'content/{k}.html'] = data.get('html', '').encode()
+                Path(p).write_text(data.get('html', ''), encoding='utf-8'); live_tree[f'content/{k}.html'] = data.get('html', '').encode()
                 continue
             p = os.path.join(inc, 'db', coll, k + '.json'); os.makedirs(os.path.dirname(p), exist_ok=True)
             json.dump(data, open(p, 'w'), ensure_ascii=False, indent=1)
@@ -324,7 +325,7 @@ def propose(a):
     retire = dict(zip(A.optall(a, '--retire'), A.optall(a, '--reason') + [''] * len(A.optall(a, '--retire'))))
     wman = {**work_manifest(d, refs), 'retired': {k: v for k, v in retire.items() if v}}
     base = cmanifest(st['base']['manifest'])
-    live_m = json.load(open(os.path.join(ad, 'incoming', 'live-manifest.json'))) if os.path.isfile(os.path.join(ad, 'incoming', 'live-manifest.json')) else base
+    live_m = json.loads(Path(os.path.join(ad, 'incoming', 'live-manifest.json')).read_text()) if os.path.isfile(os.path.join(ad, 'incoming', 'live-manifest.json')) else base
     rep = classify(base, live_m, wman)
     stop = []
     if conflict: stop.append({'error': 'merge conflict with live', 'detail': conflicts[-5:]})
@@ -345,7 +346,7 @@ def propose(a):
               for x in rep['retired'] if x in live_m['parts']]
     for k, h in sorted(frag.items()):                      # copy that moved: the content/<id> doc the page keeps over content.js
         lp = os.path.join(ad, 'incoming', 'content', k + '.html')
-        lh = open(lp, encoding='utf-8').read() if os.path.isfile(lp) else None
+        lh = Path(lp).read_text(encoding='utf-8') if os.path.isfile(lp) else None
         if lh == h or (lh is None and 'content.js' not in send): continue
         if (st.get('src_copy') or {}).get(k) == A.H(h): continue          # not edited since the export: a stale fallback copy must not revert the live content/ doc
         parts.append({'id': k, 'kind': 'content', 'from': A.H(lh) if lh is not None else None, 'to': A.H(h), 'html': h, 'retired': False, 'reason': ''})
@@ -354,7 +355,7 @@ def propose(a):
         if x not in wman['files'] and x not in live_m['files']: continue
         e = {'path': x, 'ifMatch': (st.get('files') or {}).get(x), 'contentType': CTYPE.get(os.path.splitext(x)[1].lower(), 'application/octet-stream')}
         if x not in wman['files']: e['content'] = None; e['reason'] = retire.get(x, ''); files.append(e); continue
-        b = open(os.path.join(d, x), 'rb').read()
+        b = Path(os.path.join(d, x)).read_bytes()
         try: text = b.decode('utf-8')
         except UnicodeDecodeError: text = base64.b64encode(b).decode(); e['encoding'] = 'base64'
         if len(text.encode()) > CHUNK:
@@ -364,7 +365,7 @@ def propose(a):
         files.append(e)
     live_files = dict(st.get('files') or {})                   # the listing's shas (what ifMatch compares), the page bare as the record hashes it
     bare = os.path.join(ad, 'incoming', 'files', 'index.html')
-    if 'index.html' in live_files and os.path.isfile(bare): live_files['index.html'] = hashlib.sha256(open(bare, 'rb').read()).hexdigest()
+    if 'index.html' in live_files and os.path.isfile(bare): live_files['index.html'] = hashlib.sha256(Path(bare).read_bytes()).hexdigest()
     doc = {'by': by, 'at': at, 'summary': summary, 'threads': [],
            'base': {'version': st['live']['version'], 'page_hash': live_m.get('page_hash', ''), 'docs': st.get('docs') or {}},
            'parts': parts, 'files': files, 'live_files': live_files, 'classified': rep, 'status': 'new',
@@ -421,12 +422,12 @@ def ack(a):
     pid = A.opt(a, '--proposal')
     if pid:
         pdoc = os.path.join(adir(d), 'incoming', 'db', 'incoming', pid + '.json')
-        status = (json.load(open(pdoc)) if os.path.isfile(pdoc) else {}).get('status')
+        status = (json.loads(Path(pdoc).read_text()) if os.path.isfile(pdoc) else {}).get('status')
         if status not in ('applied', 'declined'): sys.exit(f'{pid}: status {status or "unknown"} in the last export; ack it once applied or declined')
         prop = (inc.get('proposed') or {}).get(pid)
         if status == 'applied' and prop:
             git(repo_init(d), 'branch', '-f', 'base', prop['work'])
-            v = json.load(open(pdoc)).get('applied', {}).get('version', '')
+            v = json.loads(Path(pdoc).read_text()).get('applied', {}).get('version', '')
             st['base'] = {'version': v, 'manifest': prop['manifest']}; st['src_copy'] = prop.get('src_copy') or {k: A.H(h) for k, h in fragments(d).items()}      # edits made after the propose stay unsent
             if v: st['live']['version'] = v
         inc['unacked'] = [x for x in inc.get('unacked', []) if x != pid]

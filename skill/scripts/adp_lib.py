@@ -11,6 +11,7 @@ catalog index (load, main file of an entry) and the file hash. adp_catalog.py is
   split_ref(ref)              ('kit/samples/viz.json', 'viz-tree') for 'kit/samples/viz.json#viz-tree': a sample inside a bundle; (ref, None) for a plain path
   sample_issues(root, index)  [line] for the sample bundles: a #key that is not in its bundle, a bundle key no @preview names or no @samples owns, a @samples key not in a bundle of the entry's @files, a bundle not in the @files of the entry that previews on it
 """
+from pathlib import Path
 import datetime
 import hashlib
 import json
@@ -195,7 +196,7 @@ def validate(path, comment, entry, ids):
 
 
 def load(root):
-    cat = json.load(open(os.path.join(root, 'catalog.json'), encoding='utf-8'))['entries']
+    cat = json.loads(Path(os.path.join(root, 'catalog.json')).read_text(encoding='utf-8'))['entries']
     by_path = {}
     for e in cat:
         p = main_files(e)
@@ -219,7 +220,7 @@ def check(root, files=None):
         if not os.path.isfile(os.path.join(root, rel)):
             results.append((rel, 'legacy', [('missing-file', f'catalog.json lists {rel} for {e["id"]} but the file is not there')]))
             continue
-        text = open(os.path.join(root, rel), encoding='utf-8').read()
+        text = Path(os.path.join(root, rel)).read_text(encoding='utf-8')
         c = comment_of(text, rel)
         if c is None or '@id' not in c:
             results.append((rel, 'legacy', [('legacy', 'no @id header')]))

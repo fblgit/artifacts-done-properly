@@ -1,4 +1,5 @@
 """`bundle`, `import-plan`, `import-ack` with the Claude adapter, on the seed docs of a real `new` project (no hand-made records). No network."""
+from pathlib import Path
 import glob, hashlib, json, os, signal, subprocess, sys
 
 from test_commands import Cmd, URL
@@ -18,7 +19,7 @@ class BundleTests(Cmd):
         return self.ok('bundle', self.write_json(name + '.json', docs), self.p(name), '--host', 'claude', '--artifact', 'src', '--version', 'v1')
 
     def src(self):      # the seed docs of a real `new` project, as a source's reads returned them
-        return [{**x, 'revision': 1} for f in sorted(glob.glob(os.path.join(self.new_project(), 'seed', 'pack-*.json'))) for x in json.load(open(f))['docs']]
+        return [{**x, 'revision': 1} for f in sorted(glob.glob(os.path.join(self.new_project(), 'seed', 'pack-*.json'))) for x in json.loads(Path(f).read_text())['docs']]
 
     def plan(self, bundle, target, host='claude', art=URL):
         r = self.run_adp('import-plan', self.p(bundle), self.write_json('t.json', target), '--host', host, '--artifact', art)
@@ -31,7 +32,7 @@ class BundleTests(Cmd):
 
     def test_create_repeat_edit_conflict_and_rejected_write(self):
         src = self.src(); n = self.bundle(src, 'b1')['docs']
-        idx = json.load(open(self.p('b1', 'seed.json')))
+        idx = json.loads(Path(self.p('b1', 'seed.json')).read_text())
         self.assertEqual((idx['schema'], idx['source']['host'], len(idx['revisions'])), ('adp-seed/2', 'claude', n))
         rc, plan = self.plan('b1', [])      # empty target: everything is created, no pin on a create
         self.assertEqual((rc, plan['counts']['create']), (0, n))

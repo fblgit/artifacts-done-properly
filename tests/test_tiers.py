@@ -1,3 +1,4 @@
+from pathlib import Path
 import json, os, sys, unittest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from test_setup import Base
@@ -6,12 +7,12 @@ from test_setup import Base
 class TierTests(Base):
     def setUp(self):
         super().setUp()
-        os.makedirs(os.path.join(self.root, 'assets')); open(os.path.join(self.root, 'assets', 'adp.js'), 'w').write('//adp\n')
+        os.makedirs(os.path.join(self.root, 'assets')); Path(os.path.join(self.root, 'assets', 'adp.js')).write_text('//adp\n')
 
     def fake(self, name):
         d = os.path.join(self.root, 'templates', name); os.makedirs(d, exist_ok=True)
-        json.dump({'summary': 'fake', 'use_when': 'tests'}, open(os.path.join(d, 'template.json'), 'w'))
-        open(os.path.join(d, 'index.html'), 'w').write(f'<!doctype html><title>{name}</title>\n')
+        Path(os.path.join(d, 'template.json')).write_text(json.dumps({'summary': 'fake', 'use_when': 'tests'}))
+        Path(os.path.join(d, 'index.html')).write_text(f'<!doctype html><title>{name}</title>\n')
 
     def build(self, *args):
         return self.run_adp('new', *args, os.path.join(self.tmp, 'out'))
@@ -25,7 +26,7 @@ class TierTests(Base):
         self.fake('default')
         r = self.build('--tier', 'default')
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn('default', open(os.path.join(self.tmp, 'out', 'index.html')).read())
+        self.assertIn('default', Path(os.path.join(self.tmp, 'out', 'index.html')).read_text())
 
     def test_default_missing(self):
         r = self.build('--tier', 'default')

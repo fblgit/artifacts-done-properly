@@ -2,6 +2,7 @@
 `pins`, `suggest`, `kit list|show|describe`, `classify` (CLI), `diff`, `diff-pages`, `files --batch` and `new --content`.
 Same style as test_commands.py: the real script in a subprocess, a throwaway project, no network. The catalog is a small local
 catalog.json written here, so nothing drifts with the shipped one."""
+from pathlib import Path
 import hashlib, json, os, re, shutil, sys, unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -38,14 +39,14 @@ class Pins(Untested):
         out = self.ok('pins', f'{a}=v1', f'{b}=v2', '--out', self.p('vm.json'))
         self.assertEqual(out['pinned'], 3)
         self.assertEqual(out['vermap'], self.p('vm.json'))
-        self.assertEqual(json.load(open(self.p('vm.json'))), {'index.html': 'v1', 'a.js': 'v1', 'kit/x.css': 'v2'})
+        self.assertEqual(json.loads(Path(self.p('vm.json')).read_text()), {'index.html': 'v1', 'a.js': 'v1', 'kit/x.css': 'v2'})
         self.assertIn('CAT_VERMAP=', out['next'])
 
     def test_default_output_is_vermap_json_next_to_the_first_batch(self):
         a = self.write_json('b/publish-1.json', {'p.js': 'h'})
         out = self.ok('pins', f'{a}=v9')
         self.assertEqual(out['vermap'], self.p('b', 'vermap.json'))
-        self.assertEqual(json.load(open(out['vermap'])), {'p.js': 'v9'})
+        self.assertEqual(json.loads(Path(out['vermap']).read_text()), {'p.js': 'v9'})
 
     def test_without_pairs_prints_usage_and_exits_1(self):
         r = self.fails('pins')
@@ -139,7 +140,7 @@ class Headers(Untested):
     def fetched(self):
         d = os.path.join(self.home, '.adp', 'catalogs', 'abc123')
         os.makedirs(os.path.join(d, 'kit', 'viz'))
-        json.dump(SLIM, open(os.path.join(d, 'catalog.json'), 'w'))
+        Path(os.path.join(d, 'catalog.json')).write_text(json.dumps(SLIM))
         return d
 
     def test_show_reads_about_and_header_fields_from_the_main_file(self):
@@ -183,11 +184,11 @@ assert.equal(JSON.parse(takeRef({},true,{self:{url:'https://claude.ai/artifact/d
         self.assertEqual(plan['fetch']['url'], url + '/catalog.json')
         source = self.bundled(); root = os.path.dirname(source)
         with open(os.path.join(root, 'kit/viz/timeline.js'), 'w') as f: f.write('window.timeline = true;')
-        cat = json.load(open(source)); cat['url'] = url
+        cat = json.loads(Path(source).read_text()); cat['url'] = url
         for e in cat['entries']:
-            for f in e['files']: f['sha256'] = hashlib.sha256(open(os.path.join(root, f['path']), 'rb').read()).hexdigest()
+            for f in e['files']: f['sha256'] = hashlib.sha256(Path(os.path.join(root, f['path'])).read_bytes()).hexdigest()
         target = os.path.dirname(plan['index']); shutil.copytree(root, target)
-        json.dump(cat, open(plan['index'], 'w'))
+        Path(plan['index']).write_text(json.dumps(cat))
         reads = self.fails('take', url, 'viz.timeline', code=2)
         self.assertNotIn('files', json.loads(reads.stdout))
         dest = self.p('taken')
@@ -195,8 +196,8 @@ assert.equal(JSON.parse(takeRef({},true,{self:{url:'https://claude.ai/artifact/d
         self.assertEqual(out['entries'], ['viz.chips', 'viz.timeline'])
         self.assertEqual(out['materialized'], ['kit/viz/chips.js', 'kit/viz/timeline.js'])
         for name in out['materialized']:
-            self.assertEqual(open(os.path.join(dest, name), 'rb').read(), open(os.path.join(root, name), 'rb').read())
-        open(os.path.join(target, 'kit/viz/chips.js'), 'w').write('changed')
+            self.assertEqual(Path(os.path.join(dest, name)).read_bytes(), Path(os.path.join(root, name)).read_bytes())
+        Path(os.path.join(target, 'kit/viz/chips.js')).write_text('changed')
         self.fails('take', url, 'viz.timeline', '--materialize', self.p('rejected'))
         self.assertFalse(os.path.exists(self.p('rejected')))
 
@@ -221,6 +222,31 @@ assert.equal(JSON.parse(takeRef({},true,{self:{url:'https://claude.ai/artifact/d
         self.assertEqual(out['entries'], ['viz.chips', 'viz.timeline'])
         self.assertNotIn('kit/samples/viz.json', out['files'])
         self.assertNotIn('samples', out)
+
+    def test_take_prints_the_files_map_by_reference_dependencies_first_each_once_and_warns_on_a_local_index(self):
+        out = self.ok('take', self.bundled(), 'viz.timeline', 'viz.chips', '--url', self.URL)
+        self.assertEqual(out['entries'], ['viz.chips', 'viz.timeline'])
+        self.assertEqual(out['files'], {p: {'artifact': self.URL, 'path': p} for p in ('kit/viz/chips.js', 'kit/viz/timeline.js', 'kit/samples/viz.json')})
+        self.assertEqual(out['sha256'], {p: 'x' for p in out['files']})
+        self.assertFalse(out['catalog']['live'])
+        self.assertIn('a local index is a build', out['catalog']['warning'])
+
+    def test_take_of_an_index_without_hashes_names_none(self):
+        self.assertEqual(self.ok('take', self.local(), 'viz.chips', '--url', self.URL)['sha256'], {})
+
+    def test_take_refuses_an_unknown_id_a_missing_url_and_a_missing_saved_catalog(self):
+        src = self.bundled()
+        self.assertIn('no entry viz.nope', self.fails('take', src, 'viz.nope', '--url', self.URL).stderr)
+        self.assertIn('no catalog url', self.fails('take', src, 'viz.chips').stderr)
+        self.assertIn('no saved catalog', self.fails('take', '-', 'viz.chips').stderr)
+        self.assertIn('neither a catalog url', self.fails('take', self.p('none.json'), 'viz.chips').stderr)
+
+    def test_take_takes_the_url_from_the_config_and_prints_the_fetch_for_an_index_not_fetched(self):
+        cfg = self.write_json('cfg.json', {'values': {'links.catalog': self.URL}})
+        self.assertEqual(self.ok('take', self.bundled(), 'viz.chips', '--config', cfg)['files']['kit/viz/chips.js']['artifact'], self.URL)
+        out = json.loads(self.fails('take', self.URL, 'viz.chips', code=2).stdout)
+        self.assertEqual((out['error'], out['catalog']), ('index not fetched', self.URL))
+        self.assertIn('fetch', out)
 
     def test_suggest_searches_the_about_text_of_the_header(self):
         out = self.ok('suggest', self.local(), '--for', 'quartz glaze')
@@ -249,7 +275,7 @@ assert.equal(JSON.parse(takeRef({},true,{self:{url:'https://claude.ai/artifact/d
     def test_suggest_splits_the_missing_paths_in_reads_of_at_most_256(self):
         d = self.fetched()
         many = {**SLIM, 'entries': [{**SLIM['entries'][0], 'id': f'viz.e{i}', 'main': f'kit/viz/e{i}.js'} for i in range(300)]}
-        json.dump(many, open(os.path.join(d, 'catalog.json'), 'w'))
+        Path(os.path.join(d, 'catalog.json')).write_text(json.dumps(many))
         r = self.run_adp('suggest', self.URL, '--for', 'chip')
         calls = [json.loads(x) for x in r.stderr.splitlines() if x.startswith('{')]
         self.assertEqual([len(c['paths']) for c in calls], [256, 44])
@@ -306,8 +332,8 @@ class Diffs(Untested):
 
     def test_diff_pages_shows_the_changed_lines_per_deepest_part(self):
         old, new = self.p('old.html'), self.p('new.html')
-        open(old, 'w').write(self._page('<p>one</p>'))
-        open(new, 'w').write(self._page('<p>two</p>'))
+        Path(old).write_text(self._page('<p>one</p>'))
+        Path(new).write_text(self._page('<p>two</p>'))
         out = self.ok('diff-pages', old, new)
         self.assertEqual(out['changed'], ['p'])
         self.assertEqual(out['deepest'], ['p'])
@@ -317,7 +343,7 @@ class Diffs(Untested):
 
     def test_diff_pages_of_identical_pages_is_empty(self):
         old = self.p('old.html')
-        open(old, 'w').write(self._page('x'))
+        Path(old).write_text(self._page('x'))
         out = self.ok('diff-pages', old, old)
         self.assertEqual((out['added'], out['removed'], out['changed'], out['deepest']), ([], [], [], []))
 
@@ -342,8 +368,8 @@ class FilesBatches(Untested):
         self.assertEqual(len(out['batch_files']), len(out['batches']))
         for i, (b, f) in enumerate(zip(out['batches'], out['batch_files']), 1):
             self.assertEqual(f, os.path.join(d + '.adp', f'publish-{i}.json'))
-            self.assertEqual(json.load(open(f)), b)
-        deps = [r for r in re.findall(r'(?:src|href)="([^"]+)"', open(os.path.join(d, 'index.html')).read()) if r in out['batches'][0] or os.path.isfile(os.path.join(d, r))]
+            self.assertEqual(json.loads(Path(f).read_text()), b)
+        deps = [r for r in re.findall(r'(?:src|href)="([^"]+)"', Path(os.path.join(d, 'index.html')).read_text()) if r in out['batches'][0] or os.path.isfile(os.path.join(d, r))]
         self.assertTrue(deps)
         order = [p for b in out['batches'] for p in b]
         self.assertEqual(order[:len(deps)], deps)                     # what the page loads goes up first, in page order
@@ -355,7 +381,7 @@ class FilesBatches(Untested):
         pairs = [f'{f}=ver{i}' for i, f in enumerate(out['batch_files'], 1)]
         pinned = self.ok('pins', *pairs, '--out', self.p('vm.json'))
         self.assertEqual(pinned['pinned'], sum(len(b) for b in out['batches']))
-        self.assertEqual(set(json.load(open(self.p('vm.json')))), {p for b in out['batches'] for p in b})
+        self.assertEqual(set(json.loads(Path(self.p('vm.json')).read_text())), {p for b in out['batches'] for p in b})
 
     def test_under_n_stays_one_files_map(self):
         out = self.ok('files', self.new_project('proj'), '--batch', '1000')
@@ -386,7 +412,7 @@ A lead for the page.
 
     def build(self, text=None):
         f = self.p('content.md')
-        open(f, 'w').write(self.CONTENT if text is None else text)
+        Path(f).write_text(self.CONTENT if text is None else text)
         return self.run_adp('new', 'starter', 'cproj', '--content', f)
 
     def test_builds_views_and_sections_verbatim(self):
@@ -396,11 +422,11 @@ A lead for the page.
         nbytes = len('<p>Hello <b>world</b></p>') + len('<ul><li>one</li></ul>') + len('<p>deep</p>')
         self.assertEqual(out['built'], {'views': 2, 'sections': 3, 'parts': 5, 'bytes': nbytes})
         d = self.p('cproj')
-        cj = open(os.path.join(d, 'content.js')).read()
+        cj = Path(os.path.join(d, 'content.js')).read_text()
         self.assertIn('<p>Hello <b>world</b></p>', cj)
         self.assertIn('A lead for the page.', cj)
         self.assertNotIn('home.welcome', cj)
-        js = open(os.path.join(d, 'parts', 'app.js')).read()
+        js = Path(os.path.join(d, 'parts', 'app.js')).read_text()
         for pid in ('overview', 'intro', 'facts', 'details', 'deep'):
             self.assertIn(f'data-part="{pid}"', js)
         self.assertNotIn('data-part="home.welcome"', js)
@@ -454,7 +480,7 @@ class MyOwnKit(Untested):
                     os.makedirs(os.path.dirname(os.path.join(root, path)), exist_ok=True)
                     with open(os.path.join(root, path), 'w') as f: f.write(body)
         os.makedirs(root, exist_ok=True)
-        json.dump({'schema': 'kit-catalog/2', 'ver': '', 'built': 'x', 'entries': entries}, open(os.path.join(root, 'catalog.json'), 'w'))
+        Path(os.path.join(root, 'catalog.json')).write_text(json.dumps({'schema': 'kit-catalog/2', 'ver': '', 'built': 'x', 'entries': entries}))
         return root
 
     def test_an_unfetched_kit_prints_the_index_read_into_the_kit_folder(self):
@@ -490,7 +516,7 @@ class MyOwnKit(Untested):
 
     def test_an_older_catalogs_copy_still_counts_until_the_new_folder_has_an_index(self):
         d = os.path.join(self.home, '.adp', 'catalogs', 'abc123'); os.makedirs(d)
-        json.dump({'schema': 'kit-catalog/2', 'entries': []}, open(os.path.join(d, 'catalog.json'), 'w'))
+        Path(os.path.join(d, 'catalog.json')).write_text(json.dumps({'schema': 'kit-catalog/2', 'entries': []}))
         self.assertEqual(self.ok('catalog', self.URL)['kit'], d)
         self.kit({'viz': 1})
         self.assertEqual(self.ok('catalog', self.URL)['kit'], os.path.join(self.home, '.adp', 'catalog'))

@@ -1,3 +1,4 @@
+from pathlib import Path
 import json
 import os
 import sys
@@ -56,12 +57,12 @@ class Base(unittest.TestCase):
             {'id': 'kit.other', 'files': [{'path': 'kit/other.js', 'role': 'script'}]},
             {'id': 'template.t', 'files': [{'path': 'kit/t.html.txt', 'role': 'template'}, {'path': 'kit/t.css', 'role': 'style'}]},
         ]
-        json.dump({'entries': self.entries}, open(os.path.join(self.root, 'catalog.json'), 'w'))
+        Path(os.path.join(self.root, 'catalog.json')).write_text(json.dumps({'entries': self.entries}))
 
     def write(self, rel, text):
         p = os.path.join(self.root, rel)
         os.makedirs(os.path.dirname(p), exist_ok=True)
-        open(p, 'w', encoding='utf-8').write(text)
+        Path(p).write_text(text, encoding='utf-8')
         return p
 
     def rules(self, text, rel='kit/demo.js'):
