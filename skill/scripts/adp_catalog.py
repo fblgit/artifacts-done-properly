@@ -558,7 +558,7 @@ class Unit:
         kind = kind_of(rel)
         if not kind:
             return False
-        t = open(os.path.join(base, rel), encoding='utf-8').read()
+        t = Path(os.path.join(base, rel)).read_text(encoding='utf-8')
         line = line_of(t)
         if kind == '.css':
             self.css(t, rel, line)
@@ -609,7 +609,7 @@ def scheme_of(rules):
 def theme(base, css, data, ref):
     """One theme: its css rule by rule, what it declares and reads, the css against the json, the json against the convention ref.
     Returns it with the json as read."""
-    t = css_clean(open(os.path.join(base, css), encoding='utf-8').read())
+    t = css_clean(Path(os.path.join(base, css)).read_text(encoding='utf-8'))
     line, blocks, maps = line_of(t), {}, {'light': {}, 'dark-attr': {}, 'dark-media': {}, 'other': {}}
     for rules, prop, value, pos in css_decls(t):
         at = rules[-1][1] if rules else 0
@@ -634,7 +634,7 @@ def theme(base, css, data, ref):
     for k, names in reads.items():
         for r in names:
             uses[r].add(k)
-    j = json.load(open(os.path.join(base, data), encoding='utf-8'))
+    j = json.loads(Path(os.path.join(base, data)).read_text(encoding='utf-8'))
 
     def end(m, alt, k, seen=()):
         """The value token k ends up with in map m (alt: the map behind it), following a value that is one var()."""
@@ -656,7 +656,7 @@ def theme(base, css, data, ref):
 def declared(cat, e):
     """(what the @tokens tag of the entry's main file declares, where catalog.json needs.tokens says otherwise); (None, None) without the tag."""
     main = lib.main_files(e)
-    tags = lib.parse(lib.comment_of(open(os.path.join(cat, main), encoding='utf-8').read(), main) or '')[2] if main else []
+    tags = lib.parse(lib.comment_of(Path(os.path.join(cat, main)).read_text(encoding='utf-8'), main) or '')[2] if main else []
     v = next((v for n, v in tags if n == 'tokens'), None)
     if v is None:
         return None, None
@@ -687,7 +687,7 @@ def inventory(root):
     themes = [e for e in entries if e['id'].startswith('theme.')]
     themed, listed = {p for e in themes for p in paths(e)}, {p for e in entries for p in paths(e)}
     default = next((e for e in themes if e['id'] == 'theme.default'), None)
-    ref = json.load(open(os.path.join(base, paths(default, 'data')[0]), encoding='utf-8')) if default else None
+    ref = json.loads(Path(os.path.join(base, paths(default, 'data')[0])).read_text(encoding='utf-8')) if default else None
     out = {'schema': 'adp-inventory/1', 'themes': {}, 'entries': {}, 'units': {},
            'convention': {s: sorted(ref[s]) for s in ('light', 'dark')} if ref else None}
     data, scanned = {}, set()
@@ -719,14 +719,14 @@ def inventory(root):
         for f in e['files']:
             role[rel(cat, f['path'])].add(f.get('role') or 'file')
     for p in sorted(scanned):
-        same.setdefault(open(os.path.join(base, p), 'rb').read(), p)
+        same.setdefault(Path(os.path.join(base, p)).read_bytes(), p)
 
     def names(p):
-        return sorted({m.group(0) for m in IN_TEXT.finditer(open(os.path.join(base, p), encoding='utf-8', errors='replace').read())})
+        return sorted({m.group(0) for m in IN_TEXT.finditer(Path(os.path.join(base, p)).read_text(encoding='utf-8', errors='replace'))})
     unread = [{'file': p, 'why': 'index' if p == rel(cat, 'catalog.json') else '+'.join(sorted(role[p])) if p in role else 'unlisted',
                'names': names(p)} for p in found if p not in scanned and p not in themed]
     beyond = sorted(rel(d, f) for d, _, fs in os.walk(root) for f in fs if kind_of(f) and rel(d, f) not in found)
-    outside = [{'file': p, 'copy_of': same.get(open(os.path.join(base, p), 'rb').read()), 'names': names(p)} for p in beyond]
+    outside = [{'file': p, 'copy_of': same.get(Path(os.path.join(base, p)).read_bytes()), 'names': names(p)} for p in beyond]
     out['coverage'] = {'files': len(found), 'scanned': len(scanned), 'theme': len(themed), 'unread': unread, 'outside': outside}
     tok = collections.defaultdict(lambda: {'themes': {'css': {'light': [], 'dark': []}, 'json': {'light': [], 'dark': []}},
                                            'convention': {'light': False, 'dark': False}, 'declared': {'required': [], 'optional': []},

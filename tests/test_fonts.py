@@ -1,6 +1,7 @@
 """Fonts stay homogeneous: the page's own and the kit's stylesheets take every font from the three tokens
 (--f-ui, --f-display, --f-mono, and --f-hand for the canvas) or inherit it, and the kit's controls inherit the page font (native buttons and
 fields otherwise draw in the system font, which showed as Arial next to the page's own)."""
+from pathlib import Path
 import glob
 import json
 import os
@@ -23,7 +24,7 @@ class Fonts(unittest.TestCase):
     def test_every_font_declaration_takes_a_token_or_inherits(self):
         bad = []
         for p in FILES:
-            css = re.sub(r'/\*.*?\*/', '', open(p, encoding='utf-8').read(), flags=re.S)
+            css = re.sub(r'/\*.*?\*/', '', Path(p).read_text(encoding='utf-8'), flags=re.S)
             for m in DECL.finditer(css):
                 v = m.group(2)
                 family = bool(m.group(1)) or re.search(r'[A-Za-z"\']{3,}\s*(,|$)', v.split('/')[-1]) or re.search(r'\d(px|rem|em|%)?\s+[A-Za-z"\']', v)
@@ -32,7 +33,7 @@ class Fonts(unittest.TestCase):
         self.assertEqual(bad, [])
 
     def test_kit_controls_inherit_the_page_font(self):
-        css = open(os.path.join(ROOT, 'catalog', 'kit', 'chrome.css'), encoding='utf-8').read()
+        css = Path(os.path.join(ROOT, 'catalog', 'kit', 'chrome.css')).read_text(encoding='utf-8')
         for sel in ('.btn {', '.input, .select, .textarea {'):
             rule = css[css.index(sel):].split('}')[0]
             self.assertIn('font-family: inherit', rule, sel)
@@ -44,8 +45,8 @@ class TemplateWearsTheTheme(unittest.TestCase):
     Space Grotesk and Familjen Grotesk stop there, so 750 and 800 were synthesized bold) with no variation axes tuned for one family,
     native controls in the page font, and corners, edges, heading case and text size from the theme's feel tokens with the old values as fallbacks."""
     def setUp(self):
-        self.page = re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'templates', 'starter', 'styles', 'page.css.txt'), encoding='utf-8').read(), flags=re.S)
-        self.assist = open(os.path.join(ROOT, 'templates', 'assistant', 'styles', 'assist.css.txt'), encoding='utf-8').read()
+        self.page = re.sub(r'/\*.*?\*/', '', Path(os.path.join(ROOT, 'templates', 'starter', 'styles', 'page.css.txt')).read_text(encoding='utf-8'), flags=re.S)
+        self.assist = Path(os.path.join(ROOT, 'templates', 'assistant', 'styles', 'assist.css.txt')).read_text(encoding='utf-8')
 
     def test_headings_stay_within_the_weights_themes_ship(self):
         for sel, body in re.findall(r'(h[1-3])\{([^}]*)\}', self.page):
@@ -90,14 +91,14 @@ class ThemeFonts(unittest.TestCase):
     """Every theme says which web fonts its --f-* families need (`fonts` in its json and in its catalog entry, the same url), and that url
     loads every family the theme names first; `adp.py new --theme` and `take` read it from the entry (test_eval_fixes.ThemeTags)."""
     def setUp(self):
-        self.cat = {e['id']: e for e in json.load(open(os.path.join(ROOT, 'catalog', 'catalog.json'), encoding='utf-8'))['entries']}
+        self.cat = {e['id']: e for e in json.loads(Path(os.path.join(ROOT, 'catalog', 'catalog.json')).read_text(encoding='utf-8'))['entries']}
         self.themes = sorted(os.path.basename(p)[:-5] for p in glob.glob(os.path.join(THEMES, '*.json')))
 
     def test_every_theme_is_a_catalog_entry_with_its_json_fonts(self):
         self.assertEqual({'theme.' + t for t in self.themes}, {i for i in self.cat if i.startswith('theme.')})      # the files and the catalog name the same themes; no count to keep up
         for t in self.themes:
             with self.subTest(theme=t):
-                j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
+                j = json.loads(Path(os.path.join(THEMES, t + '.json')).read_text(encoding='utf-8'))
                 self.assertTrue(j.get('fonts', '').startswith('https://fonts.googleapis.com/css2?'), t)
                 self.assertIn('display=swap', j['fonts'])
                 self.assertEqual(self.cat['theme.' + t].get('fonts'), j['fonts'])
@@ -107,8 +108,8 @@ class ThemeFonts(unittest.TestCase):
         on the Canvas view) has the same value in the theme, light and dark, and the font link is the theme's. So a page that wears it and one with
         no theme file linked look the same. --r is page.css's own shorthand for the theme's corner, not a theme token."""
         norm = lambda v: re.sub(r'\s+', '', v)
-        read = lambda t, f: re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'templates', t, 'styles', f), encoding='utf-8').read(), flags=re.S)
-        j = json.load(open(os.path.join(THEMES, 'default.json'), encoding='utf-8'))
+        read = lambda t, f: re.sub(r'/\*.*?\*/', '', Path(os.path.join(ROOT, 'templates', t, 'styles', f)).read_text(encoding='utf-8'), flags=re.S)
+        j = json.loads(Path(os.path.join(THEMES, 'default.json')).read_text(encoding='utf-8'))
         for css, light, dark in ((read('starter', 'page.css.txt'), ':root{', ':root[data-theme="dark"]{'),
                                  (read('assistant', 'canvas.css.txt'), ':where(:root){', ':where(:root[data-theme="dark"]){')):
             for sel, theme in ((light, j['light']), (dark, j['dark'])):
@@ -117,12 +118,12 @@ class ThemeFonts(unittest.TestCase):
                 self.assertTrue(have, sel)
                 self.assertEqual({k: norm(v) for k, v in have.items()}, {k: norm(theme.get(k, '')) for k in have}, sel)
         for t in ('starter', 'assistant', 'default'):
-            self.assertIn('href="%s"' % j['fonts'], open(os.path.join(ROOT, 'templates', t, 'index.html.txt'), encoding='utf-8').read(), t)
+            self.assertIn('href="%s"' % j['fonts'], Path(os.path.join(ROOT, 'templates', t, 'index.html.txt')).read_text(encoding='utf-8'), t)
 
     def test_the_fonts_url_loads_every_family_the_theme_names_first(self):
         for t in self.themes:
-            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
-            css = css_tokens(open(os.path.join(THEMES, t + '.css'), encoding='utf-8').read())
+            j = json.loads(Path(os.path.join(THEMES, t + '.json')).read_text(encoding='utf-8'))
+            css = css_tokens(Path(os.path.join(THEMES, t + '.css')).read_text(encoding='utf-8'))
             have = families(j['fonts'])
             for where, toks in (('json light', j['light']), ('json dark', j.get('dark', {})), ('css', css)):
                 for k in FONT_TOKENS:
@@ -140,10 +141,10 @@ class ThemeFonts(unittest.TestCase):
         up to 500 or 600 is drawn as synthesized bold (DM Mono stopped at 500 in classic and journal), and a mono left to the system
         stack draws in another face on every machine (adr-drafting-table, notebook)"""
         kit_mono_bold = any(re.search(r'font(?:-weight)?\s*:\s*(?:italic\s+)?[6-9]00\b', body) for p in FILES
-                            for body in re.findall(r'\{([^{}]*var\(--f-mono[^{}]*)\}', open(p, encoding='utf-8').read()))
+                            for body in re.findall(r'\{([^{}]*var\(--f-mono[^{}]*)\}', Path(p).read_text(encoding='utf-8')))
         self.assertTrue(kit_mono_bold)
         for t in self.themes:
-            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
+            j = json.loads(Path(os.path.join(THEMES, t + '.json')).read_text(encoding='utf-8'))
             req = {unquote_plus(f).split(':')[0]: unquote_plus(f) for f in re.findall(r'[?&]family=([^&]+)', j['fonts'])}
             for k in ('--f-display', '--f-ui', '--f-mono'):
                 fam = first_family(j['light'][k])
@@ -158,8 +159,8 @@ class ThemeFonts(unittest.TestCase):
 
     def test_css_and_json_agree_on_the_font_tokens(self):
         for t in self.themes:
-            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))['light']
-            css = css_tokens(open(os.path.join(THEMES, t + '.css'), encoding='utf-8').read())
+            j = json.loads(Path(os.path.join(THEMES, t + '.json')).read_text(encoding='utf-8'))['light']
+            css = css_tokens(Path(os.path.join(THEMES, t + '.css')).read_text(encoding='utf-8'))
             with self.subTest(theme=t):
                 if not css:         # a layer over another theme (glaze-depth over glaze) wears that theme's fonts
                     base = [r for r in self.cat['theme.' + t]['requires'] if r.startswith('theme.')]
@@ -176,16 +177,16 @@ class ThemeFonts(unittest.TestCase):
         root = os.path.join(ROOT, 'catalog')
         need = {}
         for path, e in adp_lib.load(root)[1].items():
-            tags = dict(adp_lib.parse(adp_lib.comment_of(open(os.path.join(root, path), encoding='utf-8').read(), path) or '')[2])
+            tags = dict(adp_lib.parse(adp_lib.comment_of(Path(os.path.join(root, path)).read_text(encoding='utf-8'), path) or '')[2])
             for tok in adp_lib.split(tags.get('tokens', ''), spaces=True):
                 if tok.startswith('--') and not tok.endswith('?') and '<' not in tok:
                     need.setdefault(tok, e['id'])
         self.assertGreater(len(need), 20)
-        ref = json.load(open(os.path.join(THEMES, 'default.json'), encoding='utf-8'))
+        ref = json.loads(Path(os.path.join(THEMES, 'default.json')).read_text(encoding='utf-8'))
         self.assertEqual({k: who for k, who in need.items() if k not in ref['light']}, {}, 'theme.default lacks a token a kit entry requires')
         gaps = {}
         for t in self.themes:
-            j = json.load(open(os.path.join(THEMES, t + '.json'), encoding='utf-8'))
+            j = json.loads(Path(os.path.join(THEMES, t + '.json')).read_text(encoding='utf-8'))
             miss = [k for k in ref['light'] if k not in j['light']] + [k + ' (dark)' for k in ref['dark'] if k not in j['dark']]
             if miss:
                 gaps[t] = miss
@@ -195,7 +196,7 @@ class ThemeFonts(unittest.TestCase):
         named = set()
         for p in glob.glob(os.path.join(ROOT, '**', '*'), recursive=True):
             if os.path.isfile(p) and p.endswith(('.js', '.json', '.css', '.md', '.txt', '.html')):
-                named |= set(re.findall(r'kit/themes/[a-z0-9-]+\.(?:css|json)', open(p, encoding='utf-8').read()))
+                named |= set(re.findall(r'kit/themes/[a-z0-9-]+\.(?:css|json)', Path(p).read_text(encoding='utf-8')))
         self.assertEqual(sorted(n for n in named if not os.path.isfile(os.path.join(ROOT, 'catalog', n))), [])
 
 
@@ -207,7 +208,7 @@ class CatalogStageFonts(unittest.TestCase):
     ANCESTORS = {'stage-wrap', 'pv-wrap', 'panel', 'sheet', 'shell', 'wrap'}
 
     def test_no_catalog_font_rule_reaches_into_the_stage(self):
-        css = re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'catalog', 'styles', 'catalog.css'), encoding='utf-8').read(), flags=re.S)
+        css = re.sub(r'/\*.*?\*/', '', Path(os.path.join(ROOT, 'catalog', 'styles', 'catalog.css')).read_text(encoding='utf-8'), flags=re.S)
         leaks = []
         for sel, body in re.findall(r'([^{}]+)\{([^{}]*)\}', css):
             font = ' '.join(re.findall(r'font(?:-family)?\s*:([^;]*)', body))

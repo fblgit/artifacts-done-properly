@@ -12,6 +12,7 @@ Imported by adp.py, which sets A to itself. Stdlib only.
                                             each doc written as {collection, id, data, version}, the dump of the next step
 
 State lives in DIR/.adp-dev/: db/<collection, / as ~>.json {doc_id: {data, version}}, inbox/<ns>.jsonl, inbox/done/, watch.beat, server.json."""
+from pathlib import Path
 import contextlib, copy, hashlib, http.server, json, mimetypes, os, queue, re, sys, threading, time, types, urllib.request
 
 A: types.ModuleType = types.ModuleType('adp')      # the adp module, set by adp.py at import
@@ -48,7 +49,7 @@ class Store:
 
     def coll(self, coll):
         p = self.file(coll)
-        return json.load(open(p, encoding='utf-8')) if os.path.isfile(p) else {}
+        return json.loads(Path(p).read_text(encoding='utf-8')) if os.path.isfile(p) else {}
 
     def all(self):
         return {f'{n[:-5].replace("~", "/")}/{i}': d for n in sorted(os.listdir(self.db)) if n.endswith('.json')
@@ -79,7 +80,7 @@ class Store:
             if bad: out.append({'ok': False, **fail('conflict' if 'stale' in bad else 'invalid_argument', bad)}); continue
             for w in b:
                 data = w.get('data')
-                if data is None and w.get('file_path'): data = json.load(open(w['file_path'], encoding='utf-8'))
+                if data is None and w.get('file_path'): data = json.loads(Path(w['file_path']).read_text(encoding='utf-8'))
                 self.write(w['op'], key(w), data)
             now = self.all()      # the docs as written, so the next step needs no read
             out.append({'ok': True, 'docs': [{'collection': w['collection'], 'id': w['doc_id'], **now[key(w)]} for w in b if key(w) in now]})
@@ -109,18 +110,18 @@ def publish(d, state, files):
         if not isinstance(rel, str) or rel.startswith('/') or not p.startswith(base + os.sep) or os.sep + '.adp-dev' + os.sep in p:
             return fail('invalid_argument', f'bad path {rel}')
         v = v if isinstance(v, dict) else {'content': v}
-        cur = hashlib.sha256(open(p, 'rb').read()).hexdigest() if os.path.isfile(p) else None
+        cur = hashlib.sha256(Path(p).read_bytes()).hexdigest() if os.path.isfile(p) else None
         if v.get('ifMatch') and v['ifMatch'] != cur: moved.append({'path': rel, 'expected': v['ifMatch'], 'actual': cur})
         plan[rel] = (p, None if v.get('delete') or v.get('content') is None else v['content'])
-    n = os.path.join(state, 'publish.n'); k = int(open(n).read() or 0) if os.path.isfile(n) else 0
+    n = os.path.join(state, 'publish.n'); k = int(Path(n).read_text() or 0) if os.path.isfile(n) else 0
     if moved: return {'error': {'code': 'conflict', 'message': 'files moved since they were read', 'paths': moved, 'live': f'dev-{k}', 'changed': []}}
     shas = {}
     for rel, (p, text) in plan.items():
         if text is None:
             if os.path.isfile(p): os.remove(p)
             shas[rel] = None; continue
-        os.makedirs(os.path.dirname(p), exist_ok=True); b = text.encode('utf-8'); open(p, 'wb').write(b); shas[rel] = hashlib.sha256(b).hexdigest()
-    k += 1; open(n, 'w').write(str(k))
+        os.makedirs(os.path.dirname(p), exist_ok=True); b = text.encode('utf-8'); Path(p).write_bytes(b); shas[rel] = hashlib.sha256(b).hexdigest()
+    k += 1; Path(n).write_text(str(k))
     return {'version': f'dev-{k}', 'shas': shas}
 
 
@@ -148,7 +149,7 @@ def handler(d, state, user, fallback=True):
         def do_GET(self):
             path = self.path.split('?')[0]
             if path == '/__adp/shim.js':
-                js = f'window.__ADP_DEV={json.dumps({"user": user, "store": ident})};\n' + open(SHIM, encoding='utf-8').read()
+                js = f'window.__ADP_DEV={json.dumps({"user": user, "store": ident})};\n' + Path(SHIM).read_text(encoding='utf-8')
                 return self.send(js.encode(), 'text/javascript; charset=utf-8')
             if path == '/__adp/db': return self.send({'docs': store.all(), 'canSend': 'available' if listening(state) else 'no_session'})
             if path == '/__adp/events': return self.events()
@@ -156,7 +157,7 @@ def handler(d, state, user, fallback=True):
             f = next((p for base in ((d, os.path.join(A.HERE, 'catalog')) if fallback else (d,)) for p in [os.path.normpath(os.path.join(base, rel))]
                       if p.startswith(os.path.normpath(base) + os.sep) and os.path.isfile(p)), None)
             if not f: return self.send(fail('not_found', rel), code=404)
-            b, ctype = open(f, 'rb').read(), mimetypes.guess_type(f)[0] or 'application/octet-stream'
+            b, ctype = Path(f).read_bytes(), mimetypes.guess_type(f)[0] or 'application/octet-stream'
             if ctype == 'text/html': b = inject(b.decode('utf-8')).encode()
             self.send(b, ctype + ('; charset=utf-8' if ctype.startswith('text/') or ctype.endswith('javascript') else ''))
 
@@ -212,7 +213,7 @@ def serve(a, d):
     s = state_of(d)
     srv = http.server.ThreadingHTTPServer(('127.0.0.1', int(A.opt(a, '--port', 8787))), handler(d, s, A.opt(a, '--user', 'dev-user'), '--no-fallback' not in a))
     srv.daemon_threads = True
-    json.dump({'port': srv.server_port}, open(os.path.join(s, 'server.json'), 'w'))
+    Path(os.path.join(s, 'server.json')).write_text(json.dumps({'port': srv.server_port}))
     A.emit({'url': f'http://127.0.0.1:{srv.server_port}/', 'state': os.path.abspath(s)}); sys.stdout.flush()
     with contextlib.suppress(KeyboardInterrupt): srv.serve_forever()
     return 0
@@ -226,14 +227,14 @@ def watch(d):
         for n in sorted(os.listdir(inbox)):
             f = os.path.join(inbox, n)
             if n.endswith('.jsonl') and time.time() - os.path.getmtime(f) >= 1:      # settled for a second
-                sys.stdout.write(open(f, encoding='utf-8').read()); sys.stdout.flush()
+                sys.stdout.write(Path(f).read_text(encoding='utf-8')); sys.stdout.flush()
                 os.replace(f, os.path.join(done, n))
         time.sleep(0.5)
 
 
 def send(d, path):
     try:
-        url = f"http://127.0.0.1:{json.load(open(os.path.join(d, '.adp-dev', 'server.json')))['port']}/__adp/outbox"
+        url = f"http://127.0.0.1:{json.loads(Path(os.path.join(d, '.adp-dev', 'server.json')).read_text())['port']}/__adp/outbox"
         req = urllib.request.Request(url, json.dumps(A.read_json(path, 'FILE')).encode(), {'content-type': 'application/json'})
         res = json.loads(urllib.request.urlopen(req, timeout=10).read())['results']
     except (OSError, ValueError, KeyError) as e: sys.exit(f'dev send: no server for {d} ({e}); run adp.py dev serve {d}')

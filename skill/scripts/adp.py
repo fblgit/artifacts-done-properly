@@ -116,6 +116,7 @@ each file's text outside its parts is hashed as _rest:<path>. Schema adp/2 adds 
 Markers (HTML or JS/CSS comments): <!-- part:ID --> ... <!-- /part:ID -->  |  /* part:ID */ ... /* /part:ID */
 ID: dot-separated lowercase kebab, e.g. triage.keys-table. Hash: sha256 of the text between the markers with
 whitespace runs collapsed, first 12 hex; a parent's text includes its children. Stdlib only; run with python3 -I."""
+from pathlib import Path
 import contextlib, datetime, difflib, hashlib, io, json, math, os, re, shutil, sys
 from html import escape as html_escape
 
@@ -151,7 +152,7 @@ def manifest(text, files):
     hp = {p: H(norm(text[s:e])) for p, (s, e, _) in parts.items()}
     hp[REST] = H(norm(own(text, parts, '')))      # everything outside every part: a change there still shows
     el = {p: len(TAG.findall(own(text, parts, p))) for p in [*parts, REST]}   # own elements, children excluded
-    hf = {n: hashlib.sha256(open(f, 'rb').read()).hexdigest()[:12] for n, f in files.items()}
+    hf = {n: hashlib.sha256(Path(f).read_bytes()).hexdigest()[:12] for n, f in files.items()}
     lines = sorted(f'{p}={h}' for p, h in hp.items()) + sorted(f'file:{n}={h}' for n, h in hf.items())
     return {'schema': 'adp/1', 'page_hash': H('\n'.join(lines)), 'parts': dict(sorted(hp.items())), 'files': hf,
             'parents': {**{p: par for p, (_, _, par) in sorted(parts.items())}, REST: ''}, 'elements': dict(sorted(el.items()))}
@@ -179,7 +180,7 @@ def load(d):
         dirs[:] = sorted(x for x in dirs if not x.startswith('.'))
         for n in sorted(names):
             if n.startswith('.') or is_seed(os.path.relpath(os.path.join(root, n), d)): continue
-            p = os.path.relpath(os.path.join(root, n), d); b = open(os.path.join(root, n), 'rb').read()
+            p = os.path.relpath(os.path.join(root, n), d); b = Path(os.path.join(root, n)).read_bytes()
             files[p] = hashlib.sha256(b).hexdigest()[:12]
             if p.endswith(TEXT) and MARK.search(t := b.decode('utf-8', 'replace')): marked[p] = t
     return files, marked
@@ -273,7 +274,7 @@ def read_json(path, what='file'):
 def tmeta(name):
     p = os.path.join(TPL, name, 'template.json')
     if not os.path.isfile(p): sys.exit(f'no template {name}: ' + ', '.join(sorted(os.listdir(TPL))))
-    return json.load(open(p))
+    return json.loads(Path(p).read_text())
 
 
 ADP_HOME = os.environ.get('ADP_HOME') or os.path.join(os.path.expanduser('~'), '.adp')
@@ -355,7 +356,7 @@ def kit_reads(url, root, paths):
 
 def saved_catalog():
     p = os.path.join(ADP_HOME, 'config.json')
-    return (json.load(open(p)) if os.path.isfile(p) else {}).get('catalog')
+    return (json.loads(Path(p).read_text()) if os.path.isfile(p) else {}).get('catalog')
 
 
 def catalog_cmd(a):
@@ -363,14 +364,14 @@ def catalog_cmd(a):
     if pos:
         if not CAT_URL.match(pos[0]): sys.exit('catalog: use a Claude artifact URL or an HTTPS *.chatgpt.site catalog URL')
         p = os.path.join(ADP_HOME, 'config.json'); os.makedirs(ADP_HOME, exist_ok=True)
-        cfg = json.load(open(p)) if os.path.isfile(p) else {}; cfg['catalog'] = pos[0].rstrip('/')
+        cfg = json.loads(Path(p).read_text()) if os.path.isfile(p) else {}; cfg['catalog'] = pos[0].rstrip('/')
         json.dump(cfg, open(p, 'w'), indent=1)
     url = saved_catalog()
     if not url: return emit({'catalog': None, 'next': 'adp.py catalog <url> saves the user\'s catalog (SKILL.md says how to find it); never assume one'})
     idx = os.path.join(cat_dir(url), 'catalog.json')
     out = {'catalog': url, 'index': idx, 'fetched': os.path.isfile(idx)}
     if out['fetched']:
-        c = json.load(open(idx)); out.update(ver=c.get('ver') or None, built=c.get('built'), entries=len(c.get('entries', [])))
+        c = json.loads(Path(idx).read_text()); out.update(ver=c.get('ver') or None, built=c.get('built'), entries=len(c.get('entries', [])))
         out['refresh'] = fetch_call(url)      # the same read, when the catalog has published since
         root = cat_dir(url); every, bad = kit_missing(root, c)
         out.update(kit=root, files=len(every), missing=len(bad), complete=not bad)
@@ -430,7 +431,7 @@ def page_deps(d):
     p = os.path.join(d, 'index.html')
     if not os.path.isfile(p): return []
     out = []
-    for ref in re.findall(r'(?:src|href)="([^"]+)"', open(p, encoding='utf-8').read()):
+    for ref in re.findall(r'(?:src|href)="([^"]+)"', Path(p).read_text(encoding='utf-8')):
         if not re.match(r'(?:[a-z]+:|#|//)', ref) and ref not in out and os.path.isfile(os.path.join(d, ref)): out.append(ref)
     return out
 
@@ -456,7 +457,7 @@ def pins(a):
     vm = {}
     for x in pairs:
         f, ver = x.rsplit('=', 1)
-        for p in json.load(open(f)): vm[p] = ver
+        for p in json.loads(Path(f).read_text()): vm[p] = ver
     out = opt(a, '--out') or os.path.join(os.path.dirname(os.path.abspath(pairs[0].rsplit('=', 1)[0])), 'vermap.json')
     json.dump(vm, open(out, 'w'), indent=0, sort_keys=True)
     return emit({'pinned': len(vm), 'vermap': os.path.abspath(out), 'next': f'CAT_URL=<url> CAT_VERMAP={out} make catalog, then publish catalog.json to the same url'})
@@ -469,7 +470,7 @@ VIEWH = re.compile(r'^##\s+View:\s*(.*?)\s*(?:\(\s*id:\s*(\S+?)\s*\))?\s*$')
 def read_content(path):
     """-> (lead, [{label, id, sections: [(id, title, html)]}]) from a content file; a malformed one exits 2 with the line."""
     def bad(n, msg): sys.stderr.write(f'{path}:{n}: {msg}\n'); sys.exit(2)
-    lines = open(path, encoding='utf-8').read().split('\n'); lead, views, sec, mode = [], [], None, ''
+    lines = Path(path).read_text(encoding='utf-8').split('\n'); lead, views, sec, mode = [], [], None, ''
     i = 0
     while i < len(lines):
         l = lines[i]; i += 1
@@ -507,7 +508,7 @@ def build_content(d, path):
     views = [v for v in views if v['sections']]
     if not views: sys.stderr.write(f'{path}: no `## View: <label> (id: <id>)` with sections\n'); sys.exit(2)
     ap, cp = os.path.join(d, 'parts', 'app.js'), os.path.join(d, 'content.js')
-    js, cj = open(ap, encoding='utf-8').read(), open(cp, encoding='utf-8').read()
+    js, cj = Path(ap).read_text(encoding='utf-8'), Path(cp).read_text(encoding='utf-8')
     q = json.dumps; titles, vjs, cont = {}, [], {}
     for v in views:
         cards = '\n'.join(f'      <!-- part:{i} --><div class="card" data-part="{i}" data-comment-target></div><!-- /part:{i} -->' for i, _, _ in v['sections'])
@@ -526,7 +527,7 @@ def build_content(d, path):
     new_c['page.lead'] = dict(old['page.lead'], html=lead or old['page.lead']['html']); new_c.update(cont)
     body = '{\n' + ',\n'.join(f' {q(k, ensure_ascii=False)}: {q(v, ensure_ascii=False)}' for k, v in new_c.items()) + '\n}'
     cj = cj[:m.start(1)] + body + cj[m.end(1):]
-    open(ap, 'w', encoding='utf-8').write(js); open(cp, 'w', encoding='utf-8').write(cj)
+    Path(ap).write_text(js, encoding='utf-8'); Path(cp).write_text(cj, encoding='utf-8')
     return {'views': len(views), 'sections': len(cont), 'parts': len(views) + len(cont), 'bytes': sum(len(c['html'].encode()) for c in cont.values())}
 
 
@@ -733,9 +734,9 @@ def take(a):
         idx = src
         if not os.path.isfile(idx): sys.exit(f'take: {src} is neither a catalog url nor a catalog.json')
         cfg = cvalues(read_doc(opt(a, '--config'))) if opt(a, '--config') else {}
-        url = opt(a, '--url') or cfg.get('links.catalog') or json.load(open(idx)).get('url')
+        url = opt(a, '--url') or cfg.get('links.catalog') or json.loads(Path(idx).read_text()).get('url')
         if not url: sys.exit('take: no catalog url. Pass the catalog url as CATALOG (then the index is the live one), or --url with a local index')
-    cat = json.load(open(idx)); by = {e['id']: e for e in cat['entries']}
+    cat = json.loads(Path(idx).read_text()); by = {e['id']: e for e in cat['entries']}
     order, seen = [], set()
     def visit(i):
         if i in seen: return
@@ -757,7 +758,7 @@ def take(a):
             m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))
     info = {'url': url, 'index': os.path.abspath(idx), 'live': live, 'ver': cat.get('ver') or None, 'built': cat.get('built')}
     if not live: info['warning'] = 'a local index is a build, not the live catalog: a file it lists may be missing there. adp.py take <catalog url> ... reads the fetched live index'
-    out = {'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m}}
+    out = {'catalog': info, 'entries': order, 'files': m, 'sha256': {f['path']: f['sha256'] for i in order for f in by[i]['files'] if f['path'] in m and f.get('sha256')}}      # an index built without hashes names none
     own = {e['id']: [s for s in sample_refs(heads[e['id']]) if adp_lib.split_ref(s)[1] in (heads[e['id']].get('samples') or [])] for e in named if e['id'] in heads}
     own = {i: v for i, v in own.items() if v}
     if own: out['samples'] = own        # the keys an entry asked for owns in its bundle (@samples), as path#key: the bundle file is in the map, the output names only these
@@ -784,9 +785,9 @@ def index_of(src, a):
     if CAT_URL.match(src):
         idx = os.path.join(cat_dir(src), 'catalog.json')
         if not os.path.isfile(idx): emit({'error': 'index not fetched', 'catalog': src.rstrip('/'), 'fetch': fetch_call(src.rstrip('/')), 'next': 'adp.py catalog fetches your whole kit (My Own Kit)'}); sys.exit(2)
-        return json.load(open(idx)), None
+        return json.loads(Path(idx).read_text()), None
     if not os.path.isfile(src): sys.exit(f'{src} is neither a catalog url nor a catalog.json')
-    return json.load(open(src)), 'a local index is a build, not the live catalog: a file it lists may be missing there'
+    return json.loads(Path(src).read_text()), 'a local index is a build, not the live catalog: a file it lists may be missing there'
 
 
 def read_headers(src, entries):
@@ -874,7 +875,7 @@ def kit(a):
 def content_of(d):
     p = os.path.join(d, 'content.js')
     if not os.path.isfile(p): return {}
-    m = re.search(r'window\.ADP_CONTENT\s*=\s*(\{.*\})\s*;', open(p, encoding='utf-8').read(), re.S)
+    m = re.search(r'window\.ADP_CONTENT\s*=\s*(\{.*\})\s*;', Path(p).read_text(encoding='utf-8'), re.S)
     return json.loads(m.group(1)) if m else {}
 
 
@@ -939,14 +940,14 @@ def data_docs(sources):
                 if not p.endswith('.json'): continue
                 rel = p[:-5]; segs = rel.split('__', 1) if '__' in rel and '/' not in rel else rel.split('/')
                 if len(segs) % 2: sys.exit(f'--data {src}: {p} is not collection/id.json')
-                out.append(('/'.join(segs[:-1]), segs[-1], json.load(open(os.path.join(src, p), encoding='utf-8'))))
+                out.append(('/'.join(segs[:-1]), segs[-1], json.loads(Path(os.path.join(src, p)).read_text(encoding='utf-8'))))
             continue
         if not os.path.isfile(src): sys.exit(f'--data: no file or directory {src}')
-        f = json.load(open(src, encoding='utf-8')); docs = f.get('docs') if isinstance(f, dict) else f
+        f = json.loads(Path(src).read_text(encoding='utf-8')); docs = f.get('docs') if isinstance(f, dict) else f
         if not isinstance(docs, list): sys.exit(f'--data {src}: a list of docs or {{docs: [...]}}')
         for x in docs:
             c, i = x.get('collection'), x.get('id', x.get('doc_id'))
-            data = x.get('data') if 'data' in x else (json.load(open(x['file_path'], encoding='utf-8')) if x.get('file_path') else None)
+            data = x.get('data') if 'data' in x else (json.loads(Path(x['file_path']).read_text(encoding='utf-8')) if x.get('file_path') else None)
             if not isinstance(c, str) or not isinstance(i, str) or not isinstance(data, dict): sys.exit(f'--data {src}: a doc needs collection, id and data (an object)')
             out.append((c, i, data))
     return out
@@ -967,10 +968,10 @@ def read_seed(d):
     """The docs a DIR's seed.json and packs hold now: (index, [(collection, id, data)]); ({}, []) without one."""
     p = os.path.join(d, SEED)
     if not os.path.isfile(p): return {}, []
-    f = json.load(open(p, encoding='utf-8')); docs = list(f['docs']) if isinstance(f.get('docs'), list) else []   # adp-seed/1 held them inline
+    f = json.loads(Path(p).read_text(encoding='utf-8')); docs = list(f['docs']) if isinstance(f.get('docs'), list) else []   # adp-seed/1 held them inline
     for pk in f.get('packs') or []:
         q = os.path.join(d, pk)
-        if os.path.isfile(q): docs += json.load(open(q, encoding='utf-8')).get('docs') or []
+        if os.path.isfile(q): docs += json.loads(Path(q).read_text(encoding='utf-8')).get('docs') or []
     return f, [(x['collection'], x['id'], x['data']) for x in docs if isinstance(x, dict) and isinstance(x.get('data'), dict)]
 
 
@@ -1064,7 +1065,7 @@ def page_decides(key):
 
 def read_doc(path):
     if not path: return {}
-    d = json.load(open(path)); return d.get('data', d) if 'values' not in d and isinstance(d.get('data'), dict) else d
+    d = json.loads(Path(path).read_text()); return d.get('data', d) if 'values' not in d and isinstance(d.get('data'), dict) else d
 
 
 def cvalues(doc):
@@ -1235,7 +1236,7 @@ def requests_cmd(a):
         patch = {'state': 'working', 'progress': list(d.get('progress') or []) + [{'at': at, 'text': opt(a, '--text')}]}
     else:
         if not opt(a, '--response'): sys.exit('--done needs --response FILE (Markdown)')
-        text = open(opt(a, '--response'), encoding='utf-8').read().strip()
+        text = Path(opt(a, '--response')).read_text(encoding='utf-8').strip()
         changed = [x for x in (opt(a, '--changed', '') or '').split(',') if x]
         patch = {'status': 'done', 'doneAt': at, 'changed': changed, 'version': opt(a, '--version', '')}
         if opt(a, '--turns'):                         # a reply reopened it: the answer is the next turn
@@ -1272,7 +1273,7 @@ def resolve_project(x):
     if os.path.isdir(x): return os.path.abspath(x)
     root = os.path.join(ADP_HOME, 'projects')
     for n in sorted(os.listdir(root)) if os.path.isdir(root) else []:
-        try: c = json.load(open(os.path.join(root, n, 'config.json')))
+        try: c = json.loads(Path(os.path.join(root, n, 'config.json')).read_text())
         except (OSError, ValueError): continue
         if x in (c.get('name'), n) and os.path.isdir(c.get('path', '')): return os.path.abspath(c['path'])
     sys.exit(f'project not found: {x} (adp.py projects lists them)')
@@ -1313,7 +1314,7 @@ def project_reg(d):
     """The registry entry of project folder d in ADP_HOME/projects/<name>/config.json, or None."""
     root = os.path.join(ADP_HOME, 'projects')
     for n in sorted(os.listdir(root)) if os.path.isdir(root) else []:
-        try: c = json.load(open(os.path.join(root, n, 'config.json')))
+        try: c = json.loads(Path(os.path.join(root, n, 'config.json')).read_text())
         except (OSError, ValueError): continue
         if c.get('path') == d: return os.path.join(root, n, 'config.json')
     return None
@@ -1326,7 +1327,7 @@ def register_project(d, scope):
         base = re.sub(r'[^a-z0-9._-]+', '-', os.path.basename(d).lower()).strip('-') or 'project'; n, i = base, 2
         while os.path.exists(os.path.join(ADP_HOME, 'projects', n)): n, i = f'{base}-{i}', i + 1
         p = os.path.join(ADP_HOME, 'projects', n, 'config.json')
-    old = json.load(open(p)) if os.path.isfile(p) else {}
+    old = json.loads(Path(p).read_text()) if os.path.isfile(p) else {}
     os.makedirs(os.path.dirname(p), exist_ok=True)
     json.dump({**old, 'schema': 'adp-project/1', 'name': os.path.basename(d), 'path': d, 'scope': scope, 'created': old.get('created', now()), 'at': now()}, open(p, 'w'), indent=1)
     return p
@@ -1335,7 +1336,7 @@ def register_project(d, scope):
 def projects_cmd(a):
     root = os.path.join(ADP_HOME, 'projects'); rows = []
     for n in sorted(os.listdir(root)) if os.path.isdir(root) else []:
-        try: c = json.load(open(os.path.join(root, n, 'config.json')))
+        try: c = json.loads(Path(os.path.join(root, n, 'config.json')).read_text())
         except (OSError, ValueError): continue
         rows.append((c.get('name', n), c.get('scope', ''), c.get('path', '') + ('' if os.path.isdir(c.get('path', '')) else '  (missing)')))
     if not rows: print('no projects registered (run adp.py init in a project folder)'); return 0
@@ -1361,7 +1362,7 @@ def road_tree(d):
 
 def ref_version(skill_md):
     """metadata.version from a SKILL.md frontmatter, or None."""
-    try: lines = open(skill_md).read().split('\n')
+    try: lines = Path(skill_md).read_text().split('\n')
     except OSError: return None
     if not lines or lines[0].strip() != '---': return None
     meta = False
@@ -1375,13 +1376,13 @@ def ref_version(skill_md):
 
 def tree_files(d):
     """{relative path: bytes} of every file under d, __pycache__ excluded."""
-    return {os.path.relpath(os.path.join(r, f), d): open(os.path.join(r, f), 'rb').read()
+    return {os.path.relpath(os.path.join(r, f), d): Path(os.path.join(r, f)).read_bytes()
             for r, ds, fs in os.walk(d) if not ds.__setitem__(slice(None), [x for x in ds if x != '__pycache__']) for f in fs}
 
 
 def plugin_name():
     """The name of the Claude Code plugin this skill folder ships in (a .claude-plugin/plugin.json beside it), or None for a plain skill install."""
-    try: return json.load(open(os.path.join(os.path.dirname(HERE), '.claude-plugin', 'plugin.json'), encoding='utf-8')).get('name') or None
+    try: return json.loads(Path(os.path.join(os.path.dirname(HERE), '.claude-plugin', 'plugin.json')).read_text(encoding='utf-8')).get('name') or None
     except (OSError, ValueError, AttributeError): return None
 
 
@@ -1444,7 +1445,7 @@ def setup_cmd(a):
             p = os.path.join(t, rel); os.makedirs(os.path.dirname(p), exist_ok=True)
             with open(p, 'wb') as f: f.write(data)
     os.makedirs(os.path.dirname(cfg), exist_ok=True)
-    c = json.load(open(cfg)) if os.path.isfile(cfg) else {}
+    c = json.loads(Path(cfg).read_text()) if os.path.isfile(cfg) else {}
     mine = {'schema': 'adp-setup/1', 'scope': scope, **({'plugin': plug} if plug else {'skill_root': HERE}), 'skills': names,     # a plugin's folder changes with every version: record its name, not its path
             'version': {n: v for n in names if (v := ref_version(os.path.join(refs, n, 'SKILL.md' if os.path.isfile(os.path.join(refs, n, 'SKILL.md')) else 'road.md')))}, 'at': now()}
     add = {k: v for k, v in mine.items() if k not in c}     # a config that is already there is used as it is: setup only adds the keys it lacks
@@ -1452,13 +1453,13 @@ def setup_cmd(a):
     if scope != 'user': register_project(cwd, scope)
     if not yes: return 0
     os.makedirs(os.path.dirname(ptr), exist_ok=True)
-    old = open(ptr).read() if os.path.isfile(ptr) else ''
+    old = Path(ptr).read_text() if os.path.isfile(ptr) else ''
     pat = re.compile(re.escape(BEGIN) + r'.*?' + re.escape(END), re.S)
     new = pat.sub(lambda m: block, old, count=1) if pat.search(old) else old + ('\n' if old and not old.endswith('\n') else '') + block + '\n'
-    open(ptr, 'w').write(new)
+    Path(ptr).write_text(new)
     if gi:
-        g = open(gi).read() if os.path.isfile(gi) else ''
-        if '.adp/log.jsonl' not in g.split('\n'): open(gi, 'w').write(g + ('\n' if g and not g.endswith('\n') else '') + '.adp/log.jsonl\n')
+        g = Path(gi).read_text() if os.path.isfile(gi) else ''
+        if '.adp/log.jsonl' not in g.split('\n'): Path(gi).write_text(g + ('\n' if g and not g.endswith('\n') else '') + '.adp/log.jsonl\n')
     return 0
 
 
@@ -1489,7 +1490,7 @@ def main(a):
         since = opt(a, '--since'); n = int(opt(a, '--batch', LIMIT)); where = opt(a, '--out', a[1].rstrip('/') + '.adp')
         fresh = os.path.isfile(os.path.join(a[1], SEED)) and seed_file(a[1])    # edits after `new` change the hashes the seed carries
         if not since: return emit(batched(add_kit_refs(publish_args(a[1]), a[1]), a[1], n, where))
-        o = json.load(open(since)); o = o.get('data', o) if 'files' not in o else o
+        o = json.loads(Path(since).read_text()); o = o.get('data', o) if 'files' not in o else o
         nf = manifest_dir(a[1])['files']; of = o.get('files', {})
         changed = {p for p, h in nf.items() if of.get(p) != h and p != 'index.html'} | ({SEED, *read_seed(a[1])[0].get('packs', [])} if fresh else set())
         out = publish_args(a[1], changed); out['files'].update({p: None for p in of if p not in nf})
@@ -1497,7 +1498,7 @@ def main(a):
         if not out['page_changed']: out['note'] = 'index.html is unchanged: publish with url and the changed files, still passing file_path (the tool requires it; the page is re-sent as is)'
         return emit(batched(out, a[1], n, where))
     if len(a) >= 2 and a[0] == 'check':
-        marked = load(a[1])[1] if os.path.isdir(a[1]) else {a[1]: open(a[1], encoding='utf-8').read()}
+        marked = load(a[1])[1] if os.path.isdir(a[1]) else {a[1]: Path(a[1]).read_text(encoding='utf-8')}
         allt, bad, ids, rest, size = '\n'.join(marked.values()), [], {}, 0, 0
         for f, text in marked.items():
             parts, b = parse(text); pre = f'{f}: ' if len(marked) > 1 else ''
@@ -1519,10 +1520,10 @@ def main(a):
         return 1 if bad else 0
     if len(a) >= 2 and a[0] == 'manifest':
         files = dict(x.split('=', 1) for x in a[a.index('--file') + 1:] if '=' in x) if '--file' in a else {}
-        m = manifest_dir(a[1]) if os.path.isdir(a[1]) else manifest(open(a[1], encoding='utf-8').read(), files)
+        m = manifest_dir(a[1]) if os.path.isdir(a[1]) else manifest(Path(a[1]).read_text(encoding='utf-8'), files)
         print(json.dumps(m, indent=1)); return 0
     if len(a) == 3 and a[0] == 'diff':
-        print(json.dumps(diff(*(json.load(open(x)) for x in a[1:])), indent=1)); return 0
+        print(json.dumps(diff(*(json.loads(Path(x).read_text()) for x in a[1:])), indent=1)); return 0
     if len(a) >= 3 and a[0] == 'diff-pages':          # the diff plus what was added/removed in each deepest part
         files = dict(x.split('=', 1) for x in a[a.index('--file') + 1:] if '=' in x) if '--file' in a else {}
         def side(x):                                    # -> manifest, {part: own text}
@@ -1531,7 +1532,7 @@ def main(a):
                 pa = {f: parse(t)[0] for f, t in marked.items()}
                 return m, {**{p: own(marked[f], pa[f], p) for p, f in m['part_file'].items() if not p.startswith(REST)},
                            **{f'{REST}:{f}': own(t, pa[f], REST) for f, t in marked.items()}}
-            t = open(x, encoding='utf-8').read(); pa = parse(t)[0]
+            t = Path(x).read_text(encoding='utf-8'); pa = parse(t)[0]
             return manifest(t, files), {**{p: own(t, pa, p) for p in pa}, REST: own(t, pa, REST)}
         (om, ot), (nm, nt) = side(a[1]), side(a[2]); d = diff(om, nm)
         tok = lambda t: [x for x in (norm(y) for y in re.split(r'(?<=>)|(?=<)', t)) if x]

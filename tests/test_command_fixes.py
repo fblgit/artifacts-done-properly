@@ -1,5 +1,6 @@
 """Regression tests for the six command bugs found by tests/test_commands.py: a missing or malformed input file, `gate` on non-JSON stdin,
 `seed` flags on an existing seed, `seed` on a missing directory, a failed `requests` call leaving a directory, thin usage and flag parsing."""
+from pathlib import Path
 import json
 import os
 import unittest
@@ -24,7 +25,7 @@ class InputFiles(Cmd):
 
     def test_requests_missing_and_malformed_dump(self):
         self.refused('requests', 'nofile.json', word='DUMP.json')
-        open(self.p('bad.json'), 'w').write('not json')
+        Path(self.p('bad.json')).write_text('not json')
         self.refused('requests', 'bad.json', word='is not JSON')
 
     def test_ack_missing_result(self):

@@ -1,6 +1,7 @@
 """Durable agent work on existing ADP requests/incoming records; emit guarded native calls.
 The executor remains responsible for authorization and genuine host receipts. No network or model calls.
 """
+from pathlib import Path
 import copy
 import datetime
 import hashlib
@@ -76,7 +77,7 @@ def work(a):
     if len(pos) != 1:
         sys.exit('work accepts one native read file')
     if '--raw' in a:
-        raw = json.load(open(pos[0], encoding='utf-8'))
+        raw = json.loads(Path(pos[0]).read_text(encoding='utf-8'))
         for envelope in raw:
             args = envelope.get('call', {}).get('args', {})
             if work_origin(adapter.HOST, args.get('artifact', args.get('url'))) != work_origin(adapter.HOST, artifact):
@@ -132,12 +133,12 @@ def work(a):
         data['progress'] = list(data.get('progress') or []) + [{'at': at, 'text': text, 'by': actor}]
     if action == 'checkpoint':
         checkpoint = A.opt(a, '--checkpoint') or sys.exit('checkpoint needs --checkpoint JSON_FILE')
-        execution['checkpoint'] = json.load(open(checkpoint, encoding='utf-8'))
+        execution['checkpoint'] = json.loads(Path(checkpoint).read_text(encoding='utf-8'))
     if action == 'block':
         execution.update({'state': 'blocked', 'leaseUntil': at, 'reason': text})
     if action == 'complete':
         receipt_path = A.opt(a, '--receipt') or sys.exit('Completion needs --receipt JSON_FILE with verified evidence')
-        receipt = json.load(open(receipt_path, encoding='utf-8'))
+        receipt = json.loads(Path(receipt_path).read_text(encoding='utf-8'))
         checks = receipt.get('checks')
         if not isinstance(checks, list) or not checks or any(not isinstance(c, dict) or c.get('passed') is not True or not c.get('name') or not c.get('evidence') for c in checks):
             sys.exit('Every completion check must pass and carry evidence')

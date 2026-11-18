@@ -1,5 +1,6 @@
 """Records export/import (docs/adp-export-import.md): bundle, import-plan, import-ack. Host-neutral: a host adapter (adp_<host>_adapter.py:
 read_calls, parse_reads, write_calls, parse_receipt) only reads and writes natively. Imported by adp.py, which sets A to itself."""
+from pathlib import Path
 import hashlib, importlib, json, os, re, sys, time
 
 import adp_loop
@@ -22,7 +23,7 @@ def adapter(a):
 def reads_in(a, path):
     """-> ({key: doc}, {key: native revision of an explicit absent snapshot}, collections the read covered or None) from a normalized file, or from
     raw envelopes [{call, result}] with --raw (an incomplete read is refused). A doc is {collection, id, data, revision?}; an absent one has exists: false."""
-    f, cov = json.load(open(path, encoding='utf-8')), None
+    f, cov = json.loads(Path(path).read_text(encoding='utf-8')), None
     if '--raw' in a:
         f = adapter(a).parse_reads(f); cov = set(f.get('covered') or [])
         if not f.get('complete'): sys.exit(f'{path}: the read is incomplete ({"; ".join(f.get("warnings") or []) or "no detail"}): read again before planning')
@@ -108,7 +109,7 @@ def plan(a):
         out['order'] = {'last': 'manifest/current', 'rule': 'run the calls in order; if an earlier call is rejected or unknown, do not run the call that writes manifest/current'}
     if not held: out['calls'] = ad.write_calls(art, [o for o in ops if o['action'] in ('create', 'replace')]) if out['counts']['create'] + out['counts']['replace'] else []
     text = json.dumps(out, indent=1, ensure_ascii=False)
-    if A.opt(a, '--out'): open(A.opt(a, '--out'), 'w', encoding='utf-8').write(text)
+    if A.opt(a, '--out'): Path(A.opt(a, '--out')).write_text(text, encoding='utf-8')
     print(text); return 2 if held else 0
 
 
@@ -117,7 +118,7 @@ def ack(a):
     record is listed, not recorded; the next plan re-derives it."""
     pos, ad = A.bare(a[1:]), adapter(a)
     if len(pos) != 2: sys.exit('usage: adp.py import-ack PLAN.json RESULTS.json --host H [--raw]')
-    p, res = json.load(open(pos[0], encoding='utf-8')), json.load(open(pos[1], encoding='utf-8'))
+    p, res = json.loads(Path(pos[0]).read_text(encoding='utf-8')), json.loads(Path(pos[1]).read_text(encoding='utf-8'))
     got = {f"{r['collection']}/{r['id']}": r for r in (ad.parse_receipt(res) if '--raw' in a else res)}
     pv, recs, failed, done = p['provenance'], dict(p['provenance']['records']), [], []
     for o in p['ops']:

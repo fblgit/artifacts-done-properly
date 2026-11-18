@@ -1,6 +1,7 @@
 """Black-box tests of `gate`, `requests`, `record`, `ack`, `seed` and `propose`: what the usage text promises and what the commands
 were observed to do in a throwaway project. No network: the remote side (Artifact listing, ArtifactData dump) is a fixture built from
 the seed packs that `new` writes."""
+from pathlib import Path
 import glob, hashlib, json, os, shutil, subprocess, sys, unittest
 
 from test_setup import Base
@@ -24,7 +25,7 @@ class Cmd(Base):
     def write_json(self, name, obj):
         path = self.p(name)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        json.dump(obj, open(path, 'w'))
+        with open(path, 'w') as f: json.dump(obj, f)
         return path
 
     def ok(self, *args, stdin=None):
@@ -44,9 +45,9 @@ class Cmd(Base):
 
     def edit(self, d, to=EDIT_TO):
         f = os.path.join(d, 'parts', 'app.js')
-        s = open(f).read()
+        s = Path(f).read_text()
         self.assertIn(EDIT_FROM, s)
-        open(f, 'w').write(s.replace(EDIT_FROM, to, 1))
+        Path(f).write_text(s.replace(EDIT_FROM, to, 1))
 
     def docs_of(self, out):
         """every doc file a batch output names: {collection/doc_id: data}"""
@@ -54,7 +55,7 @@ class Cmd(Base):
         for batch in out['batches']:
             for w in batch:
                 if 'file_path' in w:
-                    res[f"{w['collection']}/{w['doc_id']}"] = json.load(open(w['file_path']))
+                    res[f"{w['collection']}/{w['doc_id']}"] = json.loads(Path(w['file_path']).read_text())
         return res
 
     def writes_of(self, out):
@@ -67,24 +68,24 @@ class Cmd(Base):
         os.makedirs(os.path.join(ad, 'incoming'))
         shutil.copytree(d, os.path.join(ad, 'incoming', 'files'), ignore=shutil.ignore_patterns('seed', 'seed.json'))
         files = [{'path': os.path.relpath(os.path.join(b, n), os.path.join(ad, 'incoming', 'files')).replace(os.sep, '/'),
-                  'sha256': hashlib.sha256(open(os.path.join(b, n), 'rb').read()).hexdigest(), 'bytes': 1}
+                  'sha256': hashlib.sha256(Path(os.path.join(b, n)).read_bytes()).hexdigest(), 'bytes': 1}
                  for b, _, ns in os.walk(os.path.join(ad, 'incoming', 'files')) for n in ns]
-        json.dump(files, open(os.path.join(ad, 'listing.json'), 'w'))
+        Path(os.path.join(ad, 'listing.json')).write_text(json.dumps(files))
         docs = {}
         for pk in sorted(glob.glob(os.path.join(d, 'seed', 'pack-*.json'))):
-            for x in json.load(open(pk))['docs']:
+            for x in json.loads(Path(pk).read_text())['docs']:
                 docs.setdefault(x['collection'], []).append({'id': x['id'], 'data': x['data'], 'version': 1})
         self.docs = docs
-        json.dump(docs, open(os.path.join(ad, 'docs.json'), 'w'))
+        Path(os.path.join(ad, 'docs.json')).write_text(json.dumps(docs))
         out = self.ok('export', d, '--url', URL)
         self.assertEqual(out['next'], 'clean: nothing to send')
         return d
 
     def state(self, d):
-        return json.load(open(d + '.adp/state.json'))
+        return json.loads(Path(d + '.adp/state.json').read_text())
 
     def save_state(self, d, st):
-        json.dump(st, open(d + '.adp/state.json', 'w'))
+        Path(d + '.adp/state.json').write_text(json.dumps(st))
 
 
 class SourceDriftTests(Cmd):
@@ -202,10 +203,10 @@ class SeedTests(Cmd):
         self.assertTrue(out['written'])
         self.assertEqual(out['packs'], ['seed/pack-001.json'])
         self.assertEqual(set(out['collections']), {'parts', 'content', 'changes', 'agents', 'manifest'})
-        idx = json.load(open(os.path.join(d, 'seed.json')))
+        idx = json.loads(Path(os.path.join(d, 'seed.json')).read_text())
         self.assertEqual((idx['schema'], idx['by'], idx['version'], idx['summary'], idx['role']), ('adp-seed/2', 'tester', '7', 'first', 'writer'))
         self.assertEqual(idx['docs'], out['docs'])
-        pack = json.load(open(os.path.join(d, 'seed', 'pack-001.json')))
+        pack = json.loads(Path(os.path.join(d, 'seed', 'pack-001.json')).read_text())
         self.assertEqual((pack['schema'], pack['pack'], pack['of']), ('adp-seed/2', 1, 1))
         self.assertEqual(len(pack['docs']), out['docs'])
         last = pack['docs'][-1]
@@ -218,10 +219,10 @@ class SeedTests(Cmd):
 
     def test_rerun_unchanged_does_not_rewrite(self):
         d = self.new_project()
-        before = open(os.path.join(d, 'seed.json')).read()
+        before = Path(os.path.join(d, 'seed.json')).read_text()
         out = self.ok('seed', d)
         self.assertFalse(out['written'])
-        self.assertEqual(open(os.path.join(d, 'seed.json')).read(), before)
+        self.assertEqual(Path(os.path.join(d, 'seed.json')).read_text(), before)
 
     def test_dry_run_writes_nothing(self):
         d = self.new_project()
@@ -242,7 +243,7 @@ class SeedTests(Cmd):
         self.assertEqual((writes[-1]['collection'], writes[-1]['doc_id']), ('manifest', 'current'))
         self.assertTrue(all(len(b) <= 50 for b in out['batches']))
         self.assertEqual(out['docs_dir'], self.p('b'))
-        self.assertEqual(len(writes), json.load(open(os.path.join(d, 'seed.json')))['docs'])
+        self.assertEqual(len(writes), json.loads(Path(os.path.join(d, 'seed.json')).read_text())['docs'])
 
     def test_batches_dry_run_counts_only(self):
         d = self.new_project()
@@ -257,7 +258,7 @@ class SeedTests(Cmd):
         out = self.ok('seed', d, '--data', data)
         self.assertTrue(out['written'])
         self.assertEqual(out['collections']['notes'], 1)
-        docs = [x for pk in glob.glob(os.path.join(d, 'seed', 'pack-*.json')) for x in json.load(open(pk))['docs']]
+        docs = [x for pk in glob.glob(os.path.join(d, 'seed', 'pack-*.json')) for x in json.loads(Path(pk).read_text())['docs']]
         self.assertIn({'a': 1}, [x['data'] for x in docs if (x['collection'], x['id']) == ('notes', 'n1')])
         self.assertEqual([x['data']['summary'] for x in docs if x['collection'] == 'changes'], ['custom'])
         again = self.ok('seed', d)                       # --data docs given before are kept
@@ -288,7 +289,7 @@ class RecordTests(Cmd):
         super().setUp()
         self.d = self.new_project()
         self.old = self.p('old.json')
-        open(self.old, 'w').write(self.run_adp('manifest', self.d).stdout)
+        Path(self.old).write_text(self.run_adp('manifest', self.d).stdout)
 
     def record(self, *extra):
         return self.run_adp('record', self.old, self.d, '--seq', '2', '--by', 'bob', '--summary', 'changed', '--out', self.p('rec'), *extra)
@@ -313,7 +314,7 @@ class RecordTests(Cmd):
         self.edit(self.d)
         out = self.ok('record', self.old, self.d, '--seq', '2', '--by', 'bob', '--summary', 'changed', '--version', 'v2',
                       '--threads', 't1,t2', '--out', self.p('rec'))
-        old = json.load(open(self.old))['parts']
+        old = json.loads(Path(self.old).read_text())['parts']
         new = json.loads(self.run_adp('manifest', self.d).stdout)['parts']
         changed = sorted(k for k in new if old.get(k) != new[k] and not k.startswith('_rest:'))
         self.assertIn('home.welcome', changed)
@@ -348,18 +349,18 @@ class RecordTests(Cmd):
 
     def test_old_manifest_wrapped_in_data_is_accepted(self):
         self.edit(self.d)
-        wrapped = self.write_json('wrapped.json', {'data': json.load(open(self.old)), 'version': 3})
+        wrapped = self.write_json('wrapped.json', {'data': json.loads(Path(self.old).read_text()), 'version': 3})
         out = self.ok('record', wrapped, self.d, '--seq', '2', '--by', 'bob', '--summary', 's', '--out', self.p('rec'))
         self.assertIn('parts/home.welcome', self.docs_of(out))
 
     def test_added_and_removed_parts(self):
         f = os.path.join(self.d, 'parts', 'app.js')
-        s = open(f).read()
+        s = Path(f).read_text()
         added = '<!-- part:home.extra --><div data-part="home.extra"></div><!-- /part:home.extra -->'
         gone = '<!-- part:home.next -->'
         self.assertIn(gone, s)
         a, b = s.index(gone), s.index('<!-- /part:home.next -->') + len('<!-- /part:home.next -->')
-        open(f, 'w').write(s[:a] + added + s[b:])
+        Path(f).write_text(s[:a] + added + s[b:])
         out = self.ok('record', self.old, self.d, '--seq', '2', '--by', 'bob', '--summary', 'swap', '--out', self.p('rec'))
         ops = {(w['op'], w['collection'], w['doc_id']) for w in self.writes_of(out)}
         self.assertIn(('set', 'parts', 'home.extra'), ops)
@@ -417,7 +418,7 @@ class RequestsTests(Cmd):
                                                 'progress': [{'at': 'x', 'text': 'half'}], 'execution': {'actor': 'codex', 'state': 'working', 'leaseUntil': '2099-01-01T00:00:00Z', 'attempt': 2, 'token': 'secret', 'origin': {'host': 'sites', 'artifact': 's'}}}},
             {'id': 'r3', 'version': 2, 'data': {'status': 'done', 'lane': 'edit'}}])
         self.out = self.p('req')
-        open(self.p('resp.md'), 'w').write('the answer\n')
+        Path(self.p('resp.md')).write_text('the answer\n')
 
     def test_lists_open_requests_oldest_first(self):
         out = self.ok('requests', self.dump)
@@ -516,18 +517,18 @@ class ProposeAckTests(Cmd):
         d = self.exported()
         ik = sorted(glob.glob(d + '.adp/incoming/content/*.html'))
         self.assertTrue(ik)
-        open(ik[0], 'w').write('<p>edited natively after content.js was written</p>')      # the live content/ doc moved; DIR's fallback copy did not
+        Path(ik[0]).write_text('<p>edited natively after content.js was written</p>')      # the live content/ doc moved; DIR's fallback copy did not
         self.edit(d)
-        kinds = lambda out: [x['id'] for x in json.load(open(out['doc']))['parts'] if x.get('kind') == 'content']
+        kinds = lambda out: [x['id'] for x in json.loads(Path(out['doc']).read_text())['parts'] if x.get('kind') == 'content']
         self.assertEqual(kinds(self.ok('propose', d, '--by', 'me', '--summary', 's')), [])
         st = self.state(d); del st['src_copy']; self.save_state(d, st)      # an export made before the snapshot existed keeps the old behaviour
         self.assertEqual(len(kinds(self.ok('propose', d, '--by', 'me', '--summary', 's2'))), 1)
 
     def test_a_pending_copy_edit_survives_a_re_export(self):
-        d = self.exported(); cj = os.path.join(d, 'content.js'); txt = open(cj).read()
-        open(cj, 'w').write(txt.replace('Replace this line', 'Replace this line NOW', 1))
+        d = self.exported(); cj = os.path.join(d, 'content.js'); txt = Path(cj).read_text()
+        Path(cj).write_text(txt.replace('Replace this line', 'Replace this line NOW', 1))
         self.ok('export', d, '--url', URL)      # a re-export before the propose must not make the edit the baseline
-        parts = json.load(open(self.ok('propose', d, '--by', 'me', '--summary', 's')['doc']))['parts']
+        parts = json.loads(Path(self.ok('propose', d, '--by', 'me', '--summary', 's')['doc']).read_text())['parts']
         self.assertIn('page.lead', [x['id'] for x in parts if x.get('kind') == 'content'])
 
     def test_proposal_doc_and_batch(self):
@@ -537,7 +538,7 @@ class ProposeAckTests(Cmd):
         pid = out['proposal']
         self.assertRegex(pid, r'^p-\d+-[a-z0-9]{4}$')
         self.assertEqual((out['files'], out['chunks']), (1, 0))
-        doc = json.load(open(out['doc']))
+        doc = json.loads(Path(out['doc']).read_text())
         self.assertEqual((doc['by'], doc['summary'], doc['status']), ('me', 'welcome edit', 'new'))
         self.assertEqual(doc['base']['version'], '1')
         ids = [x['id'] for x in doc['parts']]
@@ -575,9 +576,9 @@ class ProposeAckTests(Cmd):
         ids = json.loads(r.stdout)['refused'][1]['ids']
         args = [x for i in ids for x in ('--retire', i, '--reason', 'obsolete')]
         out = self.ok('propose', d, '--by', 'me', '--summary', 'del', *args)
-        doc = json.load(open(out['doc']))
+        doc = json.loads(Path(out['doc']).read_text())
         retired = {x['id']: x['reason'] for x in doc['parts'] if x['retired']}
-        self.assertEqual(set(retired), {i for i in ids if i in json.load(open(d + '.adp/incoming/live-manifest.json'))['parts']})
+        self.assertEqual(set(retired), {i for i in ids if i in json.loads(Path(d + '.adp/incoming/live-manifest.json').read_text())['parts']})
         self.assertEqual(set(retired.values()), {'obsolete'})
         gone = [f for f in doc['files'] if f['path'] == 'styles/page.css'][0]
         self.assertIsNone(gone['content'])
@@ -614,16 +615,16 @@ class ProposeAckTests(Cmd):
         d = self.exported()
         self.edit(d)
         out = self.ok('propose', d, '--by', 'me', '--summary', 's')
-        pid, doc = out['proposal'], json.load(open(out['doc']))
+        pid, doc = out['proposal'], json.loads(Path(out['doc']).read_text())
         doc.update(status='applied', applied={'version': 'v5', 'at': 'x'})
         self.docs['incoming'] = [{'id': pid, 'data': doc, 'version': 2}]
-        json.dump(self.docs, open(d + '.adp/docs.json', 'w'))
+        Path(d + '.adp/docs.json').write_text(json.dumps(self.docs))
         shutil.copyfile(os.path.join(d, 'parts', 'app.js'), os.path.join(d + '.adp', 'incoming', 'files', 'parts', 'app.js'))
-        listing = json.load(open(d + '.adp/listing.json'))
+        listing = json.loads(Path(d + '.adp/listing.json').read_text())
         for f in listing:
             if f['path'] == 'parts/app.js':
-                f['sha256'] = hashlib.sha256(open(os.path.join(d, 'parts', 'app.js'), 'rb').read()).hexdigest()
-        json.dump(listing, open(d + '.adp/listing.json', 'w'))
+                f['sha256'] = hashlib.sha256(Path(os.path.join(d, 'parts', 'app.js')).read_bytes()).hexdigest()
+        Path(d + '.adp/listing.json').write_text(json.dumps(listing))
         self.ok('export', d, '--url', URL)
         self.assertEqual(self.state(d)['incoming']['unacked'], [pid])
         ack = self.ok('ack', d, '--proposal', pid)

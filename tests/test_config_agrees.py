@@ -1,4 +1,5 @@
 """`adp.py config set`, `hold`, `config` and `requests` agree with adp.js and say what they do (docs/config.md sections 4 and 6)."""
+from pathlib import Path
 import datetime
 import json
 import os
@@ -37,7 +38,7 @@ class ConfigSetValues(Cmd):
         self.refused('look.theme', 'Not a theme')
         out = self.ok('config', 'set', 'look.theme', 'default', '--out', self.p('o'))
         cur = next(w for b in out['batches'] for w in b if w['collection'] == 'config')
-        data = json.load(open(cur['file_path']))
+        data = json.loads(Path(cur['file_path']).read_text())
         self.assertEqual(data.get('data', data)['values'], {'look.theme': 'default'})
 
     def test_unknown_keys_stay_accepted(self):
@@ -49,7 +50,7 @@ class ConfigDefaultKeepsChanged(Cmd):
         doc = self.write_json('c.json', {'values': {'edit.locked': True}, 'changed': {'edit.locked': {'by': 'old', 'at': 't'}}})
         out = self.ok('config', 'set', 'edit.locked', 'false', '--doc', doc, '--by', 'me', '--out', self.p('o'))
         cur = next(w for b in out['batches'] for w in b if w['collection'] == 'config')
-        data = json.load(open(cur['file_path']))
+        data = json.loads(Path(cur['file_path']).read_text())
         data = data.get('data', data)
         self.assertEqual(data['values'], {})
         self.assertEqual(data['changed']['edit.locked']['by'], 'me')
@@ -66,11 +67,11 @@ class HoldSays(Cmd):
         want = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=2)
         self.assertLess(abs((want - got).total_seconds()), 30)
         part = next(w for b in out['batches'] for w in b if w['collection'] == 'parts')
-        self.assertIn(out['hold_until'], open(part['file_path']).read())
+        self.assertIn(out['hold_until'], Path(part['file_path']).read_text())
 
     def test_refs_text_states_the_cap(self):
         ref = os.path.join(os.path.dirname(__file__), '..', 'skill', 'refs', 'adp-edit', 'SKILL.md')
-        self.assertIn('[--hours H] (at most 2)', open(ref).read())
+        self.assertIn('[--hours H] (at most 2)', Path(ref).read_text())
 
 
 class ConfigDir(Cmd):
@@ -81,7 +82,7 @@ class ConfigDir(Cmd):
         self.assertIn('defaults', a)
 
     def test_usage_lines_say_so(self):
-        src = open(self.adp).read()
+        src = Path(self.adp).read_text()
         self.assertTrue(re.search(r'adp\.py config \[DIR\] \[--doc C\.json\].*DIR is accepted and not read', src))
         self.assertIn('ping-lane requests are listed on purpose', src)
 

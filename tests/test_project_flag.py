@@ -1,3 +1,4 @@
+from pathlib import Path
 import json, os, sys, unittest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from test_setup import Base
@@ -11,7 +12,7 @@ class ProjectFlagTests(Base):
 
     def lines(self, d):
         p = os.path.join(d, '.adp', 'log.jsonl')
-        return [json.loads(l) for l in open(p)] if os.path.isfile(p) else []
+        return [json.loads(l) for l in Path(p).read_text().splitlines()] if os.path.isfile(p) else []
 
     def test_path_form_log_and_log_reads_it(self):
         self.assertEqual(self.run_adp('init', self.x).returncode, 0)
@@ -62,7 +63,7 @@ class ProjectFlagTests(Base):
     def test_secrets_still_redacted(self):
         self.run_adp('init', self.x)
         self.run_adp('projects', '--project', self.x, '--api-key', 'hunter2')
-        raw = open(os.path.join(self.x, '.adp', 'log.jsonl')).read()
+        raw = Path(os.path.join(self.x, '.adp', 'log.jsonl')).read_text()
         self.assertNotIn('hunter2', raw); self.assertIn('***', raw)
 
 

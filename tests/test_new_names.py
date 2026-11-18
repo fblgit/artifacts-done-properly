@@ -1,3 +1,4 @@
+from pathlib import Path
 import json, os, re, subprocess, sys, tempfile, unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -81,7 +82,7 @@ class ProjectIsComplete(unittest.TestCase):
         # kit/ files come from the catalog by reference; every other file the page links is the project's own
         for args in (('starter',), ('assistant',), ('--tier', 'default')):
             d, _ = self.files(*args)
-            html = open(os.path.join(d, 'index.html'), encoding='utf-8').read()
+            html = Path(os.path.join(d, 'index.html')).read_text(encoding='utf-8')
             refs = [r for r in re.findall(r'(?:src|href)="([^"]+)"', html) if not re.match(r'(?:[a-z]+:|#|//)', r) and not r.startswith('kit/')]
             self.assertEqual([r for r in refs if not os.path.isfile(os.path.join(d, r))], [], args)
 

@@ -1,4 +1,5 @@
 """The assistant template (and `default`, which inherits it) with its Canvas tab: what it takes, what its index.html loads, what the publish map holds."""
+from pathlib import Path
 import json
 import os
 import shutil
@@ -61,7 +62,7 @@ class AssistantTake(unittest.TestCase):
         rules = {r['path']: r for r in self.t['capabilities']['db']['rules']}
         self.assertEqual((rules['ns/shared']['read'], rules['ns/shared']['write']), ('view', 'interact'))
         self.assertEqual(rules['']['write'], 'admin')
-        meta = re.search(r"<meta name=\"adp:db-rules\" content='([^']*)'>", open(os.path.join(TPL, 'assistant', 'index.html.txt'), encoding='utf-8').read())
+        meta = re.search(r"<meta name=\"adp:db-rules\" content='([^']*)'>", Path(os.path.join(TPL, 'assistant', 'index.html.txt')).read_text(encoding='utf-8'))
         self.assertEqual(json.loads(meta.group(1)), self.t['capabilities']['db']['rules'])
 
 
@@ -157,14 +158,14 @@ class CanvasTab(unittest.TestCase):
             self.assertIn('part:page.style.canvas', read(d, 'styles/canvas.css'))
 
     def test_canvas_is_wired_by_reference_on_the_shared_namespace(self):
-        app = open(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt'), encoding='utf-8').read()
+        app = Path(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt')).read_text(encoding='utf-8')
         self.assertIn("pathTemplate: 'ns/shared/{name}'", app)
         for call in ('Kit.store.create', 'Kit.db.create', 'Kit.chrome.create', 'Kit.canvas.create'):
             self.assertIn(call, app)
-        self.assertNotIn('theme.journey-whiteboard', open(os.path.join(TPL, 'assistant', 'template.json'), encoding='utf-8').read())
+        self.assertNotIn('theme.journey-whiteboard', Path(os.path.join(TPL, 'assistant', 'template.json')).read_text(encoding='utf-8'))
 
     def test_canvas_tokens_are_defined_in_light_and_both_dark_blocks(self):
-        css = open(os.path.join(TPL, 'assistant', 'styles', 'canvas.css.txt'), encoding='utf-8').read()
+        css = Path(os.path.join(TPL, 'assistant', 'styles', 'canvas.css.txt')).read_text(encoding='utf-8')
         need = ['--canvas', '--dot', '--sticky-ink', '--f-hand'] + [f'--c-{c}' for c in ('ink', 'blue', 'red', 'green', 'amber', 'violet')]
         for tok in need:
             self.assertIn(tok + ':', css, tok)
@@ -180,7 +181,7 @@ class HomeExamplesAndMindMap(unittest.TestCase):
     APP = os.path.join(TPL, 'assistant', 'parts', 'app.js.txt')
 
     def app(self):
-        return open(self.APP, encoding='utf-8').read()
+        return Path(self.APP).read_text(encoding='utf-8')
 
     def test_mind_map_is_taken_and_loaded_by_assistant_and_default(self):
         for t in ('assistant', 'default'):
@@ -264,7 +265,7 @@ class HomeExamplesAndMindMap(unittest.TestCase):
 
     def test_language_setting_is_declared_with_default_english_in_both_templates(self):
         for t in ('starter', 'assistant'):
-            src = open(os.path.join(TPL, t, 'parts', 'app.js.txt'), encoding='utf-8').read()
+            src = Path(os.path.join(TPL, t, 'parts', 'app.js.txt')).read_text(encoding='utf-8')
             self.assertIn("language: {type: 'text', default: 'English', label: 'Language'", src, t)
 
 
@@ -317,7 +318,7 @@ class Installed(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(d, 'installed.json')))
 
     def test_the_view_its_parts_and_the_places_it_points_to_exist(self):
-        app = open(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt'), encoding='utf-8').read()
+        app = Path(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt')).read_text(encoding='utf-8')
         for p in ('mycatalog', 'mycatalog.intro', 'mycatalog.list'):
             self.assertIn(f'data-part="{p}"', app, p)
         self.assertIn("fetch('installed.json')", app)
@@ -328,7 +329,7 @@ class Installed(unittest.TestCase):
             self.assertIn(eid, take, eid)       # only entries the assistant really takes
             for part in re.findall(r"'([a-z.]+)'", parts):
                 self.assertIn(part, titles, part)       # and only blocks that exist on the page
-                self.assertIn(f'data-part="{part}"', app + open(os.path.join(TPL, 'assistant', 'index.html.txt'), encoding='utf-8').read(), part)
+                self.assertIn(f'data-part="{part}"', app + Path(os.path.join(TPL, 'assistant', 'index.html.txt')).read_text(encoding='utf-8'), part)
 
 
 if __name__ == '__main__':
@@ -358,6 +359,6 @@ fail(); assert.equal(node.textContent,'Last published: unavailable');
             m = load(os.path.join(TPL, t, 'template.json'))
             self.assertNotIn('downloads', m['capabilities'], t)
             self.assertEqual([r['path'] for r in m['capabilities']['db']['rules'] if r['path'] == 'status'], [], t)
-            html = open(os.path.join(TPL, t, 'index.html.txt'), encoding='utf-8').read()
+            html = Path(os.path.join(TPL, t, 'index.html.txt')).read_text(encoding='utf-8')
             self.assertEqual(json.loads(re.search(r"adp:db-rules\" content='([^']+)'", html).group(1)), m['capabilities']['db']['rules'], t)
-        self.assertNotIn('downloads', open(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt'), encoding='utf-8').read())
+        self.assertNotIn('downloads', Path(os.path.join(TPL, 'assistant', 'parts', 'app.js.txt')).read_text(encoding='utf-8'))

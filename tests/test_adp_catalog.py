@@ -1,3 +1,4 @@
+from pathlib import Path
 import contextlib
 import hashlib
 import io
@@ -41,11 +42,11 @@ class CheckCatalog(unittest.TestCase):
         root = tempfile.mkdtemp()
         os.makedirs(os.path.join(root, 'kit'))
         data = text.encode('utf-8')
-        open(os.path.join(root, 'kit', 'demo.js'), 'wb').write(data)
+        Path(os.path.join(root, 'kit', 'demo.js')).write_bytes(data)
         sha = hashlib.sha256(data).hexdigest()
         files = entry_files if entry_files is not None else [{'path': 'kit/demo.js', 'role': 'script', 'sha256': sha, 'bytes': len(data)}]
         h = hashlib.sha256('\n'.join(f"{f['path']}={f['sha256']}" for f in files).encode()).hexdigest()[:12]
-        json.dump({'entries': [{'id': 'kit.demo', 'files': files, 'hash': h}]}, open(os.path.join(root, 'catalog.json'), 'w'))
+        Path(os.path.join(root, 'catalog.json')).write_text(json.dumps({'entries': [{'id': 'kit.demo', 'files': files, 'hash': h}]}))
         return root
 
     def cmd(self, *argv):
@@ -78,23 +79,23 @@ class CheckCatalog(unittest.TestCase):
         root = self.make(HEADER)
         code, out = self.cmd('build', root)
         self.assertEqual(code, 0, out)
-        e, = json.load(open(os.path.join(root, 'catalog.json')))['entries']
+        e, = json.loads(Path(os.path.join(root, 'catalog.json')).read_text())['entries']
         self.assertEqual((e['id'], e['main'], e['name'], e['provides']), ('kit.demo', 'kit/demo.js', 'Demo', ['Kit.demo']))
         self.assertNotIn('about', e)
         self.assertIn('unchanged', self.cmd('build', root)[1])
 
     def test_build_refuses_a_broken_header_and_writes_nothing(self):
         root = self.make(HEADER.replace(' * @db        none', ' * @bogus     x'))
-        before = open(os.path.join(root, 'catalog.json')).read()
+        before = Path(os.path.join(root, 'catalog.json')).read_text()
         code, out = self.cmd('build', root)
         self.assertEqual(code, 1)
         self.assertIn('[unknown-tag]', out)
-        self.assertEqual(open(os.path.join(root, 'catalog.json')).read(), before)
+        self.assertEqual(Path(os.path.join(root, 'catalog.json')).read_text(), before)
 
     def test_check_fails_when_catalog_json_is_not_what_the_headers_build(self):
         root = self.make(HEADER)
         self.cmd('build', root)
-        open(os.path.join(root, 'kit', 'demo.js'), 'w').write(HEADER.replace('Demo\n', 'Demo two\n', 1))
+        Path(os.path.join(root, 'kit', 'demo.js')).write_text(HEADER.replace('Demo\n', 'Demo two\n', 1))
         code, out = self.cmd(root)
         self.assertEqual(code, 1)
         self.assertIn('catalog.json: kit.demo.', out)
@@ -173,11 +174,11 @@ class Drift(unittest.TestCase):
         self.entries = []
 
     def js(self, name, text, role='script'):
-        open(os.path.join(self.d, name), 'w', encoding='utf-8').write(text)
+        Path(os.path.join(self.d, name)).write_text(text, encoding='utf-8')
         return [{'path': name, 'role': role}]
 
     def run_tool(self, *args):
-        json.dump({'entries': self.entries}, open(os.path.join(self.d, 'catalog.json'), 'w'))
+        Path(os.path.join(self.d, 'catalog.json')).write_text(json.dumps({'entries': self.entries}))
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             code = cc.main(['drift', '--catalog-dir', self.d, *args])
