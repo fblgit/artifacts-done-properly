@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TPL = os.path.join(ROOT, 'skill', 'templates')
+TPL = os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'templates')
 
 
 def load(p):
@@ -17,14 +17,14 @@ def load(p):
 
 def take_of(name):
     """A template's take list as `adp.py new` reads it: `kind.*` is every entry of that kind the catalog has, in its order."""
-    ids = [e['id'] for e in load(os.path.join(ROOT, 'skill', 'catalog', 'catalog.json'))['entries']]
+    ids = [e['id'] for e in load(os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'catalog', 'catalog.json'))['entries']]
     return [x for i in load(os.path.join(TPL, name, 'template.json'))['take'] for x in ([c for c in ids if c.startswith(i[:-1])] if i.endswith('.*') else [i])]
 
 
 class DefaultTemplate(unittest.TestCase):
     def setUp(self):
         self.t = load(os.path.join(TPL, 'default', 'template.json'))
-        self.cat = {e['id']: e for e in load(os.path.join(ROOT, 'skill', 'catalog', 'catalog.json'))['entries']}
+        self.cat = {e['id']: e for e in load(os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'catalog', 'catalog.json'))['entries']}
 
     def test_name_and_base(self):
         self.assertEqual(self.t['name'], 'default')
@@ -76,7 +76,7 @@ def tags(text):
 class DefaultLoader(unittest.TestCase):
     def setUp(self):
         self.t = load(os.path.join(TPL, 'default', 'template.json'))
-        self.cat = {e['id']: e for e in load(os.path.join(ROOT, 'skill', 'catalog', 'catalog.json'))['entries']}
+        self.cat = {e['id']: e for e in load(os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'catalog', 'catalog.json'))['entries']}
         with open(os.path.join(TPL, 'default', 'index.html.txt'), encoding='utf-8') as f:
             self.text = f.read()
         self.styles, self.scripts = tags(self.text)
@@ -138,7 +138,7 @@ class DefaultLoader(unittest.TestCase):
     def test_new_writes_index_html(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = os.path.join(tmp, 'p')
-            r = subprocess.run([sys.executable, os.path.join(ROOT, 'skill', 'scripts', 'adp.py'), 'new', '--tier', 'default', out],
+            r = subprocess.run([sys.executable, os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts', 'adp.py'), 'new', '--tier', 'default', out],
                                capture_output=True, text=True, cwd=tmp, env=dict(os.environ, ADP_HOME=os.path.join(tmp, 'home')))
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertFalse(os.path.exists(os.path.join(out, 'index.html.txt')))

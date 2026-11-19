@@ -10,7 +10,7 @@ import sys
 import os
 import base64
 
-spec = importlib.util.spec_from_file_location('sites_adapter', Path(__file__).resolve().parents[1] / 'skill/scripts/adp_sites_adapter.py')
+spec = importlib.util.spec_from_file_location('sites_adapter', Path(__file__).resolve().parents[1] / 'plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_adapter.py')
 adapter = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(adapter)
 
@@ -25,7 +25,7 @@ class SitesAdapter(unittest.TestCase):
             project = root / 'site'; (project / '.openai').mkdir(parents=True)
             manifest = project / '.openai/hosting.json'; manifest.write_text('{"project_id":"keep-me"}')
             migration = project / 'migrations/001.sql'; migration.parent.mkdir(); migration.write_text('-- keep')
-            cli = Path(__file__).resolve().parents[1] / 'skill/scripts/adp.py'
+            cli = Path(__file__).resolve().parents[1] / 'plugins/artifacts-done-properly/skills/adp/scripts/adp.py'
             def run(*args):
                 return subprocess.run([sys.executable, '-I', str(cli), 'files', str(assets), *args],
                                       env={**os.environ, 'ADP_HOME': str(root / 'state')}, capture_output=True, text=True, timeout=3)
@@ -64,14 +64,14 @@ assert.equal((await req('/api/adp/demo/read','POST')).status,401);"""
             assets = {url: [mime, base64.b64decode(data).decode()] for url, (mime, data) in assets.items()}
             self.assertEqual(assets['/assistant/'], assets['/assistant/index.html'])
             self.assertIn('/api/adp/assistant-test', assets['/assistant/'][1])
-            self.assertEqual(assets['/assistant/kit/patterns/request-card.js'][1], (root / 'skill/catalog/kit/patterns/request-card.js').read_text())
+            self.assertEqual(assets['/assistant/kit/patterns/request-card.js'][1], (root / 'plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/request-card.js').read_text())
             self.assertIn('host.comments.requestPublication(pid)', assets['/assistant/parts/app.js'][1])
 
     @unittest.skipUnless(shutil.which('node'), 'Node SQLite required')
     def test_calls_through_real_localhost_worker(self):
         call = adapter.write_calls('fixture', [{'op': 'create', 'collection': 'content', 'id': 'intro', 'data': {'html': 'portable', 'opaque': [1, 2]}, 'guard': None}])[0]
         script = """
-import {start} from './skill/scripts/adp_sites_dev.mjs';
+import {start} from './plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_dev.mjs';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';

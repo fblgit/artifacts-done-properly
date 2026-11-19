@@ -1,6 +1,6 @@
 import json, os, shutil, subprocess, sys, tempfile, unittest
 
-SRC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill', 'scripts')
+SRC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts')
 
 
 def rd(p, mode='r'):

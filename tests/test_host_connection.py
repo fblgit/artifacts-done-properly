@@ -60,7 +60,7 @@ console.log(JSON.stringify({can,host:win.ADP.host,user:win.ADP.user,db:!!win.ADP
 
 
 ASSIST_ENV = r'''
-const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/skill/catalog/kit/';
+const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/plugins/artifacts-done-properly/skills/adp/catalog/kit/';
 const w = { navigator: {}, console, setTimeout, clearTimeout, setInterval, clearInterval, Date, Promise, JSON, TextEncoder, crypto: require('crypto').webcrypto,
   document: { createElement: () => ({}), getElementById: () => null, head: { append() {} }, addEventListener() {}, removeEventListener() {} }, addEventListener() {} };
 w.window = w; vm.createContext(w);
@@ -72,7 +72,7 @@ const sleep = () => new Promise(r => setTimeout(r, 30));
 @unittest.skipUnless(shutil.which('node'), 'node required')
 class HostConnection(unittest.TestCase):
     def run_case(self, mode):
-        run = run_node(['-e', HARNESS, mode, str(ROOT / 'skill/assets/adp.js')])
+        run = run_node(['-e', HARNESS, mode, str(ROOT / 'plugins/artifacts-done-properly/skills/adp/assets/adp.js')])
         self.assertEqual(run.returncode, 0, run.stderr)
         return json.loads(run.stdout)
 
@@ -121,7 +121,7 @@ class HostConnection(unittest.TestCase):
 
     def test_claude_adapter_contract(self):
         script = r'''
-const assert = require('node:assert/strict'); require('./skill/assets/adapters/claude.js');
+const assert = require('node:assert/strict'); require('./plugins/artifacts-done-properly/skills/adp/assets/adapters/claude.js');
 const host = ADPClaudeHost.create(), db = {doc(){}, collection(){}}, user = {id: async () => 'u', canEdit: async () => 'yes'};
 (async () => {
   await assert.rejects(host.connect(), /window\.claude/);
@@ -173,7 +173,7 @@ const run = async opts => { const e = w.Kit.assist.start({ seed: {}, ...opts });
 
     def test_the_panel_lets_a_queued_host_send(self):
         script = r"""
-const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/skill/catalog/kit/', made = [], noop = () => {};
+const fs = require('fs'), vm = require('vm'), K = process.argv[1] + '/plugins/artifacts-done-properly/skills/adp/catalog/kit/', made = [], noop = () => {};
 const mk = tag => { const a = {}, h = {}, t = { tag, h, attrs: a, addEventListener: (k, f) => { h[k] = f; }, dataset: {}, style: {}, classList: { add: noop, remove: noop, toggle: noop }, textContent: '', setAttribute: (k, v) => { a[k] = String(v); }, getAttribute: k => a[k] ?? null };
   return new Proxy(t, { get: (o, k) => k in o ? o[k] : k === 'className' ? '' : k === 'querySelectorAll' ? () => [] : noop, set: (o, k, v) => (o[k] = v, true) }); };
 const doc = { createElement: tag => { const e = mk(tag); made.push(e); return e; }, createTextNode: mk, getElementById: () => null, head: mk(), body: mk(), addEventListener: noop, removeEventListener: noop };

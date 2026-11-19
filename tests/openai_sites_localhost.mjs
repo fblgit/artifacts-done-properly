@@ -3,7 +3,7 @@ import {mkdtemp,rm,mkdir,writeFile,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {request as httpRequest} from 'node:http';
-import {start} from '../skill/scripts/adp_sites_dev.mjs';
+import {start} from '../plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_dev.mjs';
 const dir=await mkdtemp(join(tmpdir(),'adp-sites-http-'));
 const state=join(dir,'state'), publicDir=join(dir,'public');
 await mkdir(publicDir);await writeFile(join(publicDir,'index.html'),'<h1>Custom artifact</h1>');

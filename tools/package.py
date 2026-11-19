@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Validate the ADP skill tree and build a deterministic dist/adp.skill zip; with --plugin, also the plugin tree dist/plugin."""
+"""Validate the plugin folder (plugins/artifacts-done-properly: the adp skill and the road skills) and build a deterministic dist/adp.skill zip from it."""
 import argparse
 import hashlib
 import json
 import os
 import re
-import shutil
 import sys
 import zipfile
 
+PLUGIN_DIR = os.path.join("plugins", "artifacts-done-properly")
 SKILL_NAME = "adp"
 CATALOG_DIR = "catalog"
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
@@ -104,36 +104,55 @@ def validate_skill_md(path, expected_folder=None):
     return errors, warnings, fm
 
 
-def validate_tree(skill_dir):
+def skill_dir_of(plugin_dir):
+    return os.path.join(plugin_dir, "skills", SKILL_NAME)
+
+
+def road_names(plugin_dir):
+    """The road skills: every skills/<name>/ folder of the plugin but the base skill's, whatever its contents."""
+    skills = os.path.join(plugin_dir, "skills")
+    if not os.path.isdir(skills):
+        return []
+    return sorted(d for d in os.listdir(skills) if d != SKILL_NAME and os.path.isdir(os.path.join(skills, d)))
+
+
+def validate_tree(plugin_dir):
+    """Check the plugin folder: the base skill's SKILL.md, each road's SKILL.md, and that .claude-plugin/plugin.json carries the skill's version."""
     errors, warnings = [], []
-    root_md = os.path.join(skill_dir, "SKILL.md")
+    root_md = os.path.join(skill_dir_of(plugin_dir), "SKILL.md")
     if not os.path.isfile(root_md):
         return ["%s: missing" % root_md], warnings, {}
-    e, w, fm = validate_skill_md(root_md)
+    e, w, fm = validate_skill_md(root_md, expected_folder=SKILL_NAME)
     errors += e
     warnings += w
-    refs = os.path.join(skill_dir, "refs")
-    if os.path.isdir(refs):
-        for d in sorted(os.listdir(refs)):
-            full = os.path.join(refs, d)
-            if not os.path.isdir(full):
-                continue
-            md = os.path.join(full, "SKILL.md")
-            if not os.path.isfile(md):
-                errors.append("%s: missing" % md)
-                continue
-            e, w, _ = validate_skill_md(md, expected_folder=d)
-            errors += e
-            warnings += w
+    for d in road_names(plugin_dir):
+        md = os.path.join(plugin_dir, "skills", d, "SKILL.md")
+        if not os.path.isfile(md):
+            errors.append("%s: missing" % md)
+            continue
+        e, w, _ = validate_skill_md(md, expected_folder=d)
+        errors += e
+        warnings += w
+    manifest = os.path.join(plugin_dir, ".claude-plugin", "plugin.json")
+    if os.path.isfile(manifest):
+        try:
+            with open(manifest, encoding="utf-8") as f:
+                m = json.load(f)
+        except (OSError, ValueError) as ex:
+            errors.append("%s: cannot read (%s)" % (manifest, ex))
+        else:
+            want = (fm.get("metadata") or {}).get("version")
+            if want and m.get("version") != want:
+                errors.append("%s: version %r must equal metadata.version %r of skills/%s/SKILL.md" % (manifest, m.get("version"), want, SKILL_NAME))
     return errors, warnings, fm
 
 
-def collect_files(skill_dir):
+def collect_files(skill_dir, skip_evals=True):
     out = []
     for dirpath, dirnames, filenames in os.walk(skill_dir):
         rel_dir = os.path.relpath(dirpath, skill_dir)
         dirnames[:] = sorted(d for d in dirnames if d not in EXCLUDED_DIRS)
-        if rel_dir == ".":
+        if rel_dir == "." and skip_evals:      # the base skill keeps its evals out of the bundle; a road skill ships whatever it holds
             dirnames[:] = [d for d in dirnames if d != "evals"]
         for fn in sorted(filenames):
             if fn in EXCLUDED_FILES or fn.endswith(".pyc"):
@@ -147,10 +166,9 @@ def collect_files(skill_dir):
 LEGAL = ("LICENSE", "NOTICE")      # Apache-2.0 asks that a copy of the license and the NOTICE travel with every redistribution
 
 
-def legal_files(skill_dir):
-    """LICENSE and NOTICE from the repository root, which sits beside the skill folder: (name, path) for each."""
-    top = os.path.dirname(os.path.abspath(skill_dir))
-    return [(n, os.path.join(top, n)) for n in LEGAL]
+def legal_files(plugin_dir):
+    """LICENSE and NOTICE of the plugin folder: (name, path) for each."""
+    return [(n, os.path.join(plugin_dir, n)) for n in LEGAL]
 
 
 MAX_FILES = 200      # claude.ai refuses a skill upload over 200 files
@@ -159,13 +177,10 @@ MAX_FILES = 200      # claude.ai refuses a skill upload over 200 files
 ROAD_FILE = "road.md"
 
 
-def zip_name(rel):
-    """The path a file has in the zip. claude.ai accepts exactly one SKILL.md in a skill upload, so each road skill's refs/<road>/SKILL.md goes in as refs/<road>/road.md;
-    `adp.py setup` writes it back as SKILL.md. The repo (and so a plugin install) keeps SKILL.md."""
-    parts = rel.split("/")
-    if len(parts) == 3 and parts[0] == "refs" and parts[2] == "SKILL.md":
-        return "refs/%s/%s" % (parts[1], ROAD_FILE)
-    return rel
+def zip_name(road, rel):
+    """The path of a road skill's file in the zip. claude.ai accepts exactly one SKILL.md in a skill upload, so a road's SKILL.md goes in as refs/<road>/road.md;
+    `adp.py setup` writes it back as SKILL.md. The plugin keeps each road as skills/<road>/SKILL.md."""
+    return "refs/%s/%s" % (road, ROAD_FILE if rel == "SKILL.md" else rel)
 
 
 PACK_BYTES = 900 * 1024     # a pack is split before it passes this size (the skill zip compresses each one)
@@ -205,14 +220,16 @@ def catalog_packs(skill_dir):
             for i, g in enumerate(groups)]
 
 
-def build(skill_dir, out_dir):
+def build(plugin_dir, out_dir):
+    skill_dir = skill_dir_of(plugin_dir)
     files = [(r, f) for r, f in collect_files(skill_dir) if not r.startswith(CATALOG_DIR + "/")]
-    files = sorted(files + legal_files(skill_dir))
+    for road in road_names(plugin_dir):
+        files += [(zip_name(road, r), f) for r, f in collect_files(os.path.join(plugin_dir, "skills", road), skip_evals=False)]
+    files = sorted(files + legal_files(plugin_dir))
     packs = catalog_packs(skill_dir)
     count = len(files) + len(packs)
     if count > MAX_FILES:
         raise ValidationError("the skill zip would hold %d files; claude.ai accepts at most %d" % (count, MAX_FILES))
-    files = sorted((zip_name(r), f) for r, f in files)
     skill_mds = [r for r, _ in files if r.rsplit("/", 1)[-1] == "SKILL.md"]
     if len(skill_mds) != 1:
         raise ValidationError("the skill zip would hold %d SKILL.md files; claude.ai accepts exactly one" % len(skill_mds))
@@ -239,82 +256,17 @@ def build(skill_dir, out_dir):
     return target, count, os.path.getsize(target), sha
 
 
-PLUGIN_DIR = "plugin"
-MANIFEST = os.path.join(".claude-plugin", "plugin.json")
-
-
-def road_names(skill_dir):
-    """The road skills: each refs/<name>/ folder that holds a SKILL.md."""
-    refs = os.path.join(skill_dir, "refs")
-    if not os.path.isdir(refs):
-        return []
-    return sorted(d for d in os.listdir(refs) if os.path.isfile(os.path.join(refs, d, "SKILL.md")))
-
-
-def plugin_files(skill_dir):
-    """{path in the plugin tree: source file} of a plugin in the layout Claude Code and the plugin directory expect: skills/<name>/SKILL.md for the base skill
-    and for each road, no skill inside another skill's folder. The base skill keeps everything it had (scripts, catalog, templates, the refs/*.md guides) but the road folders."""
-    roads = set(road_names(skill_dir))
-    out = {}
-    for rel, full in collect_files(skill_dir):
-        parts = rel.split("/")
-        if len(parts) > 2 and parts[0] == "refs" and parts[1] in roads:
-            out["skills/%s/%s" % (parts[1], "/".join(parts[2:]))] = full
-        else:
-            out["skills/%s/%s" % (SKILL_NAME, rel)] = full
-    for name, full in legal_files(skill_dir):
-        out[name] = full
-    readme = os.path.join(os.path.dirname(os.path.abspath(skill_dir)), "README.md")      # the directory reads it to learn what the plugin does
-    if os.path.isfile(readme):
-        out["README.md"] = readme
-    icon = os.path.join(os.path.dirname(os.path.abspath(skill_dir)), ".claude-plugin", "icon.png")
-    if os.path.isfile(icon):
-        out[".claude-plugin/icon.png"] = icon
-    return out
-
-
-def build_plugin(skill_dir, out_dir):
-    """Write the plugin tree to <out_dir>/plugin and return (path, file count). The manifest is the repository's .claude-plugin/plugin.json without its `skills`
-    key: Claude Code finds skills/ by itself. The tree is a copy of bytes, so the same sources give the same tree."""
-    top = os.path.dirname(os.path.abspath(skill_dir))
-    src = os.path.join(top, MANIFEST)
-    try:
-        with open(src, encoding="utf-8") as f:
-            manifest = json.load(f)
-    except (OSError, ValueError) as e:
-        raise ValidationError("%s: cannot read the plugin manifest (%s)" % (src, e))
-    manifest.pop("skills", None)
-    _, _, fm = validate_tree(skill_dir)
-    manifest["version"] = (fm.get("metadata") or {}).get("version") or manifest.get("version")      # one number: ADP's
-    target = os.path.join(out_dir, PLUGIN_DIR)
-    if os.path.isdir(target):
-        shutil.rmtree(target)
-    files = plugin_files(skill_dir)
-    for rel in sorted(files):
-        dest = os.path.join(target, *rel.split("/"))
-        os.makedirs(os.path.dirname(dest), exist_ok=True)
-        shutil.copyfile(files[rel], dest)
-        shutil.copymode(files[rel], dest)
-    os.makedirs(os.path.join(target, ".claude-plugin"), exist_ok=True)
-    with open(os.path.join(target, MANIFEST), "w", encoding="utf-8", newline="\n") as f:
-        json.dump(manifest, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-    return target, len(files) + 1
-
-
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--skill-dir", default="skill")
+    p.add_argument("--plugin-dir", default=PLUGIN_DIR)
     p.add_argument("--out", default="dist")
     p.add_argument("--check", action="store_true", help="validate only")
-    p.add_argument("--plugin", action="store_true",
-                   help="also write the plugin tree to <out>/plugin (skills/<name>/SKILL.md for adp and each road, plus .claude-plugin/plugin.json)")
     a = p.parse_args(argv)
-    if not os.path.isdir(a.skill_dir):
-        print("error: skill dir not found: %s" % a.skill_dir, file=sys.stderr)
+    if not os.path.isdir(a.plugin_dir):
+        print("error: plugin dir not found: %s" % a.plugin_dir, file=sys.stderr)
         return 1
-    errors, warnings, _ = validate_tree(a.skill_dir)
-    errors += ["%s: missing (a redistribution must carry it)" % f for _, f in legal_files(a.skill_dir) if not os.path.isfile(f)]
+    errors, warnings, _ = validate_tree(a.plugin_dir)
+    errors += ["%s: missing (a redistribution must carry it)" % f for _, f in legal_files(a.plugin_dir) if not os.path.isfile(f)]
     for w in warnings:
         print("warning: " + w, file=sys.stderr)
     if errors:
@@ -326,19 +278,12 @@ def main(argv=None):
     if a.check:
         return 0
     try:
-        target, count, size, sha = build(a.skill_dir, a.out)
+        target, count, size, sha = build(a.plugin_dir, a.out)
     except ValidationError as e:
         print("error: %s" % e, file=sys.stderr)
         return 1
     print("built %s: %d files, %d bytes" % (target, count, size))
     print("sha256 %s" % sha)
-    if a.plugin:
-        try:
-            path, n = build_plugin(a.skill_dir, a.out)
-        except ValidationError as e:
-            print("error: %s" % e, file=sys.stderr)
-            return 1
-        print("built plugin tree %s: %d files" % (path, n))
     return 0
 
 

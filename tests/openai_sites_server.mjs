@@ -4,9 +4,9 @@ import {readFileSync, mkdtempSync, writeFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
-import worker from '../skill/assets/hosts/openai-sites/worker.mjs';
+import worker from '../plugins/artifacts-done-properly/skills/adp/assets/hosts/openai-sites/worker.mjs';
 const sql=new DatabaseSync(':memory:');
-sql.exec(readFileSync('skill/assets/hosts/openai-sites/schema.sql','utf8'));
+sql.exec(readFileSync('plugins/artifacts-done-properly/skills/adp/assets/hosts/openai-sites/schema.sql','utf8'));
 const env = {
   ADP_EDITORS: 'editor', ADP_READERS: 'reader',
   DB: { prepare(query) { return { bind(...args) {
@@ -83,8 +83,8 @@ globalThis.fetch=async(url,init)=>{
  const headers=new Headers(init.headers);headers.set('oai-authenticated-user-id','editor');
  return worker.fetch(new Request('https://test.example'+url,{...init,headers}),env);
 };
-await import('../skill/assets/adapters/openai-sites.js');
-await import('../skill/assets/adapters/openai.js');
+await import('../plugins/artifacts-done-properly/skills/adp/assets/adapters/openai-sites.js');
+await import('../plugins/artifacts-done-properly/skills/adp/assets/adapters/openai.js');
 const connect=()=>ADPOpenAIHost.create({profile:'sites',bridge:ADPOpenAISites.create({endpoint:'/api/adp/integration'})}).connect();
 const first=await connect(), ref=first.db.doc('decisions/keep');
 assert.equal(ref.path,'decisions/keep');
@@ -103,11 +103,11 @@ const workDirectory=mkdtempSync(join(tmpdir(),'adp81-work-')), workReadPath=join
 let workPlan;
 try {
  writeFileSync(workReadPath,JSON.stringify([{collection:'requests',id:'agent-work',data:workRead.data,revision:workRead.revision}]));
- workPlan=JSON.parse(execFileSync('python3',['-I','skill/scripts/adp.py','work',workReadPath,'--host','sites','--artifact','demo','--path','requests/agent-work','--action','claim','--by','worker-test'],{encoding:'utf8',timeout:2000,env:{...process.env,ADP_HOME:workDirectory}}));
+ workPlan=JSON.parse(execFileSync('python3',['-I','plugins/artifacts-done-properly/skills/adp/scripts/adp.py','work',workReadPath,'--host','sites','--artifact','demo','--path','requests/agent-work','--action','claim','--by','worker-test'],{encoding:'utf8',timeout:2000,env:{...process.env,ADP_HOME:workDirectory}}));
 } finally {rmSync(workDirectory,{recursive:true,force:true});}
 assert.equal((await request('write',workPlan.calls[0].args)).status,200);
 assert.equal((await request('write',workPlan.calls[0].args)).status,409);
-await import('../skill/assets/adapters/openai-sites-comments.js');
+await import('../plugins/artifacts-done-properly/skills/adp/assets/adapters/openai-sites-comments.js');
 const withComments=await ADPOpenAIHost.create({profile:'sites',bridge:ADPOpenAISites.create({endpoint:'/api/adp/integration',comments:true})}).connect();
 assert.equal(typeof withComments.comments.customAnchors,'function');
 assert.equal(withComments.agent.label,'Codex');
@@ -169,13 +169,13 @@ await second.db.doc('requests/'+thread).update({text:'Changed while closed'});
 notify(await second.db.collection('requests').get());assert.equal(panel.hidden,true);
 controller.destroy();
 const inboxWatch={};globalThis.window=globalThis;globalThis.Kit={dom:{el(tag,cls,text){const n=document.createElement(tag);n.className=cls;n.textContent=text;n.listeners={};n.addEventListener=(event,fn)=>{n.listeners[event]=fn;};return n;}}};
-await import('../skill/catalog/kit/patterns/inbox.js');
+await import('../plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/inbox.js');
 let queuedPublication='';const inbox=Kit.inbox.mount(document.createElement('div'),{artifact:null,comments:null,user:{id:'editor',canEdit:true},config:{get(){return null;}},db:{collection(path){return {onSnapshot(fn){inboxWatch[path]=fn;return ()=>{};}};},doc(){return {onSnapshot(){return ()=>{};}};}},requestPublish:async id=>{queuedPublication=id;}});
 inboxWatch.incoming({docs:[{id:'p-ui',exists:true,data:()=>({status:'merged',summary:'Publish reviewed change',files:[],parts:[]})}]});
 const queueButton=nodes.findLast(n=>n.tag==='button' && n.textContent==='Request publication');assert.ok(queueButton);assert.equal(queueButton.disabled,false);await queueButton.listeners.click();assert.equal(queuedPublication,'p-ui');
 inbox.destroy();
 document.addEventListener=()=>{};document.removeEventListener=()=>{};
-await import('../skill/catalog/kit/patterns/assist.js');
+await import('../plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/assist.js');
 const part={dataset:{part:'page.header'},closest:s=>s==='[data-part]'?part:null};
 const engine=Kit.assist.start({db:second.db,user:second.user,agent:withComments.agent,shortcut:false});await engine.ready;
 try {

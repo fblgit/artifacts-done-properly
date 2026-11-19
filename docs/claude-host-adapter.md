@@ -1,6 +1,6 @@
 # Claude host adapter (`adp-host/1`)
 
-`skill/assets/adapters/claude.js` is an explicit `adp-host/1` provider over the claude.ai
+`plugins/artifacts-done-properly/skills/adp/assets/adapters/claude.js` is an explicit `adp-host/1` provider over the claude.ai
 viewer's `window.claude.use('db'|'user'|'comments')`. It does what the runtime's built-in
 Claude default does (same capabilities, same `claude` host id, seed files on), so existing
 `adp/2` records, part ids, hashes and classification are untouched. The default is
@@ -77,7 +77,7 @@ after `db` and `user` resolve (before, in parallel).
 Two sources, in decreasing weight. **Observed live** (2026-11-16, one claude.ai viewer, runtime contract
 0.2.96, a private disposable probe page with synthetic data; it exercised the viewer's own `window.claude`,
 not `adapters/claude.js` itself): and the platform's type definitions for that contract. Differences in
-`skill/scripts/adp_dev.js` / `adp_dev.py`, the stand-in the tests and `adp.py dev` use:
+`plugins/artifacts-done-properly/skills/adp/scripts/adp_dev.js` / `adp_dev.py`, the stand-in the tests and `adp.py dev` use:
 
 - Observed, matches: `canEdit()` resolves a boolean; `canSendToClaude()` resolves `available`; `set` resolves
   `undefined`; snapshots carry `data/exists/id/metadata`; `update` merges; a missing doc reads
@@ -87,7 +87,7 @@ not `adapters/claude.js` itself): and the platform's type definitions for that c
   acquire` (the types list only `doc`/`collection`); `comments.create/delete/reply/resolve`;
   `user.profiles/search`; `doc.acquire`, which resolved `{acquired, expiresAt, holder, version}` uncontended
   (contention is unmeasured, so it is not faked).
-- Fixed in the stand-in to match what was measured (`skill/scripts/adp_dev.*`): a publish conflict's `live` is
+- Fixed in the stand-in to match what was measured (`plugins/artifacts-done-properly/skills/adp/scripts/adp_dev.*`): a publish conflict's `live` is
   the current version id and it carries `changed: []`; `update` removes a field for a bare
   `{__delete__: true}` and refuses the marker with other keys (`invalid_argument`); `orderBy` puts `null`
   lowest and a missing field last in both directions; `user.isOwner()` and `user.me()` with the live key
@@ -173,7 +173,7 @@ and is Claude-only by design, as are `claude-lane.js` and the catalog page's `pa
 
 ## Agent side
 
-`skill/scripts/adp_claude_adapter.py` is the Claude half of the shared records shell. It prints ArtifactData
+`plugins/artifacts-done-properly/skills/adp/scripts/adp_claude_adapter.py` is the Claude half of the shared records shell. It prints ArtifactData
 `list` calls to read, one atomic `batch` (at most 50 writes, 1 MiB) to write, and parses the result text the agent
 saves, wrapped as `[{call, result}]`. Observed live and relied on: a collection `list` shows each doc's native
 `version`; a batch result names every committed doc with its new version; a refused batch starts "db batch
@@ -184,7 +184,7 @@ so `parse_receipt` never reports part of one as applied. The adapter needs no
 separate readback: the batch result is the authority. Claude's page files are not part of the shell (use
 `adp.py files` plus a publish).
 
-`adp.py work --host claude` (the work planner, `skill/scripts/adp_work.py`) prints one guarded `set` for a request claim, progress, checkpoint, block or completion. On a Claude artifact its claim, a reclaim after the lease expired and a completion with a receipt were each executed as one pinned `ArtifactData` batch and read back. Put a large planned document in a file and reference it with `file_path` in the batch rather than pasting it.
+`adp.py work --host claude` (the work planner, `plugins/artifacts-done-properly/skills/adp/scripts/adp_work.py`) prints one guarded `set` for a request claim, progress, checkpoint, block or completion. On a Claude artifact its claim, a reclaim after the lease expired and a completion with a receipt were each executed as one pinned `ArtifactData` batch and read back. Put a large planned document in a file and reference it with `file_path` in the batch rather than pasting it.
 
 Mapped to the contract's
 operations by reading the existing `adp-edit` protocol: Discover/Read = `Artifact read` + ArtifactData reads

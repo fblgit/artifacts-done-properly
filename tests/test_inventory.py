@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO / "skill" / "scripts"))
+sys.path.insert(0, str(REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "scripts"))
 import adp_catalog as inv  # noqa: E402
 
 # A small tree that carries the cases a scanner gets wrong. Every name in PROSE sits where nothing reads it.
@@ -251,7 +251,8 @@ class RealCatalogTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.skill = REPO / "skill"
+        cls.skill = REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp"
+        cls.base = cls.skill.parent       # the inventory labels a file relative to the skill folder's parent: adp/catalog/...
         cls.out = inv.inventory(str(cls.skill))
         cls.entries = json.loads((cls.skill / "catalog" / "catalog.json").read_text(encoding="utf-8"))["entries"]
         cls.all = list(cls.out["entries"].items()) + list(cls.out["units"].items())
@@ -270,21 +271,21 @@ class RealCatalogTests(unittest.TestCase):
         c = self.out["coverage"]
         self.assertEqual(c["files"], len(found))
         self.assertEqual(c["files"], c["scanned"] + c["theme"] + len(c["unread"]))
-        themed = {"skill/catalog/" + f["path"] for e in self.entries if e["id"] in self.out["themes"] for f in e["files"]}
+        themed = {"adp/catalog/" + f["path"] for e in self.entries if e["id"] in self.out["themes"] for f in e["files"]}
         scanned = {f for _, x in self.all for f in x["files"]}
-        self.assertEqual(scanned, {p for p in (q.relative_to(REPO).as_posix() for q in found) if scans(p) and p not in themed})
+        self.assertEqual(scanned, {p for p in (q.relative_to(self.base).as_posix() for q in found) if scans(p) and p not in themed})
         self.assertEqual((c["scanned"], c["theme"]), (len(scanned), len(themed)))
         for e in self.entries:                                                      # each entry scans each of its own files, shared or not
             if e["id"] in self.out["entries"]:
-                mine = sorted("skill/catalog/" + f["path"] for f in e["files"] if scans(f["path"]))
+                mine = sorted("adp/catalog/" + f["path"] for f in e["files"] if scans(f["path"]))
                 self.assertEqual(self.out["entries"][e["id"]]["files"], mine, e["id"])
-        listed = {"skill/catalog/" + f["path"] for e in self.entries for f in e["files"]}
+        listed = {"adp/catalog/" + f["path"] for e in self.entries for f in e["files"]}
         self.assertEqual(listed & set(self.out["units"]["catalog.page"]["files"]), set())
-        self.assertEqual({u["file"] for u in c["unread"]}, {q.relative_to(REPO).as_posix() for q in found} - scanned - themed)
+        self.assertEqual({u["file"] for u in c["unread"]}, {q.relative_to(self.base).as_posix() for q in found} - scanned - themed)
         for o in c["outside"]:
             self.assertNotIn(o["file"], scanned)
             if o["copy_of"]:
-                self.assertEqual((REPO / o["file"]).read_bytes(), (REPO / o["copy_of"]).read_bytes())
+                self.assertEqual((self.base / o["file"]).read_bytes(), (self.base / o["copy_of"]).read_bytes())
 
     def test_a_built_name_is_listed_with_the_names_it_fits(self):
         units = dict(self.all)
@@ -296,7 +297,7 @@ class RealCatalogTests(unittest.TestCase):
     def test_theme_index_is_what_the_json_files_say(self):
         t = self.out["tokens"]
         for i, th in self.out["themes"].items():
-            j = json.loads((REPO / th["files"]["json"]).read_text(encoding="utf-8"))
+            j = json.loads((self.base / th["files"]["json"]).read_text(encoding="utf-8"))
             for s in ("light", "dark"):
                 self.assertEqual({k for k in t if i in t[k]["themes"]["json"][s]}, set(j[s]), (i, s))
                 if i == "theme.default":
@@ -307,12 +308,12 @@ class RealCatalogTests(unittest.TestCase):
         for i, x in self.all:
             for f in x["files"]:
                 if f.endswith((".css", ".css.txt")):
-                    text = re.sub(r"/\*.*?\*/", " ", (REPO / f).read_text(encoding="utf-8"), flags=re.S)
+                    text = re.sub(r"/\*.*?\*/", " ", (self.base / f).read_text(encoding="utf-8"), flags=re.S)
                     plain = len(re.findall(r"var\(\s*--[A-Za-z0-9_-]+\s*[,)]", text))
                     self.assertEqual(sum(u["files"].get(f, 0) for u in x["uses"].values()), plain, (i, f))
 
     def test_cli(self):
-        cmd = [sys.executable, "-I", str(REPO / "skill" / "scripts" / "adp_catalog.py"), "inventory"]
+        cmd = [sys.executable, "-I", str(REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "scripts" / "adp_catalog.py"), "inventory"]
         a, b = (subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", cwd=os.sep) for _ in range(2))
         self.assertEqual((a.returncode, a.stderr), (0, ""))
         self.assertEqual(a.stdout, b.stdout)

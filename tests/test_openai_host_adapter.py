@@ -12,7 +12,7 @@ class OpenAIHostAdapter(unittest.TestCase):
     def test_bridge_contract(self):
         script = r'''
 const assert = require('node:assert/strict');
-require('./skill/assets/adapters/openai.js');
+require('./plugins/artifacts-done-properly/skills/adp/assets/adapters/openai.js');
 const create = globalThis.ADPOpenAIHost.create;
 (async () => {
   assert.throws(() => create({profile:'spaces', bridge:{connect(){}}}), /profile/);

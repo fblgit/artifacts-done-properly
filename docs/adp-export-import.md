@@ -26,9 +26,9 @@ coverage.
 ## Export through the adapter
 
 ```sh
-python3 -I skill/scripts/adp.py bundle --host claude --artifact SOURCE
+python3 -I plugins/artifacts-done-properly/skills/adp/scripts/adp.py bundle --host claude --artifact SOURCE
 # Execute the emitted reads and save [{call, result}] as source-reads.json.
-python3 -I skill/scripts/adp.py bundle source-reads.json bundle-dir \
+python3 -I plugins/artifacts-done-properly/skills/adp/scripts/adp.py bundle source-reads.json bundle-dir \
   --host claude --artifact SOURCE --version PUBLICATION_VERSION --raw
 ```
 
@@ -39,10 +39,10 @@ context. Host identities and artifact locators remain distinct.
 ## Plan and apply an import
 
 ```sh
-python3 -I skill/scripts/adp.py import-plan bundle-dir \
+python3 -I plugins/artifacts-done-properly/skills/adp/scripts/adp.py import-plan bundle-dir \
   --host sites --artifact TARGET
 # Execute every emitted read; save [{call, result}] as target-reads.json.
-python3 -I skill/scripts/adp.py import-plan bundle-dir target-reads.json \
+python3 -I plugins/artifacts-done-properly/skills/adp/scripts/adp.py import-plan bundle-dir target-reads.json \
   --host sites --artifact TARGET --raw --out plan.json
 ```
 
@@ -75,7 +75,7 @@ collection, document ID, exact data and native revision for each intended write.
 These remain query receipts; they are not presented as individual document reads.
 
 ```sh
-python3 -I skill/scripts/adp.py import-ack plan.json results.json \
+python3 -I plugins/artifacts-done-properly/skills/adp/scripts/adp.py import-ack plan.json results.json \
   --host sites --raw
 ```
 

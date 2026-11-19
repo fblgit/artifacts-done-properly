@@ -1,7 +1,7 @@
 """`adp.py files --host single` / `unpack`: one self-contained index.html that unpacks byte for byte."""
 import json, os, re, subprocess, sys, tempfile, unittest
 
-ADP = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill', 'scripts', 'adp.py')
+ADP = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts', 'adp.py')
 PAGE = ('<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>T</title>'
         '<link href="https://fonts.googleapis.com/css2?family=X" rel="stylesheet"><link rel="stylesheet" href="s/a.css?v=1">'
         '<script defer src="a.js"></script><script src="https://cdnjs.cloudflare.com/x.js"></script></head>'

@@ -12,8 +12,8 @@ class OpenAISitesBridge(unittest.TestCase):
     def test_transport(self):
         script = r'''
 const assert = require('node:assert/strict');
-require('./skill/assets/adapters/openai-sites.js');
-require('./skill/assets/adapters/openai.js');
+require('./plugins/artifacts-done-properly/skills/adp/assets/adapters/openai-sites.js');
+require('./plugins/artifacts-done-properly/skills/adp/assets/adapters/openai.js');
 const create = ADPOpenAISites.create;
 const tick = () => new Promise(resolve => setImmediate(resolve));
 (async () => {

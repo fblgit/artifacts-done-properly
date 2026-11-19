@@ -3,7 +3,7 @@
 
   python3 -I tools/roundtrip.py [SKILL_DIR] [--require-node] [--only 1,2,8]
 
-SKILL_DIR holds scripts/ and catalog/ (default: skill/ of this repo). Read-only on it: everything the checks write goes to a temp folder
+SKILL_DIR holds scripts/ and catalog/ (default: the adp skill of this repo, plugins/artifacts-done-properly/skills/adp). Read-only on it: everything the checks write goes to a temp folder
 that is removed at the end. Exit 0 when no check failed. A check that needs node (3 and 6) is skipped without it, and fails with
 --require-node or when the CI environment variable is set. It needs no git history.
 
@@ -487,7 +487,7 @@ def main(argv):
         del args[i:i + 2]
     pos = [a for a in args if not a.startswith('--')]
     if len(pos) > 1 or any(a.startswith('--') and a != '--require-node' for a in args): sys.exit(__doc__)
-    setup(pos[0] if pos else os.path.join(REPO, 'skill'))
+    setup(pos[0] if pos else os.path.join(REPO, 'plugins', 'artifacts-done-properly', 'skills', 'adp'))
     rows, bad = [], False
     try:
         for n, name, fn in CHECKS:

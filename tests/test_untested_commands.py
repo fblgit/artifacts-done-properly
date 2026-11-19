@@ -169,7 +169,7 @@ class Headers(Untested):
     def test_sites_catalog_take_map_uses_https_sources_not_artifact_references(self):
         from test_host_connection import run_node
         script = """const fs=require('fs'),assert=require('assert/strict');
-const src=fs.readFileSync('skill/catalog/parts/catalog.js','utf8');
+const src=fs.readFileSync('plugins/artifacts-done-properly/skills/adp/catalog/parts/catalog.js','utf8');
 const takeFiles=()=>[{entry:{},f:{path:'kit/demo.js',sha256:'abc'}}];
 eval(src.slice(src.indexOf('function takeRef('),src.indexOf('function Take(')));
 assert.deepEqual(JSON.parse(takeRef({},true,{self:{url:'https://catalog.example.chatgpt.site'}})),{'kit/demo.js':{url:'https://catalog.example.chatgpt.site/kit/demo.js',sha256:'abc'}});

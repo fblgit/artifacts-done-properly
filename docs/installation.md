@@ -28,8 +28,8 @@ On Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows) or the
 
 1. Add the marketplace, then install the plugin from it:
 
-       /plugin marketplace add fblgit/fblgit-claude-marketplace
-       /plugin install artifacts-done-properly@fblgit-claude-marketplace
+       /plugin marketplace add fblgit/artifacts-done-properly
+       /plugin install artifacts-done-properly@fblgit-adp
 
    The name is `artifacts-done-properly`, not `adp`: the plugin named `adp` is another project
    (the Artifact Data Protocol).
@@ -42,9 +42,9 @@ On Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows) or the
 
 Updates come through the marketplace. The plugin's version is ADP's (see the releases): an update arrives when a release bumps it.
 
-- `claude plugin update artifacts-done-properly@fblgit-claude-marketplace` updates the plugin.
+- `claude plugin update artifacts-done-properly@fblgit-adp` updates the plugin.
   Start a new session to load the new version.
-- Inside a session, `/plugin marketplace update fblgit-claude-marketplace` refreshes the
+- Inside a session, `/plugin marketplace update fblgit-adp` refreshes the
   marketplace's listing.
 - Background auto-update is off by default for a third-party marketplace. Turn it on under
   `/plugin` > Marketplaces > this marketplace > Enable auto-update.

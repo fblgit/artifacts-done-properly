@@ -94,7 +94,7 @@ class DevTests(Base):
 
     def test_stand_in_sends_the_measured_snapshot_sequences_and_the_real_consumer_converges(self):      # live traces and their limits: docs/claude-host-adapter.md
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        r = run_node(['-e', HARNESS.split('const mode')[0] + SEQUENCES, os.path.join(root, 'skill/assets/adp.js'), os.path.join(root, 'skill/scripts/adp_dev.js')])
+        r = run_node(['-e', HARNESS.split('const mode')[0] + SEQUENCES, os.path.join(root, 'plugins/artifacts-done-properly/skills/adp/assets/adp.js'), os.path.join(root, 'plugins/artifacts-done-properly/skills/adp/scripts/adp_dev.js')])
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
     def test_update_marker_removes_a_field_and_one_with_other_keys_is_refused(self):      # both as measured on the live viewer
@@ -140,7 +140,7 @@ class DevTests(Base):
         self.assertEqual((docs['requests/r-1']['data']['state'], docs['requests/r-1']['version']), ('ack', 2))
         # kit.claude-lane reads this presence doc: any id when presence/claude-code is missing, at in ISO
         self.assertEqual(docs['presence/agent']['data']['at'][-1], 'Z')
-        with open(os.path.join(os.path.dirname(__file__), '..', 'skill', 'catalog', 'kit', 'claude-lane.js')) as f: lane = f.read()
+        with open(os.path.join(os.path.dirname(__file__), '..', 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'catalog', 'kit', 'claude-lane.js')) as f: lane = f.read()
         self.assertIn('all[presenceKey] || Object.values(all)', lane); self.assertIn('Date.parse(t)', lane)
         r = self.run_adp('dev', 'send', self.d, out)      # the same batch again: its if_version is stale now
         self.assertEqual((r.returncode, json.loads(r.stdout)['results'][0]['error']['code']), (3, 'conflict'))

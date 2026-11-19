@@ -70,7 +70,7 @@ class HoldSays(Cmd):
         self.assertIn(out['hold_until'], Path(part['file_path']).read_text())
 
     def test_refs_text_states_the_cap(self):
-        ref = os.path.join(os.path.dirname(__file__), '..', 'skill', 'refs', 'adp-edit', 'SKILL.md')
+        ref = os.path.join(os.path.dirname(__file__), '..', 'plugins', 'artifacts-done-properly', 'skills', 'adp-edit', 'SKILL.md')
         self.assertIn('[--hours H] (at most 2)', Path(ref).read_text())
 
 

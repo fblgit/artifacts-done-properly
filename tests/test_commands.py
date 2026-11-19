@@ -12,7 +12,7 @@ EDIT_FROM = 'data-part="home.welcome" data-comment-target>'
 EDIT_TO = EDIT_FROM + 'EDITED'
 
 
-ADP = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill', 'scripts', 'adp.py')
+ADP = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts', 'adp.py')
 
 
 class Cmd(Base):

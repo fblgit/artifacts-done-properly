@@ -12,8 +12,8 @@ Your next project starts further ahead.
 **Get it now!**: Install the plugin, your AI agent will take care of it.
 
 ```
-/plugin marketplace add fblgit/fblgit-claude-marketplace
-/plugin install artifacts-done-properly@fblgit-claude-marketplace
+/plugin marketplace add fblgit/artifacts-done-properly
+/plugin install artifacts-done-properly@fblgit-adp
 /adp setup
 ```
 
@@ -121,8 +121,8 @@ ADP comes in two forms:
 
 - **The plugin `artifacts-done-properly`** (recommended), for Claude Code (the CLI and the Code tab of the desktop app):
 
-      /plugin marketplace add fblgit/fblgit-claude-marketplace
-      /plugin install artifacts-done-properly@fblgit-claude-marketplace
+      /plugin marketplace add fblgit/artifacts-done-properly
+      /plugin install artifacts-done-properly@fblgit-adp
       /adp setup
 
 - **`adp.skill`**, a zip, for the Claude desktop app's skill library: take it from the

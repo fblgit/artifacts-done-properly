@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO / "skill" / "scripts"))
+sys.path.insert(0, str(REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "scripts"))
 import publish_catalog as pc  # noqa: E402
 
 URL0 = "https://claude.ai/artifact/OLD"
@@ -58,7 +58,7 @@ def seed_docs(tree):
 
 class PlanTests(Base):
     def test_real_catalog_boots_with_the_inbox_and_every_other_kit_file_rides_one_proposal(self):
-        real = REPO / "skill" / "catalog"
+        real = REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "catalog"
         before = tree_of(REPO)
         code, text, _ = self.plan(real)
         self.assertEqual(code, 0, text)
@@ -111,7 +111,7 @@ class PlanTests(Base):
 
     def test_plan_needs_a_url_and_welcome_is_one_page_with_the_catalogs_counts(self):
         with self.assertRaises(SystemExit): run("plan", "--catalog-dir", str(self.cat), "--out", str(self.out))      # --url is mandatory
-        real = REPO / "skill" / "catalog"
+        real = REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "catalog"
         code, _, _ = run("welcome", "--catalog-dir", str(real), "--out", str(self.out))
         self.assertEqual(code, 0)
         page = (self.out / "tree" / "index.html").read_text()
@@ -122,7 +122,7 @@ class PlanTests(Base):
         self.assertEqual(json.loads((self.out / "publish.json").read_text())["files"], {})      # one file: the page, whose publish gives the artifact its URL
 
     def test_update_makes_proposals_with_the_live_sha_for_changed_new_and_removed_files(self):
-        real = REPO / "skill" / "catalog"
+        real = REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "catalog"
         live, new = self.tmp / "live", self.tmp / "new"
         for d in (live, new):
             shutil.copytree(real, d)
@@ -204,9 +204,9 @@ class UrlTests(Base):
 
     def test_real_copy_set_url_keeps_adp_catalog_passing(self):
         copy = self.tmp / "real"
-        shutil.copytree(REPO / "skill" / "catalog", copy)
+        shutil.copytree(REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "catalog", copy)
         self.assertEqual(run("set-url", URL1, "--catalog-dir", str(copy))[0], 0)
-        r = subprocess.run([sys.executable, str(REPO / "skill" / "scripts" / "adp_catalog.py"), str(copy)], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, str(REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "scripts" / "adp_catalog.py"), str(copy)], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(run("check", URL1, "--catalog-dir", str(copy))[0], 0)
 
