@@ -12,7 +12,7 @@ repos:
           [allowlist]
           paths = [\"skill/catalog/kit/samples/patterns\\\\.json\"]" gitleaks git --redact --verbose'
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.9
+    rev: v0.17.5
     hooks:
       - id: ruff           # rules and excludes: ruff.toml
   - repo: local
