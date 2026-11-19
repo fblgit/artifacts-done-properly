@@ -1,0 +1,155 @@
+<title>ADP Media Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="adp:build" content="1">
+<meta name="adp:db-rules" content='[{"path":"","read":"view","write":"admin"},{"path":"ns/shared","read":"view","write":"interact"},{"path":"ns/users/{self}","read":"view","write":"interact"},{"path":"requests","read":"view","write":"interact"},{"path":"conversations","read":"view","write":"interact"},{"path":"presence","read":"view","write":"interact"}]'>
+<aside id="adp-info" aria-label="About ADP">
+<style>
+#adp-info{position:fixed;top:0;left:0;z-index:2147483000;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e8e9ec;text-align:left}
+#adp-info summary{list-style:none;box-sizing:content-box;width:10px;height:10px;border:6px solid transparent;border-radius:50%;background:#3ddc84;background-clip:padding-box;cursor:pointer;opacity:.55;transition:opacity .15s}
+#adp-info summary::-webkit-details-marker{display:none}
+#adp-info summary:hover,#adp-info summary:focus-visible,#adp-info details[open]>summary{opacity:1}
+#adp-info summary:focus-visible{outline:2px solid #3ddc84;outline-offset:-2px}
+#adp-info .ai-box{position:absolute;top:22px;left:4px;width:min(340px,calc(100vw - 16px));max-height:min(70vh,520px);overflow:auto;box-sizing:border-box;padding:8px 12px 12px;background:#15171b;color:#e8e9ec;border:1px solid #30343b;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#adp-info .ai-box input{position:absolute;opacity:0;pointer-events:none}
+#adp-info .ai-box label{display:inline-block;margin:0 4px 8px 0;padding:3px 8px;color:#9aa0a8;border-bottom:2px solid transparent;cursor:pointer}
+#adp-info #ai-t-about:checked~label[for=ai-t-about],#adp-info #ai-t-help:checked~label[for=ai-t-help],#adp-info #ai-t-status:checked~label[for=ai-t-status]{color:#fff;border-bottom-color:#3ddc84}
+#adp-info .ai-p{display:none;border-top:1px solid #30343b;padding-top:8px}
+#adp-info #ai-t-about:checked~.ai-about,#adp-info #ai-t-help:checked~.ai-help,#adp-info #ai-t-status:checked~.ai-status{display:block}
+#adp-info dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0}
+#adp-info dt{color:#9aa0a8}
+#adp-info dd{margin:0;min-width:0;overflow-wrap:anywhere}
+#adp-info ol{margin:0;padding-left:18px}
+#adp-info li{margin:0 0 6px}
+#adp-info p{margin:8px 0 0}
+#adp-info a{color:#7fd1ff}
+#adp-info dd,#adp-info li{color:#e8e9ec;font:inherit}
+#adp-info code{font:inherit;color:#fff;background:none;border:0;padding:0;border-radius:0}
+#adp-info table{width:100%;margin:8px 0 0;border-collapse:collapse;table-layout:auto;font:inherit;color:inherit;background:none;border:0}
+#adp-info caption{text-align:left;font:inherit;color:#9aa0a8;padding:0 0 2px}
+#adp-info th,#adp-info td{text-align:left;padding:1px 10px 1px 0;vertical-align:top;overflow-wrap:anywhere;font:inherit;color:#e8e9ec;background:none;border:0}
+#adp-info th{color:#9aa0a8;font-weight:400;white-space:nowrap}
+#adp-info td:last-child{white-space:nowrap}
+@media print{#adp-info{display:none}}
+</style>
+<details>
+<summary aria-label="ADP info: about, help, status"></summary>
+<div class="ai-box">
+<input type="radio" name="ai-tab" id="ai-t-about" checked><input type="radio" name="ai-tab" id="ai-t-help"><input type="radio" name="ai-tab" id="ai-t-status">
+<label for="ai-t-about">About</label><label for="ai-t-help">Help</label><label for="ai-t-status">Status</label>
+<section class="ai-p ai-about">
+<dl>
+<dt>ADP</dt><dd>Artifacts Done Properly 2.0.0 (not the Artifact Data Protocol)</dd>
+<dt>Repo</dt><dd><a href="https://github.com/fblgit/artifacts-done-properly" target="_blank" rel="noopener">fblgit/artifacts-done-properly</a></dd>
+<dt>Author</dt><dd>Juanako.ai (fblgit)</dd>
+<dt>License</dt><dd>Apache-2.0</dd>
+</dl>
+</section>
+<section class="ai-p ai-help">
+<ol>
+<li>Get ADP: the README's <a href="https://github.com/fblgit/artifacts-done-properly#install" target="_blank" rel="noopener">Install section</a> has the steps for the Claude Code plugin and for <code>adp.skill</code>, the zip in the <a href="https://github.com/fblgit/artifacts-done-properly/releases/latest" target="_blank" rel="noopener">latest release</a>.</li>
+<li>Set it up: <code>python3 -I &lt;adp skill folder&gt;/scripts/adp.py setup --dry-run</code>, then the same with <code>--scope user|project|local</code>.</li>
+</ol>
+</section>
+<section class="ai-p ai-status">
+<dl>
+<dt>Runtime</dt><dd><code>adp.js</code> sha256 <code title="68045fb1d5d37d9bd457cc349934baa80d1bb238754c3cfde68db17b90355dea">68045fb1d5d3</code></dd>
+<dt>Catalog</dt><dd>https://claude.ai/artifact/PGzWJWGUR7eJ7dN8G9pX4e</dd>
+</dl>
+<table>
+<caption>Components, as built</caption>
+<thead><tr><th>id</th><th>version</th><th>hash</th></tr></thead>
+<tbody><tr><td>kit.dom</td><td>0.1.0</td><td>6f6768e64757</td></tr><tr><td>kit.tokens</td><td>0.1.1</td><td>ffed515e50b8</td></tr><tr><td>kit.vocab</td><td>0.1.0</td><td>2faae84b4cd3</td></tr><tr><td>kit.keep-state</td><td>0.1.0</td><td>6dcfdf9c77ca</td></tr><tr><td>pattern.settings</td><td>0.1.0</td><td>e1e51c497a20</td></tr><tr><td>pattern.inbox</td><td>0.2.1</td><td>3a2e4b403489</td></tr><tr><td>pattern.namespaces</td><td>0.1.0</td><td>d20322ce1cc4</td></tr><tr><td>pattern.assist</td><td>0.1.2</td><td>d5b960c99da2</td></tr><tr><td>pattern.block-picker</td><td>0.1.0</td><td>44b48d35813d</td></tr><tr><td>pattern.request-card</td><td>0.1.2</td><td>9c0db071a596</td></tr><tr><td>pattern.presence</td><td>0.1.1</td><td>df125f5e41b4</td></tr><tr><td>pattern.assist-panel</td><td>0.1.0</td><td>f6e1a604b639</td></tr><tr><td>kit.store</td><td>0.1.0</td><td>925e5a42709d</td></tr><tr><td>kit.chrome</td><td>0.1.2</td><td>a9c4ab5e51b0</td></tr><tr><td>kit.canvas</td><td>0.1.1</td><td>4b71a2a1d2c0</td></tr><tr><td>pattern.mindmap</td><td>0.1.1</td><td>b2642b85242c</td></tr><tr><td>layout.topbar</td><td>0.1.0</td><td>feef5d2ab885</td></tr><tr><td>kit.view-registry</td><td>0.1.0</td><td>eeabecf2c841</td></tr><tr><td>kit.skins</td><td>0.1.2</td><td>06fbd6441780</td></tr><tr><td>kit.md</td><td>0.1.0</td><td>16d3b4ad6b21</td></tr><tr><td>theme.adr-drafting-table</td><td>0.2.0</td><td>bcd01d09cc3f</td></tr><tr><td>theme.blueprint</td><td>0.1.0</td><td>72fccba744a9</td></tr><tr><td>theme.classic</td><td>0.1.1</td><td>44a1db6fe054</td></tr><tr><td>theme.console</td><td>0.1.1</td><td>781e02b50f11</td></tr><tr><td>theme.default</td><td>0.2.0</td><td>6cb8417a8748</td></tr><tr><td>theme.glaze</td><td>0.1.2</td><td>b32ac66d5e8e</td></tr><tr><td>theme.glaze-depth</td><td>0.1.2</td><td>23a5fa06bedc</td></tr><tr><td>theme.journal</td><td>0.1.1</td><td>4bcc8188f5f3</td></tr><tr><td>theme.journey-whiteboard</td><td>0.2.0</td><td>e6cc98dd9c10</td></tr><tr><td>theme.kanban</td><td>0.1.1</td><td>862192f92ee8</td></tr><tr><td>theme.longpage</td><td>0.1.1</td><td>359c8f4a519f</td></tr><tr><td>theme.manuscript</td><td>0.1.1</td><td>060b63c1f11d</td></tr><tr><td>theme.notebook</td><td>0.1.1</td><td>05c703c113c9</td></tr><tr><td>theme.warroom</td><td>0.1.1</td><td>726723ab75cc</td></tr></tbody>
+</table>
+</section>
+</div>
+</details>
+</aside>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Atkinson+Hyperlegible+Next:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles/page.css">
+<link rel="stylesheet" href="kit/themes/default.css">
+<link rel="stylesheet" href="kit/vocab.css">
+<link rel="stylesheet" href="kit/patterns/settings.css">
+<link rel="stylesheet" href="kit/patterns/inbox.css">
+<link rel="stylesheet" href="kit/patterns/namespaces.css">
+<link rel="stylesheet" href="kit/patterns/block-picker.css">
+<link rel="stylesheet" href="kit/patterns/request-card.css">
+<link rel="stylesheet" href="kit/patterns/presence.css">
+<link rel="stylesheet" href="kit/patterns/assist-panel.css">
+<link rel="stylesheet" href="kit/chrome.css">
+<link rel="stylesheet" href="kit/canvas.css">
+<link rel="stylesheet" href="kit/patterns/mindmap.css">
+<link rel="stylesheet" href="kit/layout/topbar.css">
+<link rel="stylesheet" href="kit/view-registry.css">
+<link rel="stylesheet" href="kit/skins.css">
+<link rel="stylesheet" href="kit/md.css">
+<link rel="stylesheet" href="styles/canvas.css">
+<link rel="stylesheet" href="styles/assist.css">
+
+<div class="layout" id="layout">
+<div class="col">
+<!-- part:page.header -->
+<header class="top" data-part="page.header" data-comment-target>
+  <div class="wrap top-in">
+    <h1>ADP Media Studio: spec</h1>
+    <div class="top-actions">
+      <button type="button" class="assist-btn" id="assistBtn" aria-expanded="false" aria-controls="assist" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Work with Claude</span></button>
+      <div class="top-meta">
+      <label class="gear skin" id="skinPick" title="Theme" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 100 18c1.5 0 2-1 1.5-2.2-.6-1.4.3-2.8 1.8-2.8H17a4 4 0 004-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg><select id="skinSel" aria-label="Theme"></select></label>
+      <button type="button" class="gear theme-btn" id="themeBtn" aria-label="Colour theme" title="Colour theme"></button>
+      <button type="button" class="gear" id="gear" aria-label="Settings" title="Settings" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/><circle cx="12" cy="12" r="6.5"/></svg></button>
+    <!-- part:page.changes -->
+    <details class="wc" id="wc" data-part="page.changes" data-comment-target hidden>
+      <summary><span>What changed</span><span class="wc-n" id="wcN"></span></summary>
+      <div class="wc-body">
+        <section><h3>Latest changes</h3><ol class="wc-list" id="wcChanges"></ol></section>
+        <section><h3>Owner decisions in force</h3><ul class="wc-list wc-dec" id="wcDecisions"></ul></section>
+      </div>
+    </details>
+    <!-- /part:page.changes -->
+      </div>
+    </div>
+    <!-- part:page.lead --><p class="lead" data-part="page.lead" data-comment-target></p><!-- /part:page.lead -->
+    <div class="top-presence" id="presence" data-assist-ui></div>
+  </div>
+</header>
+<!-- /part:page.header -->
+<!-- part:page.tabs --><nav class="tabs" aria-label="Views" data-part="page.tabs" data-comment-target><div class="wrap tabs-in" id="tabs"></div></nav><!-- /part:page.tabs -->
+<main class="wrap views" id="views"></main>
+</div>
+<div class="assist-scrim" id="assistScrim" hidden></div>
+<!-- part:page.assist -->
+<aside class="assist" id="assist" data-part="page.assist" data-assist-ui aria-label="Work with Claude" hidden>
+  <button type="button" class="assist-close" id="assistClose" aria-label="Close Work with Claude">Close</button>
+  <div id="assistBody"><p class="muted">Loading.</p></div>
+</aside>
+<!-- /part:page.assist -->
+</div>
+
+<script src="adp.js"></script>
+<script src="content.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script src="kit/dom.js"></script>
+<script src="kit/tokens.js"></script>
+<script src="kit/vocab.js"></script>
+<script src="kit/keep-state.js"></script>
+<script src="kit/patterns/settings.js"></script>
+<script src="kit/patterns/inbox.js"></script>
+<script src="kit/patterns/namespaces.js"></script>
+<script src="kit/patterns/block-picker.js"></script>
+<script src="kit/patterns/assist.js"></script>
+<script src="kit/patterns/request-card.js"></script>
+<script src="kit/patterns/presence.js"></script>
+<script src="kit/patterns/assist-panel.js"></script>
+<script src="kit/store.js"></script>
+<script src="kit/chrome.js"></script>
+<script src="kit/canvas.js"></script>
+<script src="kit/patterns/mindmap.js"></script>
+<script src="kit/layout/topbar.js"></script>
+<script src="kit/view-registry.js"></script>
+<script src="kit/skins.js"></script>
+<script src="kit/md.js"></script>
+<script src="parts/app.js"></script>

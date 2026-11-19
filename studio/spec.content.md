@@ -1,0 +1,560 @@
+## Lead
+
+The spec of the ADP Media Studio: a page where people and agents make the clips, demos and narrated films that explain ADP. Read it, comment on any part, and take the piece your squad owns.
+
+## View: Overview (id: overview)
+
+### Section overview.purpose - What it is and why
+
+```html
+<h2>ADP Media Studio</h2>
+<p>A studio page, built on ADP, where a person sets up a clip in the browser and a watching Claude Code session renders it with real engines. The page holds the controls, the preview and the record. The session holds the engines. Every clip is described by a spec, so it can be rendered again when the product changes.</p>
+<h3>The problem</h3>
+<ul>
+<li>The pitch site and the journeys page have twelve media placeholders and no way to fill them that an agent can repeat.</li>
+<li>A spike (two clips, a runner, Playwright and ffmpeg) proved the engines work. It is one JavaScript file per clip, with no controls, no review and no record.</li>
+<li>Demos go stale the day the UI or the CLI changes. A hand-recorded clip cannot be regenerated.</li>
+</ul>
+<h3>What done looks like</h3>
+<ul>
+<li>A person adds a scene, edits its spec, previews it, requests a render and approves the result, all in the browser.</li>
+<li>An agent session turns a request into a clip with one command, and writes the result and its hash back to the page.</li>
+<li>Changing the product and pressing "re-render" gives a new clip from the same spec.</li>
+<li>The studio's own reusable parts (player, timeline, spec editor, narration panel) are catalog kits other pages can take.</li>
+</ul>
+```
+
+### Section overview.principles - Principles
+
+```html
+<ol>
+<li><b>Spec first.</b> A clip is data. The page edits the spec, the engines read it. No clip exists only as a recording.</li>
+<li><b>The browser asks, the session does.</b> The browser cannot run ffmpeg, Chrome capture or a model. It never pretends to: it writes a job and shows its state.</li>
+<li><b>Local first.</b> Everything works against <code>adp.py dev serve</code> and <code>dev watch</code> before anything is published.</li>
+<li><b>Deterministic or flagged.</b> The same spec and the same inputs give the same output hash, or the job says why not.</li>
+<li><b>Real over staged.</b> Terminal scenes run the real commands. Page scenes record the real page in the dev emulator. A scripted transcript is labelled as scripted.</li>
+<li><b>ADP all the way.</b> Parts with ids and hashes, copy as data, comments on parts, a record of every change, kits taken from the catalog, new kits contributed back.</li>
+</ol>
+<h3>Not in scope</h3>
+<ul>
+<li>A general video editor. Hand-made effects, colour grading, music.</li>
+<li>Cloud rendering and hosted render APIs.</li>
+<li>Live-streaming a session. Clips only.</li>
+</ul>
+```
+
+### Section overview.squads - Who works on it
+
+```html
+<table>
+<thead><tr><th>Squad</th><th>Owns</th><th>First deliverable</th></tr></thead>
+<tbody>
+<tr><td>Engines</td><td>Engine adapters, the <code>studio</code> CLI, determinism, budgets</td><td>S1: render one scene of each type to mp4 and gif</td></tr>
+<tr><td>Kits</td><td>K1 to K4, the four parts the catalog does not have</td><td>S2: media stage and clip timeline, with previews and samples</td></tr>
+<tr><td>Studio page</td><td>The ADP artifact, the data model, the job loop, the views</td><td>S3: projects, scenes, jobs and review on the dev emulator</td></tr>
+<tr><td>Journeys and QA</td><td>Scene library, end-to-end journeys, quality gates</td><td>S4: journeys J1 to J3 pass from a clean machine</td></tr>
+<tr><td>Skill and docs</td><td>The studio skill models read, the contributor guide</td><td>S5: an agent with only the skill makes a clip</td></tr>
+</tbody>
+</table>
+<p class="muted">Comment on any part of this page to ask or object. The ADP record (What changed) lists every edit with who made it.</p>
+```
+
+## View: How it works (id: how)
+
+### Section how.layers - Three layers
+
+```html
+<h3>Browser, session, engines</h3>
+<table>
+<thead><tr><th>Layer</th><th>Runs</th><th>Does</th><th>Cannot</th></tr></thead>
+<tbody>
+<tr><td><b>Browser</b><br>the studio page</td><td>On the person's screen</td><td>Edits specs, previews outputs, queues jobs, reviews, comments, approves. May run in-browser helpers (narration preview).</td><td>Render video, run commands, read files outside its folder.</td></tr>
+<tr><td><b>Session</b><br>a watching Claude Code session</td><td>On the person's machine</td><td>Reads a job, calls the engines, writes progress and results back to the page's record, answers the request.</td><td>Decide quality. A person approves.</td></tr>
+<tr><td><b>Engines</b></td><td>Called by the session through the <code>studio</code> CLI</td><td>Turn a scene spec into frames, then a file. See Engines.</td><td>Talk to the page. They only read a spec and write files.</td></tr>
+</tbody>
+</table>
+<h3>Why the split</h3>
+<p>A page on claude.ai cannot run local programs. The Work with Claude loop already lets a page send a request to a session that watches it, and the dev emulator reproduces that loop offline. The studio uses that loop and adds a typed job on top of it.</p>
+```
+
+### Section how.flow - One clip, end to end
+
+```html
+<ol>
+<li>A person edits a scene in the spec editor. The page saves the spec to the db and shows its hash.</li>
+<li>They press <b>Render</b>. The page writes a job document (queued) and sends a request to the session: "render job j-0042".</li>
+<li>The watching session reads the job and the spec, checks the spec hash, and calls <code>studio render</code> with the engine the job names.</li>
+<li>The CLI runs the engine. It prints progress lines; the session copies them into the job's progress list. The page shows them live.</li>
+<li>The engine writes the file under the studio's media folder. The CLI computes its sha256, size and duration and returns them.</li>
+<li>The session sets the job to <b>review</b>, with the outputs listed, and answers the request in one line.</li>
+<li>The person plays the output in the stage, comments on a moment, then approves or sends it back with a note (a new request on the same job).</li>
+<li>An approved clip can be published: the page publishes the file into the artifact, or the session copies it where a page expects it (for the pitch site, <code>assets/media/</code>).</li>
+</ol>
+<p><b>Rule:</b> only the session writes a job's progress and outputs. Only a person writes approval. Both are enforced by the db rules, not by convention.</p>
+```
+
+### Section how.local - Local development and publishing
+
+```html
+<ul>
+<li><b>Local:</b> <code>adp.py dev serve DIR</code> stands in for the db, user, comments and <code>artifact.publish</code>. <code>adp.py dev watch DIR</code> prints each message the page sends and keeps the "a session is watching" beat. Output files sit in the studio folder, served by the same server. <em>Verified in this repo for the assistant template; the studio's own job loop is to be built.</em></li>
+<li><b>Published:</b> the page runs on claude.ai with the same code. Rendering still needs a local session, so a published studio shows state and previews; it cannot render by itself. <em>Limit to state in the UI.</em></li>
+<li><b>Output size:</b> a binary file in an artifact is at most 15 MB, an asset at most 20 MiB, a publish call 255 files and 64 MB. The studio budgets for this (see Quality).</li>
+</ul>
+```
+
+### Section how.lifecycle - Job lifecycle
+
+```html
+<table>
+<thead><tr><th>State</th><th>Set by</th><th>Meaning</th><th>Next</th></tr></thead>
+<tbody>
+<tr><td><code>queued</code></td><td>page</td><td>Written by Render. Nothing has seen it.</td><td>running, canceled</td></tr>
+<tr><td><code>running</code></td><td>session</td><td>An engine is working. Progress lines accrue.</td><td>review, failed, canceled</td></tr>
+<tr><td><code>review</code></td><td>session</td><td>Outputs exist and are listed with hashes. Waiting for a person.</td><td>approved, queued (changes requested)</td></tr>
+<tr><td><code>approved</code></td><td>person</td><td>The clip may be published or used.</td><td>published</td></tr>
+<tr><td><code>published</code></td><td>page or session</td><td>The file is in the artifact or in its target folder. Its path is recorded.</td><td>queued (re-render when the spec or the product changes)</td></tr>
+<tr><td><code>failed</code></td><td>session</td><td>The engine stopped. The job holds the engine's last lines and a reason.</td><td>queued</td></tr>
+<tr><td><code>canceled</code></td><td>page or session</td><td>Stopped on request. Partial files are not kept.</td><td>queued</td></tr>
+</tbody>
+</table>
+<p>A job is stale when its spec hash differs from the project's current spec hash. The page marks it and offers re-render. It never deletes the old output.</p>
+```
+
+## View: Pieces (id: pieces)
+
+### Section pieces.map - The pieces
+
+```html
+<p>Each piece is a part of the studio page with a stable id. The kit column says where it comes from: <b>take</b> an existing catalog entry as it is, <b>new</b> a kit this project contributes. The catalog was read entry by entry (see Kits to contribute); nothing is rebuilt that it already has.</p>
+<table>
+<thead><tr><th>Id</th><th>Piece</th><th>Kit</th></tr></thead>
+<tbody>
+<tr><td><code>studio.shelf</code></td><td>Project shelf: projects, state, last render, stale marks, batch re-render</td><td>take <code>pattern.master-detail</code> with <code>pattern.facet-batch</code> (count tiles with digit keys, group by, selectable rows and a batch bar)</td></tr>
+<tr><td><code>studio.board</code></td><td>Scene board: scenes in order as cards, a preview frame on each</td><td>take <code>viz.buckets</code> (drag with a drop line, plus a Move to menu for keyboard), one bucket per act</td></tr>
+<tr><td><code>studio.inspector</code></td><td>Scene inspector: the typed form and the JSON of one scene</td><td>new K3 <code>pattern.spec-editor</code>, with <code>kit.chrome</code> fields, <code>kit.callout-refusal</code> for errors, <code>kit.save-status</code>, <code>kit.keep-state</code>; opens in <code>kit.drawer</code></td></tr>
+<tr><td><code>studio.stage</code></td><td>Stage: plays an output, steps frames, shows captions</td><td>new K1 <code>pattern.media-stage</code>; its scrub bar is <code>Kit.sparkline.wave</code> (a slider with marked windows)</td></tr>
+<tr><td><code>studio.timeline</code></td><td>Clip timeline: scenes and narration as tracks along time, editable</td><td>new K2 <code>pattern.clip-timeline</code>, drawing on the scale logic of <code>viz.shelf</code> and the tick strip of <code>viz.replay</code></td></tr>
+<tr><td><code>studio.narration</code></td><td>Narration panel: script per scene, voice, timing, preview</td><td>new K4 <code>pattern.narration-panel</code>; the audio view is <code>Kit.sparkline.wave</code></td></tr>
+<tr><td><code>studio.engines</code></td><td>Engine and output settings: engine, size, fps, formats, budgets</td><td>take <code>pattern.settings</code>, <code>pattern.capability-picker</code> (an engine and what it needs)</td></tr>
+<tr><td><code>studio.queue</code></td><td>Render queue: jobs, progress lines, outputs, actions</td><td>take <code>pattern.job-tray</code> with a studio adapter; <code>pattern.status-columns</code> for the board by state</td></tr>
+<tr><td><code>studio.review</code></td><td>Review: old and new output, comments on moments, approve or send back</td><td>take <code>viz.compare</code> (Before, After, Wipe), <code>pattern.gate</code> (approve or reject with a reason the asker reads), <code>pattern.card-history</code></td></tr>
+<tr><td><code>studio.assets</code></td><td>Asset shelf: outputs with hash, size, duration, path, copy</td><td>take <code>pattern.file-map</code> (area is bytes, so the budget is visible), <code>layout.file-browser</code>, <code>pattern.filter-table</code>, <code>kit.copy</code></td></tr>
+<tr><td><code>studio.ask</code></td><td>Work with Claude: free requests to the session</td><td>take <code>pattern.assist</code>, <code>pattern.assist-panel</code>, <code>pattern.request-card</code>, <code>kit.claude-lane</code></td></tr>
+<tr><td><code>studio.history</code></td><td>What changed and renders, with who and when</td><td>ADP runtime; <code>pattern.event-log</code>, <code>viz.version-compare</code></td></tr>
+<tr><td><code>studio.shell</code></td><td>Header, views, themes, command palette</td><td>take <code>layout.topbar</code>, <code>kit.skins</code>, <code>kit.tabs</code>, <code>kit.palette</code> (Ctrl+K: "render scene…")</td></tr>
+</tbody>
+</table>
+```
+
+### Section pieces.shelf - Shelf, board and inspector
+
+```html
+<h3>Project shelf <code>studio.shelf</code></h3>
+<p><b>Has:</b> a row per project: title, owner, scenes, spec hash, newest job state, stale mark. Filters by state and owner, search.<br><b>Actions:</b> new project, duplicate, archive, open.<br><b>States:</b> empty (one line saying how to start), loading, error.</p>
+<h3>Scene board <code>studio.board</code></h3>
+<p><b>Has:</b> scenes as cards in order. Each card: type glyph, title, seconds, caption flag, narration flag, last output frame, job state. Keyboard reordering (move earlier, move later) alongside drag.<br><b>Actions:</b> add scene (type picker), reorder, duplicate, delete, open in inspector, render this scene.<br><b>Rules:</b> scene ids never change once created. The order is data (a list of ids), not position in the page.</p>
+<h3>Inspector <code>studio.inspector</code></h3>
+<p><b>Has:</b> a form generated from the scene type's schema, a JSON tab holding the same data, field-level validation, a diff against the saved spec, undo and redo.<br><b>Actions:</b> edit, save (writes the spec and its hash), revert, copy JSON, paste JSON.<br><b>Rules:</b> an invalid spec cannot be rendered. The page shows which field and why.</p>
+```
+
+### Section pieces.stage - Stage, timeline and narration
+
+```html
+<h3>Stage <code>studio.stage</code></h3>
+<p><b>Has:</b> a video or image view, play and pause, scrub, frame step (one frame back and forward), speed, loop a range, captions on and off, size toggle (full, 390 px), a readout of time and frame.<br><b>Keys:</b> space, left and right (one frame), shift with them (one second), J K L, comma and period.<br><b>Rules:</b> honours <code>prefers-reduced-motion</code> (does not autoplay). A caption track is a separate file, never burned in unless the output says so.</p>
+<h3>Clip timeline <code>studio.timeline</code></h3>
+<p><b>Has:</b> tracks (scenes, narration, captions), clips as bars with label and length, a playhead, zoom, snap to scene edges.<br><b>Actions:</b> move a clip, trim its start or end, split, delete, jump the stage to a time. Everything is operable by keyboard (select, arrows, trim keys).<br><b>Rules:</b> it edits spec fields (start, seconds), it does not hold its own copy of the project.</p>
+<h3>Narration <code>studio.narration</code></h3>
+<p><b>Has:</b> one script box per scene, a voice picker, an estimated spoken length against the scene's seconds (a warning when the text will not fit), a preview button, a "generate" action that asks the session to produce the audio file.<br><b>Rules:</b> preview may run in the browser (an injected <code>speak</code> function). The audio that ships is made by the session and recorded with a hash like any output.</p>
+```
+
+### Section pieces.jobs - Settings, queue, review, assets
+
+```html
+<h3>Engine and output settings <code>studio.engines</code></h3>
+<p><b>Has:</b> engine choice per project or scene, size presets (1280x720, 1280x1000, 1080x1080, 1080x1920), fps, formats (mp4, webm, gif, png still), budgets (gif size, mp4 size, length), narration on or off.<br><b>Rules:</b> an engine that is not installed is shown disabled with the reason.</p>
+<h3>Render queue <code>studio.queue</code></h3>
+<p><b>Has:</b> jobs newest first. Each: scene or project, engine, state word and glyph (never colour alone), progress lines, outputs with hash and size, error text. Finished jobs fold to one line.<br><b>Actions:</b> render scene, render project, cancel, retry, re-render stale, open in stage.<br>
+<b>Built from:</b> <code>pattern.job-tray</code>, not a new kit. Its transport is an adapter <code>{start(kind, params), poll(id, since), resume()}</code> returning <code>{id, title, kind, status, banner, log, leases, result}</code>. The studio's adapter:</p>
+<table>
+<thead><tr><th>Job state</th><th>Tray view</th></tr></thead>
+<tbody>
+<tr><td><code>queued</code></td><td>status running, banner "waiting for a session"</td></tr>
+<tr><td><code>running</code></td><td>status running, the engine's lines in <code>log</code></td></tr>
+<tr><td><code>review</code></td><td>status paused (ended waiting for you), actions Open in stage, Approve, Send back</td></tr>
+<tr><td><code>approved</code>, <code>published</code></td><td>status done, the output path in <code>result</code></td></tr>
+<tr><td><code>failed</code></td><td>status failed, last lines, actions Try again, Dismiss</td></tr>
+<tr><td><code>canceled</code></td><td>status done, a line saying it was canceled</td></tr>
+</tbody>
+</table>
+<p><code>start</code> writes <code>jobs/&lt;jid&gt;</code> and sends the request; <code>poll</code> reads the job document. A job the db no longer has is marked lost by the tray.</p>
+<h3>Review <code>studio.review</code></h3>
+<p><b>Has:</b> the stage with the job's outputs, comments anchored to a time (moment) and to a part, a decision bar: approve, send back with a note.<br><b>Rules:</b> only an admin or the owner can approve. Sending back creates a request on the same job with the note and the timestamps.</p>
+<h3>Asset shelf <code>studio.assets</code></h3>
+<p><b>Has:</b> every output as a tile with thumbnail, format, size, duration, sha256 (short), path, and "published to" marks. Copy path, copy the markup that embeds it, open in stage.<br><b>Actions:</b> publish, unpublish, delete (admin).</p>
+```
+
+## View: Scene spec (id: scenes)
+
+### Section scenes.format - The spec
+
+```html
+<p>The spec is JSON, schema <code>studio-spec/1</code>. One project is one spec. The inspector, the CLI and the engines all read the same file. Fields marked * are required.</p>
+<pre><code>{
+  "schema": "studio-spec/1",
+  "id": "j3-catalog-road",            // * kebab, never changes
+  "title": "Catalog tour",
+  "size": [1280, 1000], "fps": 30,    // * pixels, frames per second
+  "scenes": [
+    { "id": "s1", "type": "title", "text": "Take a part instead of rebuilding it", "seconds": 2.5 },
+    { "id": "s2", "type": "browser", "url": "{{catalog}}",
+      "steps": [ {"click": "Visualizations"}, {"click": "Pebble map"}, {"wait": 3}, {"click": "Glaze"} ],
+      "caption": "Preview an entry in a theme before taking it." },
+    { "id": "s3", "type": "terminal", "env": "throwaway-home",
+      "cmds": ["adp.py take CATALOG kit.tabs"] }
+  ],
+  "narration": { "voice": "af_heart", "lines": { "s1": "Take a part instead of rebuilding it." } },
+  "outputs": [ { "format": "mp4" }, { "format": "gif", "width": 960, "fps": 10 } ]
+}</code></pre>
+<p><b>Spec hash:</b> sha256 of the spec with keys sorted and whitespace removed. A job records the hash it rendered. A changed hash marks the job stale.</p>
+```
+
+### Section scenes.types - Scene types
+
+```html
+<table>
+<thead><tr><th>Type</th><th>What it shows</th><th>Key fields</th><th>Engine</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>browser</code></td><td>A real page driven by steps</td><td>url, steps (click, type, wait, scroll, theme), viewport</td><td>Playwright, served by the dev emulator</td><td>Spike done (J3 clip)</td></tr>
+<tr><td><code>terminal</code></td><td>Real commands, real output, typed on screen</td><td>cmds, env, theme, speed</td><td>Playwright terminal page</td><td>Spike done (J1 clip)</td></tr>
+<tr><td><code>title</code></td><td>A title or lower-third card</td><td>text, subtitle, seconds, theme</td><td>HyperFrames or Remotion</td><td>To do</td></tr>
+<tr><td><code>transcript</code></td><td>A scripted conversation between a person and an agent, labelled scripted</td><td>turns [{who, text, at}]</td><td>HyperFrames or Remotion</td><td>To do</td></tr>
+<tr><td><code>clip</code></td><td>An existing video or image</td><td>src, in, out</td><td>ffmpeg</td><td>To do</td></tr>
+<tr><td><code>compose</code></td><td>A hand-written composition</td><td>path, props</td><td>HyperFrames or Remotion</td><td>To do</td></tr>
+</tbody>
+</table>
+<h3>Step vocabulary (browser)</h3>
+<p><code>click "text"</code>, <code>type "text"</code>, <code>wait seconds</code>, <code>scroll px</code>, <code>theme name</code>, <code>press key</code>, <code>hover "text"</code>, <code>mark "label"</code> (adds a caption moment). A step that does not resolve fails the scene with the step and the page text it saw.</p>
+```
+
+### Section scenes.outputs - Outputs and files
+
+```html
+<ul>
+<li><b>Folder:</b> <code>media/&lt;project-id&gt;/&lt;scene-id or "full"&gt;.&lt;format&gt;</code>, beside the studio page. A manifest <code>media/&lt;project-id&gt;/manifest.json</code> lists each file with sha256, bytes, duration, spec hash, engine and version.</li>
+<li><b>Formats:</b> mp4 (h264, yuv420p, faststart) for the web and LinkedIn, webm optional, gif (palette-quantized) for the README, png for stills.</li>
+<li><b>Captions:</b> a <code>.vtt</code> file from the captions and narration, kept next to the video.</li>
+<li><b>Reproducible:</b> same spec hash and same engine versions should give the same sha256. When they do not (a network font, a clock), the manifest says <code>deterministic: false</code> and why.</li>
+</ul>
+```
+
+## View: Data and actions (id: data)
+
+### Section data.model - Data model
+
+```html
+<p>All studio data sits under <code>ns/shared/studio/</code> in the page's db. Documents are small; files are never stored in the db.</p>
+<table>
+<thead><tr><th>Document</th><th>Holds</th><th>Written by</th></tr></thead>
+<tbody>
+<tr><td><code>projects/&lt;pid&gt;</code></td><td>title, owner, status, scene order, current spec hash, created, updated</td><td>person</td></tr>
+<tr><td><code>specs/&lt;pid&gt;</code></td><td>the spec JSON (kept under 200 KB), its hash, a version counter</td><td>person</td></tr>
+<tr><td><code>jobs/&lt;jid&gt;</code></td><td>pid, scene or "all", engine and version, spec hash, state, progress lines, outputs [{path, sha256, bytes, duration, format}], error, by, times</td><td>page creates; session updates state, progress and outputs</td></tr>
+<tr><td><code>approvals/&lt;jid&gt;</code></td><td>decision, by, note, moments [{t, text}]</td><td>admin or owner only</td></tr>
+<tr><td><code>moments/&lt;jid&gt;/&lt;id&gt;</code></td><td>a review comment pinned to a time</td><td>person</td></tr>
+<tr><td><code>requests/&lt;rid&gt;</code></td><td>the Work with Claude records, including the render request that wakes the session</td><td>the assist engine</td></tr>
+</tbody>
+</table>
+<p>The ADP record (<code>manifest/</code>, <code>parts/</code>, <code>content/</code>, <code>changes/</code>) is unchanged. A render adds a line to What changed only when an output is published, not on every progress line.</p>
+```
+
+### Section data.actions - Actions
+
+```html
+<table>
+<thead><tr><th>Action</th><th>Who</th><th>Writes</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Create or duplicate project</td><td>interact</td><td>projects, specs</td><td>New project, scenes empty or copied</td></tr>
+<tr><td>Edit spec, add or move a scene</td><td>interact</td><td>specs (with version pin), projects</td><td>New spec hash, jobs become stale</td></tr>
+<tr><td>Request render</td><td>interact</td><td>jobs (queued), requests</td><td>The session is woken</td></tr>
+<tr><td>Run render</td><td>session</td><td>jobs (running, progress)</td><td>Live progress in the queue</td></tr>
+<tr><td>Finish render</td><td>session</td><td>jobs (review, outputs) or failed</td><td>Outputs listed with hashes</td></tr>
+<tr><td>Cancel</td><td>job's author or admin</td><td>jobs</td><td>canceled</td></tr>
+<tr><td>Comment on a moment</td><td>interact</td><td>moments</td><td>A pin on the timeline</td></tr>
+<tr><td>Approve or send back</td><td>admin or owner</td><td>approvals, jobs</td><td>approved, or queued with a note</td></tr>
+<tr><td>Publish output</td><td>editor</td><td>artifact files, jobs (published), changes</td><td>File in the artifact, path recorded</td></tr>
+<tr><td>Delete output or project</td><td>admin</td><td>artifact files, projects</td><td>Removed, with a record</td></tr>
+</tbody>
+</table>
+<p>Specs use <code>if_version</code> pins. A refused write means someone edited first: the page re-reads and shows both versions. Nothing is merged silently.</p>
+```
+
+### Section data.caps - Capabilities and rules
+
+```html
+<table>
+<thead><tr><th>Capability</th><th>Why the studio needs it</th></tr></thead>
+<tbody>
+<tr><td><code>db</code></td><td>Projects, specs, jobs, approvals, moments. Rules: shared studio data readable by viewers, writable by interact; <code>approvals</code> writable by admin only; a job's progress and outputs are written by the session, which acts as an editor.</td></tr>
+<tr><td><code>user</code></td><td>Names on jobs, comments and approvals; owner and admin checks.</td></tr>
+<tr><td><code>comments</code> (custom anchors)</td><td>Comments on parts and on moments in a clip.</td></tr>
+<tr><td><code>artifact</code></td><td>Page-side publish of approved outputs into the artifact (editors only; file limits apply).</td></tr>
+<tr><td><code>assets</code></td><td>Optional store for large outputs (20 MiB each) referenced by id from the job.</td></tr>
+<tr><td><code>sample</code></td><td>"Ask now" answers without a watching session.</td></tr>
+<tr><td><code>downloads</code></td><td>Save a clip or a spec to disk from the page.</td></tr>
+</tbody>
+</table>
+<p class="muted">Declared on the first publish only. Not declared: <code>mcp</code>, <code>files</code>, <code>room</code>, <code>tts</code>, <code>dictation</code>. Narration preview uses an in-browser engine, not the <code>tts</code> capability, so the same voice can be rendered by the session later.</p>
+```
+
+## View: Journeys (id: journeys)
+
+### Section journeys.j1 - J1 to J4
+
+```html
+<h3>J1. First clip from a catalog page</h3>
+<p><b>Who:</b> a person with the studio open and a session watching. <b>Trigger:</b> "I need a 15 second tour of the catalog."<br>
+<b>Steps:</b> new project from the <code>browser</code> template, set the URL, add steps (click a tab, open an entry, switch a theme), press Render, watch the queue, play the output in the stage, approve.<br>
+<b>Done when:</b> an mp4 and a gif exist in <code>media/</code> with hashes in the manifest, the job is approved, and no file was written by hand.<br>
+<b>If it fails:</b> the job shows the step that did not resolve and the text on the page at that moment.</p>
+<h3>J2. A terminal demo from real commands</h3>
+<p><b>Trigger:</b> "Show the installer on a fresh machine."<br>
+<b>Steps:</b> add a <code>terminal</code> scene with <code>env: throwaway-home</code> and the commands. The session runs them in a temporary HOME, captures the output, and the terminal scene types them out.<br>
+<b>Done when:</b> the clip shows the real output of the version in the repo, and the manifest records the commit it ran against.</p>
+<h3>J3. Title card and narration</h3>
+<p><b>Trigger:</b> "Open with a title and speak the captions."<br>
+<b>Steps:</b> add a <code>title</code> scene, write narration per scene, check the length warning, generate audio, render.<br>
+<b>Done when:</b> the mp4 has the audio, the <code>.vtt</code> matches the narration, and the narration fits every scene's length.</p>
+<h3>J4. The product changed, re-render</h3>
+<p><b>Trigger:</b> a release changed the UI or the CLI output.<br>
+<b>Steps:</b> the shelf marks affected projects stale (spec hash or engine version changed, or the product commit differs). Press "re-render stale", review the new output next to the old, approve.<br>
+<b>Done when:</b> the new output replaces the old in its target folder, and the old is kept in history with its hash.</p>
+```
+
+### Section journeys.j5 - J5 to J8
+
+```html
+<h3>J5. Review with comments on moments</h3>
+<p><b>Who:</b> a reviewer who did not make the clip.<br>
+<b>Steps:</b> open the job in review, play, pin a comment at 00:07 ("the theme switch is too fast"), send back. The session gets a request with the note and the timestamp, edits the spec (a longer wait), renders again.<br>
+<b>Done when:</b> the second job references the first, the comment is resolved, and approval is by a person.</p>
+<h3>J6. Hand off between squads</h3>
+<p><b>Steps:</b> the Engines squad adds an engine adapter and marks it available. The Studio page squad sees it in engine settings the same day, without a page change. A Journeys squad member picks a scene from the shelf and extends it.<br>
+<b>Done when:</b> nobody needed to publish over someone else's work. Each edit is in What changed with its author.</p>
+<h3>J7. Harvest a scene into the catalog</h3>
+<p><b>Trigger:</b> a scene type works well and others would want it.<br>
+<b>Steps:</b> the session proposes it as a catalog entry (a scene template with a header), an editor applies it, <code>adp_catalog.py build</code> regenerates the index.<br>
+<b>Done when:</b> another page takes the template by reference and renders it.</p>
+<h3>J8. Recover from a failure</h3>
+<p><b>Cases:</b> engine not installed, Chrome refuses a debugging port, the dev server is down, a step does not resolve, the file is over budget.<br>
+<b>Steps:</b> the job fails with the last engine lines and a named reason. The page offers the matching action (choose another engine, open the setup note, shorten, retry).<br>
+<b>Done when:</b> no failure leaves a half-written file in <code>media/</code>.</p>
+```
+
+## View: Kits to contribute (id: kits)
+
+### Section kits.rules - What a contributed kit must be
+
+```html
+<p>Each new part is built as a catalog entry first and used by the studio second, so other pages can take it. The studio page takes its kits by reference like any ADP page.</p>
+<ul>
+<li><b>Entry:</b> files under <code>skill/catalog/kit/</code> with a header comment in the format of <code>docs/catalog-header.md</code> (id, kind, group, status new, version 0.1.0, summary, tags, requires, files, provides, config, tokens, preview, samples, changed).</li>
+<li><b>Look:</b> colours only from tokens, no literal colour. Works under every catalog theme, light and dark, and at 390 px.</li>
+<li><b>Behaviour:</b> keyboard complete, visible focus, a role and an accessible name for every control, <code>prefers-reduced-motion</code> respected, state announced in a live region where it changes.</li>
+<li><b>Data:</b> holds no storage of its own. Data goes in, changes come out through a callback, the page decides what to do. A sample bundle under <code>kit/samples/</code> shows it with invented data.</li>
+<li><b>Preview:</b> a catalog preview that runs the kit on its sample, with the states (empty, loading, error, full).</li>
+<li><b>Checks:</b> <code>python3 -I skill/scripts/adp_catalog.py</code> passes, the suite passes, a test covers the kit's pure logic.</li>
+<li><b>Path:</b> branch, files, <code>adp_catalog.py build</code>, pull request. The live catalog changes by proposal, not by a publish over it.</li>
+</ul>
+```
+
+### Section kits.new - The four new kits
+
+```html
+<h3>K1 <code>pattern.media-stage</code></h3>
+<p><b>Does:</b> plays one video or still with transport controls, frame stepping, range loop, captions, speed. The scrub bar is <code>Kit.sparkline.wave</code> (click, drag, arrows, marked windows for scenes), so only the video element and the frame math are new.<br>
+<b>Config:</b> <code>mount(box, {src, poster, fps, captions, onTime(t, frame), onEnded})</code>. <b>Returns:</b> <code>{play, pause, seek(t), step(n), setRange(a,b), destroy}</code>.<br>
+<b>Tokens:</b> <code>--panel --ink --ink-2 --rule --accent</code>. <b>Needs:</b> <code>kit.tokens</code>, <code>kit.dom</code>. <b>Done when:</b> frame step is exact at the given fps, keys work, reduced motion stops autoplay.</p>
+<h3>K2 <code>pattern.clip-timeline</code></h3>
+<p><b>Does:</b> tracks and clips along time with a playhead, zoom, snap, move and trim. <code>viz.shelf</code> already draws tracks on one scale with proportional segments, tooltips and keyboard stops, but only to read. K2 adds the editing (move, trim, split, snap) and a time axis; it should reuse the shelf's scale code or extend it, to be decided after reading the file.<br>
+<b>Config:</b> <code>mount(box, {tracks:[{id,label,clips:[{id,start,dur,label,kind}]}], playhead, zoom, snap, onChange(change), onSeek(t)})</code>.<br>
+<b>Done when:</b> every move and trim is possible by keyboard, <code>onChange</code> carries the new start and duration, and a screen reader hears "clip s2, 3 seconds, starts at 2.5".</p>
+<h3>K3 <code>pattern.spec-editor</code></h3>
+<p><b>Does:</b> edits a JSON document through a form generated from a small schema, with a JSON tab, validation, a diff and undo.<br>
+<b>Config:</b> <code>mount(box, {schema, value, onChange(value, valid), onInvalid(errors)})</code>. Schema: types, enums, required, ranges, per-type field lists.<br>
+<b>Done when:</b> an invalid value never reaches <code>onChange</code> as valid, errors name the field, and the form and JSON stay in step.</p>
+<h3>K4 <code>pattern.narration-panel</code></h3>
+<p><b>Does:</b> a script box per scene, a voice picker, spoken-length estimate against the scene length, preview, and the audio drawn with <code>Kit.sparkline.wave</code> (played part, marked windows).<br>
+<b>Config:</b> <code>mount(box, {scenes:[{id,seconds,text}], voices, speak(text, voice) -> Promise&lt;Blob&gt;, onChange})</code>. The kit holds no speech engine; the page injects one.<br>
+<b>Done when:</b> the length warning appears before a render, not after, and preview works with a stub engine in the catalog sample.</p>
+```
+
+### Section kits.reuse - What the catalog already gives
+
+```html
+<p>All 141 entries were listed and the likely ones read through their headers (what they draw, their config, their requires). Versions are the catalog's. Nothing below is rebuilt.</p>
+<table>
+<thead><tr><th>Studio need</th><th>Take</th><th>What it gives, from its header</th></tr></thead>
+<tbody>
+<tr><td>Render queue</td><td><code>pattern.job-tray</code> 0.1.0</td><td>Capsules with state bead, run time, progress wave, last log line, pills for what a job holds; waiting-for-you jobs first; Continue, Try again, Dismiss; an adapter <code>{start, poll, resume}</code> so the studio brings its own transport.</td></tr>
+<tr><td>Old against new clip</td><td><code>viz.compare</code> 0.1.0</td><td><code>Kit.compare.stage</code>: Before, After and a Wipe divider over two DOM nodes (two <code>&lt;video&gt;</code> elements keep their own state); the divider is a real range input.</td></tr>
+<tr><td>Approve or send back</td><td><code>pattern.gate</code> 0.1.0, <code>pattern.decisions-ack</code> 0.1.0</td><td>A card per request with risk, preview and Approve or Reject; Reject asks for a reason the asker reads; an acknowledgement block records who read the answer.</td></tr>
+<tr><td>Job history</td><td><code>pattern.card-history</code> 0.1.0, <code>pattern.event-log</code> 0.1.0</td><td>A track with a node at each state change, the ask, answer and reply turns; a log grouped by day with repeats folded.</td></tr>
+<tr><td>Scrub and audio view</td><td><code>viz.sparkline</code> 0.1.0 (<code>Kit.sparkline.wave</code>)</td><td>A mirrored-bar waveform with a played part and marked windows (hatched, labelled, keyboard reachable); with <code>onSeek</code> it is a slider: click, drag, arrows, Home and End.</td></tr>
+<tr><td>Track scale</td><td><code>viz.shelf</code> 0.1.0, <code>viz.replay</code> 0.1.0</td><td>Tracks on one scale with proportional segments, tooltips and keyboard stops (read only); a tick strip drawn to scale on a real time axis with play and scrub.</td></tr>
+<tr><td>Scenes in order</td><td><code>viz.buckets</code> 0.1.0</td><td>Cards in ordered buckets, drag with a drop line, and a Move to menu on every card so no drag is needed.</td></tr>
+<tr><td>Jobs by state or owner</td><td><code>pattern.status-columns</code> 0.1.0</td><td>A board with a column per state or per a key, the waiting column widest, empty columns folded, limits per lane.</td></tr>
+<tr><td>Project list and stale batch</td><td><code>pattern.master-detail</code> 0.1.0, <code>pattern.facet-batch</code> 0.1.0, <code>pattern.filter-table</code> 0.1.0</td><td>A searchable list with a detail pane; count tiles with digit keys, group by, sort, selectable rows and a batch bar; a sortable table with chips.</td></tr>
+<tr><td>Files and budgets</td><td><code>pattern.file-map</code> 0.1.0, <code>layout.file-browser</code> 0.2.0, <code>kit.copy</code> 0.1.0</td><td>A squarified map where area is bytes; a tree with hashes, versions and marks per file; copy buttons with a select fallback.</td></tr>
+<tr><td>Ask Claude, requests</td><td><code>pattern.assist</code>, <code>pattern.assist-panel</code>, <code>pattern.request-card</code> 0.1.2, <code>kit.claude-lane</code> 0.1.3, <code>pattern.presence</code></td><td>The engine that writes <code>requests/&lt;rid&gt;</code> and wakes the session; the panel; a request followed from queued to done (finished ones fold); whether a session is listening.</td></tr>
+<tr><td>Forms, errors, saving</td><td><code>kit.chrome</code> 0.1.2, <code>kit.callout-refusal</code> 0.1.0, <code>kit.save-status</code> 0.1.0, <code>kit.keep-state</code> 0.1.0, <code>kit.store</code> 0.1.0</td><td>A form dialog with text, textarea, checkbox and checklist fields; an error that names the code and the field refused; a saved, saving, offline line; drafts that survive a redraw; per-document write queues with optimistic paint.</td></tr>
+<tr><td>Shell</td><td><code>layout.topbar</code>, <code>kit.skins</code>, <code>kit.tabs</code>, <code>kit.palette</code>, <code>kit.drawer</code>, <code>kit.vocab</code>, <code>kit.tooltip</code></td><td>Header and theme switch; whole-page skins kept per viewer; ARIA tabs with deep links; a Ctrl+K command palette; a right-hand drawer; one table of state words, glyphs and tones (the studio adds its own job-state enum); one shared tooltip.</td></tr>
+<tr><td>Try a kit live</td><td><code>pattern.playground</code> 0.1.2, <code>pattern.prototype</code> 0.1.0</td><td>Pick any catalog entry, edit its sample, switch theme, mode and width; a mock-up at real size with keys and numbered markers. Both are ready-made <code>browser</code> scene sources for kit demos.</td></tr>
+<tr><td>Run a step from outside</td><td><code>template.tester</code> 0.1.0</td><td>A step harness where a person presses a step and Claude presses the same step from outside: the shape of the studio's job loop, taken as text.</td></tr>
+</tbody>
+</table>
+<h3>For the spec artifact itself</h3>
+<p>Later versions of this page can show its own content with <code>pattern.steps</code> and <code>pattern.steps-owners</code> (journeys), <code>viz.wires</code> (slices and their dependencies on lanes), <code>pattern.questions</code> or <code>pattern.options</code> (the decisions), <code>pattern.blueprint</code> (browser, session and engine lanes per journey step), <code>pattern.scenarios</code> (failure cases), <code>pattern.capability-picker</code> and <code>pattern.namespaces</code> (capabilities and db rules), <code>viz.flow</code> or <code>viz.topology</code> (the architecture). They are not used yet: this first version is plain cards.</p>
+```
+
+### Section kits.missing - What is genuinely missing
+
+```html
+<p>After the survey, four parts have no catalog equivalent (searched by name, tag and header):</p>
+<ul>
+<li><b>K1</b> a video and still stage with transport, frame stepping and range loop. The catalog has a waveform slider and a history replay, nothing that plays media.</li>
+<li><b>K2</b> an editable multi-track clip timeline. <code>viz.shelf</code> reads; nothing moves or trims.</li>
+<li><b>K3</b> a schema-driven editor with a JSON tab, diff and undo. <code>kit.chrome</code> has simple dialog fields; <code>kit.view-registry</code> validates layouts against typed kinds, which is a different job.</li>
+<li><b>K4</b> a per-scene narration panel with a spoken-length estimate. Nothing in the catalog knows speech or timing.</li>
+</ul>
+<p class="muted">If a squad finds an entry that already does one of these, say so in a comment: the kit is dropped, not built twice.</p>
+```
+
+## View: Engines and environment (id: engines)
+
+### Section engines.table - Engines and their state
+
+```html
+<p>State on the maintainer's Mac, 2026-11-15. <b>Verified</b> means it ran here. <b>Installed</b> means the package is present and was not run. Sources for the unverified claims are the packages' own descriptions and secondary articles.</p>
+<table>
+<thead><tr><th>Tool</th><th>Role</th><th>State</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Playwright 1.48.2</td><td>Drive and record pages and the terminal page</td><td>Verified</td><td>Recorded both spike clips. Uses its own Chromium.</td></tr>
+<tr><td>ffmpeg 9.0.2</td><td>Encode, trim, join, frames, contact sheets</td><td>Verified</td><td>mp4 and frame extraction in use.</td></tr>
+<tr><td>gifski</td><td>High-quality small gif</td><td>Verified</td><td>1.8 and 2.9 MB for 16 and 18 second clips.</td></tr>
+<tr><td>HyperFrames 0.9.52</td><td>HTML, CSS and animation to mp4, deterministic frame seek, built for agents</td><td>Installed</td><td>Needs Node 22 or newer (here 24.21). Capture mode on macOS unverified. postinstall scripts need approval.</td></tr>
+<tr><td>Remotion 4.0.543</td><td>React compositions to mp4</td><td>Installed</td><td>Free for individuals and teams up to 3 (per its docs); a company licence above. Renders with its own headless Chrome.</td></tr>
+<tr><td>kokoro-js 1.2.1</td><td>Offline text to speech, in the browser or Node</td><td>Installed</td><td>Voice quality and licence to confirm. Model download size to measure.</td></tr>
+<tr><td>Editly 0.14.2</td><td>JSON clip editing on ffmpeg</td><td>Failed</td><td>Native <code>canvas</code> does not build on Node 24 here. Decision D1: drop.</td></tr>
+<tr><td>VHS and ttyd</td><td>Terminal recording</td><td>Blocked</td><td>Needs Chrome remote debugging, which this Mac disables by policy. Not used.</td></tr>
+</tbody>
+</table>
+```
+
+### Section engines.contract - The engine adapter contract
+
+```html
+<p>An adapter is a module with three functions. The <code>studio</code> CLI knows nothing else about an engine.</p>
+<pre><code>available() -> { ok: boolean, reason?: string, version?: string }
+render(scene, ctx) -> AsyncIterable&lt;{ line?: string, progress?: number }&gt; then { file, sha256, bytes, duration, deterministic }
+estimate(scene) -> { seconds: number }       // for the queue and the narration warning</code></pre>
+<ul>
+<li><b>ctx:</b> the output folder, size, fps, the dev server URL, a temp folder, an abort signal.</li>
+<li><b>Failure:</b> throw with a short reason and the last lines. Never leave a partial file.</li>
+<li><b>Selection:</b> the scene's engine, else the project's, else the first available that supports the type.</li>
+</ul>
+<h3>The CLI</h3>
+<pre><code>studio check                         # which engines are available, and why not
+studio render SPEC [--scene ID] [--engine NAME] [--out DIR]
+studio narrate SPEC [--scene ID]      # audio files and the .vtt
+studio verify DIR                     # re-hash outputs against manifest.json</code></pre>
+```
+
+### Section engines.env - Environment notes
+
+```html
+<ul>
+<li><b>Node:</b> 22 or newer. nvm install steps are in the README's Requirements.</li>
+<li><b>Chrome policy:</b> a managed Mac can forbid remote debugging in branded Chrome. Playwright and Remotion bring their own browsers; HyperFrames needs checking. The CLI's <code>check</code> must run a one-frame capture to prove it, not trust a version number.</li>
+<li><b>npm install scripts:</b> esbuild, onnxruntime-node, sharp and protobufjs ask for approval. Approve them in one reviewed step and record which.</li>
+<li><b>Network:</b> pages loaded in a scene may fetch fonts or libraries. A scene that needs the network says so; a deterministic scene does not.</li>
+<li><b>Disk:</b> models and browsers are hundreds of MB. <code>studio check</code> reports sizes, and nothing downloads without being asked.</li>
+</ul>
+```
+
+## View: Quality bar (id: quality)
+
+### Section quality.gates - Gates
+
+```html
+<table>
+<thead><tr><th>Gate</th><th>Check</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>ADP</td><td><code>adp.py check</code> passes: markers balance, ids unique, parts have <code>data-part</code>.</td><td>Studio page</td></tr>
+<tr><td>Catalog</td><td><code>adp_catalog.py</code> passes: headers valid, hashes match.</td><td>Each kit</td></tr>
+<tr><td>Spec</td><td>Spec validates against <code>studio-spec/1</code>. Unknown fields are refused.</td><td>CLI and inspector</td></tr>
+<tr><td>Reproduce</td><td>Same spec hash and engine version gives the same sha256, or <code>deterministic: false</code> with a reason.</td><td>CLI</td></tr>
+<tr><td>Budget</td><td>gif at most 3 MB, mp4 at most 2 MB for 20 seconds, length within the project's limit, narration fits its scene.</td><td>CLI and queue</td></tr>
+<tr><td>Accessibility</td><td>Every clip has alt text and captions or a transcript. Page controls keyboard complete. No flashing above three per second.</td><td>Review</td></tr>
+<tr><td>Truth</td><td>A terminal scene ran the commands. A scripted transcript is labelled. A clip names the commit it showed.</td><td>Manifest</td></tr>
+<tr><td>Review</td><td>A person approves. A clip is never published by the session alone.</td><td>db rules</td></tr>
+<tr><td>Tests</td><td>Pure logic of each kit and of the CLI has a test. Tests are not longer than the code they cover.</td><td>CI</td></tr>
+</tbody>
+</table>
+```
+
+### Section quality.risks - Risks
+
+```html
+<table>
+<thead><tr><th>Risk</th><th>Effect</th><th>Answer</th></tr></thead>
+<tbody>
+<tr><td>HyperFrames or Remotion does not run under this machine's Chrome policy</td><td>No title or compose scenes</td><td>One-frame capture check in <code>studio check</code>; fall back to Playwright title pages</td></tr>
+<tr><td>Output over the 15 MB file limit</td><td>Cannot publish into an artifact</td><td>Budgets, mp4 over gif, assets capability, or link to the repo path</td></tr>
+<tr><td>Clips in git bloat the repo</td><td>Slow clones</td><td>Decision D7; keep clips small or build them in CI</td></tr>
+<tr><td>Two squads edit the same part</td><td>Lost work</td><td>ADP hold and version pins; proposals for the live catalog</td></tr>
+<tr><td>Scenes drift from the product</td><td>Stale demos</td><td>Spec hash plus commit in the manifest; re-render stale</td></tr>
+<tr><td>Remotion licence</td><td>Cost or non-compliance above 3 people</td><td>Decision D5 before it is used for shipped work</td></tr>
+</tbody>
+</table>
+```
+
+## View: Plan and decisions (id: plan)
+
+### Section plan.slices - Slices
+
+```html
+<table>
+<thead><tr><th>Slice</th><th>Squad</th><th>Delivers</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td>S0</td><td>Studio page</td><td>This spec as an ADP artifact, commentable</td><td>Published, reviewed, decisions D1 to D8 answered</td></tr>
+<tr><td>S1</td><td>Engines</td><td>The <code>studio</code> CLI, spec schema, adapters for Playwright and ffmpeg, then one of HyperFrames or Remotion</td><td>One scene of each v1 type renders to mp4 and gif with a manifest</td></tr>
+<tr><td>S2</td><td>Kits</td><td>K1 and K2 with previews, samples and tests; K3 and K4 after</td><td>Entries pass the catalog check and preview under every theme</td></tr>
+<tr><td>S3</td><td>Studio page</td><td>Shelf, board, inspector, stage, queue, review on the dev emulator</td><td>J1 works end to end locally with a watching session</td></tr>
+<tr><td>S4</td><td>Journeys and QA</td><td>Scene library, J1 to J4 automated, budgets enforced</td><td>A clean machine reproduces the twelve site clips</td></tr>
+<tr><td>S5</td><td>Skill and docs</td><td>The studio skill and the contributor guide</td><td>A session with only the skill makes a clip</td></tr>
+<tr><td>S6</td><td>All</td><td>Publish the studio, contribute K1 to K4 to the live catalog by proposal</td><td>Other pages take the kits</td></tr>
+</tbody>
+</table>
+<p>S1, S2 and S3 can start together once the spec format (Scene spec view) and the adapter contract (Engines view) are agreed. S4 needs S1 and S3. S5 needs S1.</p>
+```
+
+### Section plan.decisions - Decisions to make
+
+```html
+<table>
+<thead><tr><th>Id</th><th>Question</th><th>Options</th><th>Recommendation</th></tr></thead>
+<tbody>
+<tr><td>D1</td><td>Editly</td><td>Drop, or retry on Node 22</td><td>Drop. HyperFrames or Remotion plus ffmpeg cover it.</td></tr>
+<tr><td>D2</td><td>First composition engine</td><td>HyperFrames, Remotion</td><td>Run the same 15 second scene in both, keep the one that runs here and renders deterministically. Lean HyperFrames: HTML in, agent-first.</td></tr>
+<tr><td>D3</td><td>Where outputs live when the studio is published</td><td>Artifact files, assets, repo path only</td><td>Repo path for shipped clips, artifact files for review copies under 15 MB.</td></tr>
+<tr><td>D4</td><td>Narration engine</td><td>Kokoro in the browser, Kokoro in the session, system voice</td><td>Preview in the browser, final audio in the session. Confirm quality and licence first.</td></tr>
+<tr><td>D5</td><td>Remotion licence</td><td>Use, avoid</td><td>Avoid for shipped work until headcount and terms are checked.</td></tr>
+<tr><td>D6</td><td>Where the CLI lives</td><td><code>tools/media</code> in this repo, a <code>studio/</code> package, its own repo</td><td>A <code>studio/</code> package in this repo; split later.</td></tr>
+<tr><td>D7</td><td>Clips in git</td><td>Commit small files, generate in CI, store elsewhere</td><td>Commit under 3 MB each for now; revisit past 50 MB total.</td></tr>
+<tr><td>D8</td><td>Chrome policy</td><td>Ask IT, use bundled browsers only</td><td>Bundled browsers only; the check proves it.</td></tr>
+</tbody>
+</table>
+<p class="muted">Answer a decision by commenting on this part. The studio page squad records the answer in What changed.</p>
+```
