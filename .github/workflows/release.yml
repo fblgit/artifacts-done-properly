@@ -10,18 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
-      - name: Tests and checks
+      - name: Promote the bundle CI built for this content (nothing is rebuilt)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python3 -m unittest discover -s tests -v
-          python3 tools/package.py --check
-          python3 skill/scripts/adp_catalog.py
-      - name: Build bundle
-        run: python3 tools/package.py
+          OK=$(gh run list --workflow ci.yml --commit "$GITHUB_SHA" --status success --json databaseId --jq length)
+          [ "$OK" -gt 0 ] || { echo "::error::no green ci run on $GITHUB_SHA; wait for it or fix it, then retag"; exit 1; }
+          KEY=$(git rev-parse HEAD:skill HEAD:LICENSE HEAD:NOTICE HEAD:tools/package.py | sha256sum | cut -c1-16)
+          RUN=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=adp-skill-$KEY&per_page=100" \
+            --jq '[.artifacts[] | select(.expired | not)] | first | .workflow_run.id // empty')
+          [ -n "$RUN" ] || { echo "::error::no bundle for content $KEY (expired or never built); rerun ci on this commit"; exit 1; }
+          gh run download "$RUN" -n "adp-skill-$KEY" -D dist
+          (cd dist && sha256sum -c adp.skill.sha256)
       - name: Verify tag matches skill version
         env:
           TAG: ${{ github.ref_name }}

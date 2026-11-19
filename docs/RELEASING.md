@@ -13,8 +13,8 @@ It also holds exactly one `SKILL.md` (claude.ai refuses more): the road skills g
 1. Set `metadata.version` in `skill/SKILL.md` (for example `"1.2.0"`), add the version's section to `CHANGELOG.md`, and merge to `main`.
 2. Tag the merge commit with `v` plus that version and push the tag:
    `git tag v1.2.0 && git push origin v1.2.0`
-3. The `release` workflow builds the bundle and publishes a GitHub release with
-   `adp.skill` and `adp.skill.sha256`; the notes include the SHA-256.
+3. The `release` workflow does not build. It checks that `ci` is green on the tagged commit, takes the bundle CI built for the same content
+   (see below), checks its hash and publishes a GitHub release with `adp.skill` and `adp.skill.sha256`; the notes include the SHA-256.
 
 If the tag and `metadata.version` differ, the workflow fails before publishing.
 
@@ -29,8 +29,13 @@ the zip install.
 - `secrets`: gitleaks over the full history.
 - `tests`: `python3 -m unittest discover -s tests -v`.
 - `skill`: `tools/package.py --check` (frontmatter of `skill/SKILL.md` and every
-  `skill/refs/*/SKILL.md`), `skill/scripts/adp_catalog.py`, then a build uploaded as an
-  artifact. The release workflow repeats tests and checks.
+  `skill/refs/*/SKILL.md`), `skill/scripts/adp_catalog.py`, the catalog roundtrip.
+- `bundle`: runs after the others pass. The bundle is built once per content: the key is the git trees of `skill/`, `LICENSE`, `NOTICE` and
+  `tools/package.py`. A PR commit that changes none of them, and the merge to `main`, find the artifact `adp-skill-<key>` and reuse it
+  after checking its hash; new content builds and uploads it. A PR keeps only its newest bundle and one comment, edited per commit, with
+  the download link and a history of hashes. A PR from a fork gets the bundle but no comment.
+
+An artifact expires (90 days by default). A tag whose bundle expired fails with that message; rerun `ci` on the commit.
 
 Build locally with `python3 tools/package.py` (output in `dist/`).
 
