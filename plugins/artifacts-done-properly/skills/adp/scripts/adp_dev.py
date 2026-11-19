@@ -8,6 +8,7 @@ Imported by adp.py, which sets A to itself. Stdlib only.
   dev watch DIR                             runs until stopped: prints each message the page sends, one JSON line, and moves its file
                                             to inbox/done/; keeps watch.beat fresh, so the page reads a session as listening
   dev send DIR FILE                         POST the batches a command printed (adp.py requests) to the server: applied as ArtifactData
+                                            (FILE's file_path entries are read by this command; the server itself reads only files inside DIR or its state)
                                             would (if_version pinned, each batch all or nothing) and pushed to the page; prints
                                             each doc written as {collection, id, data, version}, the dump of the next step
 
@@ -40,24 +41,36 @@ def merge(a, b):
 
 class Store:
     """The db as files under state/db; the server is its only writer, under one lock."""
-    def __init__(self, state):
+    def __init__(self, state, roots=()):
         self.db, self.mu = os.path.join(state, 'db'), threading.Lock()
+        self.roots = [os.path.realpath(r) for r in roots]      # the folders a batch's file_path may name
         os.makedirs(self.db, exist_ok=True)
 
     def file(self, coll):
-        return os.path.join(self.db, coll.replace('/', '~') + '.json')
+        """The file of a collection. A name that would leave the db folder (a drive, a backslash, a dot component) raises ValueError."""
+        p = os.path.realpath(os.path.join(self.db, coll.replace('/', '~') + '.json'))
+        if os.path.dirname(p) != os.path.realpath(self.db): raise ValueError(f'{coll!r} is not a collection name')
+        return p
+
+    def readable(self, path):
+        """True when a batch's file_path is a file inside the artifact folder or the dev state: the emulator reads no other file."""
+        p = os.path.realpath(path)
+        return os.path.isfile(p) and any(os.path.commonpath([p, r]) == r for r in self.roots)
 
     def coll(self, coll):
         p = self.file(coll)
         return json.loads(Path(p).read_text(encoding='utf-8')) if os.path.isfile(p) else {}
 
     def all(self):
-        return {f'{n[:-5].replace("~", "/")}/{i}': d for n in sorted(os.listdir(self.db)) if n.endswith('.json')
-                for i, d in self.coll(n[:-5].replace('~', '/')).items()}
+        return {f'{n[:-5].replace("~", "/")}/{i}': d for n in sorted(os.listdir(self.db)) if n.endswith('.json') and not self.name_error(n[:-5].replace('~', '/'))
+                for i, d in self.coll(n[:-5].replace('~', '/')).items()}      # a file that is a link out of db/ is not a collection
 
     def write(self, op, path, data=None):
         """One write, under the lock. -> error or None"""
-        c, i = path.rsplit('/', 1); docs = self.coll(c); cur = docs.get(i)
+        c, i = path.rsplit('/', 1)
+        try: self.file(c)
+        except ValueError as e: return fail('invalid_argument', str(e))
+        docs = self.coll(c); cur = docs.get(i)
         if op == 'delete': docs.pop(i, None)
         elif not isinstance(data, dict): return fail('invalid_argument', 'a document body is a JSON object')
         elif op == 'update' and cur is None: return fail('invalid_argument', f'{path}: update needs an existing document')
@@ -69,6 +82,11 @@ class Store:
         json.dump(docs, open(tmp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1); os.replace(tmp, self.file(c))
         return None
 
+    def name_error(self, coll):
+        try: self.file(coll)
+        except ValueError as e: return str(e)
+        return None
+
     def apply(self, batches):
         """ArtifactData batches [[{op, collection, doc_id, file_path|data, if_version}]]: each batch all or nothing."""
         out = []
@@ -77,6 +95,9 @@ class Store:
             bad = next((f'{key(w)}: stale if_version {w["if_version"]}' for w in b
                         if 'if_version' in w and (docs.get(key(w)) or {}).get('version') != w['if_version']), None)
             bad = bad or next((f'{key(w)}: update needs an existing document' for w in b if w['op'] == 'update' and key(w) not in docs), None)
+            bad = bad or next((f'{key(w)}: {e}' for w in b for e in [self.name_error(key(w).rsplit('/', 1)[0])] if e), None)
+            bad = bad or next((f'{key(w)}: file_path must be a file inside the artifact folder or the dev state' for w in b
+                               if w.get('data') is None and w.get('file_path') and not self.readable(w['file_path'])), None)
             if bad: out.append({'ok': False, **fail('conflict' if 'stale' in bad else 'invalid_argument', bad)}); continue
             for w in b:
                 data = w.get('data')
@@ -126,7 +147,7 @@ def publish(d, state, files):
 
 
 def handler(d, state, user, fallback=True):
-    store, subs = Store(state), []
+    store, subs = Store(state, roots=(d, state)), []
     ident = hashlib.sha256(os.path.abspath(d).encode()).hexdigest()[:16]      # which artifact this is: the shim scopes the browser's cached query results to it
     inbox = os.path.join(state, 'inbox'); os.makedirs(inbox, exist_ok=True)
 
@@ -142,6 +163,7 @@ def handler(d, state, user, fallback=True):
         def log_message(self, format, *args): pass
 
         def send(self, body, ctype='application/json', code=200):
+            if not re.fullmatch(r'[\w.+-]+/[\w.+-]+(; charset=[\w-]+)?', ctype): ctype = 'application/octet-stream'      # a header value holds no CR or LF
             b = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode()
             self.send_response(code); self.send_header('content-type', ctype); self.send_header('content-length', str(len(b)))
             self.send_header('cache-control', 'no-store'); self.end_headers(); self.wfile.write(b)
@@ -232,10 +254,23 @@ def watch(d):
         time.sleep(0.5)
 
 
+def inline(x):
+    """The batches with each write's file_path read into its data: the one who runs `dev send` is the one who names the files, so the client reads them
+    (wherever --out put them) and the server never reads a path a request names."""
+    if isinstance(x, list): return [inline(i) for i in x]
+    if not isinstance(x, dict): return x
+    if 'op' in x and 'data' not in x and x.get('file_path'):
+        return {**{k: v for k, v in x.items() if k != 'file_path'}, 'data': json.loads(Path(x['file_path']).read_text(encoding='utf-8'))}
+    return {k: inline(v) for k, v in x.items()}
+
+
 def send(d, path):
+    try: url = f"http://127.0.0.1:{json.loads(Path(os.path.join(d, '.adp-dev', 'server.json')).read_text())['port']}/__adp/outbox"
+    except (OSError, ValueError, KeyError) as e: sys.exit(f'dev send: no server for {d} ({e}); run adp.py dev serve {d}')
+    try: body = inline(A.read_json(path, 'FILE'))
+    except (OSError, ValueError) as e: sys.exit(f"dev send: cannot read a write's file_path ({e})")
     try:
-        url = f"http://127.0.0.1:{json.loads(Path(os.path.join(d, '.adp-dev', 'server.json')).read_text())['port']}/__adp/outbox"
-        req = urllib.request.Request(url, json.dumps(A.read_json(path, 'FILE')).encode(), {'content-type': 'application/json'})
+        req = urllib.request.Request(url, json.dumps(body).encode(), {'content-type': 'application/json'})
         res = json.loads(urllib.request.urlopen(req, timeout=10).read())['results']
     except (OSError, ValueError, KeyError) as e: sys.exit(f'dev send: no server for {d} ({e}); run adp.py dev serve {d}')
     A.emit({'results': res})

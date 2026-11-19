@@ -666,7 +666,7 @@ def declared(cat, e):
         d['patterns' if '<' in tok else 'optional' if tok.endswith('?') else 'required'].append(tok.rstrip('?'))
     needs = set()                                       # needs.tokens is prose: "--a, --b-0..4 (optional)", "plus kit/vocab.css"
     for s in e.get('needs', {}).get('tokens', []):
-        for m in re.finditer(r'(--[A-Za-z0-9_<>-]+?)(\d+)\.\.(\d+)|--[A-Za-z0-9_<>-]+', s):
+        for m in re.finditer(r'(--[A-Za-z0-9_<\x3e-]+?)(\d+)\.\.(\d+)|--[A-Za-z0-9_<\x3e-]+', s):
             names = [m.group(1) + str(n) for n in range(int(m.group(2)), int(m.group(3)) + 1)] if m.group(1) else [m.group(0)]
             needs.update(n + ('?' if '(optional' in s else '') for n in names)
     differ = {'header_only': sorted(set(toks) - needs), 'needs_only': sorted(needs - set(toks))}
