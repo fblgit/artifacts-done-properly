@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ",
  "ver": "",
- "built": "2026-11-16T18:08:12Z",
+ "built": "2026-11-19T18:41:46Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -615,11 +615,11 @@
     {
      "path": "kit/guides/artifact-dataplane.md",
      "role": "doc",
-     "sha256": "327ee4a51c98798048d62523da4d70899e10fdb9aa8b2fc973a3099d2c89785c",
-     "bytes": 15408
+     "sha256": "486fc13ac156ab99bff9cd02d93606e2b3013d85490f7929bd1cdad1c2a54824",
+     "bytes": 15364
     }
    ],
-   "hash": "00e47d068a9b"
+   "hash": "5466fe92c36b"
   },
   {
    "id": "guide.component-inventory",
@@ -645,11 +645,11 @@
     {
      "path": "kit/guides/component-inventory.md",
      "role": "doc",
-     "sha256": "2f56a196757ed83ae660da65608b25b20265b8857aacd83a6980cb78677e67ac",
-     "bytes": 16573
+     "sha256": "de14cae20f957147cda3af1a3815025bf3de365510d8f5a85bac112aefe9ec95",
+     "bytes": 16546
     }
    ],
-   "hash": "1ec92b7bbef0"
+   "hash": "89fd65d8432d"
   },
   {
    "id": "kit.icons",
@@ -4303,11 +4303,11 @@
     {
      "path": "kit/templates/adp2-shell.html.txt",
      "role": "template",
-     "sha256": "4bb86b54aed50a927837483f0ded7bf873985469d733615716881182ed53913f",
-     "bytes": 4351
+     "sha256": "3bd6090abae550c570ca8b5632215cdf22c4af77f996ad2a1c060ad4a994a74d",
+     "bytes": 4321
     }
    ],
-   "hash": "ec5041cea293"
+   "hash": "e054438561f3"
   },
   {
    "id": "template.doc",
@@ -4565,11 +4565,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "bcd01d09cc3f"
+   "hash": "785ab91a59d6"
   },
   {
    "id": "theme.blueprint",
@@ -4738,11 +4738,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "6cb8417a8748"
+   "hash": "a0016f82a8ac"
   },
   {
    "id": "theme.glaze-depth",
@@ -4906,11 +4906,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "e6cc98dd9c10"
+   "hash": "e8abc056aaba"
   },
   {
    "id": "theme.kanban",
@@ -5369,11 +5369,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "cdbe87aa9105"
+   "hash": "061ad0d1f9ed"
   },
   {
    "id": "viz.bubbles",
@@ -5421,11 +5421,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "e7be2f641dd5"
+   "hash": "bd55ee3ef43a"
   },
   {
    "id": "viz.buckets",
@@ -5464,11 +5464,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "8f2c45ebd303"
+   "hash": "f06988e5fe28"
   },
   {
    "id": "viz.capability-wheel",
@@ -5514,11 +5514,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "e9b38e8f744b"
+   "hash": "2b4d0e90f5e6"
   },
   {
    "id": "viz.compare",
@@ -5561,11 +5561,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "0fa99672a373"
+   "hash": "326325f75a7c"
   },
   {
    "id": "viz.core",
@@ -5615,11 +5615,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "f31f3cef7535"
+   "hash": "fef722c40a0d"
   },
   {
    "id": "viz.dial-meter",
@@ -5667,11 +5667,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "22d32d559ff7"
+   "hash": "8a551b14d23c"
   },
   {
    "id": "viz.dotgrid",
@@ -5716,11 +5716,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "3973aa10bd8e"
+   "hash": "c5ba7ca3f9b2"
   },
   {
    "id": "viz.flow",
@@ -5762,11 +5762,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "69e3621acbda"
+   "hash": "ed80ee9ca3d2"
   },
   {
    "id": "viz.focus",
@@ -5805,11 +5805,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "0925f5ca11ed"
+   "hash": "d6eb7933598e"
   },
   {
    "id": "viz.impact",
@@ -5850,11 +5850,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "22d3f109ac17"
+   "hash": "06dfa6b97765"
   },
   {
    "id": "viz.lease-graph",
@@ -5900,11 +5900,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "d1b06064eec3"
+   "hash": "40451c05c4b6"
   },
   {
    "id": "viz.matrix",
@@ -5943,11 +5943,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "7fc872f9d983"
+   "hash": "545b4a6b952c"
   },
   {
    "id": "viz.pebble-map",
@@ -5996,11 +5996,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "ee0d630c89de"
+   "hash": "13e53f25bd1d"
   },
   {
    "id": "viz.phase-strip",
@@ -6048,11 +6048,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "b6f665fd597a"
+   "hash": "c5ab1dae9e0a"
   },
   {
    "id": "viz.replay",
@@ -6092,11 +6092,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "c5519b1dca1b"
+   "hash": "685adfe75f21"
   },
   {
    "id": "viz.runway",
@@ -6143,11 +6143,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "da5bb30e8849"
+   "hash": "3685dc1ea3fc"
   },
   {
    "id": "viz.seal",
@@ -6199,11 +6199,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "4a55c5e542e2"
+   "hash": "f15a2f522523"
   },
   {
    "id": "viz.shelf",
@@ -6249,11 +6249,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "462789a77149"
+   "hash": "223ae3362b24"
   },
   {
    "id": "viz.slider-chart",
@@ -6298,11 +6298,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "3c9a1537ff49"
+   "hash": "8f71c61bac68"
   },
   {
    "id": "viz.sparkline",
@@ -6349,11 +6349,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "8e021251b0b7"
+   "hash": "2a7ade02086a"
   },
   {
    "id": "viz.stepper",
@@ -6394,11 +6394,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "4ce95d0cf025"
+   "hash": "0afda62bbc2c"
   },
   {
    "id": "viz.timeline-phased",
@@ -6448,11 +6448,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "0c641ff04f32"
+   "hash": "0f702e94ccf4"
   },
   {
    "id": "viz.timeline",
@@ -6495,11 +6495,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "1fdbb4869272"
+   "hash": "874a05760b90"
   },
   {
    "id": "viz.topology",
@@ -6543,11 +6543,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "2fafc2eeb431"
+   "hash": "404308fa51b8"
   },
   {
    "id": "viz.tree",
@@ -6589,11 +6589,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "8c5c1320c038"
+   "hash": "5018bf2595ea"
   },
   {
    "id": "viz.trust-tree",
@@ -6645,11 +6645,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "828e85632266"
+   "hash": "5593f0335269"
   },
   {
    "id": "viz.version-compare",
@@ -6694,11 +6694,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "c9ac7f815171"
+   "hash": "6e6d2875714a"
   },
   {
    "id": "viz.wheel",
@@ -6743,11 +6743,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "09e48cfd32e7"
+   "hash": "ba2dd231882a"
   },
   {
    "id": "viz.wires",
@@ -6794,11 +6794,11 @@
     {
      "path": "kit/samples/viz.json",
      "role": "sample",
-     "sha256": "ea35cfce311e7f22d28d20c9bf8f92a84d4ecac7e4033b9a9b550e30aa0deffe",
-     "bytes": 127904
+     "sha256": "3063425c69db275ffec92e44c23efca61d879b53ce7819ab6ed53b2eef97a298",
+     "bytes": 127807
     }
    ],
-   "hash": "f194c4573d06"
+   "hash": "6be99bdd03f0"
   },
   {
    "id": "kit.vocab",

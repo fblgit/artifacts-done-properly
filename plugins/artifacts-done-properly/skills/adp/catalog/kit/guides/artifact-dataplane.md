@@ -22,7 +22,7 @@ Provides (no global): the protocol.
 @tokens    none
 @globals   none
 @db        none
-@source    eventhub plugin | skills/artifact-dataplane/SKILL.md | commit f1098e86, 2026-10-25; reduced to the standard itself
+@source    ADP | the artifact dataplane standard | reduced to the standard itself
 @preview   {"render": "guide", "samples": ["kit/guides/artifact-dataplane.md"]}
 @changed   Copied byte for byte from SKILL.md at commit f1098e86 (before: c2f889b8). That commit adds reveal(id, key) for keyed anchors and records the page’s own data by doc under changes/<seq>.data.
 -->

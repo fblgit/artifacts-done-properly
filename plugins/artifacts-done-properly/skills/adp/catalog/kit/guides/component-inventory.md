@@ -22,7 +22,7 @@ The inventory taken from the Journey Whiteboard and the ADR Drafting Table befor
 
 # Component inventory: Journey Whiteboard (JW) and ADR Drafting Table (ADR)
 
-Sources read: JW = ~/Library/Caches/eventhub/artifacts/emissary/journey/{app.js (2237 lines, single file), app.css, index.html}; ADR = .../scratchpad/adrmig/new/{adp.js, parts/*.js, styles/*.css}.
+Sources read: JW = the Journey Whiteboard's app.js (2237 lines, single file), app.css and index.html; ADR = the ADR Drafting Table's adp.js, parts/*.js and styles/*.css.
 JW is one monolithic app.js; ADR is split into parts (and already loads adp.js). Function names are from the code; "reads/writes" come from the code I read (function heads and the ones I opened), the rest is marked (inference). I did not read every function body; rows marked (head only) are from names/signatures plus nearby code.
 Coupling: low / medium / high. "To share" = what it takes to be an ADP part.
 

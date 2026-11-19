@@ -22,7 +22,7 @@ Provides (no global): index.html skeleton.
 @tokens    none
 @globals   none
 @db        none
-@source    eventhub plugin | skills/artifact-dataplane/assets/example-shell.html | YouTuner Uplift v14 shell
+@source    ADP | the adp/2 example page shell | a thin shell for an adp/2 page
 @preview   {"render": "template", "samples": ["kit/templates/adp2-shell.html.txt"]}
 @changed   Published as .html.txt: as .html it would be a second page of this catalog, and HTML files cannot be copied between artifacts server-side.
 -->
