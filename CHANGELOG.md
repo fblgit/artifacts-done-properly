@@ -2,6 +2,25 @@
 
 What each release of Artifacts Done Properly (ADP) brings, newest first. The release page of each version carries `adp.skill` and its SHA-256.
 
+## v2.2.0
+
+Minor release on v2.1.2. Install and verify as before; `adp.skill.sha256` on the release page is the authoritative hash.
+
+### Changed
+
+- **Plugin directory layout.** The plugin is the folder `plugins/artifacts-done-properly/` in the standard layout: `.claude-plugin/plugin.json`, `skills/adp` and one sibling skill for each road (`adp-new`, `adp-catalog`, `adp-edit`, `adp-adopt`), with its own README, LICENSE, NOTICE and icon. The repository root carries `.claude-plugin/marketplace.json` (`fblgit-adp`): `/plugin marketplace add fblgit/artifacts-done-properly`, then `/plugin install artifacts-done-properly@fblgit-adp`. The plugin version is ADP's version, and `tools/package.py --check` fails when they differ. `adp.skill` is built from that folder and `adp.py setup` finds the road skills in either layout (#101, #105).
+- **README and docs.** The README holds only the install (the plugin marketplace or `adp.skill`); the manual steps and Python commands are in `docs/installation.md`. Skill frontmatter descriptions are quoted.
+- **No `.toml` in the repository.** The gitleaks config is the `GITLEAKS_CONFIG_TOML` env in `ci.yml` and inline in the pre-push hook.
+
+### Security
+
+- **Dev emulator.** `adp.py dev serve` keeps every collection file inside its `db/` folder, reads a batch's `file_path` only inside the artifact folder or its state, and strips line breaks from a content type before it reaches a header. `adp.py dev send` reads the `file_path` files itself, so `--out` can still point anywhere.
+- **Catalog page.** The three CDN scripts carry `integrity` and `crossorigin`; the script-tag regexes accept `</script >`.
+
+### CI
+
+- `claude plugin validate` runs on the plugin folder (directory profile, strict) and on the repository (marketplace). CodeQL runs as GitHub's default setup. Dependabot keeps the actions (grouped) and the pre-commit hooks current; `ruff` in `ci.yml` follows the hook version.
+
 ## v2.1.2
 
 Patch release on v2.1.1. Install and verify as before; `adp.skill.sha256` on the release page is the authoritative hash.

@@ -1,6 +1,6 @@
 {
   "name": "artifacts-done-properly",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "ADP (Artifacts Done Properly): skills, page templates and a component catalog for building reusable claude.ai Artifacts.",
   "author": {
     "name": "Xavier Murias (fblgit)",
