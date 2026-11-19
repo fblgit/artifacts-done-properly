@@ -2,7 +2,10 @@
 A marketplace installs and updates it. In that install `adp.py setup` copies no road skill and records no path, since the plugin's folder changes with its version."""
 import json
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -33,11 +36,10 @@ class Manifest(unittest.TestCase):
         with open(MANIFEST, encoding='utf-8') as f:
             self.m = json.load(f)
 
-    def test_name_and_no_pinned_version(self):
+    def test_name_and_version_follow_adp(self):
         self.assertEqual(self.m['name'], NAME)       # not `adp`: the Artifact Data Protocol's own plugin has that name
-        # no version on purpose: Claude Code then takes the commit as the version, so every commit on the default branch is an update
-        # and nothing has to be bumped. A version here would pin every install to it until someone changed the number.
-        self.assertNotIn('version', self.m)
+        # the plugin's version is ADP's: the one in skill/SKILL.md (metadata.version), which a release tag carries. A release bumps both.
+        self.assertEqual(self.m['version'], frontmatter(os.path.join(ROOT, 'skill', 'SKILL.md'))['metadata']['version'])
         self.assertEqual(self.m['license'], 'Apache-2.0')
 
     def test_it_serves_the_adp_skill_and_the_four_roads(self):
@@ -48,6 +50,47 @@ class Manifest(unittest.TestCase):
             found += skill_names(os.path.join(ROOT, p))
         self.assertEqual(sorted(found), ['adp', 'adp-adopt', 'adp-catalog', 'adp-edit', 'adp-new'])
         self.assertFalse(os.path.exists(os.path.join(ROOT, 'skills')))      # a default skills/ folder at the root would be scanned too
+
+
+class BuiltPlugin(unittest.TestCase):
+    """`tools/package.py --plugin` writes the layout the plugin directory expects: skills/<name>/SKILL.md, no skill inside another skill's folder."""
+    @classmethod
+    def setUpClass(cls):
+        cls.out = tempfile.mkdtemp()
+        cls.addClassCleanup(shutil.rmtree, cls.out, True)
+        package.build_plugin(os.path.join(ROOT, 'skill'), cls.out)
+        cls.tree = os.path.join(cls.out, 'plugin')
+
+    def test_five_skills_side_by_side(self):
+        skills = os.path.join(self.tree, 'skills')
+        self.assertEqual(sorted(os.listdir(skills)), ['adp', 'adp-adopt', 'adp-catalog', 'adp-edit', 'adp-new'])
+        for n in os.listdir(skills):
+            self.assertEqual(frontmatter(os.path.join(skills, n, 'SKILL.md'))['name'], n)
+
+    def test_no_skill_inside_a_skill(self):
+        found = [os.path.relpath(os.path.join(d, f), self.tree) for d, _, fs in os.walk(self.tree) for f in fs if f == 'SKILL.md']
+        self.assertEqual(sorted(found), sorted('skills/%s/SKILL.md' % n for n in os.listdir(os.path.join(self.tree, 'skills'))))
+        self.assertFalse(os.path.exists(os.path.join(self.tree, 'skills', 'adp', 'refs', 'adp-new')))
+        self.assertTrue(os.path.isfile(os.path.join(self.tree, 'skills', 'adp', 'refs', 'local-bus.md')))     # the guides stay in the base skill
+
+    def test_manifest_has_no_skills_key_and_keeps_the_rest(self):
+        with open(os.path.join(self.tree, '.claude-plugin', 'plugin.json'), encoding='utf-8') as f:
+            built = json.load(f)
+        with open(MANIFEST, encoding='utf-8') as f:
+            src = json.load(f)
+        src.pop('skills')
+        self.assertEqual(built, src)
+        self.assertTrue(os.path.isfile(os.path.join(self.tree, 'LICENSE')) and os.path.isfile(os.path.join(self.tree, 'NOTICE')))
+
+    def test_setup_in_the_built_tree_is_a_plugin_install(self):
+        home = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, home, True)
+        env = {k: v for k, v in os.environ.items() if k != 'ADP_HOME'}
+        env['HOME'] = home
+        r = subprocess.run([sys.executable, '-I', os.path.join(self.tree, 'skills', 'adp', 'scripts', 'adp.py'), 'setup', '--dry-run'],
+                           env=env, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn('the 4 road skills (adp-adopt, adp-catalog, adp-edit, adp-new) come with the plugin %s' % NAME, r.stdout)
 
 
 class PluginSetup(Base):

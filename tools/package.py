@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Validate the ADP skill tree and build a deterministic dist/adp.skill zip."""
+"""Validate the ADP skill tree and build a deterministic dist/adp.skill zip; with --plugin, also the plugin tree dist/plugin."""
 import argparse
 import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 import zipfile
 
@@ -238,11 +239,76 @@ def build(skill_dir, out_dir):
     return target, count, os.path.getsize(target), sha
 
 
+PLUGIN_DIR = "plugin"
+MANIFEST = os.path.join(".claude-plugin", "plugin.json")
+
+
+def road_names(skill_dir):
+    """The road skills: each refs/<name>/ folder that holds a SKILL.md."""
+    refs = os.path.join(skill_dir, "refs")
+    if not os.path.isdir(refs):
+        return []
+    return sorted(d for d in os.listdir(refs) if os.path.isfile(os.path.join(refs, d, "SKILL.md")))
+
+
+def plugin_files(skill_dir):
+    """{path in the plugin tree: source file} of a plugin in the layout Claude Code and the plugin directory expect: skills/<name>/SKILL.md for the base skill
+    and for each road, no skill inside another skill's folder. The base skill keeps everything it had (scripts, catalog, templates, the refs/*.md guides) but the road folders."""
+    roads = set(road_names(skill_dir))
+    out = {}
+    for rel, full in collect_files(skill_dir):
+        parts = rel.split("/")
+        if len(parts) > 2 and parts[0] == "refs" and parts[1] in roads:
+            out["skills/%s/%s" % (parts[1], "/".join(parts[2:]))] = full
+        else:
+            out["skills/%s/%s" % (SKILL_NAME, rel)] = full
+    for name, full in legal_files(skill_dir):
+        out[name] = full
+    readme = os.path.join(os.path.dirname(os.path.abspath(skill_dir)), "README.md")      # the directory reads it to learn what the plugin does
+    if os.path.isfile(readme):
+        out["README.md"] = readme
+    icon = os.path.join(os.path.dirname(os.path.abspath(skill_dir)), ".claude-plugin", "icon.png")
+    if os.path.isfile(icon):
+        out[".claude-plugin/icon.png"] = icon
+    return out
+
+
+def build_plugin(skill_dir, out_dir):
+    """Write the plugin tree to <out_dir>/plugin and return (path, file count). The manifest is the repository's .claude-plugin/plugin.json without its `skills`
+    key: Claude Code finds skills/ by itself. The tree is a copy of bytes, so the same sources give the same tree."""
+    top = os.path.dirname(os.path.abspath(skill_dir))
+    src = os.path.join(top, MANIFEST)
+    try:
+        with open(src, encoding="utf-8") as f:
+            manifest = json.load(f)
+    except (OSError, ValueError) as e:
+        raise ValidationError("%s: cannot read the plugin manifest (%s)" % (src, e))
+    manifest.pop("skills", None)
+    _, _, fm = validate_tree(skill_dir)
+    manifest["version"] = (fm.get("metadata") or {}).get("version") or manifest.get("version")      # one number: ADP's
+    target = os.path.join(out_dir, PLUGIN_DIR)
+    if os.path.isdir(target):
+        shutil.rmtree(target)
+    files = plugin_files(skill_dir)
+    for rel in sorted(files):
+        dest = os.path.join(target, *rel.split("/"))
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        shutil.copyfile(files[rel], dest)
+        shutil.copymode(files[rel], dest)
+    os.makedirs(os.path.join(target, ".claude-plugin"), exist_ok=True)
+    with open(os.path.join(target, MANIFEST), "w", encoding="utf-8", newline="\n") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    return target, len(files) + 1
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--skill-dir", default="skill")
     p.add_argument("--out", default="dist")
     p.add_argument("--check", action="store_true", help="validate only")
+    p.add_argument("--plugin", action="store_true",
+                   help="also write the plugin tree to <out>/plugin (skills/<name>/SKILL.md for adp and each road, plus .claude-plugin/plugin.json)")
     a = p.parse_args(argv)
     if not os.path.isdir(a.skill_dir):
         print("error: skill dir not found: %s" % a.skill_dir, file=sys.stderr)
@@ -266,6 +332,13 @@ def main(argv=None):
         return 1
     print("built %s: %d files, %d bytes" % (target, count, size))
     print("sha256 %s" % sha)
+    if a.plugin:
+        try:
+            path, n = build_plugin(a.skill_dir, a.out)
+        except ValidationError as e:
+            print("error: %s" % e, file=sys.stderr)
+            return 1
+        print("built plugin tree %s: %d files" % (path, n))
     return 0
 
 

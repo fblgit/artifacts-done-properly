@@ -1,6 +1,6 @@
 ---
 name: adp-edit
-description: Edit, publish or answer comments on an ADP artifact that more than one agent or session works on. Load it before ANY edit, publish or comment reply on an artifact that has a manifest or db (adp/2), or when the user says several agents are editing, a comment was sent to Claude, or asks what changed. Gives the export, hold, publish, record protocol with version pins so a stale copy never overwrites newer work.
+description: "Edit, publish or answer comments on an ADP artifact that more than one agent or session works on. Load it before ANY edit, publish or comment reply on an artifact that has a manifest or db (adp/2), or when the user says several agents are editing, a comment was sent to Claude, or asks what changed. Gives the export, hold, publish, record protocol with version pins so a stale copy never overwrites newer work."
 metadata:
   version: "2.1.2"
 ---
