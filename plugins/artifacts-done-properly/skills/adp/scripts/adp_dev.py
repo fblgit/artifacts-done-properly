@@ -55,6 +55,10 @@ class Store:
 
     def readable(self, path):
         """A batch's file_path as a checked real path: a file inside the artifact folder or the dev state, else None (the emulator reads no other file)."""
+        if not isinstance(path, str) or not path or len(path) > 4096:
+            return None
+        if '\x00' in path or any(ord(c) < 32 for c in path):
+            return None
         try:
             p = Path(path).resolve(strict=True)
         except (OSError, RuntimeError, ValueError):
