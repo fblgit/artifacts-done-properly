@@ -59,15 +59,15 @@ class Store:
             return None
         if '\x00' in path or any(ord(c) < 32 for c in path):
             return None
-        try:
-            cand = Path(path).resolve(strict=True)
-        except (OSError, RuntimeError, ValueError):
-            return None
-        if not cand.is_file():
+        raw = Path(path)
+        if raw.is_absolute() or '..' in raw.parts:
             return None
         for r in self.roots:
             try:
                 root = Path(r).resolve(strict=True)
+                cand = (root / raw).resolve(strict=True)
+                if not cand.is_file():
+                    continue
                 cand.relative_to(root)
                 return str(cand)
             except (OSError, RuntimeError, ValueError):
