@@ -43,7 +43,7 @@ class Store:
     """The db as files under state/db; the server is its only writer, under one lock."""
     def __init__(self, state, roots=()):
         self.db, self.mu = os.path.join(state, 'db'), threading.Lock()
-        self.roots = [Path(r).resolve(strict=True) for r in roots]      # the folders a batch's file_path may name
+        self.roots = [os.path.realpath(r) for r in roots]      # the folders a batch's file_path may name
         os.makedirs(self.db, exist_ok=True)
 
     def file(self, coll):
@@ -55,25 +55,9 @@ class Store:
 
     def readable(self, path):
         """A batch's file_path as a checked real path: a file inside the artifact folder or the dev state, else None (the emulator reads no other file)."""
-        if not isinstance(path, str) or not path or len(path) > 4096:
-            return None
-        if '\x00' in path or any(ord(c) < 32 for c in path):
-            return None
-        raw = Path(path)
-        if raw.is_absolute() or '..' in raw.parts:
-            return None
-        for r in self.roots:
-        allowed = False
-        for root in self.roots:
-                if not cand.is_file():
-                cand.relative_to(root)
-                allowed = True
-                break
-            except (OSError, RuntimeError, ValueError):
-                continue
-        if not allowed or not cand.is_file():
-            return None
-        return str(cand)
+        if not isinstance(path, str) or not path or len(path) > 4096 or any(ord(c) < 32 for c in path): return None
+        p = os.path.realpath(path)
+        return p if os.path.isfile(p) and any(p.startswith(r + os.sep) for r in self.roots) else None
 
     def coll(self, coll):
         p = self.file(coll)

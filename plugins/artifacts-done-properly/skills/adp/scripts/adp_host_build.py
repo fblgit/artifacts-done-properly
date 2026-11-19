@@ -2,12 +2,10 @@
 single packs the folder into ONE self-contained index.html (and `unpack` returns it, byte for byte)."""
 import base64
 import hashlib
-import io
 import json
 import mimetypes
 import os
 import re
-from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import quote
 
@@ -148,81 +146,7 @@ def pack(src, fragment=False):
     def link(m):
         a = attrs(m.group(1)); p = local(a.get('href'), files)
         return '<script>ADPPACK.css(%s)</script>' % json.dumps(p) if p and a.get('rel', '').lower() == 'stylesheet' else m.group(0)
-    def rewrite(html):
-        class _RewriteParser(HTMLParser):
-            def __init__(self):
-                super().__init__(convert_charrefs=False)
-                self.out = io.StringIO()
-                self._script_attrs = None
-                self._script_buf = None
-
-            def handle_starttag(self, tag, attrs_list):
-                raw = self.get_starttag_text()
-                if tag.lower() == 'script':
-                    m = re.match(r'(?is)<script\b([^>]*)>', raw or '')
-                    self._script_attrs = m.group(1) if m else ''
-                    self._script_buf = []
-                    return
-                if tag.lower() == 'link':
-                    m = re.match(r'(?is)<link\b([^>]*)>', raw or '')
-                    attrs_txt = m.group(1) if m else ''
-                    self.out.write(link(type('M', (), {'group': lambda _, i: attrs_txt if i == 1 else ''})()))
-                    return
-                self.out.write(raw if raw is not None else '')
-
-            def handle_endtag(self, tag):
-                if tag.lower() == 'script' and self._script_attrs is not None:
-                    content = ''.join(self._script_buf or [])
-                    if content.strip() == '':
-                        self.out.write(script(type('M', (), {
-                            'group': lambda _, i: self._script_attrs if i == 1 else (content if i == 0 else '')
-                        })()))
-                    else:
-                        self.out.write('<script%s>%s</script>' % (self._script_attrs, content))
-                    self._script_attrs = None
-                    self._script_buf = None
-                    return
-                self.out.write(f'</{tag}>')
-
-            def handle_data(self, data):
-                if self._script_attrs is not None:
-                    self._script_buf.append(data)
-                else:
-                    self.out.write(data)
-
-            def handle_comment(self, data):
-                if self._script_attrs is not None:
-                    self._script_buf.append('<!--%s-->' % data)
-                else:
-                    self.out.write('<!--%s-->' % data)
-
-            def handle_entityref(self, name):
-                text = f'&{name};'
-                if self._script_attrs is not None:
-                    self._script_buf.append(text)
-                else:
-                    self.out.write(text)
-
-            def handle_charref(self, name):
-                text = f'&#{name};'
-                if self._script_attrs is not None:
-                    self._script_buf.append(text)
-                else:
-                    self.out.write(text)
-
-            def handle_decl(self, decl):
-                self.out.write(f'<!{decl}>')
-
-            def unknown_decl(self, data):
-                self.out.write(f'<![{data}]>')
-
-            def get_html(self):
-                return self.out.getvalue()
-
-        p = _RewriteParser()
-        p.feed(html)
-        p.close()
-        return p.get_html()
+    def rewrite(html): return re.sub(r'<link\b([^>]*)>', link, re.sub(r'<script\b([^>]*)>\s*</script[^>]*>', script, html, flags=re.I), flags=re.I)
 
     head, body = rewrite(head), rewrite(bd)
     title = re.search(r'<title>.*?</title>', head, re.S | re.I)
