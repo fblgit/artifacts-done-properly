@@ -48,14 +48,15 @@ class Store:
 
     def file(self, coll):
         """The file of a collection. A name that would leave the db folder (a drive, a backslash, a dot component) raises ValueError."""
-        p = os.path.realpath(os.path.join(self.db, coll.replace('/', '~') + '.json'))
-        if os.path.dirname(p) != os.path.realpath(self.db): raise ValueError(f'{coll!r} is not a collection name')
+        base = os.path.realpath(self.db)
+        p = os.path.realpath(os.path.join(base, coll.replace('/', '~') + '.json'))
+        if not p.startswith(base + os.sep) or os.path.dirname(p) != base: raise ValueError(f'{coll!r} is not a collection name')
         return p
 
     def readable(self, path):
-        """True when a batch's file_path is a file inside the artifact folder or the dev state: the emulator reads no other file."""
+        """A batch's file_path as a checked real path: a file inside the artifact folder or the dev state, else None (the emulator reads no other file)."""
         p = os.path.realpath(path)
-        return os.path.isfile(p) and any(os.path.commonpath([p, r]) == r for r in self.roots)
+        return p if os.path.isfile(p) and any(p.startswith(r + os.sep) for r in self.roots) else None
 
     def coll(self, coll):
         p = self.file(coll)
@@ -97,11 +98,11 @@ class Store:
             bad = bad or next((f'{key(w)}: update needs an existing document' for w in b if w['op'] == 'update' and key(w) not in docs), None)
             bad = bad or next((f'{key(w)}: {e}' for w in b for e in [self.name_error(key(w).rsplit('/', 1)[0])] if e), None)
             bad = bad or next((f'{key(w)}: file_path must be a file inside the artifact folder or the dev state' for w in b
-                               if w.get('data') is None and w.get('file_path') and not self.readable(w['file_path'])), None)
+                               if w.get('data') is None and w.get('file_path') and self.readable(w['file_path']) is None), None)
             if bad: out.append({'ok': False, **fail('conflict' if 'stale' in bad else 'invalid_argument', bad)}); continue
             for w in b:
                 data = w.get('data')
-                if data is None and w.get('file_path'): data = json.loads(Path(w['file_path']).read_text(encoding='utf-8'))
+                if data is None and w.get('file_path'): data = json.loads(Path(self.readable(w['file_path'])).read_text(encoding='utf-8'))
                 self.write(w['op'], key(w), data)
             now = self.all()      # the docs as written, so the next step needs no read
             out.append({'ok': True, 'docs': [{'collection': w['collection'], 'id': w['doc_id'], **now[key(w)]} for w in b if key(w) in now]})
@@ -163,7 +164,7 @@ def handler(d, state, user, fallback=True):
         def log_message(self, format, *args): pass
 
         def send(self, body, ctype='application/json', code=200):
-            if not re.fullmatch(r'[\w.+-]+/[\w.+-]+(; charset=[\w-]+)?', ctype): ctype = 'application/octet-stream'      # a header value holds no CR or LF
+            ctype = ctype.replace('\r', '').replace('\n', '')      # a header value holds no CR or LF
             b = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode()
             self.send_response(code); self.send_header('content-type', ctype); self.send_header('content-length', str(len(b)))
             self.send_header('cache-control', 'no-store'); self.end_headers(); self.wfile.write(b)

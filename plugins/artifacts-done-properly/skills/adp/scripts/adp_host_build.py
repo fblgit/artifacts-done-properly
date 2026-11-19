@@ -146,7 +146,7 @@ def pack(src, fragment=False):
     def link(m):
         a = attrs(m.group(1)); p = local(a.get('href'), files)
         return '<script>ADPPACK.css(%s)</script>' % json.dumps(p) if p and a.get('rel', '').lower() == 'stylesheet' else m.group(0)
-    def rewrite(html): return re.sub(r'<link\b([^>]*)>', link, re.sub(r'<script\b([^>]*)>\s*</script\s*>', script, html, flags=re.I), flags=re.I)
+    def rewrite(html): return re.sub(r'<link\b([^>]*)>', link, re.sub(r'<script\b([^>]*)>\s*</script[^>]*>', script, html, flags=re.I), flags=re.I)
 
     head, body = rewrite(head), rewrite(bd)
     title = re.search(r'<title>.*?</title>', head, re.S | re.I)

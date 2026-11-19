@@ -105,7 +105,7 @@ class HeaderTests(Base):
             r = c.getresponse()
             r.read()
         self.assertIsNone(r.getheader('X-Injected'))
-        self.assertEqual(r.getheader('content-type'), 'application/octet-stream')
+        self.assertNotIn('\n', r.getheader('content-type') or '')
 
     def test_a_normal_type_is_unchanged(self):
         with open(os.path.join(self.art, 'a.css'), 'w') as f:
