@@ -3,7 +3,7 @@ name: adp
 description: "ADP (Artifacts Done Properly) is the standard for shared Claude Artifacts and Sites pages that collect comments or requests from people, or that are built from shared catalog components. Load it FIRST, before writing any HTML and before calling the Artifact or ArtifactData tools, whenever the user wants a new artifact page, board, tracker, dashboard, assistant or record that will be kept, shared or edited again; wants to edit, republish or answer comments on an artifact that already exists or that another session touched; says ADP, adp.py, catalog, kit, theme, template, part id, watch the artifact, requests or presence; wants an existing artifact put on ADP; or is setting ADP up for the first time. Skipping it risks a stale copy overwriting newer versions and rebuilding by hand what the catalog already has."
 license: Apache-2.0
 metadata:
-  version: "2.1.2"
+  version: "2.2.0"
 ---
 
 # ADP: Artifacts Done Properly
