@@ -25,7 +25,7 @@ CI (`.github/workflows/ci.yml`) runs these on Python 3.12:
     python3 tools/package.py
 
 Ruff uses `ruff.toml` (pyflakes errors only). CI also runs gitleaks over the
-full history. The catalog entry headers are checked locally with
+full history (its config is inline in `ci.yml` and in the pre-push hook). The catalog entry headers are checked locally with
 `python3 skill/scripts/adp_catalog.py headers` (the pre-commit hook `catalog-headers`).
 
 To try a page in a browser without claude.ai, run `python3 skill/scripts/adp.py dev serve DIR` (docs/assist.md, "Local emulator").

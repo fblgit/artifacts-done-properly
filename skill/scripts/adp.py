@@ -1380,10 +1380,31 @@ def tree_files(d):
             for r, ds, fs in os.walk(d) if not ds.__setitem__(slice(None), [x for x in ds if x != '__pycache__']) for f in fs}
 
 
+def plugin_manifest():
+    """The .claude-plugin/plugin.json this skill folder ships in, as a dict, or None for a plain skill install. Two layouts: the repository (the manifest beside skill/) and the plugin tree `tools/package.py --plugin` builds (skills/adp/, the manifest two levels up)."""
+    up = os.path.dirname(HERE)
+    for d in (up, os.path.dirname(up) if os.path.basename(up) == 'skills' else None):
+        if d is None: continue
+        try: return json.loads(Path(os.path.join(d, '.claude-plugin', 'plugin.json')).read_text(encoding='utf-8'))
+        except (OSError, ValueError): continue
+    return None
+
+
 def plugin_name():
-    """The name of the Claude Code plugin this skill folder ships in (a .claude-plugin/plugin.json beside it), or None for a plain skill install."""
-    try: return json.loads(Path(os.path.join(os.path.dirname(HERE), '.claude-plugin', 'plugin.json')).read_text(encoding='utf-8')).get('name') or None
-    except (OSError, ValueError, AttributeError): return None
+    """The name of the Claude Code plugin this skill folder ships in, or None for a plain skill install."""
+    m = plugin_manifest()
+    return (m.get('name') or None) if isinstance(m, dict) else None
+
+
+def road_home():
+    """(folder, names) of the four road skills. In the repo and the zip they are refs/<road>/ in this skill; in the built plugin tree they are skills/<road>/ beside this skill's folder."""
+    refs = os.path.join(HERE, 'refs')
+    if os.path.isdir(refs) and any(os.path.isdir(os.path.join(refs, n)) for n in os.listdir(refs)):
+        return refs, sorted(n for n in os.listdir(refs) if os.path.isdir(os.path.join(refs, n)))
+    up = os.path.dirname(HERE)
+    if os.path.basename(up) == 'skills' and plugin_name():
+        return up, sorted(n for n in os.listdir(up) if os.path.isfile(os.path.join(up, n, 'SKILL.md')) and os.path.join(up, n) != HERE)
+    return refs, []
 
 
 def shipped_catalog():
@@ -1421,7 +1442,7 @@ def setup_cmd(a):
     if scope is None: sys.exit(f'setup: --scope is needed (or --dry-run to look first); nothing was set up\n{SETUP_USAGE}')
     if scope not in ('user', 'project', 'local'): sys.exit('setup: --scope user|project|local')
     cwd, home = PROJECT if PROJECT and scope != 'user' else os.getcwd(), os.path.expanduser('~')
-    refs = os.path.join(HERE, 'refs'); names = sorted(n for n in os.listdir(refs) if os.path.isdir(os.path.join(refs, n))) if os.path.isdir(refs) else []
+    refs, names = road_home()
     skills = os.path.join(home if scope == 'user' else cwd, '.claude', 'skills')
     cfg = os.path.join(ADP_HOME if scope == 'user' else os.path.join(cwd, '.adp'), 'config.json')
     ptr = {'user': os.path.join(home, '.claude', 'CLAUDE.md'), 'project': os.path.join(cwd, 'CLAUDE.md'), 'local': os.path.join(cwd, 'CLAUDE.local.md')}[scope]

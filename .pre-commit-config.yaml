@@ -5,8 +5,12 @@ repos:
     rev: v8.24.3          # same version CI runs
     hooks:
       - id: gitleaks
-        stages: [pre-push]          # secrets are checked on push: the whole history, rules and allowlist in .gitleaks.toml
-        entry: gitleaks git --redact --verbose
+        stages: [pre-push]          # secrets are checked on push: the whole history; the config (default rules plus one allowlisted path) is inline, as in ci.yml
+        entry: >-
+          bash -c 'GITLEAKS_CONFIG_TOML="[extend]
+          useDefault = true
+          [allowlist]
+          paths = [\"skill/catalog/kit/samples/patterns\\\\.json\"]" gitleaks git --redact --verbose'
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.9
     hooks:

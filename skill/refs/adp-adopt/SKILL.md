@@ -1,6 +1,6 @@
 ---
 name: adp-adopt
-description: Put an existing claude.ai Artifact on ADP: add part ids and hashes, declare the db, seed the records, or move a single-file page to the multi-file adp/2 layout. Load it when the user wants an artifact they already have to be shared, commented on, edited by several agents, or converted to ADP or adp/2, before touching its source.
+description: "Put an existing claude.ai Artifact on ADP: add part ids and hashes, declare the db, seed the records, or move a single-file page to the multi-file adp/2 layout. Load it when the user wants an artifact they already have to be shared, commented on, edited by several agents, or converted to ADP or adp/2, before touching its source."
 metadata:
   version: "2.1.2"
 ---

@@ -10,7 +10,7 @@ It also holds exactly one `SKILL.md` (claude.ai refuses more): the road skills g
 
 ## Cut a release
 
-1. Set `metadata.version` in `skill/SKILL.md` (for example `"1.2.0"`), add the version's section to `CHANGELOG.md`, and merge to `main`.
+1. Set `metadata.version` in `skill/SKILL.md` (for example `"1.2.0"`) and the same `version` in `.claude-plugin/plugin.json` (a test keeps them equal), add the version's section to `CHANGELOG.md`, and merge to `main`.
 2. Tag the merge commit with `v` plus that version and push the tag:
    `git tag v1.2.0 && git push origin v1.2.0`
 3. The `release` workflow does not build. It checks that `ci` is green on the tagged commit, takes the bundle CI built for the same content
@@ -19,14 +19,12 @@ It also holds exactly one `SKILL.md` (claude.ai refuses more): the road skills g
 If the tag and `metadata.version` differ, the workflow fails before publishing.
 
 The plugin `artifacts-done-properly` is listed in `fblgit/fblgit-claude-marketplace` by repository
-URL, and `.claude-plugin/plugin.json` sets no `version` on purpose (a test keeps it that way).
-Claude Code then takes the commit as the plugin's version, so every commit on `main` is an update
-for plugin installs and a release needs no change for the plugin. The tag and `adp.skill` are for
-the zip install.
+URL. Its `version` in `.claude-plugin/plugin.json` is ADP's version (the same as `metadata.version` in `skill/SKILL.md`, which the tag carries), so a plugin
+install updates when a release bumps it, and `tools/package.py --plugin` takes it from the skill. The tag and `adp.skill` are for the zip install.
 
 ## What CI checks
 
-- `secrets`: gitleaks over the full history.
+- `secrets`: gitleaks over the full history. Its config (default rules plus one allowlisted sample file) is the `GITLEAKS_CONFIG_TOML` env in `ci.yml` and inline in the pre-push hook: the repo has no `.toml` of its own for it.
 - `tests`: `python3 -m unittest discover -s tests -v`.
 - `skill`: `tools/package.py --check` (frontmatter of `skill/SKILL.md` and every
   `skill/refs/*/SKILL.md`), `skill/scripts/adp_catalog.py`, the catalog roundtrip.
@@ -38,6 +36,10 @@ the zip install.
 An artifact expires (90 days by default). A tag whose bundle expired fails with that message; rerun `ci` on the commit.
 
 Build locally with `python3 tools/package.py` (output in `dist/`).
+
+`python3 tools/package.py --plugin` also writes the plugin tree `dist/plugin/`: `.claude-plugin/plugin.json` (the repo's manifest without its `skills` key),
+`skills/adp/` (the base skill, with its scripts, catalog and guides) and one `skills/<road>/SKILL.md` for each road skill, so no skill sits inside another
+skill's folder, which is the layout the Claude plugin directory expects. `adp.py setup` run from that tree is a plugin install as well.
 
 ## Verify a download
 

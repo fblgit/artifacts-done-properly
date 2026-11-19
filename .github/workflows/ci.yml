@@ -25,6 +25,18 @@ jobs:
       - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The gitleaks config lives here, not in a .toml file at the repo root (the plugin directory takes no .toml). It extends the
+          # default rules; two samples in the catalog's bundle of pattern samples (sandbox and timed-reveal: demo inputs for the
+          # redaction and timed-reveal components) hold fake values. Keep it equal to the hook in .pre-commit-config.yaml.
+          GITLEAKS_CONFIG_TOML: |
+            [extend]
+            useDefault = true
+
+            [allowlist]
+            description = "fake demo values in the catalog's pattern samples"
+            paths = [
+              '''skill/catalog/kit/samples/patterns\.json''',
+            ]
 
   lint:
     runs-on: ubuntu-latest
@@ -52,6 +64,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 tools/package.py --check
+      - name: The plugin tree builds (skills/<name>/SKILL.md layout)
+        run: python3 tools/package.py --plugin --out "$RUNNER_TEMP/plugin-build" && test -f "$RUNNER_TEMP/plugin-build/plugin/skills/adp-new/SKILL.md"
       - run: python3 skill/scripts/adp_catalog.py
       - name: Catalog roundtrip (node comes with the runner image; the script fails when it is missing)
         run: python3 -I tools/roundtrip.py --require-node
