@@ -4175,7 +4175,7 @@
    "p-new": {
     "kind": "problem",
     "status": "open",
-    "label": "The eventhub journey was traced by hand; a new one has no fast path",
+    "label": "The sample journey was traced by hand; a new one has no fast path",
     "code": "P12",
     "bucket": null,
     "links": []
@@ -4492,7 +4492,7 @@
    {
     "id": "p-new",
     "code": "P12",
-    "label": "The eventhub journey was traced by hand; a new one has no fast path"
+    "label": "The sample journey was traced by hand; a new one has no fast path"
    }
   ],
   "links": {
@@ -4919,7 +4919,7 @@
     "id": "p-new",
     "t": 1792390022000,
     "kind": "problem",
-    "label": "The eventhub journey was traced by hand; a new one has no fast path"
+    "label": "The sample journey was traced by hand; a new one has no fast path"
    },
    {
     "id": "s-about",
@@ -5397,7 +5397,7 @@
     "kind": "solution",
     "status": "done",
     "label": "Canvases: pen, highlighter, shapes, bound arrows, text, stickies and cards of items or pages",
-    "body": "A selector switches canvases. The first is created when something is first sent to a canvas; the eventhub space was seeded with an overview canvas.",
+    "body": "A selector switches canvases. The first is created when something is first sent to a canvas; the sample space was seeded with an overview canvas.",
     "bucket": null,
     "parents": [
      "p-draw"
@@ -5481,8 +5481,8 @@
     "code": "P12",
     "kind": "problem",
     "status": "open",
-    "label": "The eventhub journey was traced by hand; a new one has no fast path",
-    "body": "\"how about the journey of a new thing? how we reach the eventhub sample state? in a coherent fast process, its like you talking thru that interface, and evolving the state.\"",
+    "label": "The sample journey was traced by hand; a new one has no fast path",
+    "body": "\"how about the journey of a new thing? how we reach the sample state? in a coherent fast process, its like you talking thru that interface, and evolving the state.\"",
     "bucket": null,
     "parents": [],
     "order": 1792390022000
@@ -5796,7 +5796,7 @@
     "chips": [
      "Note"
     ],
-    "body": "## Where it started\nOn 2026-10-18 a worktree cleanup and the review of `build-m` showed two hub directories with disagreeing defaults. The owner asked to step back to the whiteboard. That design lives in the space **eventhub · multi-hub instances**.\n\n## v1\nA page with the proposal and a board of notes.\n\n## v2\nThe owner asked for answers with paths, challenges and inputs, a fast chat loop, MoSCoW with background estimates, pages as outcomes, real canvases, and reuse across sessions. Built as one artifact on the shared database, with Claude in the page (quick lane) and this Claude Code session (deep lane).\nTwo bugs found on the way: views stopped updating after the first change (fixed in the store hook), and two v1 notes had moved since they were written, so their deletes were pinned to fresh versions.\n\n## v3\nThe owner asked for a tree of the journey, a preview of each move and what it changes, an \"other way?\" box with a preview of its impact, a fast path for a new journey, and this space.\n\n## Not yet verified\nReal-browser rendering, MoSCoW drag and canvas drawing by hand, and real Claude calls from the page. See the open questions.\n",
+    "body": "## Where it started\nTwo hub directories showed disagreeing defaults. The owner asked to step back to the whiteboard. That design lives in the space **multi-hub instances**.\n\n## v1\nA page with the proposal and a board of notes.\n\n## v2\nThe owner asked for answers with paths, challenges and inputs, a fast chat loop, MoSCoW with background estimates, pages as outcomes, real canvases, and reuse across sessions. Built as one artifact on the shared database, with Claude in the page (quick lane) and this Claude Code session (deep lane).\nTwo bugs found on the way: views stopped updating after the first change (fixed in the store hook), and two v1 notes had moved since they were written, so their deletes were pinned to fresh versions.\n\n## v3\nThe owner asked for a tree of the journey, a preview of each move and what it changes, an \"other way?\" box with a preview of its impact, a fast path for a new journey, and this space.\n\n## Not yet verified\nReal-browser rendering, MoSCoW drag and canvas drawing by hand, and real Claude calls from the page. See the open questions.\n",
     "parents": [
      "p-unclear",
      "p-tree"
