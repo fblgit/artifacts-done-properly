@@ -43,7 +43,7 @@ class Store:
     """The db as files under state/db; the server is its only writer, under one lock."""
     def __init__(self, state, roots=()):
         self.db, self.mu = os.path.join(state, 'db'), threading.Lock()
-        self.roots = [os.path.realpath(r) for r in roots]      # the folders a batch's file_path may name
+        self.roots = [Path(r).resolve(strict=True) for r in roots]      # the folders a batch's file_path may name
         os.makedirs(self.db, exist_ok=True)
 
     def file(self, coll):
@@ -63,16 +63,17 @@ class Store:
         if raw.is_absolute() or '..' in raw.parts:
             return None
         for r in self.roots:
-            try:
-                root = Path(r).resolve(strict=True)
-                cand = (root / raw).resolve(strict=True)
+        allowed = False
+        for root in self.roots:
                 if not cand.is_file():
-                    continue
                 cand.relative_to(root)
-                return str(cand)
+                allowed = True
+                break
             except (OSError, RuntimeError, ValueError):
                 continue
-        return None
+        if not allowed or not cand.is_file():
+            return None
+        return str(cand)
 
     def coll(self, coll):
         p = self.file(coll)
@@ -118,7 +119,11 @@ class Store:
             if bad: out.append({'ok': False, **fail('conflict' if 'stale' in bad else 'invalid_argument', bad)}); continue
             for w in b:
                 data = w.get('data')
-                if data is None and w.get('file_path'): data = json.loads(Path(self.readable(w['file_path'])).read_text(encoding='utf-8'))
+                if data is None and w.get('file_path'):
+                    safe_path = self.readable(w['file_path'])
+                    if safe_path is None:
+                        continue
+                    data = json.loads(Path(safe_path).read_text(encoding='utf-8'))
                 self.write(w['op'], key(w), data)
             now = self.all()      # the docs as written, so the next step needs no read
             out.append({'ok': True, 'docs': [{'collection': w['collection'], 'id': w['doc_id'], **now[key(w)]} for w in b if key(w) in now]})
