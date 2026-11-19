@@ -70,7 +70,7 @@ CDN = {
 def tags(text):
     """(styles, scripts) hrefs and srcs in document order; the Google Fonts links are not files of the page."""
     styles = [h for h in re.findall(r'<link rel="stylesheet" href="([^"]+)">', text) if not h.startswith('https://fonts.googleapis.com/')]
-    return (styles, re.findall(r'<script src="([^"]+)"></script[^>]*>', text))
+    return (styles, re.findall(r'<script src="([^"]+)"></script\b[^>]*>', text))
 
 
 class DefaultLoader(unittest.TestCase):

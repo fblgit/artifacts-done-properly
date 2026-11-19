@@ -57,7 +57,9 @@ class Store:
         """A batch's file_path as a checked real path: a file inside the artifact folder or the dev state, else None (the emulator reads no other file)."""
         if not isinstance(path, str) or not path or len(path) > 4096 or any(ord(c) < 32 for c in path): return None
         p = os.path.realpath(path)
-        return p if os.path.isfile(p) and any(p.startswith(r + os.sep) for r in self.roots) else None
+        for r in self.roots:
+            if p.startswith(r + os.sep) and os.path.isfile(p): return p
+        return None
 
     def coll(self, coll):
         p = self.file(coll)
@@ -104,10 +106,9 @@ class Store:
             for w in b:
                 data = w.get('data')
                 if data is None and w.get('file_path'):
-                    safe_path = self.readable(w['file_path'])
-                    if safe_path is None:
-                        continue
-                    data = json.loads(Path(safe_path).read_text(encoding='utf-8'))
+                    real = os.path.realpath(w['file_path'])      # checked above by readable(); the same test here, where the file is opened
+                    if not any(real.startswith(r + os.sep) for r in self.roots) or not os.path.isfile(real): continue
+                    data = json.loads(Path(real).read_text(encoding='utf-8'))
                 self.write(w['op'], key(w), data)
             now = self.all()      # the docs as written, so the next step needs no read
             out.append({'ok': True, 'docs': [{'collection': w['collection'], 'id': w['doc_id'], **now[key(w)]} for w in b if key(w) in now]})
