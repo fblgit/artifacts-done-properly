@@ -55,8 +55,19 @@ class Store:
 
     def readable(self, path):
         """A batch's file_path as a checked real path: a file inside the artifact folder or the dev state, else None (the emulator reads no other file)."""
-        p = os.path.realpath(path)
-        return p if os.path.isfile(p) and any(p.startswith(r + os.sep) for r in self.roots) else None
+        try:
+            p = Path(path).resolve(strict=True)
+        except (OSError, RuntimeError, ValueError):
+            return None
+        if not p.is_file():
+            return None
+        for r in self.roots:
+            try:
+                p.relative_to(Path(r).resolve())
+                return str(p)
+            except ValueError:
+                continue
+        return None
 
     def coll(self, coll):
         p = self.file(coll)
