@@ -1,0 +1,17 @@
+{
+  "name": "fblgit-adp",
+  "owner": {
+    "name": "Xavier Murias (fblgit)",
+    "url": "https://github.com/fblgit"
+  },
+  "metadata": {
+    "description": "ADP (Artifacts Done Properly): skills, templates and a component catalog for reusable claude.ai Artifacts."
+  },
+  "plugins": [
+    {
+      "name": "artifacts-done-properly",
+      "source": "./plugins/artifacts-done-properly",
+      "description": "ADP (Artifacts Done Properly): skills, page templates and a component catalog for building reusable claude.ai Artifacts."
+    }
+  ]
+}

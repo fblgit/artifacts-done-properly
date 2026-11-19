@@ -4,7 +4,7 @@ The assist is the part of ADP by which a page works with Claude. A person points
 
 This file states what the code does. It is read by a maintainer and by a model that must implement or operate it. Every name below (collection, field, lane, status, number) is taken from the files cited next to it. Where a comment in the code and the code disagree, this file says what the code does.
 
-Sources: `skill/catalog/kit/patterns/assist.js` (the engine), `assist-panel.js`, `block-picker.js`, `request-card.js`, `presence.js`, `inbox.js` (all under `skill/catalog/kit/patterns/`), `skill/assets/adp.js` (the runtime, the "What changed" panel), `skill/templates/assistant/` (the template that wires them), `skill/scripts/adp.py` (`requests_cmd`) and `skill/scripts/adp_loop.py` (`export`, `propose`, `ack`, `gate`).
+Sources: `plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/assist.js` (the engine), `assist-panel.js`, `block-picker.js`, `request-card.js`, `presence.js`, `inbox.js` (all under `plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/`), `plugins/artifacts-done-properly/skills/adp/assets/adp.js` (the runtime, the "What changed" panel), `plugins/artifacts-done-properly/skills/adp/templates/assistant/` (the template that wires them), `plugins/artifacts-done-properly/skills/adp/scripts/adp.py` (`requests_cmd`) and `plugins/artifacts-done-properly/skills/adp/scripts/adp_loop.py` (`export`, `propose`, `ack`, `gate`).
 
 ## Contract numbers
 
@@ -227,7 +227,7 @@ Not emulated: access rules and roles, sampling, `artifact.publish`, the comment 
 
 ## 7. Capabilities and rules the assist needs
 
-`skill/templates/assistant/template.json` declares:
+`plugins/artifacts-done-properly/skills/adp/templates/assistant/template.json` declares:
 
 ```
 db: rules
@@ -357,7 +357,7 @@ Classifying, picking, Apply and Decline write only for an editor (`user.canEdit`
 
 ## 12. The assistant template's Home examples
 
-The `assistant` template (and `default`, which repeats its take list) shows how a request is made by sending real ones. `mountExamples()` in `skill/templates/assistant/parts/app.js.txt` draws the `home.examples` part: the `EXAMPLES` list (a drag and drop board, a calendar, a drafting board, a canvas, a mind map, rearranging, changing, adopting) and a table of `LANGUAGES` with a flag each. A button calls `engine.send({lane: 'task', scope: null, text})`, so the request is the ordinary `requests/<rid>` document of section 3, about the whole page, and the page then opens the Requests view. Replies to it are turns, as in section 5.
+The `assistant` template (and `default`, which repeats its take list) shows how a request is made by sending real ones. `mountExamples()` in `plugins/artifacts-done-properly/skills/adp/templates/assistant/parts/app.js.txt` draws the `home.examples` part: the `EXAMPLES` list (a drag and drop board, a calendar, a drafting board, a canvas, a mind map, rearranging, changing, adopting) and a table of `LANGUAGES` with a flag each. A button calls `engine.send({lane: 'task', scope: null, text})`, so the request is the ordinary `requests/<rid>` document of section 3, about the whole page, and the page then opens the Requests view. Replies to it are turns, as in section 5.
 
 - The buttons are disabled unless `engine.can().send` is `available` or `queued`; the line under the table says why when it is not (no engine, `writers_only`, `no_session`, or off). The check repeats every 30 seconds.
 - Each prompt is written to fit the comment that wakes the session (4000 bytes with its instruction and trailer); `tests/test_assistant_template.py` checks the length and that every catalog id a prompt names exists.

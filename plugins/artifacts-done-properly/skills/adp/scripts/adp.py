@@ -1381,7 +1381,7 @@ def tree_files(d):
 
 
 def plugin_manifest():
-    """The .claude-plugin/plugin.json this skill folder ships in, as a dict, or None for a plain skill install. Two layouts: the repository (the manifest beside skill/) and the plugin tree `tools/package.py --plugin` builds (skills/adp/, the manifest two levels up)."""
+    """The .claude-plugin/plugin.json this skill folder ships in, as a dict, or None for a plain skill install. In a plugin install the skill is skills/adp/ and the manifest is two levels up; the skill zip has none."""
     up = os.path.dirname(HERE)
     for d in (up, os.path.dirname(up) if os.path.basename(up) == 'skills' else None):
         if d is None: continue

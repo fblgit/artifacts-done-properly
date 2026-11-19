@@ -30,10 +30,10 @@ feedback must not be described as a native Sites comment service.
 
 ## Components
 
-- `skill/assets/adapters/openai-sites.js`: same-origin HTTP bridge implementing
+- `plugins/artifacts-done-properly/skills/adp/assets/adapters/openai-sites.js`: same-origin HTTP bridge implementing
   the runtime document/query interface, with serialized snapshot polling (2s default,
   configurable >=1s), change events, unsubscribe and explicit transport errors.
-- `skill/assets/hosts/openai-sites/worker.mjs`: Worker handler for the HTTP API and
+- `plugins/artifacts-done-properly/skills/adp/assets/hosts/openai-sites/worker.mjs`: Worker handler for the HTTP API and
   Site MCP tools (`adp_session`, `adp_read`, `adp_query`, `adp_write`).
 - `schema.sql`: bounded, schema-only D1 migration. Records are keyed by artifact
   and path, preserving nested `ns/<name>/...` namespaces.
@@ -165,7 +165,7 @@ export, hold, propose, record and ack commands with native Sites publication:
    materialized asset snapshot with the canonical Worker into `dist/server/index.js`.
    It reports the required `DB` binding and schema; provisioning/migrations remain
    native Sites operations. It preserves hosting identity and existing migrations.
-   See [the host guide](../skill/refs/sites.md) for agent routing and repository ownership.
+   See [the host guide](../plugins/artifacts-done-properly/skills/adp/refs/sites.md) for agent routing and repository ownership.
    Package and publish the exact source
    through the native Sites source helper and deployment tools. This path uses
    source-repository guards; a record revision cannot guard a source deployment.
@@ -184,7 +184,7 @@ The inbox's disabled Apply button is not a successful publication receipt.
 
 ## Agent feedback and publication
 
-For workstation agent coordination, the separate [local bus](../skill/refs/local-bus.md)
+For workstation agent coordination, the separate [local bus](../plugins/artifacts-done-properly/skills/adp/refs/local-bus.md)
 can queue prefixed messages into a subscribed Codex chat. It does not monitor
 hosted requests or add wake-ups to this transport. Commands, diagrams, tests and
 host-specific delivery evidence live in that guide.
@@ -204,8 +204,8 @@ the selected native adapter. With no read file it prints the reads to perform;
 pass their envelopes with `--raw`. It emits guarded calls, never executes them:
 
 ```sh
-python3 -I skill/scripts/adp.py work --host sites --artifact ART --path requests/RID
-python3 -I skill/scripts/adp.py work reads.json --raw --host sites --artifact ART \
+python3 -I plugins/artifacts-done-properly/skills/adp/scripts/adp.py work --host sites --artifact ART --path requests/RID
+python3 -I plugins/artifacts-done-properly/skills/adp/scripts/adp.py work reads.json --raw --host sites --artifact ART \
   --path requests/RID --action claim --by SESSION
 # Execute the call and read it back before beginning work. Retain leaseToken.
 # Use --action progress --token TOKEN --text MESSAGE to renew the lease.

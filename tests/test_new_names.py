@@ -2,8 +2,8 @@ from pathlib import Path
 import json, os, re, subprocess, sys, tempfile, unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ADP = os.path.join(ROOT, 'skill', 'scripts', 'adp.py')
-sys.path.insert(0, os.path.join(ROOT, 'skill', 'scripts'))
+ADP = os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts', 'adp.py')
+sys.path.insert(0, os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts'))
 import adp  # noqa: E402
 
 

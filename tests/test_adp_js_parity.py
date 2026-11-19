@@ -1,4 +1,4 @@
-"""skill/assets/adp.js and skill/scripts/adp.py compute the same part hashes and the same classification.
+"""plugins/artifacts-done-properly/skills/adp/assets/adp.js and plugins/artifacts-done-properly/skills/adp/scripts/adp.py compute the same part hashes and the same classification.
 adp.js runs in a node vm with stub globals; the page hash and every part hash are compared with `adp.py manifest` on the same text,
 and ADP.classify with adp_loop.classify on a handful of manifests. Skipped when node is not on PATH."""
 import hashlib
@@ -11,9 +11,9 @@ import tempfile
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ADP_JS = os.path.join(ROOT, 'skill', 'assets', 'adp.js')
-ADP_PY = os.path.join(ROOT, 'skill', 'scripts', 'adp.py')
-sys.path.insert(0, os.path.join(ROOT, 'skill', 'scripts'))
+ADP_JS = os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'assets', 'adp.js')
+ADP_PY = os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts', 'adp.py')
+sys.path.insert(0, os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts'))
 
 HARNESS = r"""
 const vm = require('vm'), fs = require('fs'), noop = () => {};

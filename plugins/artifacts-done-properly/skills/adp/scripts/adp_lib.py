@@ -31,7 +31,7 @@ ID = re.compile(r'[a-z0-9][a-z0-9-]*\.[a-z0-9][a-z0-9.-]*')
 SEMVER = re.compile(r'\d+\.\d+\.\d+')
 DATE = re.compile(r'\d{4}-\d{2}-\d{2}')
 MEMBER = re.compile(r'[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*')
-TOKEN = re.compile(r'--[A-Za-z0-9_<>-]+\??')       # a trailing ? marks an optional property
+TOKEN = re.compile(r'--[A-Za-z0-9_<\x3e-]+\??')       # a trailing ? marks an optional property
 SUMMARY_MAX = 260
 KEY = re.compile(r'[\w.-]+')                       # a sample's key inside its bundle: the file name the sample had, without folder and extension
 

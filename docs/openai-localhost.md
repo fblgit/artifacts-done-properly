@@ -2,7 +2,7 @@
 
 ```sh
 # Node 22+ with node:sqlite (Node 24 recommended), no npm dependencies
-node skill/scripts/adp_sites_dev.mjs --state /tmp/adp-codex-demo
+node plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_dev.mjs --state /tmp/adp-codex-demo
 ```
 
 Open the printed `http://127.0.0.1:8788` URL. The default page is the disposable
@@ -11,11 +11,11 @@ Sites transport fixture: read, save, reopen and try a stale revision. Use a stab
 
 ```sh
 # Serve your own artifact with fallback runtime/adapter assets
-node skill/scripts/adp_sites_dev.mjs --dir ./my-artifact --state /tmp/adp-codex-demo
+node plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_dev.mjs --dir ./my-artifact --state /tmp/adp-codex-demo
 # Test read-only behavior against the same records
-node skill/scripts/adp_sites_dev.mjs --state /tmp/adp-codex-demo --read-only
+node plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_dev.mjs --state /tmp/adp-codex-demo --read-only
 # A separate process/port can observe the same SQLite state
-node skill/scripts/adp_sites_dev.mjs --state /tmp/adp-codex-demo --port 8789
+node plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_dev.mjs --state /tmp/adp-codex-demo --port 8789
 ```
 
 Custom artifacts use the `ADPOpenAIHost` + `ADPOpenAISites` script setup from
@@ -81,7 +81,7 @@ it does not automatically install a Codex plugin or claim native tool discovery.
 Hosted Sites uses its native private plugin publication/connection flow.
 
 For local agent-to-agent coordination and delivery to an existing Codex chat,
-use the separate [local bus guide](../skill/refs/local-bus.md). It owns the
+use the separate [local bus guide](../plugins/artifacts-done-properly/skills/adp/refs/local-bus.md). It owns the
 commands, diagrams and tests. The bus does not replace this record server or
 automatically watch its records.
 

@@ -23,33 +23,35 @@ class Base(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.skill = os.path.join(self.tmp.name, "skill")
+        self.plugin = os.path.join(self.tmp.name, "plugin")
+        self.skill = os.path.join(self.plugin, "skills", "adp")
         self.out = os.path.join(self.tmp.name, "dist")
-        for n in ("LICENSE", "NOTICE"):       # beside the skill folder, as in the repository
-            with open(os.path.join(self.tmp.name, n), "w", encoding="utf-8") as f:
+        os.makedirs(self.plugin)
+        for n in ("LICENSE", "NOTICE"):       # in the plugin folder, as in the repository
+            with open(os.path.join(self.plugin, n), "w", encoding="utf-8") as f:
                 f.write(n + "\n")
         write(os.path.join(self.skill, "SKILL.md"), fm())
-        write(os.path.join(self.skill, "refs", "alpha", "SKILL.md"), fm("alpha"))
+        write(os.path.join(self.plugin, "skills", "alpha", "SKILL.md"), fm("alpha"))
         write(os.path.join(self.skill, "scripts", "run.py"), "print(1)\n")
 
     def check(self):
-        return package.validate_tree(self.skill)[0]
+        return package.validate_tree(self.plugin)[0]
 
 
 class ValidationTests(Base):
     def test_valid_tree(self):
         self.assertEqual(self.check(), [])
-        self.assertEqual(package.main(["--skill-dir", self.skill, "--out", self.out]), 0)
+        self.assertEqual(package.main(["--plugin-dir", self.plugin, "--out", self.out]), 0)
         self.assertTrue(os.path.isfile(os.path.join(self.out, "adp.skill")))
 
     def test_check_only_does_not_build(self):
-        self.assertEqual(package.main(["--skill-dir", self.skill, "--out", self.out, "--check"]), 0)
+        self.assertEqual(package.main(["--plugin-dir", self.plugin, "--out", self.out, "--check"]), 0)
         self.assertFalse(os.path.exists(self.out))
 
     def test_missing_skill_md(self):
         os.remove(os.path.join(self.skill, "SKILL.md"))
         self.assertTrue(self.check())
-        self.assertEqual(package.main(["--skill-dir", self.skill, "--out", self.out]), 1)
+        self.assertEqual(package.main(["--plugin-dir", self.plugin, "--out", self.out]), 1)
 
     def test_bad_names(self):
         for bad in ("Adp", "a--b", "-a", "a-", "a_b", "x" * 65):
@@ -71,18 +73,18 @@ class ValidationTests(Base):
         self.assertTrue(self.check())
 
     def test_ref_folder_name_mismatch(self):
-        write(os.path.join(self.skill, "refs", "beta", "SKILL.md"), fm("gamma"))
+        write(os.path.join(self.plugin, "skills", "beta", "SKILL.md"), fm("gamma"))
         errs = self.check()
         self.assertTrue(any("beta" in e for e in errs))
 
     def test_ref_bad_description(self):
-        write(os.path.join(self.skill, "refs", "alpha", "SKILL.md"), fm("alpha", "a > b"))
+        write(os.path.join(self.plugin, "skills", "alpha", "SKILL.md"), fm("alpha", "a > b"))
         self.assertTrue(self.check())
 
     def test_quoted_values_and_unknown_key_warns(self):
         write(os.path.join(self.skill, "SKILL.md"),
               "---\nname: 'adp'\ndescription: \"quoted: value\"\nfoo: bar\n---\n")
-        errs, warns, data = package.validate_tree(self.skill)
+        errs, warns, data = package.validate_tree(self.plugin)
         self.assertEqual(errs, [])
         self.assertTrue(warns)
         self.assertEqual(data["description"], "quoted: value")
@@ -95,7 +97,7 @@ class BuildTests(Base):
         write(os.path.join(self.skill, "node_modules", "m", "i.js"), "x")
         write(os.path.join(self.skill, ".DS_Store"), "x")
         write(os.path.join(self.skill, "evals", "e.json"), "{}")
-        write(os.path.join(self.skill, "refs", "alpha", "evals", "keep.md"), "kept")
+        write(os.path.join(self.plugin, "skills", "alpha", "evals", "keep.md"), "kept")
 
     def names(self):
         with zipfile.ZipFile(os.path.join(self.out, "adp.skill")) as z:
@@ -103,7 +105,7 @@ class BuildTests(Base):
 
     def test_layout_and_exclusions(self):
         self.populate_excluded()
-        package.build(self.skill, self.out)
+        package.build(self.plugin, self.out)
         names = self.names()
         self.assertEqual({n.split("/")[0] for n in names}, {"adp"})
         self.assertIn("adp/SKILL.md", names)
@@ -123,7 +125,7 @@ class BuildTests(Base):
         for i in range(250):                      # a kit far over the 200 files an upload takes, and over one pack
             write(os.path.join(self.skill, "catalog", "kit", "f%03d.js" % i), ("x%d é\r\n" % i) * 2000)
         write(os.path.join(self.skill, "catalog", "kit", "__pycache__", "x.pyc"), "x")
-        _, count, _, _ = package.build(self.skill, self.out)
+        _, count, _, _ = package.build(self.plugin, self.out)
         names = self.names()
         self.assertEqual(count, len(names)); self.assertLessEqual(count, package.MAX_FILES)
         self.assertEqual([n for n in names if n.startswith("adp/catalog/") or n.endswith(".zip")], [])
@@ -142,32 +144,32 @@ class BuildTests(Base):
         write(os.path.join(self.skill, "catalog", "catalog.json"), "{}")
         with open(os.path.join(self.skill, "catalog", "kit.bin"), "wb") as f: f.write(b"\xff\xfe\x00")
         with self.assertRaises(package.ValidationError):
-            package.build(self.skill, self.out)
+            package.build(self.plugin, self.out)
 
     def test_no_catalog_folder_means_no_catalog_pack(self):
-        package.build(self.skill, self.out)
+        package.build(self.plugin, self.out)
         self.assertEqual([n for n in self.names() if "catalog" in n], [])
 
     def test_a_zip_over_the_upload_limit_is_refused(self):
         for i in range(package.MAX_FILES):
             write(os.path.join(self.skill, "scripts", "s%03d.py" % i), "x")
         with self.assertRaises(package.ValidationError):
-            package.build(self.skill, self.out)
+            package.build(self.plugin, self.out)
 
     def test_deterministic(self):
-        _, _, _, sha1 = package.build(self.skill, self.out)
+        _, _, _, sha1 = package.build(self.plugin, self.out)
         with open(os.path.join(self.out, "adp.skill"), "rb") as f:
             a = f.read()
         os.utime(os.path.join(self.skill, "SKILL.md"), (1, 1))
         out2 = os.path.join(self.tmp.name, "dist2")
-        _, _, _, sha2 = package.build(self.skill, out2)
+        _, _, _, sha2 = package.build(self.plugin, out2)
         with open(os.path.join(out2, "adp.skill"), "rb") as f:
             b = f.read()
         self.assertEqual(a, b)
         self.assertEqual(sha1, sha2)
 
     def test_timestamps_and_sha_file(self):
-        _, _, _, sha = package.build(self.skill, self.out)
+        _, _, _, sha = package.build(self.plugin, self.out)
         with zipfile.ZipFile(os.path.join(self.out, "adp.skill")) as z:
             for i in z.infolist():
                 self.assertEqual(i.date_time, (1980, 1, 1, 0, 0, 0))

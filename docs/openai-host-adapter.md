@@ -1,6 +1,6 @@
 # OpenAI host adapter: explicit bridge, not an invented SDK
 
-`skill/assets/adapters/openai.js` implements the `adp-host/1` runtime boundary
+`plugins/artifacts-done-properly/skills/adp/assets/adapters/openai.js` implements the `adp-host/1` runtime boundary
 for an **integrator-supplied bridge**. It does not turn a ChatGPT subscription
 into a database connection, discover tools, install a plugin, or deploy a Site.
 The tests exercise a fake bridge, not a live ChatGPT/Codex integration.
@@ -69,7 +69,7 @@ revision, deployed version, and record revision independently. A merged proposal
 is not proof of deployment; a deployment failure is not proof that no data or
 schema change occurred. Reconcile uncertain outcomes before retrying.
 
-Local Codex chat delivery uses the separate [ADP bus](../skill/refs/local-bus.md):
+Local Codex chat delivery uses the separate [ADP bus](../plugins/artifacts-done-properly/skills/adp/refs/local-bus.md):
 its subscriber passes prefixed events to `codex queue --thread … --message …`.
 Queue-only wake-up was observed in a desktop chat. This does not add wake-up
 capabilities to the browser bridge or hosted Sites; see the guide for setup,

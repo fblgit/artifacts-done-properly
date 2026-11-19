@@ -12,7 +12,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 import worker from '../assets/hosts/openai-sites/worker.mjs';
 
 const base = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const usage = 'node skill/scripts/adp_sites_dev.mjs [--port 8788] [--state DIR] [--dir ARTIFACT_DIR] [--user dev-user] [--read-only]';
+const usage = 'node plugins/artifacts-done-properly/skills/adp/scripts/adp_sites_dev.mjs [--port 8788] [--state DIR] [--dir ARTIFACT_DIR] [--user dev-user] [--read-only]';
 function options(argv) {
   const result = {port:8788,state:resolve('.adp-sites'),user:'dev-user',readOnly:false};
   for(let i=0;i<argv.length;i++) {

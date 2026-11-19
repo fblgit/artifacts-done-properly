@@ -32,9 +32,13 @@ class LegalFiles(unittest.TestCase):
         c = read('CITATION.cff')
         self.assertIn('license: Apache-2.0', c)
         self.assertIn('NOTICE', c)
-        skill = read('skill/SKILL.md').split('---')[1]
+        skill = read('plugins/artifacts-done-properly/skills/adp/SKILL.md').split('---')[1]
         self.assertIn('license: Apache-2.0', skill)
         self.assertEqual(re.search(r'^version: (\S+)$', c, re.M).group(1), re.search(r'version: "([^"]+)"', skill).group(1))
+
+    def test_the_plugin_folder_carries_the_same_license_and_notice(self):
+        for n in ('LICENSE', 'NOTICE'):       # the directory reads the plugin folder alone, GitHub the repo root: one text in both
+            self.assertEqual(read('plugins/artifacts-done-properly/' + n), read(n), n)
 
     def test_bundle_carries_license_and_notice_unchanged(self):
         out = tempfile.mkdtemp()

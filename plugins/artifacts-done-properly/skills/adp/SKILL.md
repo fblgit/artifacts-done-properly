@@ -41,7 +41,7 @@ use native Sites source/record tools in place of the roads' Claude host calls.
 | to edit or publish an artifact others also work on, or answer its comments | `adp-edit` |
 | an existing artifact put on ADP (adopt it, move it to adp/2) | `adp-adopt` |
 
-In a plugin install the road names carry the plugin's prefix, for example `artifacts-done-properly:adp-new`. Each road is also a plain file in this skill's folder, `refs/<road>/SKILL.md` (`refs/<road>/road.md` in a zip install; for example `refs/adp-new/SKILL.md`): when the Skill tool does not know a road, read that file; setup is not needed for it. Each road is complete on its own; the full standard is `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there; read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
+In a plugin install the road names carry the plugin's prefix, for example `artifacts-done-properly:adp-new`. Each road is also a plain file: `../<road>/SKILL.md` beside this skill's folder in a plugin install (for example `../adp-new/SKILL.md`), `refs/<road>/road.md` in a zip install. When the Skill tool does not know a road, read that file; setup is not needed for it. Each road is complete on its own; the full standard is `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there; read it only when a road leaves a question open). Run `adp.py` with no arguments for the real command list; if a road names a command it does not list, the command does not exist.
 
 When a page documents a repository, [source review drift](refs/source-drift.md)
 maps committed file changes to affected chapters/parts without model calls.

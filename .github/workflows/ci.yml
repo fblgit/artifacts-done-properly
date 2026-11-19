@@ -35,7 +35,7 @@ jobs:
             [allowlist]
             description = "fake demo values in the catalog's pattern samples"
             paths = [
-              '''skill/catalog/kit/samples/patterns\.json''',
+              '''plugins/artifacts-done-properly/skills/adp/catalog/kit/samples/patterns\.json''',
             ]
 
   lint:
@@ -64,27 +64,20 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 tools/package.py --check
-      - name: The plugin tree builds (skills/<name>/SKILL.md layout)
-        run: python3 tools/package.py --plugin --out "$RUNNER_TEMP/plugin-build" && test -f "$RUNNER_TEMP/plugin-build/plugin/skills/adp-new/SKILL.md"
-      - run: python3 skill/scripts/adp_catalog.py
+      - run: python3 plugins/artifacts-done-properly/skills/adp/scripts/adp_catalog.py
       - name: Catalog roundtrip (node comes with the runner image; the script fails when it is missing)
         run: python3 -I tools/roundtrip.py --require-node
 
-  # The plugin as the directory reads it: the repo as it is, and the tree package.py --plugin builds. --profile directory fails on what the
-  # directory refuses, --strict on its warnings too. Claude Code runs through npx, unpinned on purpose: the check follows the current CLI.
+  # The plugin as the directory reads it: the plugin folder (the one submitted) and the repo root (its marketplace). --profile directory fails on
+  # what the directory refuses, --strict on its warnings too. Claude Code runs through npx, unpinned on purpose: the check follows the current CLI.
   plugin:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: "3.12"
-      - name: Validate the repository as a plugin
-        run: npx --yes @anthropic-ai/claude-code plugin validate . --profile directory --strict
-      - name: Validate the built plugin tree
-        run: |
-          python3 tools/package.py --plugin --out "$RUNNER_TEMP/plugin-build"
-          npx --yes @anthropic-ai/claude-code plugin validate "$RUNNER_TEMP/plugin-build/plugin" --profile directory --strict
+      - name: Validate the plugin folder
+        run: npx --yes @anthropic-ai/claude-code plugin validate plugins/artifacts-done-properly --profile directory --strict
+      - name: Validate the repository (marketplace)
+        run: npx --yes @anthropic-ai/claude-code plugin validate . --strict
 
   # Build once per content: the key is the git trees of everything the bundle is made from, so a merge that changes
   # nothing in them finds the bundle a PR commit already built and builds nothing. Promotion (the release) takes that
@@ -106,7 +99,7 @@ jobs:
       - name: Content key and an existing bundle for it
         id: key
         run: |
-          KEY=$(git rev-parse HEAD:skill HEAD:LICENSE HEAD:NOTICE HEAD:tools/package.py | sha256sum | cut -c1-16)
+          KEY=$(git rev-parse HEAD:plugins/artifacts-done-properly HEAD:tools/package.py | sha256sum | cut -c1-16)
           echo "key=$KEY" >> "$GITHUB_OUTPUT"
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=adp-skill-$KEY&per_page=100" \
             --jq '[.artifacts[] | select(.expired | not)] | first | select(. != null) | "id=\(.id)\nrun=\(.workflow_run.id)"' >> "$GITHUB_OUTPUT"

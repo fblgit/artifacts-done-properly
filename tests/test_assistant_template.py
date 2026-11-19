@@ -12,8 +12,8 @@ import unittest
 from test_default_template import CDN, TPL, load, tags, take_of
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ADP = os.path.join(ROOT, 'skill', 'scripts', 'adp.py')
-CATALOG = os.path.join(ROOT, 'skill', 'catalog', 'catalog.json')
+ADP = os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts', 'adp.py')
+CATALOG = os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'catalog', 'catalog.json')
 URL = 'https://example.invalid/catalog'
 ARGS = {'assistant': ('assistant',), 'default': ('--tier', 'default')}
 CANVAS_PARTS = ('canvas', 'canvas.intro', 'canvas.board')

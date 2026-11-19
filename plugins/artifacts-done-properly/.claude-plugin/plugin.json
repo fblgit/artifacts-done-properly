@@ -9,6 +9,5 @@
   "homepage": "https://github.com/fblgit/artifacts-done-properly",
   "repository": "https://github.com/fblgit/artifacts-done-properly",
   "license": "Apache-2.0",
-  "keywords": ["claude artifacts", "skills", "catalog", "templates"],
-  "skills": ["./skill", "./skill/refs"]
+  "keywords": ["claude artifacts", "skills", "catalog", "templates"]
 }

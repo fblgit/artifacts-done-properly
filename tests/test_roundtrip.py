@@ -19,7 +19,7 @@ def roundtrip(*args, env=None):
 class Roundtrip(unittest.TestCase):
     def copy(self):
         d = tempfile.mkdtemp(); self.addCleanup(shutil.rmtree, d, True)
-        shutil.copytree(os.path.join(ROOT, 'skill'), os.path.join(d, 'skill'), ignore=shutil.ignore_patterns('__pycache__'))
+        shutil.copytree(os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp'), os.path.join(d, 'skill'), ignore=shutil.ignore_patterns('__pycache__'))
         return os.path.join(d, 'skill')
 
     @unittest.skipIf(os.environ.get('CI'), 'CI runs tools/roundtrip.py on the whole catalog in its own step (the skill job)')

@@ -10,7 +10,7 @@ import unittest
 from unittest import mock
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, 'skill', 'scripts'))
+sys.path.insert(0, os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts'))
 import adp_catalog as cc  # noqa: E402
 from test_adp_lib import GOOD, Base, header  # noqa: E402
 
@@ -102,7 +102,7 @@ class CheckCatalog(unittest.TestCase):
 
     def test_the_shipped_catalog_keeps_its_url(self):
         # build keeps the url already in catalog.json, so a rebuild from a blank one stays blank and `adp.py new --catalog` then refuses it
-        with open(os.path.join(ROOT, 'skill', 'catalog', 'catalog.json')) as f:
+        with open(os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'catalog', 'catalog.json')) as f:
             self.assertTrue(json.load(f)['url'].startswith('https://'))
 
     def test_no_header_fails(self):

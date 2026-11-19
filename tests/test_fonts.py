@@ -10,8 +10,8 @@ import sys
 import unittest
 from urllib.parse import unquote_plus
 
-ROOT = os.path.join(os.path.dirname(__file__), '..', 'skill')
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'skill', 'scripts'))
+ROOT = os.path.join(os.path.dirname(__file__), '..', 'plugins', 'artifacts-done-properly', 'skills', 'adp')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts'))
 import adp_lib  # noqa: E402
 FILES = sorted(glob.glob(os.path.join(ROOT, 'templates', '*', 'styles', '*.txt'))
                + glob.glob(os.path.join(ROOT, 'catalog', 'kit', '*.css'))

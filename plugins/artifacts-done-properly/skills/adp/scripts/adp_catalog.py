@@ -11,7 +11,7 @@
   adp_catalog.py headers [FILES...] [--report] [--root DIR]
                                           validate the header of each FILES (repo paths) that is the main file of a catalog entry; other
                                           files (stylesheets, samples) are skipped. No FILES: every main file of the catalog. --report:
-                                          counts per kind and per failed rule, exit 0. --root: the catalog directory (default skill/catalog)
+                                          counts per kind and per failed rule, exit 0. --root: the catalog directory (default plugins/artifacts-done-properly/skills/adp/catalog)
   adp_catalog.py drift [--catalog-dir D] [--field F,..] [--strict]
                                           read-only report: where an entry's header disagrees with catalog.json (adp_catalog.py drift -h)
   adp_catalog.py inventory [--root DIR]   what every theme, catalog entry and page declares, reads and hard-codes: one JSON, the same on
@@ -666,7 +666,7 @@ def declared(cat, e):
         d['patterns' if '<' in tok else 'optional' if tok.endswith('?') else 'required'].append(tok.rstrip('?'))
     needs = set()                                       # needs.tokens is prose: "--a, --b-0..4 (optional)", "plus kit/vocab.css"
     for s in e.get('needs', {}).get('tokens', []):
-        for m in re.finditer(r'(--[A-Za-z0-9_<>-]+?)(\d+)\.\.(\d+)|--[A-Za-z0-9_<>-]+', s):
+        for m in re.finditer(r'(--[A-Za-z0-9_<\x3e-]+?)(\d+)\.\.(\d+)|--[A-Za-z0-9_<\x3e-]+', s):
             names = [m.group(1) + str(n) for n in range(int(m.group(2)), int(m.group(3)) + 1)] if m.group(1) else [m.group(0)]
             needs.update(n + ('?' if '(optional' in s else '') for n in names)
     differ = {'header_only': sorted(set(toks) - needs), 'needs_only': sorted(needs - set(toks))}
@@ -820,7 +820,7 @@ def check_catalog(argv):
     skill_runtime = root.parent / 'assets' / 'adp.js'
     if root.name == 'catalog' and skill_runtime.is_file() and (root / 'adp.js').is_file() \
             and skill_runtime.read_bytes() != (root / 'adp.js').read_bytes():
-        errors.append('runtime: skill/assets/adp.js and skill/catalog/adp.js differ; the skill has one runtime')
+        errors.append('runtime: plugins/artifacts-done-properly/skills/adp/assets/adp.js and plugins/artifacts-done-properly/skills/adp/catalog/adp.js differ; the skill has one runtime')
     if errors:
         print(f'FAIL: {len(errors)} problem(s)')
         for m in errors:
@@ -892,7 +892,7 @@ def inventory_main(argv):
 DRIFT_FIELDS = ['version', 'about', 'provides', 'tokens', 'db']
 DRIFT_DOC = """Read-only report: where the header of each entry's main file disagrees with catalog.json.
 
-adp_catalog.py drift [--catalog-dir skill/catalog] [--field version,about,provides,tokens,db] [--strict]
+adp_catalog.py drift [--catalog-dir plugins/artifacts-done-properly/skills/adp/catalog] [--field version,about,provides,tokens,db] [--strict]
 
 One line per disagreement:  <entry id> <field>: header=<...> catalog=<...>   (values cut to 80 chars)
 Then a summary table (equal / differ / no header per field) and the entries whose main file has no header.

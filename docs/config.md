@@ -2,7 +2,7 @@
 
 This is the reference for ADP's settings, called switches. Everything below is stated from the code and names the file and function it comes from. Where a switch does nothing, the table says so.
 
-Sources: `skill/assets/adp.js` (the runtime, section "config"), `skill/scripts/adp.py` (`CORE`, `guard`, `config_cmd`, `hold`, `record`), `skill/catalog/kit/patterns/settings.js`, `skill/catalog/kit/patterns/namespaces.js`, `skill/catalog/kit/patterns/playground.js`, `skill/catalog/kit/patterns/assist.js`, `skill/templates/starter/parts/app.js.txt`. `skill/catalog/adp.js` is byte-identical to `skill/assets/adp.js` at the time of writing.
+Sources: `plugins/artifacts-done-properly/skills/adp/assets/adp.js` (the runtime, section "config"), `plugins/artifacts-done-properly/skills/adp/scripts/adp.py` (`CORE`, `guard`, `config_cmd`, `hold`, `record`), `plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/settings.js`, `plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/namespaces.js`, `plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/playground.js`, `plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/assist.js`, `plugins/artifacts-done-properly/skills/adp/templates/starter/parts/app.js.txt`. `plugins/artifacts-done-properly/skills/adp/catalog/adp.js` is byte-identical to `plugins/artifacts-done-properly/skills/adp/assets/adp.js` at the time of writing.
 
 ## 1. What a switch is
 
@@ -38,7 +38,7 @@ Sixteen core switches are registered at load by `define(...)` calls at the end o
 
 Core switches carry no `level`, so `define` gives each `level: 'page'`. No core switch uses `level: 'db'`.
 
-"Read by" lists every place in `skill/` that reads the switch. "None" means no reader was found by searching `skill/` for the key, for `get('<key>')`, and for the group's use.
+"Read by" lists every place in the adp skill (`skills/adp/`) that reads the switch. "None" means no reader was found by searching the adp skill for the key, for `get('<key>')`, and for the group's use.
 
 | key | type | default | options | read by | effect |
 |---|---|---|---|---|---|
@@ -47,13 +47,13 @@ Core switches carry no `level`, so `define` gives each `level: 'page'`. No core 
 | `edit.reason` | text | `''` | | adp.js `effects`; adp.py `guard` | Text of the banner; the `reason` field of the adp.py `locked` error. |
 | `edit.require-hold` | bool | false | | adp.py `guard` (only through `record`) | `record` refuses changed existing parts that have no holder in `--holds`. The page does not read it. |
 | `parts.locked` | list | `[]` | | adp.js `partLocked` via `label`; namespaces.js `locks`; adp.py `guard` | In the page: the label of a comment anchor on a locked part gets the prefix "locked: " (with a lock emoji). In adp.py: `hold` and `record` refuse parts under a listed prefix. Whole-segment prefix match. |
-| `comments.enabled` | bool | true | | none | Registered and shown on the settings page, but nothing in `skill/` reads it. It changes no behaviour. |
+| `comments.enabled` | bool | true | | none | Registered and shown on the settings page, but nothing in the adp skill (`skills/adp/`) reads it. It changes no behaviour. |
 | `panel.changes` | enum | everyone | everyone, editors, off | adp.js `hideChanges`, `panels` | Sets `hidden` on every `[data-part="page.changes"]` when the value is `off`, or is `editors` and the viewer cannot edit. |
 | `panel.checks` | enum | editors | everyone, editors, off | adp.js `badge` | `badge` fills the text of every `[data-adp-integrity]` element. It returns without touching them when the value is `off`, or is `editors` and the viewer cannot edit (the elements are not hidden, just not filled). |
 | `playground.enabled` | bool | true | | playground.js `isOff` | When it is exactly false the playground renders one line and nothing else; re-checked on change. |
-| `look.theme` | enum | the theme `index.html` links (`kit/themes/<name>.css`, read when adp.js loads), else `default` | that one theme; on a page with a theme switch, the themes it has installed | adp.js `effects`; `skill/templates/assistant/parts/app.js.txt` | adp.js sets the attribute `data-adp-theme` on `<html>` and nothing else, so on a page without a theme switch (the starter) the setting offers one choice and changes nothing. The assistant and default templates define the switch again with the themes in `installed.json` and wear the chosen one through `kit.skins` (`docs/themes.md`, "At runtime"); a viewer's own pick in the header wins over it in that browser. |
+| `look.theme` | enum | the theme `index.html` links (`kit/themes/<name>.css`, read when adp.js loads), else `default` | that one theme; on a page with a theme switch, the themes it has installed | adp.js `effects`; `plugins/artifacts-done-properly/skills/adp/templates/assistant/parts/app.js.txt` | adp.js sets the attribute `data-adp-theme` on `<html>` and nothing else, so on a page without a theme switch (the starter) the setting offers one choice and changes nothing. The assistant and default templates define the switch again with the themes in `installed.json` and wear the chosen one through `kit.skins` (`docs/themes.md`, "At runtime"); a viewer's own pick in the header wins over it in that browser. |
 | `look.mode` | enum | auto | auto, light, dark | adp.js `effects` | `light` or `dark` sets `data-theme` on `<html>`; `auto` removes the attribute. |
-| `look.density` | enum | comfortable | comfortable, compact | adp.js `effects` | Sets `data-adp-density` on `<html>` (removed when empty). No stylesheet or script in `skill/` reads that attribute. |
+| `look.density` | enum | comfortable | comfortable, compact | adp.js `effects` | Sets `data-adp-density` on `<html>` (removed when empty). No stylesheet or script in the adp skill (`skills/adp/`) reads that attribute. |
 | `links.catalog` | url | `''` | | adp.py `take` | The catalog URL `take` uses when a local `catalog.json` is given, no `--url` is passed and `--config` is passed. |
 | `links.board` | url | `''` | | none | Registered only. adp.py `config DIR` prints every `links.*` value under `links`. |
 | `links.repo` | url | `''` | | none | As `links.board`. |
@@ -63,7 +63,7 @@ Core switches carry no `level`, so `define` gives each `level: 'page'`. No core 
 
 A kit or a page adds a switch with `ADP.config.define(group, {name: {type, default, label, help, options, level}})`. `define` rejects a bad group or name, stores `type` (default `text`), `level` (default `page`) and `default`, and re-runs the page effects if the config is already ready. A switch defined after load appears in `all()` and on the settings page; nothing is written to `config/current` until it is set.
 
-Defined in `skill/`:
+Defined in the adp skill (`skills/adp/`):
 
 | key | type | default | options | defined in | read by |
 |---|---|---|---|---|---|
@@ -72,8 +72,8 @@ Defined in `skill/`:
 | `assist.ask-now` | bool | true | | assist.js | assist.js, assist-panel.js |
 | `assist.presence-minutes` | enum | 5 | 2, 5, 15 (strings) | assist.js | assist.js; inbox.js |
 | `assist.shortcut` | text | Mod+Shift+K | | assist.js | assist.js, assist-panel.js |
-| `page.show-about` | bool | true | | `skill/templates/starter/parts/app.js.txt` and `skill/templates/assistant/parts/app.js.txt` | the same files: `ADP.config.on('page.show-about', ...)` hides `[data-part="home.about"]` |
-| `look.theme` (defined again) | enum | as in the runtime | the themes in `installed.json`, Default first | `skill/templates/assistant/parts/app.js.txt` | the same file: `ADP.config.on('look.theme', ...)` wears the theme |
+| `page.show-about` | bool | true | | `plugins/artifacts-done-properly/skills/adp/templates/starter/parts/app.js.txt` and `plugins/artifacts-done-properly/skills/adp/templates/assistant/parts/app.js.txt` | the same files: `ADP.config.on('page.show-about', ...)` hides `[data-part="home.about"]` |
+| `look.theme` (defined again) | enum | as in the runtime | the themes in `installed.json`, Default first | `plugins/artifacts-done-properly/skills/adp/templates/assistant/parts/app.js.txt` | the same file: `ADP.config.on('look.theme', ...)` wears the theme |
 
 assist.js defines its five switches only when `H.config.define` exists, and reads each through a helper that falls back to its own default. inbox.js reads `assist.presence-minutes` as `Number(...) || 5`, so it uses 5 minutes when the switch is not defined or not a number; with the switch defined the value is also 5 unless changed. docs/assist.md covers what the assist switches do.
 
@@ -107,7 +107,7 @@ Without `--config`, none of this runs.
 
 ### The hard layer
 
-Who can write which database path is set by the rules in the page's `<meta name="adp:db-rules">`. In the three templates under `skill/templates/`, the first rule is `{"path":"","read":"view","write":"admin"}`, so `config/current`, like any path without a more specific rule, needs `admin` to write; `ns/shared`, `ns/users/{self}` and (starter) `status` or (assistant, default) `requests`, `conversations`, `presence` need `interact`. namespaces.js draws these rules. The code in this repository declares the rules; it does not enforce them, so what the platform enforces beyond that cannot be checked here. The adp.js write path itself writes only if `canEdit` is true.
+Who can write which database path is set by the rules in the page's `<meta name="adp:db-rules">`. In the three templates under `plugins/artifacts-done-properly/skills/adp/templates/`, the first rule is `{"path":"","read":"view","write":"admin"}`, so `config/current`, like any path without a more specific rule, needs `admin` to write; `ns/shared`, `ns/users/{self}` and (starter) `status` or (assistant, default) `requests`, `conversations`, `presence` need `interact`. namespaces.js draws these rules. The code in this repository declares the rules; it does not enforce them, so what the platform enforces beyond that cannot be checked here. The adp.js write path itself writes only if `canEdit` is true.
 
 ## 4. Reading and writing
 
@@ -148,7 +148,7 @@ On the first ready, each registered listener is called once with the current val
 
 ## 5. The settings pattern
 
-`skill/catalog/kit/patterns/settings.js` is `Kit.settings.mount(root, {config, user, groups, labels, onChange, download, timeZone})`, returning `{update, destroy}`. `config` defaults to `ADP.config` and may be any object with `all`, `get`, `set`, `reset` and `on`; `user` defaults to `ADP.user`.
+`plugins/artifacts-done-properly/skills/adp/catalog/kit/patterns/settings.js` is `Kit.settings.mount(root, {config, user, groups, labels, onChange, download, timeZone})`, returning `{update, destroy}`. `config` defaults to `ADP.config` and may be any object with `all`, `get`, `set`, `reset` and `on`; `user` defaults to `ADP.user`.
 
 It draws, from `config.all()`:
 
@@ -162,11 +162,11 @@ It never touches the database itself. Rows redraw on `config.on('*')`. Without `
 
 ### How a kit or page registers its own switch
 
-Call `ADP.config.define(group, {...})` before or after the runtime is ready; the settings page lists it under its group on the next draw. The starter template shows the pattern in `skill/templates/starter/parts/app.js.txt`: it defines `page.show-about`, follows it with `ADP.config.on`, and applies the value again when the home view renders.
+Call `ADP.config.define(group, {...})` before or after the runtime is ready; the settings page lists it under its group on the next draw. The starter template shows the pattern in `plugins/artifacts-done-properly/skills/adp/templates/starter/parts/app.js.txt`: it defines `page.show-about`, follows it with `ADP.config.on`, and applies the value again when the home view renders.
 
 ### The gear and the settings view
 
-In the starter and assistant templates the header has `<button id="gear" hidden>`. `app.js.txt` toggles between the Settings view and Home on click, and after `ADP.config.ready` un-hides the gear only when `ADP.user.canEdit` is true. The Settings view is `<section class="view settings-view" data-part="settings">`; `.settings-view` is a grid in `skill/templates/starter/styles/page.css.txt`. On entering the view it mounts `Kit.settings` into `[data-part="settings.switches"]`, `Kit.inbox` into `settings.inbox` (when `ADP.db` exists) and `Kit.namespaces` into `settings.namespaces`, once `ADP.config.ready` has resolved; leaving the view calls `destroy`. If `Kit.settings` or `Kit.namespaces` is missing, the switches area shows "The settings kit is not installed."
+In the starter and assistant templates the header has `<button id="gear" hidden>`. `app.js.txt` toggles between the Settings view and Home on click, and after `ADP.config.ready` un-hides the gear only when `ADP.user.canEdit` is true. The Settings view is `<section class="view settings-view" data-part="settings">`; `.settings-view` is a grid in `plugins/artifacts-done-properly/skills/adp/templates/starter/styles/page.css.txt`. On entering the view it mounts `Kit.settings` into `[data-part="settings.switches"]`, `Kit.inbox` into `settings.inbox` (when `ADP.db` exists) and `Kit.namespaces` into `settings.namespaces`, once `ADP.config.ready` has resolved; leaving the view calls `destroy`. If `Kit.settings` or `Kit.namespaces` is missing, the switches area shows "The settings kit is not installed."
 
 namespaces.js "Locked parts" lists each `parts.locked` prefix with the part ids it covers (whole-segment match, as in section 3) and the count of parts left open. It reads `parts.locked` from `ADP.config` and writes nothing.
 
@@ -188,6 +188,6 @@ These are observed differences; the code is what this document follows.
 1. `edit.require-hold` help in adp.js says "A publish touching a part nobody holds is refused". The code refuses only in `record`, only changed parts that existed before, only the deepest changed ones, and needs `--holds`; the expiry in `hold_until` is not checked.
 2. `edit.locked` help says it "Freezes every control marked data-adp-edit". The code does this with CSS pointer events only; scripts can still call `ADP.config.set`.
 3. `adp.py config set` and `ADP.config.set` differ on unknown keys (rejected versus accepted with `unknown: true`, on purpose). Url, text length and datetime real-ness agree for ISO values; `Date.parse` also accepts non-ISO text and overflowing days such as `2026-02-30` (read as 2 March) that `real_date` refuses.
-4. `comments.enabled`, `links.board` and `links.repo` are registered with no reader in `skill/`; `look.density` only sets an attribute nothing reads, and so does `look.theme` on a page without a theme switch.
+4. `comments.enabled`, `links.board` and `links.repo` are registered with no reader in the adp skill (`skills/adp/`); `look.density` only sets an attribute nothing reads, and so does `look.theme` on a page without a theme switch.
 5. settings.js labels the layer from `level`; every core switch has `level: 'page'`, so `parts.locked` and `edit.require-hold` also show "Enforced by the page" although adp.py also enforces them.
 6. `adp.py hold --hours H` accepts larger values but writes at most 2 hours; the usage line says so and the output states `hold_until`.

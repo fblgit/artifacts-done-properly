@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-SKILL = HERE.parent      # the adp skill folder (a repo's skill/, a plugin's, or an installed adp/)
+SKILL = HERE.parent      # the adp skill folder (the repo's plugins/artifacts-done-properly/skills/adp/, a plugin install's, or an installed adp/)
 ADP = HERE / "adp.py"
 # the catalog to publish: the skill folder's own catalog/ (a repo, a clone, a plugin), else the user's local copy (an installed zip: setup put it there)
 DEFAULT_CATALOG = SKILL / "catalog" if (SKILL / "catalog" / "catalog.json").is_file() else Path(os.environ.get("ADP_HOME") or Path.home() / ".adp") / "catalog"

@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, 'skill', 'scripts'))
+sys.path.insert(0, os.path.join(ROOT, 'plugins', 'artifacts-done-properly', 'skills', 'adp', 'scripts'))
 import adp_lib as ch  # noqa: E402
 
 GOOD = """/* part:page.script.kit.demo */

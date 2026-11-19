@@ -22,7 +22,7 @@ jobs:
         run: |
           OK=$(gh run list --workflow ci.yml --commit "$GITHUB_SHA" --status success --json databaseId --jq length)
           [ "$OK" -gt 0 ] || { echo "::error::no green ci run on $GITHUB_SHA; wait for it or fix it, then retag"; exit 1; }
-          KEY=$(git rev-parse HEAD:skill HEAD:LICENSE HEAD:NOTICE HEAD:tools/package.py | sha256sum | cut -c1-16)
+          KEY=$(git rev-parse HEAD:plugins/artifacts-done-properly HEAD:tools/package.py | sha256sum | cut -c1-16)
           RUN=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=adp-skill-$KEY&per_page=100" \
             --jq '[.artifacts[] | select(.expired | not)] | first | .workflow_run.id // empty')
           [ -n "$RUN" ] || { echo "::error::no bundle for content $KEY (expired or never built); rerun ci on this commit"; exit 1; }
@@ -36,16 +36,16 @@ jobs:
           import sys
           sys.path.insert(0, "tools")
           import package
-          with open("skill/SKILL.md", encoding="utf-8") as f:
+          with open("plugins/artifacts-done-properly/skills/adp/SKILL.md", encoding="utf-8") as f:
               fm = package.parse_frontmatter(f.read())
           print((fm.get("metadata") or {}).get("version", ""))
           PY
           )
           if [ -z "$VERSION" ]; then
-            echo "::error::skill/SKILL.md has no metadata.version"; exit 1
+            echo "::error::plugins/artifacts-done-properly/skills/adp/SKILL.md has no metadata.version"; exit 1
           fi
           if [ "$TAG" != "v$VERSION" ]; then
-            echo "::error::tag $TAG does not match skill version v$VERSION; bump metadata.version in skill/SKILL.md or retag"
+            echo "::error::tag $TAG does not match skill version v$VERSION; bump metadata.version in plugins/artifacts-done-properly/skills/adp/SKILL.md or retag"
             exit 1
           fi
       - name: Create GitHub release

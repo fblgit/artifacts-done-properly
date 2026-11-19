@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CAT = ROOT / "skill" / "catalog"
+CAT = ROOT / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "catalog"
 
 
 def read(p):
@@ -12,7 +12,7 @@ def read(p):
 
 class RuntimeTruth(unittest.TestCase):
     def test_one_runtime(self):
-        self.assertEqual((ROOT / "skill/assets/adp.js").read_bytes(), (CAT / "adp.js").read_bytes())
+        self.assertEqual((ROOT / "plugins/artifacts-done-properly/skills/adp/assets/adp.js").read_bytes(), (CAT / "adp.js").read_bytes())
 
     def test_runtime_help_says_what_the_code_does(self):
         js = read(CAT / "adp.js")

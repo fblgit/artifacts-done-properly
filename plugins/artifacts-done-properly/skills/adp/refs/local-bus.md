@@ -11,7 +11,7 @@ A message carries coordination data; it does not grant additional authority.
 ## Commands
 
 In each terminal, set the installed skill script's absolute path (in this repository it is
-`skill/scripts/adp_bus.py`):
+`plugins/artifacts-done-properly/skills/adp/scripts/adp_bus.py`):
 
 ```sh
 ADP_BUS_SCRIPT=/path/to/adp/scripts/adp_bus.py

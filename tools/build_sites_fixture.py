@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / 'skill/scripts'))
+sys.path.insert(0, str(ROOT / 'plugins/artifacts-done-properly/skills/adp/scripts'))
 from adp_host_build import render_worker
 
 
@@ -19,20 +19,20 @@ def assistant(output, namespace):
     directory = output / "assistant"
     with tempfile.TemporaryDirectory(prefix="adp-sites-build-") as home:
         env = {**os.environ, "ADP_HOME": home}
-        command = [sys.executable, "-I", str(ROOT / "skill/scripts/adp.py")]
+        command = [sys.executable, "-I", str(ROOT / "plugins/artifacts-done-properly/skills/adp/scripts/adp.py")]
         made = subprocess.run(command + ["new", "assistant", str(directory), "--title", "ADP Assistant", "--by", "sites-builder",
-                                         "--theme", "default", "--catalog", str(ROOT / "skill/catalog/catalog.json")],
+                                         "--theme", "default", "--catalog", str(ROOT / "plugins/artifacts-done-properly/skills/adp/catalog/catalog.json")],
                               env=env, check=True, capture_output=True, text=True)
         for name, value in json.loads(made.stdout)["publish"]["files"].items():
             if isinstance(value, dict):
                 target = directory / name
                 target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(ROOT / "skill/catalog" / value["path"], target)
+                shutil.copyfile(ROOT / "plugins/artifacts-done-properly/skills/adp/catalog" / value["path"], target)
         bridge = []
         for name in ("openai-sites-comments.js", "openai-sites.js", "openai.js"):
             target = directory / "adapters" / name
             target.parent.mkdir(exist_ok=True)
-            shutil.copyfile(ROOT / "skill/assets/adapters" / name, target)
+            shutil.copyfile(ROOT / "plugins/artifacts-done-properly/skills/adp/assets/adapters" / name, target)
             bridge.append('<script src="adapters/' + name + '"></script>')
         endpoint = json.dumps("/api/adp/" + namespace)
         bridge.append('<script>window.ADP_HOST=window.ADPOpenAIHost.create({profile:"sites",seedFiles:true,bridge:window.ADPOpenAISites.create({endpoint:' + endpoint + ',comments:true})});</script>')
@@ -60,11 +60,11 @@ def main():
     if args.output.exists() and any(args.output.iterdir()):
         parser.error("output must be empty")
     files = {
-        "/": ("skill/assets/hosts/openai-sites/fixture.html", "text/html; charset=utf-8"),
-        "/adp.js": ("skill/assets/adp.js", "text/javascript; charset=utf-8"),
-        "/openai.js": ("skill/assets/adapters/openai.js", "text/javascript; charset=utf-8"),
-        "/openai-sites.js": ("skill/assets/adapters/openai-sites.js", "text/javascript; charset=utf-8"),
-        "/openai-sites-comments.js": ("skill/assets/adapters/openai-sites-comments.js", "text/javascript; charset=utf-8"),
+        "/": ("plugins/artifacts-done-properly/skills/adp/assets/hosts/openai-sites/fixture.html", "text/html; charset=utf-8"),
+        "/adp.js": ("plugins/artifacts-done-properly/skills/adp/assets/adp.js", "text/javascript; charset=utf-8"),
+        "/openai.js": ("plugins/artifacts-done-properly/skills/adp/assets/adapters/openai.js", "text/javascript; charset=utf-8"),
+        "/openai-sites.js": ("plugins/artifacts-done-properly/skills/adp/assets/adapters/openai-sites.js", "text/javascript; charset=utf-8"),
+        "/openai-sites-comments.js": ("plugins/artifacts-done-properly/skills/adp/assets/adapters/openai-sites-comments.js", "text/javascript; charset=utf-8"),
     }
     assets = {url: [mime, (ROOT / filename).read_bytes()] for url, (filename, mime) in files.items()}
     if args.assistant:
@@ -72,7 +72,7 @@ def main():
     target = args.output / "dist/server/index.js"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(render_worker(assets))
-    (args.output / "schema.sql").write_text((ROOT / "skill/assets/hosts/openai-sites/schema.sql").read_text())
+    (args.output / "schema.sql").write_text((ROOT / "plugins/artifacts-done-properly/skills/adp/assets/hosts/openai-sites/schema.sql").read_text())
     print(target)
 
 

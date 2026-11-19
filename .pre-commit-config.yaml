@@ -10,7 +10,7 @@ repos:
           bash -c 'GITLEAKS_CONFIG_TOML="[extend]
           useDefault = true
           [allowlist]
-          paths = [\"skill/catalog/kit/samples/patterns\\\\.json\"]" gitleaks git --redact --verbose'
+          paths = [\"plugins/artifacts-done-properly/skills/adp/catalog/kit/samples/patterns\\\\.json\"]" gitleaks git --redact --verbose'
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.5
     hooks:
@@ -22,22 +22,22 @@ repos:
         entry: python3 tools/package.py --check
         language: system
         pass_filenames: false
-        files: ^(skill/.*SKILL\.md|tools/package\.py)$
+        files: ^(plugins/artifacts-done-properly/(skills/.*SKILL\.md|\.claude-plugin/)|tools/package\.py)
       - id: catalog-check
         name: catalog sizes, sha256 and hashes
-        entry: python3 skill/scripts/adp_catalog.py
+        entry: python3 plugins/artifacts-done-properly/skills/adp/scripts/adp_catalog.py
         language: system
         pass_filenames: false
-        files: ^(skill/catalog/|skill/scripts/adp_(catalog|lib)\.py)
+        files: ^(plugins/artifacts-done-properly/skills/adp/catalog/|plugins/artifacts-done-properly/skills/adp/scripts/adp_(catalog|lib)\.py)
       - id: catalog-roundtrip
         name: catalog roundtrip (headers, index, files, take, seed, previews)
         entry: python3 -I tools/roundtrip.py
         language: system
         pass_filenames: false
         stages: [pre-push]          # about 9 s: on push, not on every commit
-        files: ^(skill/|tools/roundtrip\.py)
+        files: ^(plugins/artifacts-done-properly/skills/adp/|tools/roundtrip\.py)
       - id: catalog-headers
         name: catalog entry headers (docs/catalog-header.md)
-        entry: python3 skill/scripts/adp_catalog.py headers
+        entry: python3 plugins/artifacts-done-properly/skills/adp/scripts/adp_catalog.py headers
         language: system
-        files: ^skill/catalog/.*\.(js|css|md|txt)$      # a main file without a valid header blocks the commit
+        files: ^plugins/artifacts-done-properly/skills/adp/catalog/.*\.(js|css|md|txt)$      # a main file without a valid header blocks the commit
