@@ -117,7 +117,7 @@ the calling agent still follows its user's authorized scope.
 - Existing runtime writes that do not pass a guard remain last-writer-wins. This
   does **not** upgrade ADP's overall configuration editing to conflict-safe.
 - `update()` recursively merges objects, replaces arrays/scalars, preserves explicit
-  nulls and treats dotted keys literally, matching Claude's live `claude-r1` receipt. A nested `{__delete__: true}` removes that field. Marker objects with
+  nulls and treats dotted keys literally, matching Claude. A nested `{__delete__: true}` removes that field. Marker objects with
   additional keys are rejected until their live semantics are established. Updating
   a missing document fails. No atomic batch writes. Sites keeps its explicit HTTP
   error codes; it does not pretend to be Claude's native API.
@@ -268,29 +268,19 @@ clocks, so expiry labels are advisory; native revisions remain authoritative.
 Blocked requests retain the existing `ack` state and explain the block through
 `execution.state` and `execution.reason`.
 
-## Verification evidence
+## Tests
 
 `test_openai_sites_bridge.py` tests browser transport behavior and polling.
 `test_openai_sites_server.py` runs the actual SQL against Node SQLite, the actual
-Worker request handler and browser bridge code **executed in Node, not a browser**: permissions, namespace
+Worker request handler and browser bridge code executed in Node, not a browser: permissions, namespace
 isolation, revisions/conflicts, concurrent guarded writes, tombstones, query
 filter/order/limit, body limits, a second browser connection, and MCP read/write.
 Node 22+ with `node:sqlite` is needed for SQL tests; older Node skips that suite
-explicitly. These are local integration tests with injected identity, **not**
-proof of hosted Dispatch, deployed D1 persistence or plugin discovery.
+explicitly. They are local integration tests with an injected identity, not a hosted
+Dispatch or a deployed D1.
 
-Hosted owner evidence is separate from those local tests:
+Limits of the transport: the collection budget, independent listener polling, a hidden-tab first-snapshot delay, no browser sampling,
+and no atomic batch or namespace-role parity. A deployed Site and a working browser do not show that its plugin tools are connected in an agent
+session: read through each Site's own authenticated tool.
 
-- [Owner edit and reload receipt](https://github.com/fblgit/artifacts-done-properly/pull/81#issuecomment-6914915590): the imported shell's intro edit persisted at revision 3 after reload.
-- [Final Sites acceptance receipt](https://github.com/fblgit/artifacts-done-properly/pull/81#issuecomment-6926240289): deployed source `d7cb813bc71fd142da52b38dc964f9286b01b4ba`, successful deployment, served-source checks, guarded assistant/spec change and manifest readbacks, and browser reload displaying the deployed version. The receipt distinguishes its local acknowledgement check from live publication evidence.
-
-Those owner receipts do not establish separate reader/anonymous authorization,
-identity changes, interrupted-network recovery or racing live claimants. They do
-not remove the collection budget, independent listener polling, hidden-tab first
-snapshot delay, lack of browser sampling or lack of atomic batch/namespace-role
-parity. Rendered integrity remains qualified. A deployed Site and a working
-browser alone do not prove its plugin tools are connected in an agent session;
-verify each Site's own authenticated tool read.
-
-Use [the live test protocol](host-live-test-protocol.md) to record further results
-at an exact commit in the PR. Sites passing does not certify Spaces or Claude.
+[The live test protocol](host-live-test-protocol.md) is how a result on a host is recorded at an exact commit.

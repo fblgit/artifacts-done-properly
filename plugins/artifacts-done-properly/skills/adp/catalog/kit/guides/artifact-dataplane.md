@@ -140,10 +140,8 @@ adp/1 rebuilds inside one `index.html` what the platform gives per file, per doc
 
   The runtime provides `ADP.content(id)`, live repaint of `[data-part]` from `content/`, the changes and decisions panel, customAnchors, error capture, and `checks/latest`.
 
-## 8. What has been tested
+## 8. What a host must provide
 
-Tested on claude.ai Artifacts, runtime contract 0.2.90.
-
-- **Exercised:** files as parts with per-file hashes, content as db docs with live repaint, the page self-check, the customAnchors mechanism, and the server-side `files: {artifact}` copy between artifacts.
-- **Not exercised:** the live mapping of old CSS-path threads, and page-side `artifact.publish(files)` compare-and-set per file.
-- **Untested on other hosts:** `customAnchors`, db `rules`, `if_version` and the server-side `files: {artifact}` copy. Check each before relying on it there.
+The standard relies on these host features; another host provides each of them, or the matching step is not available there: files as parts with
+per-file hashes, content as db docs with live repaint, the page self-check, `customAnchors`, db `rules`, `if_version` on every write, page-side
+`artifact.publish(files)` compare-and-set per file, and the server-side `files: {artifact}` copy between artifacts.

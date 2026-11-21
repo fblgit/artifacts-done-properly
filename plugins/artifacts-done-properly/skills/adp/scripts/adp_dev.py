@@ -28,7 +28,7 @@ def fail(code, msg):
 
 
 def merge(a, b):
-    """update(): nested objects merge recursively, anything else replaces the field. As measured live, {"__delete__": true}
+    """update(): nested objects merge recursively, anything else replaces the field. As the live viewer does, {"__delete__": true}
     alone removes the field at any depth; with other keys it is refused."""
     o = copy.deepcopy(a)
     for k, v in b.items():
