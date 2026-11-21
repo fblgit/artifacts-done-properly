@@ -333,6 +333,18 @@ class RecordTests(Cmd):
         self.assertEqual((writes[-1]['collection'], writes[-1]['doc_id']), ('manifest', 'current'))
         self.assertEqual(set(out['needs_pin']), {f'parts/{k}' for k in changed} | {'threads/t1', 'threads/t2', 'manifest/current'})
 
+    def test_clears_only_the_agents_own_holds(self):
+        self.edit(self.d)
+        out = self.ok('record', self.old, self.d, '--seq', '2', '--by', 'bob', '--summary', 's', '--out', self.p('rec'))
+        docs = self.docs_of(out)
+        self.assertEqual(docs['parts/home.welcome']['holder'], '')          # edited by bob: its hold is cleared
+        self.assertNotIn('holder', docs['parts/home'])                     # changed only through its child: the holder stays
+        holds = self.write_json('holds.json', {'home.welcome': 'carol', 'home': 'bob'})
+        out = self.ok('record', self.old, self.d, '--seq', '2', '--by', 'bob', '--summary', 's', '--holds', holds, '--out', self.p('rec2'))
+        docs = self.docs_of(out)
+        self.assertNotIn('holder', docs['parts/home.welcome'])             # held by carol
+        self.assertEqual(docs['parts/home']['holder'], '')                 # held by bob
+
     def test_pins_become_if_version(self):
         self.edit(self.d)
         pins = self.write_json('pins.json', {'manifest/current': 4, 'parts/home.welcome': 2})

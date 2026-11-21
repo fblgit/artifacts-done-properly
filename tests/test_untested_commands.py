@@ -40,7 +40,7 @@ class Pins(Untested):
         self.assertEqual(out['pinned'], 3)
         self.assertEqual(out['vermap'], self.p('vm.json'))
         self.assertEqual(json.loads(Path(self.p('vm.json')).read_text()), {'index.html': 'v1', 'a.js': 'v1', 'kit/x.css': 'v2'})
-        self.assertIn('CAT_VERMAP=', out['next'])
+        self.assertIn(self.p('vm.json'), out['next'])
 
     def test_default_output_is_vermap_json_next_to_the_first_batch(self):
         a = self.write_json('b/publish-1.json', {'p.js': 'h'})

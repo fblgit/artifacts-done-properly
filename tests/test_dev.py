@@ -15,11 +15,11 @@ const rec = (t, s) => t.push([s.docChanges().map(c => '+~-'['amr'.indexOf(c.type
 (async () => {
   const ta = [], dbA = await page({'c/0added': {data: {n: 1}, version: 1}, 'c/a': {data: {n: 1}, version: 1}});
   dbA.collection('c').onSnapshot(s => { rec(ta, s); if (ta.length === 1) dbA.doc('c/b').set({n: 2}); }); await tick();
-  assert.deepEqual(ta, [['+0added +a', 2, 0, 0], ['+b', 3, 0, 1], ['', 3, 1, 1], ['~b', 3, 1, 0], ['', 3, 0, 0]]);      // measured live: a new document written from the first callback
+  assert.deepEqual(ta, [['+0added +a', 2, 0, 0], ['+b', 3, 0, 1], ['', 3, 1, 1], ['~b', 3, 1, 0], ['', 3, 0, 0]]);      // as the live viewer: a new document written from the first callback
   (await page({'r/a': {data: {n: 1}, version: 1}, 'r/old': {data: {n: 1}, version: 1}})).collection('r').onSnapshot(() => {}); await tick();      // load 1 settles and is persisted
   const tb = [], dbB = await page({'r/a': {data: {n: 1}, version: 1}, 'r/new': {data: {n: 1}, version: 1}});
   dbB.collection('r').onSnapshot(s => rec(tb, s)); await tick();
-  assert.deepEqual(tb, [['+a +old', 2, 1, 0], ['-old +new', 2, 0, 0]]);      // measured live: the persisted result first, the stale document included, then corrected
+  assert.deepEqual(tb, [['+a +old', 2, 1, 0], ['-old +new', 2, 0, 0]]);      // as the live viewer: the persisted result first, the stale document included, then corrected
   const tc = [], dbC = await page({'r/a': {data: {n: 1}, version: 1}, 'r/other': {data: {n: 1}, version: 1}}, 's2');      // another artifact on the same origin never sees s1's cached result
   dbC.collection('r').onSnapshot(s => rec(tc, s)); await tick();
   assert.deepEqual(tc, [['+a +other', 2, 0, 0]]);

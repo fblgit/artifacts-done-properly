@@ -39,7 +39,7 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
   adp.py files DIR --host sites --out PROJECT_DIR     full materialized asset snapshot + canonical API -> dist/server/index.js;
                                                     prints DB binding/schema requirements; does not deploy, seed or reconcile
   adp.py pins publish-1.json=VERSION_ID ... [--out vermap.json]
-                                                    {path: version id} for CAT_VERMAP from the batches and the id each publish returned
+                                                    {path: version id} from the batches and the id each publish returned
   adp.py catalog [URL]                              the user's catalog: URL saves it (~/.adp/config.json); prints the Artifact read that
                                                     fetches its catalog.json into ~/.adp/catalog/ (My Own Kit), then the reads (256 paths at most
                                                     each) for every file the index lists; `complete` says the whole kit is local. Or ver and built
@@ -460,7 +460,7 @@ def pins(a):
         for p in json.loads(Path(f).read_text()): vm[p] = ver
     out = opt(a, '--out') or os.path.join(os.path.dirname(os.path.abspath(pairs[0].rsplit('=', 1)[0])), 'vermap.json')
     json.dump(vm, open(out, 'w'), indent=0, sort_keys=True)
-    return emit({'pinned': len(vm), 'vermap': os.path.abspath(out), 'next': f'CAT_URL=<url> CAT_VERMAP={out} make catalog, then publish catalog.json to the same url'})
+    return emit({'pinned': len(vm), 'vermap': os.path.abspath(out), 'next': f'reference each file in catalog.json at the version {out} gives it, then publish catalog.json to the same url'})
 
 
 SECTION = re.compile(r'^###\s+Section\s+(\S+)\s*(?:[\u2014\u2013-]+\s*(.*?))?\s*$')
@@ -1166,7 +1166,15 @@ def record(a):
     op, np_, moved, cont = real(o), real(n), [], content_of(d)
     ch = {p for p in np_ if p not in op or op[p] != np_[p]} | {p for p in op if p not in np_}
     par = {**o.get('parents', {}), **n.get('parents', {})}
-    guard(a, ch, {p for p in ch if p in op and not any(par.get(c) == p for c in ch)}, set(op))
+    deepest = {p for p in ch if p in op and not any(par.get(c) == p for c in ch)}
+    guard(a, ch, deepest, set(op))
+    # Clear only this agent's holds: the parts --holds shows it holding, or without --holds the parts it edited itself. A parent that
+    # changed only through a child keeps its holder, which may be another agent's.
+    if opt(a, '--holds'):
+        h = read_json(opt(a, '--holds'), '--holds'); who = lambda x: (x.get('holder') if isinstance(x, dict) else x) or ''
+        mine = {p for p in op if who(h.get(p)) == by}
+    else: mine = deepest
+    clear = lambda p: {'holder': '', 'hold_until': ''} if p in mine else {}
     b = Batch(opt(a, '--out', d.rstrip('/') + '.adp'), pins)
     for p, h in np_.items():
         if p not in op:
@@ -1174,7 +1182,7 @@ def record(a):
                                       'at': at, 'by': by, 'summary': 'added: ' + summary, 'holder': '', 'hold_until': '', 'file': n['part_file'].get(p, '')})
             moved.append({'id': p, 'from': '', 'to': h})
         elif op[p] != h:
-            b.put('update', 'parts', p, {'hash': h, 'version': version, 'at': at, 'by': by, 'summary': summary, 'holder': '', 'hold_until': '',
+            b.put('update', 'parts', p, {'hash': h, 'version': version, 'at': at, 'by': by, 'summary': summary, **clear(p),
                                          'file': n['part_file'].get(p, '')})
             moved.append({'id': p, 'from': op[p], 'to': h})
     for p in op:

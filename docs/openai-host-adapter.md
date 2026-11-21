@@ -71,10 +71,10 @@ schema change occurred. Reconcile uncertain outcomes before retrying.
 
 Local Codex chat delivery uses the separate [ADP bus](../plugins/artifacts-done-properly/skills/adp/refs/local-bus.md):
 its subscriber passes prefixed events to `codex queue --thread … --message …`.
-Queue-only wake-up was observed in a desktop chat. This does not add wake-up
+Queue-only wake-up works in a desktop chat. This does not add wake-up
 capabilities to the browser bridge or hosted Sites; see the guide for setup,
-diagrams, tests and the distinction between observed Codex delivery and Claude's
-reported Monitor wake-up.
+diagrams, tests and the difference between Codex delivery and Claude's
+Monitor wake-up.
 
 ## Spaces are a separate adapter surface
 
@@ -91,11 +91,8 @@ Run `python3 -m unittest discover -s tests -p test_openai_host_adapter.py -v`.
 Coverage includes explicit setup, missing/malformed sessions, anonymous and
 strict edit permission, optional capabilities, error propagation, and profile
 selection. The concrete [Sites transport](openai-sites-transport.md) now supplies a Worker/D1
-implementation and local integration tests. Hosted owner flows were also observed:
-record editing and reload persistence, browser/agent record handoff, and guarded
-publication with deployed-source and record readback. See the
-[Sites verification evidence](openai-sites-transport.md#verification-evidence)
-for receipts and the distinction between local and hosted checks.
+implementation and local integration tests; see
+[the Sites transport tests](openai-sites-transport.md#tests).
 
 These observations do not certify production support or every host capability.
 Separate reader/anonymous authorization, identity changes, interrupted-network

@@ -59,7 +59,7 @@ async function query(db, artifact, args) {
   });
   return {docs:docs.slice(0,args.limit || MAX_DOCS)};
 }
-// Measured Claude browser/agent update semantics (PR #81, claude-r1):
+// Claude browser/agent update semantics:
 // recursive objects, replacing arrays/scalars, stored null, literal dotted keys.
 function mergeUpdate(current, patch, depth = 0) {
   if(depth>64)fail(400,'Document nesting too deep');

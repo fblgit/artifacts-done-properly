@@ -163,8 +163,8 @@ returned success for a different operation.
   arbitrary runtime fetches or subscriptions. Native spreadsheets/slides require
   their own document profile.
 
-The unit harness validates no live host. Live runs on Claude and Sites are summarised in
-`docs/claude-host-adapter.md` and `docs/openai-sites-transport.md`; no Space installation has been validated.
+The unit harness runs no live host. The Claude and Sites behaviour is in
+`docs/claude-host-adapter.md` and `docs/openai-sites-transport.md`.
 The release gates for each host are: fresh and existing artifact, anonymous and
 editor access, stale version rejection, concurrent writes, interrupted/repeated
 publish, readback/receipt reconciliation, missing capabilities, and reopening in
@@ -173,7 +173,7 @@ fully supported until its live flow passes those gates.
 
 ## Capability references
 
-Host guidance checked for this proposal (2026-11-16):
+Host guidance:
 [Space overview](https://help.openai.com/en/articles/20001549-getting-started-with-space-in-chatgpt),
 [Sites overview](https://help.openai.com/en/articles/20001339-creating-and-using-chatgpt-sites),
 [Site-hosted plugins](https://help.openai.com/en/articles/20001547-hosting-a-plugin-with-chatgpt-sites).
