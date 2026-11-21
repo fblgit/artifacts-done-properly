@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ",
  "ver": "",
- "built": "2026-11-19T18:41:46Z",
+ "built": "2026-11-20T11:40:21Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -615,11 +615,11 @@
     {
      "path": "kit/guides/artifact-dataplane.md",
      "role": "doc",
-     "sha256": "486fc13ac156ab99bff9cd02d93606e2b3013d85490f7929bd1cdad1c2a54824",
-     "bytes": 15364
+     "sha256": "f8883b69921ad4f0770cbda0da662a940c0b332388edea4c9be63f0da0080909",
+     "bytes": 15223
     }
    ],
-   "hash": "5466fe92c36b"
+   "hash": "dc0af4d47856"
   },
   {
    "id": "guide.component-inventory",
@@ -645,11 +645,11 @@
     {
      "path": "kit/guides/component-inventory.md",
      "role": "doc",
-     "sha256": "de14cae20f957147cda3af1a3815025bf3de365510d8f5a85bac112aefe9ec95",
-     "bytes": 16546
+     "sha256": "89b104549387c35957251292ad15c0b4d1d0d04e5809921c6f1d50ff3801ee95",
+     "bytes": 16542
     }
    ],
-   "hash": "89fd65d8432d"
+   "hash": "c0b065c175bb"
   },
   {
    "id": "kit.icons",

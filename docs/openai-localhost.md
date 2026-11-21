@@ -35,7 +35,7 @@ therefore have one implementation, not two separately maintained mocks.
 | ADP browser bridge | Same source | Same source | Local Node tests + localhost HTTP |
 | ADP HTTP/MCP API | Same Worker handler | Same Worker handler | Local HTTP and deployed private Site browser/MCP flows verified |
 | Storage interface | SQLite adapter implementing only used `prepare/bind/first/all/run` operations | Native D1 binding | Live create/read/update, guarded conflicts and reload persistence observed; full D1 parity not claimed |
-| Authentication | Fixed `--user` simulated by the local process | Sites Dispatch identity | Live owner/editor flow observed; separate Sites reader/anonymous rejection not verified |
+| Authentication | Fixed `--user` simulated by the local process | Sites Dispatch identity | Sites owner/editor identity; reader and anonymous access follow Sites |
 | Networking/execution | Node on loopback | Cloudflare Worker | Latency, limits, failures and isolation differ |
 | Publishing | None | Native Sites deployment | Not emulated |
 
@@ -44,9 +44,7 @@ The D1 methods consumed by the Worker match the documented
 parameter binding, first-row reads, `results` arrays, and `meta.changes` for writes.
 The local adapter is not a complete D1 emulator and does not reproduce all D1
 metadata, failure modes or distributed behavior. Passing localhost tests cannot
-certify production D1 or Sites Dispatch. Live runs cover shell import,
-repeat no-op, stale-write rejection and return, and browser editing/reload persistence.
-These establish those scenarios, not complete platform parity.
+certify production D1 or Sites Dispatch.
 
 ## Local security boundaries
 

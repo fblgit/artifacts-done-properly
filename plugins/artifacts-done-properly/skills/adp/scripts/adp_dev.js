@@ -1,7 +1,7 @@
 /* adp.py dev: a stand-in for the claude.ai viewer's window.claude (db, user, comments, artifact.publish), served at /__adp/shim.js by `adp.py dev serve`,
    which prepends window.__ADP_DEV = {user}. use(name) resolves later, memoized, and null for anything not stood in here.
    Live updates: the server's event stream names the changed docs; the page then re-reads the db and fires the listeners whose result changed.
-   Snapshots follow what the live viewer was measured to send (docs/claude-host-adapter.md): a query listener sees a new document written here at once (pending), echoed
+   Snapshots follow what the live viewer sends (docs/claude-host-adapter.md): a query listener sees a new document written here at once (pending), echoed
    from cache, modified by the acknowledgement, then settled; after a reload its first snapshot is the persisted result (fromCache, stale documents included) and the
    next one corrects it with removed/added. Everything else stays settled-only (updates, deletes, document listeners, concurrent writers: not measured). */
 (function () {
@@ -47,7 +47,7 @@ function rows(c, q) {
   for (const [f, op, v] of q.where) l = l.filter(p => f in docs[p].data && OPS[op](docs[p].data[f], v));
   if (q.order) {
     const [f, s] = [q.order[0], q.order[1] === 'desc' ? -1 : 1], val = p => docs[p].data[f];
-    const lt = (x, y) => x === null ? y !== null : y === null ? false : x < y;      // measured live: null is the lowest value, a missing field sorts last either way
+    const lt = (x, y) => x === null ? y !== null : y === null ? false : x < y;      // as the live viewer: null is the lowest value, a missing field sorts last either way
     l.sort((a, b) => val(a) === val(b) ? 0 : val(a) === undefined ? 1 : val(b) === undefined ? -1 : lt(val(a), val(b)) ? -s : s);
   }
   return q.limit ? l.slice(0, q.limit) : l;
@@ -74,7 +74,7 @@ function listen(fire) {
   return () => { on = false; subs.delete(f); };
 }
 function write(op, path, data) {      // in order, and before any sendToClaude that follows
-  const fresh = op === 'set' && !docs[path];      // measured live for a new document: shown at once (pending), echoed from cache, modified by the ack, settled
+  const fresh = op === 'set' && !docs[path];      // the live viewer, for a new document: shown at once (pending), echoed from cache, modified by the ack, settled
   if (fresh) { docs[path] = { data: clone(data), version: 0 }; notify({ fromCache: false, hasPendingWrites: true }); notify({ fromCache: true, hasPendingWrites: true }, true); }
   const w = pending.then(() => post('/__adp/db', { op, path, data: clone(data) })).then(() => refresh(fresh ? { fromCache: true, hasPendingWrites: false } : SETTLED))
     .then(() => { if (fresh) notify(SETTLED, true); }, e => { if (fresh) refresh(); throw e; });

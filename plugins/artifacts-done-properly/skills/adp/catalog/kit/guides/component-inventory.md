@@ -16,7 +16,7 @@ The inventory taken from the Journey Whiteboard and the ADR Drafting Table befor
 @tokens    none
 @globals   none
 @db        none
-@source    this session | components.md | read from both boards' sources on 2026-10-24
+@source    ADP | the component inventory | read from the sources of the two boards
 @preview   {"render": "guide", "samples": ["kit/guides/component-inventory.md"]}
 -->
 

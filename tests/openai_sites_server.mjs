@@ -202,7 +202,7 @@ assert.equal(JSON.parse(agentRead.result.content[0].text).data.feedback,'Agent s
 globalThis.fetch=savedFetch;
 console.log('Node-executed browser bridge -> Worker handler -> SQLite -> new connection -> MCP read passed');
 
-// Claude live receipt claude-r1: preserve nested fields, replace arrays/scalars,
+// Claude update semantics: preserve nested fields, replace arrays/scalars,
 // store null and literal dotted keys, delete only explicit marker fields.
 await request('write',{path:'parity/current',mode:'set',data:{a:{x:1,y:2},arr:[1,2],gone:{x:1},unchanged:{keep:true}}});
 await request('write',{path:'parity/current',mode:'update',data:{a:{y:9,z:3},arr:[3],nil:null,gone:{__delete__:true},'a.x':7}});
