@@ -10,8 +10,8 @@
  * @kind      theme
  * @group     Themes
  * @status    new
- * @version   0.2.0
- * @updated   2026-11-14
+ * @version   0.2.1
+ * @updated   2026-11-23
  * @summary   A cool workbench: chalk ground, white panels, a blue accent and six pens. Its names are the kit contract.
  * @tags      palette, tokens, colours, dark mode, journey, whiteboard
  * @requires  none
@@ -25,7 +25,7 @@
  * @db        none
  * @source    Journey Whiteboard | app.css | the :root, prefers-color-scheme and [data-theme] blocks
  * @preview   {"render": "theme", "samples": ["kit/themes/journey-whiteboard.json", "kit/samples/viz.json#viz-chips", "kit/samples/viz.json#viz-stepper", "kit/samples/viz.json#viz-matrix"], "uses": ["viz.core", "viz.stepper", "viz.matrix"]}
- * @changed   The fonts url requests every weight from 400 to 800 the family ships, so headings at 700 to 800 use real faces, not synthesized bold.
+ * @changed   The light --ok and --warn are a shade darker (#207954, #946000), so both read at 4.5:1 or more on --sunk and --bg as text.
  */
 /* Layout: a full-height workbench: top bar, one view at a time (journey, canvas, MoSCoW, pages), a side drawer for the selected item or the Claude chat. */
 :root {
@@ -41,8 +41,8 @@
   --accent-ink: #ffffff;
   --accent-soft: #e2e9fb;
   --danger: #b8392a;
-  --ok: #22825a;
-  --warn: #9a6400;
+  --ok: #207954;
+  --warn: #946000;
   --k-problem: #c0432e;
   --k-solution: #22825a;
   --k-idea: #9a7000;

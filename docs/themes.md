@@ -14,13 +14,15 @@ A theme is a catalog entry `theme.<id>` (kind `theme`, group `Themes`) with two 
 
 Tokens use the kit contract names, so kit files draw in the theme without aliases: `--bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink`, the meanings (`--ok --warn --danger …`) and the four font tokens `--f-display`, `--f-ui`, `--f-mono` and `--f-hand` (the canvas). `Kit.tokens.contract(part)` lists the names a kit file reads. A theme that keeps its own names maps them in a second `:root` block (`theme.adr-drafting-table` sets `--f-ui: var(--f-body)`).
 
-A layer theme adds to another one: `theme.glaze-depth` requires `theme.glaze`, sets no font token and has the same `fonts` as Glaze.
+A layer theme adds to another one: `theme.glaze-depth` requires `theme.glaze`, sets no font token and has the same `fonts` as Glaze. Its json is its base theme's json plus its own tokens, so previews and pickers that read only the json get the whole theme.
 
 ### One convention
 
 The viewer can switch themes at run time, so every theme sets the same names. The convention has one source, `theme.default`: it sets every token a kit entry's header declares as required (`@tokens` without a trailing `?`), and every other theme's json sets every name the default's json sets, in light, and in dark wherever the default's dark map has it (colours and shadows). A theme may set more; the default sets only what is shared. That is the surfaces and inks, the accent with `--seam`, `--gold-leaf` and `--focus`, five meanings (`--ok --warn --danger --info --wait`) each with a `-soft` tint, six `--k-*` kinds, the canvas (`--canvas --dot`, six `--c-*` pens, four `--st-*` stickies, `--sticky-ink`), `--shadow`, the four font tokens, and the feel the templates read (`--outline --edge-w --text-size --leading --head-case --bg-image --bg-size`). `--radius` and `--radius-lg` are not in it: the templates and the kit fall back to different corners in different places, so the default cannot state one value without changing its look; a theme that sets them gets its own corners everywhere.
 
 `tests/test_fonts.py` checks every theme: the convention above, the json `fonts` equals the entry `fonts`, the url loads the first family of every font token in the css and the json at 700 or more for the display and UI families, and the css and json agree on the font tokens. It also checks that the catalog page's own fonts (`--cat-f-*`) never reach into a preview stage.
+
+`adp_catalog.py` checks each theme's shape: the three blocks, and a json with `light`, `dark` and the entry's `fonts`. `tests/test_inventory.py` checks the rest, with no exception for any theme: the stylesheet sets the convention (a name set as `var(--x)` counts), both dark blocks hold the same values, the blocks hold tokens and `color-scheme` only, and the json equals the stylesheet (a layer theme: its base's json plus its own tokens). Text reads at 4.5:1 or more (WCAG), light and dark: `--ink`, `--ink-2`, `--accent` and the five meanings on `--panel`, `--sunk` and `--bg`, each meaning on its `-soft` tint, and `--accent-ink` on `--accent` (`CONTRAST_PAIRS`; `adp_catalog.py inventory` lists each ratio).
 
 ## Wear a theme
 

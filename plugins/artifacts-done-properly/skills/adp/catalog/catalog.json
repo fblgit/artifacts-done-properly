@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX",
  "ver": "",
- "built": "2026-11-22T17:16:45Z",
+ "built": "2026-11-22T20:15:12Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -4548,7 +4548,7 @@
     "adr"
    ],
    "status": "new",
-   "version": "0.2.0",
+   "version": "0.2.1",
    "requires": [],
    "globals": [],
    "provides": [],
@@ -4558,14 +4558,14 @@
     {
      "path": "kit/themes/adr-drafting-table.css",
      "role": "style",
-     "sha256": "2e6c70cb254ad9c70fe385d012f41972070d7c115531960183d938d36f5ea135",
-     "bytes": 8113
+     "sha256": "0944717e2739910e059f01f1e0923c36258c46a6c196107f409965c9b67f25bc",
+     "bytes": 8116
     },
     {
      "path": "kit/themes/adr-drafting-table.json",
      "role": "data",
-     "sha256": "53ced87c1d7c176f3a22c8d65ff37916fc5dac39f8ad41e10a5802fbcc0c594a",
-     "bytes": 6196
+     "sha256": "b108ee78501f13ef00c37a7f173815ad6eaa928f71f0c17103b9e12e76683c1e",
+     "bytes": 6100
     },
     {
      "path": "kit/samples/viz.json",
@@ -4574,7 +4574,7 @@
      "bytes": 127807
     }
    ],
-   "hash": "785ab91a59d6"
+   "hash": "eef3e0e8012f"
   },
   {
    "id": "theme.blueprint",
@@ -4889,7 +4889,7 @@
     "whiteboard"
    ],
    "status": "new",
-   "version": "0.2.0",
+   "version": "0.2.1",
    "requires": [],
    "globals": [],
    "provides": [],
@@ -4899,13 +4899,13 @@
     {
      "path": "kit/themes/journey-whiteboard.css",
      "role": "style",
-     "sha256": "204e2283ea83df4dd036393fc8025a43018d93ca87ef2e4606c2504367b8e6b7",
-     "bytes": 5890
+     "sha256": "458ec18956ed25a7c067d4e6b1121834bdd43c5aac9aa82d28aa49d87e4d9616",
+     "bytes": 5879
     },
     {
      "path": "kit/themes/journey-whiteboard.json",
      "role": "data",
-     "sha256": "fa17873f370068ca94be6d09d79ce480e37f049c2a66733a535dce36687013f2",
+     "sha256": "0992941e134ecf78001001af7e00178afb658f04712b448987982dd715799d3b",
      "bytes": 3403
     },
     {
@@ -4915,7 +4915,7 @@
      "bytes": 127807
     }
    ],
-   "hash": "e8abc056aaba"
+   "hash": "eb1f214dcfb4"
   },
   {
    "id": "theme.kanban",

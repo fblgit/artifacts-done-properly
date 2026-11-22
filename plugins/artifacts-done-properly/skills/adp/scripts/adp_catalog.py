@@ -34,6 +34,7 @@ The inventory JSON (schema adp-inventory/1); paths are relative to the directory
                 json        the css against the json, light and dark: only_css, only_json, differ (json scale counts as light; a token
                             that follows another through var() or dark_via is compared by the value it ends up with)
                 convention  the json against the convention, light and dark: missing, extra
+                contrast    [[scheme, text, ground, ratio]] each CONTRAST_PAIRS pair the json gives as plain hex (a var() followed), WCAG
   entries{id}   every other catalog entry: kind (the first part of the id), files (the ones scanned),
                 declares    the @tokens tag of its main file: required, optional (a trailing ?), patterns (a <placeholder>); null without
                             the tag
@@ -606,6 +607,22 @@ def scheme_of(rules):
     return 'dark-media' if dark else 'other'
 
 
+TEXT_INKS, SIGNALS, SURFACES = ('--ink', '--ink-2', '--accent'), ('--danger', '--ok', '--warn', '--info', '--wait'), ('--panel', '--sunk', '--bg')
+CONTRAST_PAIRS = [(f, b) for f in TEXT_INKS + SIGNALS for b in SURFACES] + [(f, f + '-soft') for f in SIGNALS] + [('--accent-ink', '--accent')]
+
+
+def ratio(a, b):
+    """The WCAG contrast ratio of two plain hex colours, None when either is anything else."""
+    def lum(h):
+        if not re.fullmatch(r'#(?:[0-9a-f]{3}|[0-9a-f]{6})', h or ''):
+            return None
+        h = h[1:] if len(h) == 7 else ''.join(c * 2 for c in h[1:])
+        c = [(x / 12.92 if x <= .04045 else ((x + .055) / 1.055) ** 2.4) for x in (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))]
+        return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]
+    la, lb = lum(a), lum(b)
+    return None if la is None or lb is None else round((max(la, lb) + .05) / (min(la, lb) + .05), 2)
+
+
 def theme(base, css, data, ref):
     """One theme: its css rule by rule, what it declares and reads, the css against the json, the json against the convention ref.
     Returns it with the json as read."""
@@ -648,9 +665,13 @@ def theme(base, css, data, ref):
         sides[s] = {'only_css': sorted(set(cm) - set(jm)), 'only_json': sorted(set(jm) - mine),
                     'differ': sorted(k for k in mine & set(jm) if canon(cm.get(k, calt.get(k))) != canon(jm[k]) and end(cm, calt, k) != end(jm, jalt, k))}
     conv = {s: {'missing': sorted(set(ref[s]) - set(j[s])), 'extra': sorted(set(j[s]) - set(ref[s]))} for s in ('light', 'dark')} if ref else None
+    jl = dict(j.get('scale', {}), **j['light'])      # the json, which a layer theme fills with its base's values too
+    col = lambda s, k: end(jl, {}, k) if s == 'light' else end(j['dark'], jl, k)
+    contrast = [[s, f, b, r] for s in ('light', 'dark') for f, b in CONTRAST_PAIRS if (r := ratio(col(s, f), col(s, b))) is not None]
     return {'files': {'css': css, 'json': data}, 'blocks': sorted(blocks.values(), key=lambda b: b['line']), 'declares': declares,
             'media_differs': sorted(k for k in set(dark) | set(maps['dark-media']) if dark.get(k) != maps['dark-media'].get(k)),
-            'uses': {r: {'by': sorted(by), 'declared': r in reads} for r, by in uses.items()}, 'json': sides, 'convention': conv}, j
+            'uses': {r: {'by': sorted(by), 'declared': r in reads} for r, by in uses.items()}, 'json': sides, 'convention': conv,
+            'contrast': contrast}, j
 
 
 def declared(cat, e):
@@ -795,6 +816,15 @@ def check_catalog(argv):
                 errors.append(f"{eid}: hash {e['hash']} != computed {want}")
         else:
             errors.append(f'{eid}: entry has no hash')
+    for e in (e for e in cat['entries'] if e.get('kind') == 'theme'):      # the theme shape; a missing file is reported above
+        css, data = (next((root / f['path'] for f in e['files'] if f.get('role') == r and (root / f['path']).is_file()), None) for r in ('style', 'data'))
+        t = css_clean(css.read_text(encoding='utf-8')) if css else ''
+        for which, rx in ((':root', r'(?:^|[;}\s]):root\s*\{'), ('@media (prefers-color-scheme: dark)', r'@media[^{]*prefers-color-scheme\s*:\s*dark'),
+                          (':root[data-theme="dark"]', r':root\[data-theme=["\']?dark["\']?\]\s*\{')):
+            errors += [f"{e['id']}: theme: no {which} block"] if css and not re.search(rx, t) else []
+        j = json.loads(data.read_text(encoding='utf-8')) if data else {}
+        if data and not (isinstance(j.get('light'), dict) and isinstance(j.get('dark'), dict) and j.get('fonts') == e.get('fonts')):
+            errors.append(f"{e['id']}: theme: its JSON lacks light, dark or the entry's fonts url")
     tree = {p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()}
     for path in sorted(tree):
         if path in referenced or path in PAGE_FILES or path.startswith('parts/'):
