@@ -1,8 +1,9 @@
 /* part:page.style.kit.margin-notes */
-/* Kit css: clause with margin notes    kit version 0.1.0    pairs with kit/layout/margin-notes.js (also works on hand-written markup)
-   .kit-mn > section.kit-mn-sec (h2.kit-mn-sh > .kit-mn-sn, p.kit-mn-intro, article.kit-mn-clause[data-vo-tone] > div.kit-mn-body (h3.kit-mn-h > .kit-mn-no .kit-mn-t sup.kit-mn-ref, p.kit-mn-text, details.kit-mn-fn) + aside.kit-mn-margin (.kit-mn-state, .kit-mn-own, .kit-mn-ans, .kit-mn-ack))
+/* Kit css: clause with margin notes    kit version 0.2.0    pairs with kit/layout/margin-notes.js (also works on hand-written markup)
+   .kit-mn > section.kit-mn-sec (h2.kit-mn-sh > .kit-mn-sn, p.kit-mn-intro, article.kit-mn-clause[data-vo-tone] > div.kit-mn-body (h3.kit-mn-h > .kit-mn-no .kit-mn-t sup.kit-mn-ref, p.kit-mn-text, details.kit-mn-fn) + aside.kit-mn-margin (.kit-mn-state, .kit-mn-own, .kit-mn-ans, .kit-mn-ack, div.kit-mn-note[data-sev] > p.kit-mn-nh, p.kit-mn-nb, .kit-mn-acts))
+   0.2: mark.kit-mn-q[data-sev] highlights the words a note is about; .kit-mn-q-on while its note is hovered or focused.
    .kit-mn-bar marks a clause that waits on someone. The layout answers its own width (a container query), so it also works inside a narrow pane.
-   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --f-ui --f-display --f-mono, optional --seam --measure --label-caps --label-case --radius */
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --f-ui --f-display --f-mono, optional --seam --measure --label-caps --label-case --radius --danger --warn --sunk */
 .kit-mn { container-type: inline-size; min-width: 0; max-width: 100%; display: grid; gap: 28px; font-family: var(--f-ui); color: var(--ink); }
 .kit-mn-sec { display: grid; gap: 4px; min-width: 0; }
 .kit-mn-sh { display: flex; align-items: baseline; gap: 12px; margin: 0 0 6px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); font: 700 clamp(1.25rem, 3vw, 1.6rem)/1.2 var(--f-display, var(--f-ui)); text-wrap: balance; }
@@ -35,4 +36,27 @@ html .kit-mn .kit-mn-l { font-family: var(--f-mono); }
   .kit-mn-clause { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .kit-mn-margin { margin-left: 4px; padding: 6px 0 2px 12px; border-left: 2px solid var(--rule); }
 }
+/* 0.2: review notes */
+.kit-mn-clause[data-sev="high"].kit-mn-bar::before { background: var(--danger, var(--seam, var(--accent))); }
+.kit-mn-clause[data-sev="medium"].kit-mn-bar::before { background: var(--warn, var(--seam, var(--accent))); }
+.kit-mn-margin-empty { border-left-color: transparent; }
+.kit-mn-q { color: inherit; background: color-mix(in srgb, var(--warn, #c98a00) 22%, transparent); border-bottom: 2px solid var(--warn, #c98a00); padding: 0 1px; border-radius: 2px; transition: background-color .15s; }
+.kit-mn-q[data-sev="high"] { background: color-mix(in srgb, var(--danger, #c0392b) 16%, transparent); border-bottom-color: var(--danger, #c0392b); }
+.kit-mn-q[data-sev="low"] { background: none; border-bottom: 2px dotted var(--ink-2); }
+.kit-mn-q-on { background: color-mix(in srgb, var(--accent) 30%, transparent); outline: 2px solid var(--accent); outline-offset: 1px; }
+.kit-mn-note { display: grid; gap: 5px; padding: 8px 10px; border: 1px solid var(--rule); border-left: 3px solid var(--ink-2); border-radius: var(--radius, 4px); background: var(--panel, transparent); color: var(--ink); }
+.kit-mn-note[data-sev="high"] { border-left-color: var(--danger, #c0392b); }
+.kit-mn-note[data-sev="medium"] { border-left-color: var(--warn, #c98a00); }
+.kit-mn-nh { display: grid; gap: 2px; } .kit-mn-nh b { font: 600 14px/1.35 var(--f-ui); color: var(--ink); overflow-wrap: anywhere; }
+.kit-mn-note[data-sev="high"] .kit-mn-sev { color: var(--danger, var(--ink-2)); }
+.kit-mn-nb { color: var(--ink-2); } .kit-mn-nq { font-style: italic; color: var(--ink-2); }
+.kit-mn-note-closed { border-left-color: var(--rule); background: transparent; } .kit-mn-note-closed b { font-weight: 400; color: var(--ink-2); text-decoration: line-through; }
+.kit-mn-sug { display: grid; gap: 2px; } .kit-mn-sug q { color: var(--ink); font-style: italic; overflow-wrap: anywhere; }
+.kit-mn-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.kit-mn-btn { font: 500 13px/1.2 var(--f-ui); color: var(--ink); background: transparent; border: 1px solid var(--rule); border-radius: var(--radius, 4px); padding: 5px 10px; cursor: pointer; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
+.kit-mn-btn:hover { background: var(--sunk, transparent); }
+.kit-mn-btn:focus-visible { outline: 3px solid var(--seam, var(--accent)); outline-offset: 2px; }
+.kit-mn-pri { color: var(--on-accent, #fff); background: var(--accent); border-color: var(--accent); }
+.kit-mn-pri:hover { background: var(--accent); filter: brightness(1.08); }
+@media (prefers-reduced-motion: reduce) { .kit-mn-q { transition: none; } }
 /* /part:page.style.kit.margin-notes */

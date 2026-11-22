@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ",
  "ver": "",
- "built": "2026-11-20T11:40:21Z",
+ "built": "2026-11-22T09:56:59Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -776,11 +776,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "c53dbcb8032c"
+   "hash": "724f810724ad"
   },
   {
    "id": "layout.carousel",
@@ -824,11 +824,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "8aa2c49c8055"
+   "hash": "8cfbc3750318"
   },
   {
    "id": "layout.doc-shell",
@@ -873,11 +873,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "637997f255b1"
+   "hash": "4f927b4f31a3"
   },
   {
    "id": "layout.explorer-shell",
@@ -923,11 +923,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "3cf98335200b"
+   "hash": "a0aa95555e35"
   },
   {
    "id": "layout.file-browser",
@@ -975,18 +975,18 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "b364115d1776"
+   "hash": "b6d72f90c6ce"
   },
   {
    "id": "layout.margin-notes",
    "kind": "component",
    "group": "Layouts",
    "name": "Clause with margin notes",
-   "summary": "Numbered clauses with an aside in the margin for state, owner, answer and acknowledgement; history as footnotes.",
+   "summary": "Numbered clauses with an aside in the margin for state, owner, answer and acknowledgement, history as footnotes, and review notes pinned to the words they are about.",
    "tags": [
     "clause",
     "margin",
@@ -997,10 +997,15 @@
     "spec",
     "history",
     "change bar",
-    "manuscript"
+    "manuscript",
+    "review",
+    "annotation",
+    "suggestion",
+    "contract",
+    "comment"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.2.0",
    "requires": [
     "kit.tokens",
     "kit.vocab"
@@ -1014,23 +1019,23 @@
     {
      "path": "kit/layout/margin-notes.js",
      "role": "script",
-     "sha256": "6ea36d50e4792fc2a0078c8a7a74bfe9c2a58e056f296983efebcb7eb1682ffc",
-     "bytes": 7449
+     "sha256": "d18bc5f98f4b205c343743f9cd4523119ed63282aa31a554d76704cda8773a68",
+     "bytes": 13183
     },
     {
      "path": "kit/layout/margin-notes.css",
      "role": "style",
-     "sha256": "f51616578eae911d8c61e0e54221a4502a55157665e0d2228b99a00fa3269b28",
-     "bytes": 4195
+     "sha256": "64d5f64515ab3745fe2b2df11577bab506c10ee54b72ab213ee4ac59f3080b7d",
+     "bytes": 7009
     },
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "03a4025f1526"
+   "hash": "2e3f2f9ae526"
   },
   {
    "id": "layout.stack",
@@ -1077,11 +1082,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "eb3d277593fb"
+   "hash": "3f675957a1b3"
   },
   {
    "id": "layout.topbar",
@@ -1126,11 +1131,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "feef5d2ab885"
+   "hash": "9c30c0c9bd9f"
   },
   {
    "id": "layout.viewer3d",
@@ -1172,11 +1177,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "5e31ad1abb0e"
+   "hash": "49ddeaff4977"
   },
   {
    "id": "kit.md",
@@ -2280,11 +2285,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "c89b009eff56"
+   "hash": "4916d6d9a9bd"
   },
   {
    "id": "pattern.filter-table",
@@ -3168,11 +3173,11 @@
     {
      "path": "kit/samples/layout.json",
      "role": "sample",
-     "sha256": "ff12a3b9ee2c7e3130aa5ef60e749ac6c5ee5f9eee14894f9bd6e27c0763cfc2",
-     "bytes": 46343
+     "sha256": "d67905124a39c86d011b070b23481b4f369d92eef9283f2fed470ed514dc701a",
+     "bytes": 52130
     }
    ],
-   "hash": "c548cfc86416"
+   "hash": "debe7d1e099f"
   },
   {
    "id": "pattern.region-frame",
