@@ -1,0 +1,164 @@
+{
+ "schema": "adp-seed/2",
+ "pack": 1,
+ "of": 1,
+ "docs": [
+  {
+   "collection": "incoming/p-catalog-kit-split-pane-9ad19e89/chunks",
+   "id": "0",
+   "data": {
+    "path": "kit/previews/split-pane.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.preview.kit.split-pane */\n/* The catalog's live preview of kit.split-pane. It rides with the kit and only the catalog page loads it: `adp.py take` leaves it out. */\n(function () {\n'use strict';\nconst { html, useState, useEffect, useRef } = window.htmPreact;\nconst P = window.CatalogPreviews = window.CatalogPreviews || {};\nconst K = () => window.Kit;\nconst first = (samples, part) => samples[Object.keys(samples).find(k => k.endsWith('/' + part + '.json'))];\nconst Sim = ({ children }) => html`<p class=\"pv-sim\"><b>Sandbox</b> ${children}</p>`;\nconst Cases = ({ d, value, set, label = 'Use case' }) => html`<div class=\"pv-row\" role=\"group\" aria-label=${label}><span class=\"pv-label\">${label}</span>\n  ${d.cases.map(c => html`<button type=\"button\" key=${c.id} class=${'pv-btn' + (c.id === value ? ' pri' : '')} aria-pressed=${c.id === value} onClick=${() => set(c.id)}>${c.label}</button>`)}</div>`;\n\nconst node = (tag, text, cls) => { const n = document.createElement(tag); if (text != null) n.textContent = text; if (cls) n.className = cls; return n; };\n// a pane spec is {title, list | text | code} or {split: opts-with-a-and-b}: nested splits are mounted in the pane\nfunction fill(pane, spec, out) {\n  if (spec.split) { out.push(build(pane, spec.split)); return; }\n  pane.style.padding = '12px 14px';\n  pane.append(node('h4', spec.title, 'pv-pane-h'));\n  if (spec.code) pane.append(node('pre', spec.code, 'pv-pane-code'));\n  (spec.text || []).forEach(t => pane.append(node('p', t, 'pv-pane-p')));\n  if (spec.list) { const ul = node('ul', null, 'pv-pane-ul'); spec.list.forEach(t => ul.append(node('li', t))); pane.append(ul); }\n}\nfunction build(host, o, onChange) {\n  const sp = K().splitPane.mount(host, { orientation: o.orientation, size: o.size, min: o.min, max: o.max, collapse: o.collapse, key: o.key, label: o.label, height: '100%', onChange });\n  const kids = [];\n  fill(sp.a, o.a, kids); fill(sp.b, o.b, kids);\n  const destroy = sp.destroy; sp.destroy = () => { kids.forEach(k => k.destroy()); destroy(); };\n  return sp;\n}\nconst CSS = `.pv-pane-h{margin:0 0 8px;font:600 13px/1.3 var(--f-ui)}.pv-pane-p{margin:0 0 8px;font:13px/1.5 var(--f-ui);color:var(--ink-2)}\n.pv-pane-ul{margin:0;padding:0;list-style:none;display:grid;gap:2px;font:13px/1.4 var(--f-ui)}.pv-pane-ul li{padding:5px 8px;border-radius:5px;background:var(--sunk)}\n.pv-pane-code{margin:0;padding:8px 10px;border-radius:6px;background:var(--sunk);font:12px/1.5 var(--f-mono);overflow:auto;white-space:pre}\n.pv-sp-box{height:340px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);overflow:hidden}`;\n\nP['kit.split-pane'] = ({ samples }) => {\n  const d = first(samples, 'split-pane');\n  const [id, setId] = useState(d.cases[0].id);\n  const c = d.cases.find(x => x.id === id);\n  const host = useRef(null), sp = useRef(null);\n  const [st, setSt] = useState(null);\n  useEffect(() => {\n    const onChange = s => setSt(s);\n    sp.current = build(host.current, c.split, onChange);\n    setSt({ size: sp.current.size(), collapsed: sp.current.collapsed() });\n    return () => { sp.current.destroy(); sp.current = null; };\n  }, [id]);\n  const o = c.split;\n  const sides = o.orientation === 'vertical' ? ['top', 'bottom'] : ['left', 'right'];\n  const can = k => o.collapse === 'both' || o.collapse === k || !o.collapse;\n  return html`<div class=\"pv-stack\"><style>${CSS}</style>\n    <${Cases} d=${d} value=${id} set=${setId}/>\n    <${Sim}>${c.context} The page gives each pane its content; the kit only draws the divider and keeps the size${o.key ? ' (remembered in this browser)' : ''}.<//>\n    <div class=\"pv-row\"><span class=\"pv-label\" aria-live=\"polite\">${st ? `first pane ${st.size}%${st.collapsed ? ', ' + (st.collapsed === 'a' ? sides[0] : sides[1]) + ' collapsed' : ''}` : ''}</span>\n      ${['a', 'b'].map((k, i) => can(k) && html`<button type=\"button\" key=${k} class=\"pv-btn\" onClick=${() => sp.current && sp.current.collapse(k)}>Collapse ${sides[i]}</button>`)}\n      <button type=\"button\" class=\"pv-btn\" onClick=${() => sp.current && sp.current.restore()}>Restore</button>\n      <span class=\"pv-label\">Tab to the divider: arrows, Home, End, Enter; double-click resets</span></div>\n    <div class=\"pv-sp-box\"><div ref=${host} style=\"height:100%\"></div></div>\n  </div>`;\n};\n})();\n/* /part:page.script.preview.kit.split-pane */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-split-pane-9ad19e89/chunks",
+   "id": "1",
+   "data": {
+    "path": "kit/samples/split-pane.json",
+    "n": 0,
+    "of": 1,
+    "content": "{\n \"component\": \"split-pane\",\n \"file\": \"kit/split-pane.js\",\n \"about\": \"Three places a page puts two parts side by side or one over the other. The kit is the same in each: it draws the divider and keeps the ratio; the page decides what goes in the panes and what the size is worth.\",\n \"cases\": [\n  {\n   \"id\": \"inbox\",\n   \"label\": \"Incident inbox\",\n   \"context\": \"On-call engineers read an incident list on the left and the open incident on the right; the list can collapse so the write-up gets the whole width, and each engineer keeps their own width.\",\n   \"split\": {\n    \"orientation\": \"horizontal\",\n    \"size\": 34,\n    \"min\": [\n     \"200px\",\n     \"320px\"\n    ],\n    \"max\": [\n     \"60%\",\n     100\n    ],\n    \"collapse\": \"a\",\n    \"key\": \"adp-kit-split-pane:inbox\",\n    \"label\": \"Resize incident list\",\n    \"a\": {\n     \"title\": \"Open incidents\",\n     \"list\": [\n      \"INC-2291 Checkout latency, p95 4.1 s\",\n      \"INC-2288 Webhook retries piling up\",\n      \"INC-2284 EU region: image resize failing\",\n      \"INC-2279 Billing export missed 02:00 run\",\n      \"INC-2275 Search index 40 min behind\",\n      \"INC-2270 Login emails delayed\"\n     ]\n    },\n    \"b\": {\n     \"title\": \"INC-2291 Checkout latency, p95 4.1 s\",\n     \"text\": [\n      \"Started 13:42 UTC after the 13:30 deploy of the pricing service. Payment calls wait on a connection pool sized for last year's traffic.\",\n      \"Mitigation: pool raised from 20 to 60 on two of five nodes; p95 on those nodes is back to 380 ms. Rolling the rest next.\",\n      \"Owner: Priya Nair. Next update at 14:30.\"\n     ]\n    }\n   }\n  },\n  {\n   \"id\": \"query\",\n   \"label\": \"Query and results\",\n   \"context\": \"A reporting page keeps the SQL over its results. The divider moves up and down; the results can fold away to give the query room.\",\n   \"split\": {\n    \"orientation\": \"vertical\",\n    \"size\": 55,\n    \"min\": [\n     15,\n     10\n    ],\n    \"collapse\": \"b\",\n    \"label\": \"Resize query and results\",\n    \"a\": {\n     \"title\": \"Query\",\n     \"code\": \"SELECT region, count(*) AS orders, sum(total_eur) AS revenue\\nFROM orders\\nWHERE placed_at >= date '2026-11-01'\\nGROUP BY region\\nORDER BY revenue DESC;\"\n    },\n    \"b\": {\n     \"title\": \"Result, 5 rows\",\n     \"list\": [\n      \"DACH, 4 812 orders, 612 440 EUR\",\n      \"Nordics, 2 190 orders, 301 075 EUR\",\n      \"Iberia, 1 977 orders, 188 930 EUR\",\n      \"Benelux, 1 204 orders, 176 220 EUR\",\n      \"Baltics, 311 orders, 29 840 EUR\"\n     ]\n    }\n   }\n  },\n  {\n   \"id\": \"review\",\n   \"label\": \"Review desk\",\n   \"context\": \"A review page nests two splitters: the changed files on the left, and on the right the diff over the comment thread.\",\n   \"split\": {\n    \"orientation\": \"horizontal\",\n    \"size\": 28,\n    \"min\": [\n     \"160px\",\n     \"300px\"\n    ],\n    \"collapse\": \"a\",\n    \"label\": \"Resize file list\",\n    \"a\": {\n     \"title\": \"Changed files\",\n     \"list\": [\n      \"billing/invoice.py\",\n      \"billing/tax_rules.py\",\n      \"tests/test_invoice.py\",\n      \"docs/changelog.md\"\n     ]\n    },\n    \"b\": {\n     \"split\": {\n      \"orientation\": \"vertical\",\n      \"size\": 60,\n      \"min\": [\n       20,\n       15\n      ],\n      \"collapse\": \"b\",\n      \"label\": \"Resize diff and comments\",\n      \"a\": {\n       \"title\": \"billing/tax_rules.py\",\n       \"code\": \"-    rate = RATES[country]\\n+    rate = RATES.get(country, RATES[\\\"default\\\"])\\n     return round(net * rate, 2)\"\n      },\n      \"b\": {\n       \"title\": \"Comments, 2\",\n       \"list\": [\n        \"Marta: the default rate should log a warning, a silent fallback hides bad country codes.\",\n        \"Ola: agreed; I will add the log line and a test for an unknown code.\"\n       ]\n      }\n     }\n    }\n   }\n  }\n ]\n}\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-split-pane-9ad19e89/chunks",
+   "id": "2",
+   "data": {
+    "path": "kit/split-pane.css",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.style.kit.split-pane */\n/* Kit css: Split pane    kit version 0.1.0    pairs with kit/split-pane.js\n   .kit-sp (.kit-sp-h side by side, .kit-sp-v stacked) > .kit-sp-pane + .kit-sp-bar (the divider, with .kit-sp-grip) + .kit-sp-pane. The script sets the grid tracks, in fr, so the ratio survives a resize.\n   The divider is a 10px track with a 24px hit area (it overlaps 7px of each pane); the panes keep their own padding and background (a collapsed pane drops them). --kit-sp-h sets the height, --kit-sp-d the divider track.\n   Needs from the board: --panel --rule --ink-3 --accent, optional --seam --radius */\n.kit-sp { display: grid; width: 100%; height: var(--kit-sp-h, 100%); min-width: 0; min-height: 0; }\n.kit-sp-h { grid-auto-rows: minmax(0, 1fr); }\n.kit-sp-v { grid-template-columns: minmax(0, 1fr); }\n.kit-sp-pane { min-width: 0; min-height: 0; overflow: auto; }\n.kit-sp-pane[inert] { overflow: hidden; padding: 0 !important; border-width: 0 !important; }   /* a collapsed pane is nothing, whatever padding or border the page gave it */\n.kit-sp-bar { position: relative; z-index: 1; touch-action: none; user-select: none; -webkit-user-select: none; outline: none; }\n.kit-sp-h > .kit-sp-bar { width: var(--kit-sp-d, 10px); cursor: col-resize; }\n.kit-sp-v > .kit-sp-bar { height: var(--kit-sp-d, 10px); cursor: row-resize; }\n.kit-sp-bar::before { content: \"\"; position: absolute; }\n.kit-sp-h > .kit-sp-bar::before { inset: 0 -7px; }\n.kit-sp-v > .kit-sp-bar::before { inset: -7px 0; }\n/* collapsed: the divider sits on the host's edge, which may clip, so the 24px hit area grows only toward the open pane */\n.kit-sp-h > .kit-sp-bar[data-c=a]::before { inset: 0; inset-inline-end: -14px; }\n.kit-sp-h > .kit-sp-bar[data-c=b]::before { inset: 0; inset-inline-start: -14px; }\n.kit-sp-v > .kit-sp-bar[data-c=a]::before { inset: 0 0 -14px; }\n.kit-sp-v > .kit-sp-bar[data-c=b]::before { inset: -14px 0 0; }\n.kit-sp-bar::after { content: \"\"; position: absolute; background: var(--rule); }\n.kit-sp-h > .kit-sp-bar::after { top: 0; bottom: 0; left: calc(50% - 1px); width: 2px; }\n.kit-sp-v > .kit-sp-bar::after { left: 0; right: 0; top: calc(50% - 1px); height: 2px; }\n.kit-sp-grip { position: absolute; z-index: 1; border-radius: 3px; background: var(--ink-3); box-shadow: 0 0 0 2px var(--panel); pointer-events: none; }\n.kit-sp-h > .kit-sp-bar > .kit-sp-grip { left: 3px; right: 3px; top: calc(50% - 16px); height: 32px; }\n.kit-sp-v > .kit-sp-bar > .kit-sp-grip { top: 3px; bottom: 3px; left: calc(50% - 16px); width: 32px; }\n.kit-sp-bar:hover::after, .kit-sp-drag > .kit-sp-bar::after { background: var(--accent); }\n.kit-sp-bar:hover > .kit-sp-grip, .kit-sp-drag > .kit-sp-bar > .kit-sp-grip { background: var(--accent); }\n.kit-sp-bar:focus-visible { outline: 2px solid var(--seam, var(--accent)); outline-offset: 1px; border-radius: var(--radius, 4px); }\n.kit-sp-drag { user-select: none; -webkit-user-select: none; }\n@media (prefers-reduced-motion: no-preference) { .kit-sp:not(.kit-sp-drag) { transition: grid-template-columns .16s ease, grid-template-rows .16s ease; } }\n/* /part:page.style.kit.split-pane */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-split-pane-9ad19e89/chunks",
+   "id": "3",
+   "data": {
+    "path": "kit/split-pane.js",
+    "n": 0,
+    "of": 1,
+    "content": "/**\n * Split pane\n * Kit.splitPane.mount(el, opts) fills el with two panes and a draggable divider between them, side by side or stacked. The divider is the WAI-ARIA window splitter: role=separator with aria-valuenow, arrow keys, Home and End, Enter to collapse and restore. Pointer, touch and pen drag it. Sizes are percentages of the room the panes share, so resizing the window keeps the ratio; a pane's min and max can be percent or px. A pane can collapse to nothing and come back to where it was, and the size can be remembered in this browser.\n *\n * What it is: the one resizable divider for a page's two-part layouts (list and detail, editor and results, tree and everything else). It does not lay out what is inside the panes: put content in pane.a and pane.b, or mount another split pane in one of them to get three or more parts.\n * Leaves out (the page does it): more than two panes by itself (nest them), the content and its overflow rules, the host's height when stacked, and sharing a size between viewers or devices (the memory is localStorage of one browser).\n * API (small and stable):\n *   Kit.splitPane.mount(el, {a, b, orientation, size, min, max, collapse, step, key, label, height, onChange}) -> split\n *     a, b          nodes or text put in the first and second pane (or fill split.a and split.b yourself)\n *     orientation   \"horizontal\" (default): panes side by side, divider vertical; \"vertical\": panes stacked, divider horizontal\n *     size          size of the first pane in percent, the default (default 50); a double click on the divider returns to it\n *     min, max      limits per pane: a number or \"30%\" (percent), \"240px\", or [first, second]; min default 10 (percent), max default 100. max is the pane's own largest size\n *     collapse      which pane may collapse to nothing: \"both\" (default), \"a\", \"b\" or \"none\". Dragging past half of a min collapses; so does an arrow key pressed at the min\n *     step          arrow key step in percent (default 5)\n *     key           localStorage key that remembers the size and the collapse per viewer; no key, nothing is remembered\n *     label         accessible name of the divider (default \"Resize panes\"); height: a CSS length, default the host's height\n *     onChange({size, collapsed})   after the size or the collapse changes by the viewer or by the calls below (not on mount, not when a window resize forces a limit)\n *   split.a, split.b          the pane elements          split.el   the root\n *   split.size() -> percent of the first pane (0 to 100)     split.setSize(percent)     clamped to the limits (0 or 100 collapses a side that may)\n *   split.collapsed() -> \"a\" | \"b\" | null                    split.collapse(\"a\" | \"b\")  only a side collapse allows\n *   split.restore()           back to the size before the collapse\n *   split.destroy()           remove listeners and the markup (the panes' content goes with it)\n * Keys on the divider (APG window splitter): the arrows across the divider move it (Left and Right, or Up and Down when stacked; mirrored in right-to-left text), Home and End go to the smallest and largest first pane, Enter collapses the first pane (the second when collapse is \"b\") or restores; an arrow pressed at a limit collapses a side that may collapse, and from a collapsed pane an arrow away from the edge restores. The double click is a pointer shortcut only: the keys reach every size.\n * The 7px of hit area either side of the divider covers the edge of a pane, scrollbar included. The host needs a width; stacked it also needs a height (or pass height). The collapsed pane is inert, so its content takes no focus.\n *\n * @id        kit.split-pane\n * @kind      component\n * @group     Kit\n * @status    new\n * @version   0.1.0\n * @updated   2026-11-22\n * @summary   Two panes and a resizable divider, side by side or stacked, nestable: drag or arrow keys, min and max, collapse and restore, double-click for the default, size remembered per viewer.\n * @tags      split pane, splitter, resize, divider, panes, layout, master detail, window splitter, collapse, keyboard, pointer, touch\n * @requires  none\n * @files     kit/split-pane.css, kit/samples/split-pane.json, kit/previews/split-pane.js\n * @provides  Kit.splitPane.mount\n * @config    Kit.splitPane.mount(el, opts) | a, b (nodes), orientation (horizontal or vertical), size (percent, default 50), min, max (percent, \"240px\" or [first, second]), collapse (both, a, b, none), step (percent), key (localStorage), label, height, onChange({size, collapsed})\n * @tokens    --panel --rule --ink-3 --accent --seam? --radius?\n * @globals   none\n * @db        none\n * @related   layout.explorer-shell, pattern.master-detail\n * @source    ADP extra kits | WAI-ARIA Authoring Practices, window splitter pattern | the keys, the separator and its aria-valuenow\n * @preview   {\"render\": \"kit.split-pane\", \"samples\": [\"kit/samples/split-pane.json\"]}\n */\n(function () {\n'use strict';\nconst Kit = window.Kit = window.Kit || { version: '0.1.0' };\nlet uid = 0;\nconst clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));\nconst el = (cls, tag = 'div') => { const e = document.createElement(tag); e.className = cls; return e; };\nconst pair = (v, d) => v == null ? [d, d] : Array.isArray(v) ? v : [v, v];\n\nfunction mount(host, opts = {}) {\n  const horiz = opts.orientation !== 'vertical', step = opts.step || 5, mode = opts.collapse || 'both';\n  const can = { a: mode === 'both' || mode === 'a', b: mode === 'both' || mode === 'b' };\n  const dflt = clamp(+(opts.size == null ? 50 : opts.size) || 50, 0, 100);\n  const id = 'kit-sp-' + (++uid);\n  const root = el('kit-sp kit-sp-' + (horiz ? 'h' : 'v')), pa = el('kit-sp-pane'), pb = el('kit-sp-pane'), bar = el('kit-sp-bar');\n  const grip = el('kit-sp-grip', 'span');\n  pa.id = id; grip.setAttribute('aria-hidden', 'true'); bar.append(grip);\n  bar.setAttribute('role', 'separator'); bar.tabIndex = 0;\n  bar.setAttribute('aria-orientation', horiz ? 'vertical' : 'horizontal');\n  bar.setAttribute('aria-controls', id); bar.setAttribute('aria-label', opts.label || 'Resize panes');\n  root.style.setProperty('--kit-sp-h', opts.height || '100%');   // set on every root so a nested split never inherits its parent's\n  if (opts.a != null) pa.append(opts.a);\n  if (opts.b != null) pb.append(opts.b);\n  root.append(pa, bar, pb); host.append(root);\n\n  let want = dflt, last = dflt, drag = null;       // want: the size the viewer chose; last: the size before a collapse\n  if (opts.key) try { const [v, l] = String(localStorage.getItem(opts.key)).split('|').map(parseFloat); if (isFinite(v)) want = clamp(v, 0, 100); if (l > 0 && l < 100) last = l; } catch (_) {}\n\n  const avail = () => { const r = root.getBoundingClientRect(), b = bar.getBoundingClientRect(); return (horiz ? r.width - b.width : r.height - b.height) || 1; };\n  function limits() {\n    const w = avail(), f = v => typeof v === 'string' && v.endsWith('px') ? parseFloat(v) / w * 100 : parseFloat(v);\n    const [n0, n1] = pair(opts.min, 10).map(f), [x0, x1] = pair(opts.max, 100).map(f);\n    let lo = Math.max(n0, 100 - x1), hi = Math.min(x0, 100 - n1);\n    if (lo > hi) lo = hi = (lo + hi) / 2;\n    return [lo, hi];\n  }\n  function place(raw, snap) {                       // snap: how far past a limit collapses (1 = the limit itself, .5 = half of it, 0 = only an exact 0 or 100)\n    const [lo, hi] = limits();\n    if (can.a && (raw <= 0 || raw < lo * snap)) return 0;\n    if (can.b && (raw >= 100 || raw > 100 - (100 - hi) * snap)) return 100;\n    return clamp(raw, lo, hi);\n  }\n  const side = p => p <= 0 && can.a ? 'a' : p >= 100 && can.b ? 'b' : null;\n  const eff = () => place(want, 0);               // a size the window can no longer hold is clamped, never collapsed\n\n  function render() {\n    const p = eff(), [lo, hi] = limits(), c = side(p);\n    root.style[horiz ? 'gridTemplateColumns' : 'gridTemplateRows'] = `minmax(0, ${p}fr) auto minmax(0, ${100 - p}fr)`;\n    pa.inert = c === 'a'; pb.inert = c === 'b'; bar.dataset.c = c || '';\n    bar.setAttribute('aria-valuenow', Math.round(p));\n    bar.setAttribute('aria-valuemin', can.a ? 0 : Math.round(lo));\n    bar.setAttribute('aria-valuemax', can.b ? 100 : Math.round(hi));\n    return c;\n  }\n  function save() { if (opts.key) try { localStorage.setItem(opts.key, want + '|' + last); } catch (_) {} }\n  function set(raw, snap = 0) {\n    const p = place(raw, snap), was = eff();\n    want = p; if (!side(p)) last = p;\n    const c = render();\n    if (!drag) save();\n    if (p !== was && opts.onChange) opts.onChange({ size: api.size(), collapsed: c });\n  }\n\n  const off = [];\n  const on = (t, ty, f) => { t.addEventListener(ty, f); off.push(() => t.removeEventListener(ty, f)); };\n  const at = e => horiz ? e.clientX : e.clientY;\n  const rtl = () => horiz && getComputedStyle(root).direction === 'rtl';\n  on(bar, 'pointerdown', e => {\n    if (e.button > 0) return;\n    drag = { x: at(e), p: eff(), w: avail(), s: rtl() ? -1 : 1 };\n    try { bar.setPointerCapture(e.pointerId); } catch (_) {}\n    root.classList.add('kit-sp-drag');\n  });\n  on(bar, 'pointermove', e => { if (drag) set(drag.p + (at(e) - drag.x) * drag.s / drag.w * 100, .5); });\n  const end = () => { if (drag) save(); drag = null; root.classList.remove('kit-sp-drag'); };\n  on(bar, 'pointerup', end); on(bar, 'pointercancel', end);\n  on(bar, 'dblclick', () => set(dflt));\n  on(bar, 'keydown', e => {\n    if (e.ctrlKey || e.metaKey || e.altKey) return;\n    const p = eff(), c = side(p), [lo, hi] = limits();\n    const grow = horiz ? (rtl() ? 'ArrowLeft' : 'ArrowRight') : 'ArrowDown', shrink = horiz ? (rtl() ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';\n    const nudge = d => { const r = p + d; set(d < 0 && p > lo && r < lo ? lo : d > 0 && p < hi && r > hi ? hi : r, 1); };   // reach the limit before collapsing past it\n    if (e.key === grow) { if (c === 'a') set(last); else if (!c) nudge(step); }\n    else if (e.key === shrink) { if (c === 'b') set(last); else if (!c) nudge(-step); }\n    else if (e.key === 'Home') set(lo);\n    else if (e.key === 'End') set(hi);\n    else if (e.key === 'Enter') c ? set(last) : set(can.a ? 0 : can.b ? 100 : p);\n    else return;\n    e.preventDefault();\n  });\n  const ro = window.ResizeObserver ? new ResizeObserver(render) : null;\n  if (ro) ro.observe(root); else { on(window, 'resize', render); }\n  render();\n\n  const api = {\n    a: pa, b: pb, el: root,\n    size: () => Math.round(eff() * 10) / 10,\n    setSize: v => set(+v),\n    collapsed: () => side(eff()),\n    collapse: s => set(s === 'b' ? 100 : 0),\n    restore: () => set(last),\n    destroy() { off.forEach(f => f()); if (ro) ro.disconnect(); root.remove(); },\n  };\n  return api;\n}\n\nKit.splitPane = Object.freeze({ mount });\n})();\n"
+   }
+  },
+  {
+   "collection": "incoming",
+   "id": "p-catalog-kit-split-pane-9ad19e89",
+   "data": {
+    "by": "catalog",
+    "at": "",
+    "summary": "Kit kit.split-pane 0.1.0 (4 files)",
+    "threads": [],
+    "base": {
+     "version": "",
+     "page_hash": "",
+     "docs": {}
+    },
+    "parts": [],
+    "files": [
+     {
+      "path": "kit/previews/split-pane.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "8b0127dc299351c33bb10e46f92d7fc83a172658cc1aedfe41d341c992e3fdc1",
+      "size": 4357,
+      "chunks": 1
+     },
+     {
+      "path": "kit/samples/split-pane.json",
+      "ifMatch": null,
+      "contentType": "application/json",
+      "sha256": "e7ccc4831940457bcfb343a57db20b2ccbe6c8be25981974adc10ff8643ff333",
+      "size": 3636,
+      "chunks": 1
+     },
+     {
+      "path": "kit/split-pane.css",
+      "ifMatch": null,
+      "contentType": "text/css",
+      "sha256": "b00a6e2f951ecc9347cafb48c0b0d4d6d8b1839960976ed9d8dc600620f515da",
+      "size": 3126,
+      "chunks": 1
+     },
+     {
+      "path": "kit/split-pane.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "8a2e7186dc9fb24d63b14e7f63f4491453a00fb5853578544212cb5e6c02b60a",
+      "size": 10713,
+      "chunks": 1
+     }
+    ],
+    "live_files": {},
+    "status": "new",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    },
+    "entry": {
+     "id": "kit.split-pane",
+     "kind": "component",
+     "group": "Kit",
+     "name": "Split pane",
+     "summary": "Two panes and a resizable divider, side by side or stacked, nestable: drag or arrow keys, min and max, collapse and restore, double-click for the default, size remembered per viewer.",
+     "tags": [
+      "split pane",
+      "splitter",
+      "resize",
+      "divider",
+      "panes",
+      "layout",
+      "master detail",
+      "window splitter",
+      "collapse",
+      "keyboard",
+      "pointer",
+      "touch"
+     ],
+     "status": "new",
+     "version": "0.1.0",
+     "requires": [],
+     "globals": [],
+     "provides": [
+      "Kit.splitPane.mount"
+     ],
+     "main": "kit/split-pane.js",
+     "files": [
+      {
+       "path": "kit/split-pane.js",
+       "role": "script",
+       "sha256": "8a2e7186dc9fb24d63b14e7f63f4491453a00fb5853578544212cb5e6c02b60a",
+       "bytes": 10713
+      },
+      {
+       "path": "kit/split-pane.css",
+       "role": "style",
+       "sha256": "b00a6e2f951ecc9347cafb48c0b0d4d6d8b1839960976ed9d8dc600620f515da",
+       "bytes": 3126
+      },
+      {
+       "path": "kit/samples/split-pane.json",
+       "role": "sample",
+       "sha256": "e7ccc4831940457bcfb343a57db20b2ccbe6c8be25981974adc10ff8643ff333",
+       "bytes": 3636
+      },
+      {
+       "path": "kit/previews/split-pane.js",
+       "role": "preview",
+       "sha256": "8b0127dc299351c33bb10e46f92d7fc83a172658cc1aedfe41d341c992e3fdc1",
+       "bytes": 4357
+      }
+     ],
+     "hash": "4f0729d7dd95"
+    }
+   }
+  }
+ ]
+}
