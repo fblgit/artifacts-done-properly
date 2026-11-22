@@ -46,6 +46,7 @@ REPO = "https://github.com/fblgit/artifacts-done-properly"
 WELCOME = Path(__file__).with_name("welcome.html")
 BOOT_ENTRY = "pattern.inbox"     # the entry the page runs to apply the proposals: it and its requires are published directly
 MAX_FILES, MAX_BYTES = 60, 600 * 1024      # one proposal = one publish call; a real call of 100 files / 900 KB went through, so stay well under it
+BATCH_WRITES, BATCH_BYTES = 50, 700 * 1024      # an ArtifactData batch holds at most 50 writes and 1 MiB: stay under it
 CHUNK = 100 * 1024     # a chunk doc holds this many characters of a file (adp_loop.propose splits at CHUNK // 2 of 200 KB)
 CTYPE = {".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".md": "text/markdown", ".txt": "text/plain", ".html": "text/html"}
 CAPABILITIES = {
@@ -267,9 +268,12 @@ def cmd_kit_pack(a):
             raise Fail("%s: its files differ from its record in catalog.json: run adp_catalog.py build" % i)
         # the page adds this record to catalog.json once the files are applied (parts/catalog.js)
         docs[-1]["data"].update(entry=e, summary="Kit %s %s (%d files)" % (i, e.get("version", ""), len(files)))
+        size = len(json.dumps(docs, ensure_ascii=False).encode("utf-8"))
+        if len(docs) > BATCH_WRITES or size > BATCH_BYTES:      # docs/kit-json.md: one kit is one batch
+            raise Fail("%s needs %d writes / %d KB: one batch takes %d / %d KB" % (i, len(docs), size // 1024, BATCH_WRITES, BATCH_BYTES // 1024))
         out.mkdir(parents=True, exist_ok=True)
         write_text(out / (i + ".json"), json.dumps({"schema": "adp-seed/2", "pack": 1, "of": 1, "docs": docs}, ensure_ascii=False, indent=1) + "\n")
-        print("%s %s: %d files -> %s" % (i, e.get("version", ""), len(files), out / (i + ".json")))
+        print("%s %s: %d files, %d writes -> %s" % (i, e.get("version", ""), len(files), len(docs), out / (i + ".json")))
     return 0
 
 
@@ -309,9 +313,9 @@ def cmd_update(a):
         shutil.rmtree(out)
     out.mkdir(parents=True)
     batches, cur, size = [], [], 0
-    for w in writes:      # an ArtifactData batch holds at most 50 writes and 1 MiB; the order is kept (a proposal's chunks first, its doc last)
+    for w in writes:      # the order is kept (a proposal's chunks first, its doc last)
         n_bytes = len(json.dumps(w, ensure_ascii=False).encode("utf-8"))
-        if cur and (len(cur) >= 50 or size + n_bytes > 700 * 1024):
+        if cur and (len(cur) >= BATCH_WRITES or size + n_bytes > BATCH_BYTES):
             batches.append(cur); cur, size = [], 0
         cur.append(w); size += n_bytes
     batches.append(cur)

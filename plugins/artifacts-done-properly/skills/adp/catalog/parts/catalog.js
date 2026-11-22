@@ -88,19 +88,31 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
   // catalog.json with that record, and the inbox applies it like any file: What changed and the manifest follow. It is computed once nothing is pending, on the merged catalog.json.
   const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
   let indexing = false;
+  const note = (...m) => {      // why the index did not change, in the Incoming panel: an editor's tab only (a viewer never writes)
+    m = m.filter(Boolean).join(' · ');
+    if (!sec || !(window.ADP && ADP.user && ADP.user.canEdit)) return;
+    let p = sec.querySelector('.index-note');
+    if (!p) { p = document.createElement('p'); p.className = 'index-note'; p.setAttribute('role', 'status'); sec.prepend(p); }
+    p.textContent = m; p.hidden = !m; if (m) sec.hidden = false;
+  };
+  // a record is indexed only when the proposal delivered every file it lists, with the same sha256
+  const delivered = d => (d.entry.files || []).every(f => (d.files || []).some(x => x.path === f.path && x.sha256 === f.sha256));
   db.collection('incoming').onSnapshot(async snap => {
     const docs = snap.docs.filter(d => d.exists).map(d => Object.assign({}, d.data(), { pid: d.id })), kits = {};
     // each kit proposal is indexed once: a later removal or update of that kit is never undone from its old record
-    const todo = docs.filter(d => d.status === 'applied' && !d.indexed && d.entry && ID.test(d.entry.id || '')).sort((a, b) => ((a.applied || {}).at > (b.applied || {}).at ? 1 : -1));
+    const due = docs.filter(d => d.status === 'applied' && !d.indexed && d.entry && ID.test(d.entry.id || ''));
+    const bad = due.filter(d => !delivered(d)), warn = bad.length ? 'index not updated for ' + bad.map(d => d.entry.id).join(', ') + ': its record lists files or hashes its proposal did not deliver' : '';
+    const todo = due.filter(delivered).sort((a, b) => ((a.applied || {}).at > (b.applied || {}).at ? 1 : -1));
     todo.forEach(d => { kits[d.entry.id] = d.entry; });      // the newest applied record of each kit
     const at = d => (d.applied || {}).at || '';      // Landing's "New entries": the applied kits, newest first
     set({ added: docs.filter(d => d.status === 'applied' && d.entry && ID.test(d.entry.id || '')).sort((a, b) => (at(a) < at(b) ? 1 : -1)).map(d => d.entry).filter((e, i, l) => l.findIndex(x => x.id === e.id) === i).slice(0, 20) });
+    if (!indexing) note(warn);
     if (indexing || !Object.keys(kits).length || docs.some(d => d.status === 'new' || d.status === 'merged')) return;      // the index is computed after every pending proposal is merged
     indexing = true;
     try {
       const text = await (await fetch('catalog.json', { cache: 'no-store' })).text(), cat = JSON.parse(text), base = await sha(text);
       const mr = await db.doc('manifest/current').get(), mv = (mr.exists && mr.data()) || {}, rec = ((mv.data && !mv.parts ? mv.data : mv).files || {})['catalog.json'];
-      if (rec && base.slice(0, 12) !== rec) return;      // this tab reads an older catalog.json than the record holds: a current tab proposes
+      if (rec && base.slice(0, 12) !== rec) return note(warn, 'index not updated: this tab reads an older catalog.json, reload it');      // this tab reads an older catalog.json than the record holds: a current tab proposes
       const add = Object.values(kits).filter(e => !cat.entries.some(x => x.id === e.id && x.hash === e.hash));
       // settled: the index holds the record, or a newer proposal of the same kit replaced it. A held index proposal leaves its kit to be proposed again
       const settled = todo.filter(d => kits[d.entry.id] !== d.entry || !add.includes(d.entry));
@@ -112,7 +124,7 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
           files: [{ path: 'catalog.json', ifMatch: base, contentType: 'application/json', sha256: await sha(content), size: new TextEncoder().encode(content).length, chunks: n }] });
       }
       for (const d of settled) await db.doc('incoming/' + d.pid).update({ indexed: true });
-    } catch (_) {} finally { indexing = false; }      // a viewer cannot write: an editor's tab does it
+    } catch (err) { note(warn, 'index not updated (' + ((err && err.message) || err) + '): reload this tab'); } finally { indexing = false; }      // a viewer cannot write: an editor's tab does it
   }, () => {});
 })();
 
@@ -249,7 +261,7 @@ function Howto() {
 function Landing() {
   const s = useS();
   const k = Object.keys(KIND).map(x => [x, s.entries.filter(e => e.kind === x)]).filter(([, l]) => l.length);
-  const fresh = s.added.map(e => byId(e.id) || e);      // the kits applied through the inbox, newest first (the incoming listener keeps them)
+  const fresh = s.added.map(e => byId(e.id)).filter(Boolean);      // the kits applied through the inbox that the catalog still holds, newest first
   return html`<section class="sheet" data-part="catalog.landing" data-comment-target aria-label="Catalog">
     <div class="land">
       <h2>Take a part instead of rebuilding it</h2>

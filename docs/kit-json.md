@@ -29,12 +29,21 @@ Its own files only, all text under `kit/`, at most 60 files and 600 KB. No file 
 ## Pack
 
 `python3 -I <adp skill folder>/scripts/publish_catalog.py kit pack ID ... [--catalog-dir D] [--out extras]` writes `<out>/<ID>.json` from a
-built catalog folder that holds the entry.
+built catalog folder that holds the entry, and prints its writes. A pack over one batch (50 writes or 700 KB: each file is one chunk doc
+per 100 KB, plus the proposal doc) is refused.
 
 ## Push
 
-ArtifactData batches: every doc of each pack, in file order, as `{op: "set", collection, doc_id: <id>, data}`. Several kits fit one batch (at most 50 writes and 1 MiB).
+ArtifactData batches: every doc of each pack, in file order, as `{op: "set", collection, doc_id: <id>, data}`. One kit is one batch; several kits
+fit one while their writes total 50 or fewer and 1 MiB.
 
 The catalog does the rest while an editor has it open: the inbox publishes the files and records it in `What changed`, then the page adds
 `entry` to its own `catalog.json` through the same inbox. Nobody sends `catalog.json`. A catalog whose page predates this (`parts/catalog.js`)
-publishes the files and never lists the kit.
+publishes the files and never lists the kit. The page indexes a record only when its proposal delivered every file the record lists, with
+the same sha256; when it does not index, the Incoming panel says why.
+
+## Update
+
+None yet. A pack proposes new files (`ifMatch: null`), so a new version of an installed kit is held, never applied. `publish_catalog.py update`
+is no route either: it compares the base catalog with the live one, so it proposes removing an installed kit's files and drops its record from
+`catalog.json`.

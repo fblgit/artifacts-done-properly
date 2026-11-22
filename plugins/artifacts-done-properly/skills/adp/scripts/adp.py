@@ -837,7 +837,7 @@ def suggest(a):
         seen = {f: want & set(WORD.findall(v.lower())) for f, v in fields.items()}
         score = 3 * len(hit) + len(seen['name/summary']) + len(seen['id']) + 2 * len(seen['provides']) + len(seen['about'])
         if score: groups.setdefault(kind, []).append((score, e['id'], {'id': e['id'], 'kind': kind, 'why': '; '.join(([f"tags: {', '.join(hit)}"] if hit else []) + [f"{f}: {', '.join(sorted(w))}" for f, w in seen.items() if w]),
-                  'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') != 'sample'])}))
+                  'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') not in ('sample', 'preview')])}))
     out = [x[2] for k in sorted(groups) for x in sorted(groups[k], key=lambda t: (-t[0], t[1]))[:n]]
     if warn: sys.stderr.write('warning: ' + warn + '\n')
     if missing:
@@ -859,7 +859,7 @@ def kit(a):
             emit({'id': e['id'], 'kind': e['id'].split('.')[0], 'name': e.get('name'), 'summary': e.get('summary'), 'tags': e.get('tags', [])})
         return 0
     e = next((x for x in cat['entries'] if x['id'] == pos[1]), None) or sys.exit(f'no entry {pos[1]} in the catalog')
-    paths = [f['path'] for f in e['files'] if f.get('role') != 'sample']; sample = [f['path'] for f in e['files'] if f.get('role') == 'sample']
+    paths = [f['path'] for f in e['files'] if f.get('role') not in ('sample', 'preview')]; sample = [f['path'] for f in e['files'] if f.get('role') == 'sample']
     heads, missing, calls = read_headers(src, [e]); h = heads.get(e['id'], {})      # about, db, config, source and changes live in the main-file header
     if missing and not calls: sys.stderr.write('note: the main-file header is not on disk, so about and the header fields are missing\n')      # a local catalog: no call to offer
     note = {'note': 'the main-file header is not on disk, so about and the header fields are missing; read it, then run the command again', 'fetch': calls} if calls else {}

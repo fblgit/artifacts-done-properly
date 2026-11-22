@@ -158,6 +158,12 @@ class PlanTests(Base):
         self.assertEqual((prop["data"]["entry"], prop["data"]["status"], prop["data"]["files"][0]["ifMatch"]), (entry, "new", None))
         code, _, err = run("kit", "pack", "kit.table", "--catalog-dir", str(real), "--out", str(ext))      # its sample is a key of a shared bundle
         self.assertEqual((code, "kit/samples/kit.json" in err), (1, True))
+        files = [{"path": "kit/big/%02d.js" % k, "sha256": hashlib.sha256(b"x").hexdigest(), "bytes": 1} for k in range(50)]      # 50 chunks + the proposal: 51 writes
+        (self.cat / "kit" / "big").mkdir(parents=True)
+        for f in files: (self.cat / f["path"]).write_text("x")
+        (self.cat / "catalog.json").write_text(json.dumps({"entries": [{"id": "kit.big", "files": files}]}))
+        code, _, err = run("kit", "pack", "kit.big", "--catalog-dir", str(self.cat), "--out", str(ext))
+        self.assertEqual((code, "51 writes" in err), (1, True))
 
     def test_a_file_that_is_not_text_stops_the_plan(self):
         cj = json.loads((self.cat / "catalog.json").read_text())
