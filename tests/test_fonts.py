@@ -162,11 +162,6 @@ class ThemeFonts(unittest.TestCase):
             j = json.loads(Path(os.path.join(THEMES, t + '.json')).read_text(encoding='utf-8'))['light']
             css = css_tokens(Path(os.path.join(THEMES, t + '.css')).read_text(encoding='utf-8'))
             with self.subTest(theme=t):
-                if not css:         # a layer over another theme (glaze-depth over glaze) wears that theme's fonts
-                    base = [r for r in self.cat['theme.' + t]['requires'] if r.startswith('theme.')]
-                    self.assertTrue(base, t + ' sets no --f-* token and requires no theme')
-                    self.assertEqual(self.cat[base[0]]['fonts'], self.cat['theme.' + t]['fonts'])
-                    continue
                 self.assertEqual({k: css[k] for k in FONT_TOKENS if k in css}, {k: j[k] for k in FONT_TOKENS if k in j})
 
     def test_every_theme_sets_the_one_convention(self):

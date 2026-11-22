@@ -1,5 +1,5 @@
 /* part:page.script.previews.b7 */
-/* Live previews of batch 7 (foundations): the state vocabulary, the Glaze depth tokens, the Glaze surfaces, the type roles, the side drawer, the carousel strip, the region frame and keep-state.
+/* Live previews of batch 7 (foundations): the state vocabulary, the Glaze surfaces, the type roles, the side drawer, the carousel strip, the region frame and keep-state.
    Each mounts the entry's own published file on its own published sample (invented content). Nothing leaves the page. */
 (function () {
 'use strict';
@@ -18,17 +18,6 @@ const STYLE = `
 .pv7-line > span:first-child { font: 600 14px/1.3 var(--f-ui); overflow-wrap: anywhere; min-width: 0; }
 .pv7-line .pv7-raw { grid-column: 1 / -1; font: 12px/1.3 var(--f-mono); color: var(--ink-2); }
 @media (max-width: 640px) { .pv7-line { grid-template-columns: minmax(0, 1fr) auto; } .pv7-line > span:first-child { grid-column: 1 / -1; } }
-.pv7-sw { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-.pv7-sw div { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); font: 12px/1.3 var(--f-mono); color: var(--ink-2); min-width: 0; overflow-wrap: anywhere; }
-.pv7-sw i { display: block; height: 28px; border-radius: 8px; border: 1px solid var(--rule-2); }
-.pv7-lit { padding: 20px; border-radius: 26px; background: var(--panel); box-shadow: inset 0 1.5px 0 var(--rim, transparent), inset 0 -22px 26px -24px var(--pool, transparent), var(--glz-sh-1, var(--shadow)); display: grid; gap: 10px; }
-.pv7-bead { width: 26px; height: 26px; border-radius: 50%; display: inline-block; vertical-align: middle; }
-.pv7-seam { height: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--seam-0, var(--seam)), var(--seam-1, var(--seam)), var(--seam-2, var(--seam)), var(--seam-3, var(--seam)), var(--seam-4, var(--seam))); }
-.pv7-log { margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--log-bg, var(--sunk)); color: var(--log-ink, var(--ink)); font: 13px/1.6 var(--f-mono); overflow: auto; }
-.pv7-log .ok { color: var(--log-ok, var(--ok)); } .pv7-log .warn { color: var(--log-warn, var(--warn)); } .pv7-log .bad { color: var(--log-bad, var(--danger)); } .pv7-log .dim { color: var(--log-dim, var(--ink-2)); }
-.pv7-kinds { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font: 13px var(--f-ui); }
-.pv7-kinds span { display: inline-flex; align-items: center; gap: 6px; }
-.pv7-kinds i { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--rule); }
 .pv7-sheet { position: relative; min-height: 360px; border-radius: 12px; background: var(--bg); overflow: hidden; border: 1px solid var(--rule); isolation: isolate; }
 .pv7-sheet .pv7-list { padding: 14px; display: grid; gap: 8px; max-width: 520px; }
 .pv7-rec { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel); color: var(--ink); font: 14px/1.3 var(--f-ui); text-align: left; cursor: pointer; }
@@ -60,20 +49,6 @@ function useMount(fn, deps) {
   useEffect(() => { if (!ref.current) return; const h = fn(ref.current); return () => { if (h && h.destroy) h.destroy(); }; }, deps);
   return ref;
 }
-// the depth-only tokens of the Glaze depth theme (those Glaze itself lacks), for a stage theme that has none
-function useDepth(on) {
-  const [st, setSt] = useState('');
-  useEffect(() => {
-    if (!on) { setSt(''); return; } let off = false;
-    Promise.all([fetch('kit/themes/glaze.json').then(r => r.json()), fetch('kit/themes/glaze-depth.json').then(r => r.json())]).then(([g, d]) => {
-      if (off) return; const dark = document.documentElement.dataset.theme === 'dark' || (document.documentElement.dataset.theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
-      void dark; const m = {}; [d.light].forEach(x => Object.keys(x).forEach(k => { if (!(k in g.light)) m[k] = x[k]; })); setSt({ light: m, dark: Object.fromEntries(Object.keys(d.dark).filter(k => !(k in g.dark) || !(k in g.light)).map(k => [k, d.dark[k]])) });
-    }).catch(() => {});
-    return () => { off = true; };
-  }, [on]);
-  return st;
-}
-const styleOf = (m, dark) => m ? Object.entries(Object.assign({}, m.light, dark ? m.dark : {})).map(([k, v]) => k + ':' + v).join(';') : '';
 
 // ---------------------------------------------------------------- kit.vocab
 P['kit.vocab'] = ({ samples }) => {
@@ -109,30 +84,10 @@ P['kit.vocab'] = ({ samples }) => {
   </div>`;
 };
 
-// ---------------------------------------------------------------- theme.glaze-depth
-P['theme.glaze-depth'] = ({ theme }) => {
-  const names = ['--rim', '--pool', '--well', '--edge', '--edge-gold', '--lac-rim', '--hi', '--lo', '--sunk-2', '--gold'];
-  const beads = [['ok', 'Fired'], ['warn', 'Too fast'], ['danger', 'Cracked'], ['info', 'Firing'], ['wait', 'Waiting']];
-  return html`<div class="pv7-frame pv7-stack">
-    <div class="pv7-grid">
-      <div class="pv7-lit"><p class="pv7-h">A lit rim and a pooled foot</p><b style="font:600 20px var(--f-display)">Tenmoku tea bowl</b><span style="color:var(--ink-2);font:14px var(--f-ui)">The glaze gathers darker where it pools at the foot.</span></div>
-      <div class="pv7-stack"><p class="pv7-h">The gold seam, five stops</p><div class="pv7-seam"></div>
-        <p class="pv7-h">Neutral kind greys</p><div class="pv7-kinds">${[1, 2, 3, 4].map(n => html`<span key=${n}><i style=${'background:var(--kind-' + n + ')'}></i>kind ${n}</span>`)}</div></div>
-    </div>
-    <div class="pv7-stack"><p class="pv7-h">A bead, its soft tint and its ink, for each meaning</p>
-      <div class="pv7-wrap">${beads.map(([k, l]) => html`<span key=${k} style=${'display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;background:var(--' + k + '-soft);color:var(--' + k + '-ink);font:600 13px var(--f-ui)'}><i class="pv7-bead" style=${'background:var(--' + k + '-bead);width:16px;height:16px'}></i>${l}</span>`)}</div>
-      <p style="margin:0;color:var(--ink-2);font:13px/1.5 var(--f-ui);max-width:64ch">Beads are for fills with a glyph or a word beside them. The plain --ok, --warn, --danger, --info and --wait stay the text-safe values.</p></div>
-    <div class="pv7-stack"><p class="pv7-h">A log block that stays dark</p><div class="pv7-log" role="log" tabindex="0" aria-label="Sample log"><div><span class="dim">10:02</span> <span class="ok">kiln two reached 1,280</span></div><div><span class="dim">10:41</span> <span class="warn">cooling faster than the program</span></div><div><span class="dim">11:03</span> <span class="bad">element 3 fault, firing stopped</span></div></div></div>
-    <div class="pv7-stack"><p class="pv7-h">Depth tokens as swatches</p><div class="pv7-sw">${names.map(n => html`<div key=${n}><i style=${'background:var(' + n + ')'}></i>${n}</div>`)}</div></div>
-  </div>`;
-};
-
 // ---------------------------------------------------------------- kit.glaze-surfaces
 P['kit.glaze-surfaces'] = ({ samples, dark }) => {
   const d = first(samples, 'glaze-surfaces');
-  const [depth, setDepth] = useState('on');
   const [fleck, setFleck] = useState('on');
-  const dp = useDepth(depth === 'on');
   const sw = useRef(null), seg = useRef(null), busyB = useRef(null);
   const [sv, setSv] = useState(true), [sg, setSg] = useState('day'), [busy, setBusy] = useState(false);
   useEffect(() => { K().glaze.defs(); }, []);
@@ -144,9 +99,8 @@ P['kit.glaze-surfaces'] = ({ samples, dark }) => {
   useEffect(() => { if (fleck !== 'on' || !fr.current) return; const s = K().glaze.speck(fr.current); return () => s.remove(); }, [fleck]);
   const toggleBusy = () => { setBusy(true); setTimeout(() => setBusy(false), 1600); };
   return html`<div class="pv7-stack">
-    <div class="pv7-wrap"><span class="pv7-h">Depth tokens</span><${Seg} label="Depth tokens" value=${depth} set=${setDepth} items=${[['on', 'Glaze depth'], ['off', 'None (flat)']]}/>
-      <span class="pv7-h">Fleck layer</span><${Seg} label="Fleck layer" value=${fleck} set=${setFleck} items=${[['on', 'On'], ['off', 'Off']]}/></div>
-    <div class="pv7-frame pv7-stack" style=${styleOf(dp, dark)}>
+    <div class="pv7-wrap"><span class="pv7-h">Fleck layer</span><${Seg} label="Fleck layer" value=${fleck} set=${setFleck} items=${[['on', 'On'], ['off', 'Off']]}/></div>
+    <div class="pv7-frame pv7-stack">
       <div ref=${fr} style="position:absolute;inset:0;overflow:hidden;border-radius:12px;pointer-events:none"></div>
       <div class="pv7-wrap" style="position:relative;z-index:1">${d.orbs.map(o => html`<span key=${o.word} class=${'kit-chip ' + tone[o.tone]}><i class=${'kit-orb' + (o.run ? ' kit-run' : '') + (o.ring ? ' kit-ring' : '')}></i>${o.word}</span>`)}</div>
       <div class="kit-btn-row" style="position:relative;z-index:1"><button type="button" class="kit-btn kit-primary">Start firing</button><button type="button" class="kit-btn">Save a draft</button><button type="button" class="kit-btn kit-ghost">Cancel</button><button type="button" class="kit-btn kit-danger">Empty the kiln</button><button type="button" class="kit-btn kit-sm" ref=${busyB} onClick=${toggleBusy}>Try busy</button></div>

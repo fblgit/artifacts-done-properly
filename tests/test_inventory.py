@@ -306,19 +306,15 @@ class RealCatalogTests(unittest.TestCase):
 
     def test_every_theme_keeps_the_theme_rules(self):
         """Its stylesheet sets the convention (light; dark: the default's dark names), both dark rules alike, tokens only; its json equals the
-        stylesheet, or for a layer theme (one that requires a theme) its base's json plus its own tokens; text reads at 4.5:1 or more."""
-        by, conv = {e["id"]: e for e in self.entries}, self.out["convention"]
+        stylesheet; text reads at 4.5:1 or more. No theme is exempt."""
+        conv = self.out["convention"]
         for i, t in self.out["themes"].items():
-            base = next((r for r in by[i]["requires"] if r.startswith("theme.")), None)
-            j = json.loads((self.base / t["files"]["json"]).read_text(encoding="utf-8"))
             self.assertEqual([b for b in t["blocks"] if b["scheme"] not in ("light", "dark-media", "dark-attr") or b["other"]], [], i)
             self.assertEqual((t["media_differs"], [x for x in t["contrast"] if x[3] < 4.5]), ([], []), i)
             for s in ("light", "dark"):
                 own = {k for k, v in t["declares"].items() if v[s] or s == "dark" and "dark_via" in v}      # dark_via: it changes with them
-                b = json.loads((self.base / self.out["themes"][base]["files"]["json"]).read_text(encoding="utf-8"))[s] if base else {}
-                self.assertEqual((t["json"][s]["only_css"], t["json"][s]["differ"], t["json"][s]["only_json"]), ([], [], sorted(set(b) - own)), (i, s))
-                self.assertEqual(({k: v for k, v in j[s].items() if k not in own}, t["convention"][s]["missing"]), (b, []), (i, s))
-                self.assertLessEqual(set() if base else set(conv[s]), own, (i, s))      # a name set as var(--x) counts as set
+                self.assertEqual(t["json"][s], {"only_css": [], "only_json": [], "differ": []}, (i, s))
+                self.assertLessEqual(set(conv[s]), own, (i, s))      # a name set as var(--x) counts as set
 
     def test_stylesheet_reads_equal_a_plain_regex_count(self):
         for i, x in self.all:

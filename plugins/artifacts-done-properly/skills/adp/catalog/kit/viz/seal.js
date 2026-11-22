@@ -32,11 +32,11 @@
  * @kind      component
  * @group     Visualizations
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-23
  * @summary   A medallion whose ring is the time left, with the number in serif and a crackle that spreads over the glaze as the end nears; round action buttons fan out on hover or focus.
  * @tags      seal, ring, countdown, lifetime, expiry, medallion, crackle, actions, porcelain
- * @requires  kit.vocab, theme.glaze-depth
+ * @requires  kit.vocab
  * @files     kit/viz/seal.css, kit/samples/viz.json
  * @provides  Kit.seal.make, Kit.seal.mini, Kit.seal.parts, Kit.seal.text, Kit.seal.stateOf, Kit.seal.states, Kit.seal.icons
  * @config    Kit.seal.make(item, {size, soonDays, urgentDays, unitOf, actions, onAction, onOpen}) | item {id, label, left (days), life (0 to 1) or total, state, actions}; actions [{key, label, icon, danger}]; a ring needs life or total, with neither no arc is drawn
@@ -48,7 +48,7 @@
  * @source    Catalog harvest, 2026-10-25 | a network-ops console's stylesheet | the .seal medallion, the crackle path and the quick-action arc
  * @preview   {"render": "viz.seal", "samples": ["kit/samples/viz.json#seal"]}
  * @samples   seal
- * @changed   The unit is a callback (days, hours, years); the states are the vocab's table; the item's text, label and actions are config.
+ * @changed   Requires no theme: theme.glaze-depth is deleted, so every depth token takes its flat fallback on every theme, Glaze included.
  */
 (function () {
 'use strict';

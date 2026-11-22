@@ -665,7 +665,7 @@ def theme(base, css, data, ref):
         sides[s] = {'only_css': sorted(set(cm) - set(jm)), 'only_json': sorted(set(jm) - mine),
                     'differ': sorted(k for k in mine & set(jm) if canon(cm.get(k, calt.get(k))) != canon(jm[k]) and end(cm, calt, k) != end(jm, jalt, k))}
     conv = {s: {'missing': sorted(set(ref[s]) - set(j[s])), 'extra': sorted(set(j[s]) - set(ref[s]))} for s in ('light', 'dark')} if ref else None
-    jl = dict(j.get('scale', {}), **j['light'])      # the json, which a layer theme fills with its base's values too
+    jl = dict(j.get('scale', {}), **j['light'])      # the json's light (scale counts as light)
     col = lambda s, k: end(jl, {}, k) if s == 'light' else end(j['dark'], jl, k)
     contrast = [[s, f, b, r] for s in ('light', 'dark') for f, b in CONTRAST_PAIRS if (r := ratio(col(s, f), col(s, b))) is not None]
     return {'files': {'css': css, 'json': data}, 'blocks': sorted(blocks.values(), key=lambda b: b['line']), 'declares': declares,

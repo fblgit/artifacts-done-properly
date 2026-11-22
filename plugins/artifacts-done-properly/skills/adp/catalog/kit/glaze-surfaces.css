@@ -10,8 +10,8 @@
      <div class="kit-card">  + kit-soft | kit-tinted      <dl class="kit-facts"><div><dt>…</dt><dd>…</dd></div></dl>
      <button class="kit-row"><span class="kit-ava"></span><span><b class="t">…</b><span class="s">…</span></span></button>      <div class="kit-empty">…</div>
      <div class="kit-speck"></div>   the kiln fleck layer (opt in; place it in a positioned parent, or add kit-fixed); needs Kit.glaze.defs() once
-   Without the depth tokens (theme.glaze-depth) every part falls back to a flat look from the contract tokens, so it still reads in any theme.
-   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono, and, from theme.glaze-depth
+   Without the depth tokens (no catalog theme sets them) every part falls back to a flat look from the contract tokens, so it still reads in any theme.
+   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --rule-2 --accent --accent-ink --accent-soft --ok --warn --danger --f-ui --f-mono, and the depth tokens
    (each optional): --rim --pool --hi --lo --shade --edge --edge-gold --lac-rim --danger-edge --on-accent --on-state --gold --sunk-2 --ok-bead --warn-bead --danger-bead --info-bead --wait-bead
    --ok-ink --warn-ink --danger-ink --info-ink --wait-ink --speck-opacity --speck-invert --glyph-drop --glz-r-* --glz-sh-* */
 :is(.kit-orb, .kit-chip, .kit-btn, .kit-input, .kit-select, .kit-area, .kit-switch, .kit-seg, .kit-card, .kit-row, .kit-ava, .kit-empty, .kit-field, .kit-facts, .kit-speck) {
