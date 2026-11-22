@@ -199,9 +199,15 @@ def cmanifest(m, files=None):
             'parents': dict(m.get('parents') or {})}
 
 
-def work_manifest(d, refs):
+def work_manifest(d, refs, live):
+    """the folder's manifest as classify reads it. A part in a file whose hash equals live's keeps the hash live records, or is left
+    out when live records none: the record holds the parts of the files the page loads, not of every file it only serves, and a
+    file unchanged since export is never new or ours"""
     m = A.manifest_dir(d)
-    return {**cmanifest(m), 'files': {k: v for k, v in m['files'].items() if k not in refs and not k.startswith('content/')}}
+    same = lambda p: (f := m['part_file'].get(p, '')) in live['files'] and live['files'][f] == m['files'].get(f)
+    parts = {p: live['parts'].get(p) if same(p) else h for p, h in m['parts'].items()}
+    return {**cmanifest(m), 'parts': {p: h for p, h in parts.items() if h},
+            'files': {k: v for k, v in m['files'].items() if k not in refs and not k.startswith('content/')}}
 
 
 # ---- export ----
@@ -264,7 +270,7 @@ def export(a):
                 os.makedirs(os.path.dirname(os.path.join(d, f['path'])) or d, exist_ok=True); shutil.copyfile(src, os.path.join(d, f['path']))
     wm, wtree = work_tree(d, refs)
     commit_tree(repo, 'work', wtree, 'work', db_from='live')
-    wman = work_manifest(d, refs)
+    wman = work_manifest(d, refs, live_m)
     rep = classify(cmanifest(base['manifest']), live_m, wman)
     merged = None
     if not rep['held']:
@@ -323,9 +329,9 @@ def propose(a):
     _, conflicts = merge3(repo, 'base', 'work', 'live')
     conflict = bool(conflicts)
     retire = dict(zip(A.optall(a, '--retire'), A.optall(a, '--reason') + [''] * len(A.optall(a, '--retire'))))
-    wman = {**work_manifest(d, refs), 'retired': {k: v for k, v in retire.items() if v}}
     base = cmanifest(st['base']['manifest'])
     live_m = json.loads(Path(os.path.join(ad, 'incoming', 'live-manifest.json')).read_text()) if os.path.isfile(os.path.join(ad, 'incoming', 'live-manifest.json')) else base
+    wman = {**work_manifest(d, refs, live_m), 'retired': {k: v for k, v in retire.items() if v}}
     rep = classify(base, live_m, wman)
     stop = []
     if conflict: stop.append({'error': 'merge conflict with live', 'detail': conflicts[-5:]})
