@@ -78,4 +78,6 @@ Updating the live catalog (day 2), never by a publish over it:
 4. Write each `update-NN.json` in order as an ArtifactData batch (`adp.py dev send` does it on the emulator). The catalog page applies them while an editor has it open; a file that moved since is held and the panel warns.
 5. Verify as step 6 above, then commit.
 
+Pushing an extra kit (`extras/<id>.json`, [kit-json.md](kit-json.md)): one ArtifactData batch per kit holding the pack's docs unchanged, one kit at a time. The catalog does the rest, `catalog.json` included.
+
 Known gaps: `update` does not cover the page's own files (`index.html`, `adp.js`, `parts/`, `styles/`, `welcome.html`: their live shas are not in the index); two editor tabs open at once could both auto-apply (no lock); one Apply has a size limit that is not known, so proposals stay at 60 files / 600 KB; closing the tab mid-bootstrap stops it, and the next editor open resumes it.

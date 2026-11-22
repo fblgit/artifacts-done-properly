@@ -1,0 +1,171 @@
+{
+ "schema": "adp-seed/2",
+ "pack": 1,
+ "of": 1,
+ "docs": [
+  {
+   "collection": "incoming/p-catalog-kit-qr-code-c184a68c/chunks",
+   "id": "0",
+   "data": {
+    "path": "kit/previews/qr-code.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.preview.kit.qr-code */\n/* The catalog's live preview of kit.qr-code. It rides with the kit and only the catalog page loads it: `adp.py take` leaves it out. */\n(function () {\n'use strict';\nconst { html, useState, useEffect, useRef } = window.htmPreact;\nconst P = window.CatalogPreviews = window.CatalogPreviews || {};\nconst K = () => window.Kit;\nconst first = (samples, part) => samples[Object.keys(samples).find(k => k.endsWith('/' + part + '.json'))];\nconst Sim = ({ children }) => html`<p class=\"pv-sim\"><b>Sandbox</b> ${children}</p>`;\nconst Cases = ({ d, value, set, label = 'Use case' }) => html`<div class=\"pv-row\" role=\"group\" aria-label=${label}><span class=\"pv-label\">${label}</span>\n  ${d.cases.map(c => html`<button type=\"button\" key=${c.id} class=${'pv-btn' + (c.id === value ? ' pri' : '')} aria-pressed=${c.id === value} onClick=${() => set(c.id)}>${c.label}</button>`)}</div>`;\nconst LOG = 'margin:0;font:13px/1.45 var(--f-ui);color:var(--ink-2);min-width:0;flex:1 1 14rem';\n\nP['kit.qr-code'] = ({ samples }) => {\n  const d = first(samples, 'qr-code');\n  const [id, setId] = useState(d.cases[0].id);\n  const c = d.cases.find(x => x.id === id);\n  const [text, setText] = useState(c.text);\n  const [ecc, setEcc] = useState(c.ecc);\n  const box = useRef(null), qr = useRef(null);\n  const [info, setInfo] = useState(null);\n  useEffect(() => { setText(c.text); setEcc(c.ecc); }, [id]);\n  useEffect(() => { qr.current = K().qrCode.mount(box.current, { text: c.text, ecc: c.ecc, caption: c.caption, label: c.title }); setInfo(qr.current.qr); return () => qr.current.destroy(); }, [id]);\n  useEffect(() => { if (qr.current) setInfo(qr.current.update({ text, ecc, caption: text === c.text ? c.caption : undefined }).qr); }, [text, ecc]);\n  return html`<div class=\"pv-stack\">\n    <${Cases} d=${d} value=${id} set=${setId}/>\n    <${Sim}>${c.context} Made in the page: nothing is sent anywhere.<//>\n    <div class=\"pv-two\">\n      <section><div ref=${box}></div></section>\n      <section class=\"pv-stack\">\n        <label class=\"pv-field\"><span>Text in the code: edit it and the code follows</span>\n          <textarea style=\"width:100%;min-height:70px;font:13px/1.45 var(--f-mono);color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px 10px\" value=${text} onInput=${e => setText(e.target.value)}></textarea></label>\n        <div class=\"pv-row\" role=\"group\" aria-label=\"Error correction\"><span class=\"pv-label\">Error correction</span>${['L', 'M', 'Q', 'H'].map(x => html`<button type=\"button\" key=${x} class=${'pv-btn' + (ecc === x ? ' pri' : '')} aria-pressed=${ecc === x} onClick=${() => setEcc(x)}>${x}</button>`)}</div>\n        <p style=${LOG}>${info ? 'Version ' + info.version + ' (' + info.size + '×' + info.size + ' modules), mask ' + info.mask + ', ' + info.bytes + ' bytes. Higher error correction makes a denser code that survives more damage.' : 'Too long for a QR code at this level.'}</p>\n        <div class=\"pv-row\"><button type=\"button\" class=\"pv-btn pri\" onClick=${() => K().qrCode.open({ text, ecc, title: c.title, hint: c.hint, caption: text === c.text ? c.caption : undefined })}>Show it large</button></div>\n      </section>\n    </div></div>`;\n};\n})();\n/* /part:page.script.preview.kit.qr-code */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-qr-code-c184a68c/chunks",
+   "id": "1",
+   "data": {
+    "path": "kit/qr-code.css",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.style.kit.qr-code */\n/* Kit css: QR code    kit version 0.1.0    pairs with kit/qr-code.js\n   .kit-qr > figure.kit-qr-fig (div.kit-qr-code > svg, figcaption.kit-qr-cap) + div.kit-qr-acts; the sheet: .kit-qr-back > .kit-qr-sheet\n   The code itself is always black on white with its quiet zone, in both themes: scanners need the contrast. Only the frame follows the theme.\n   Reads --panel --ink --ink-2 --rule --accent --f-ui --f-mono, each with a plain fallback (the sheet sits on <body>); optional --radius --on-accent --shadow */\n.kit-qr { display: grid; gap: 10px; justify-items: start; min-width: 0; font: 14px/1.45 var(--f-ui, system-ui, sans-serif); color: var(--ink, #16181d); }\n.kit-qr-fig { margin: 0; display: grid; gap: 8px; justify-items: center; max-width: 100%; }\n.kit-qr-code { width: var(--kit-qr-size, 12rem); max-width: 100%; aspect-ratio: 1; background: #fff; border: 1px solid var(--rule, #c9ced6); border-radius: var(--radius, 6px); overflow: hidden; }\n.kit-qr-code svg { display: block; width: 100%; height: 100%; }\n.kit-qr-cap { max-width: var(--kit-qr-size, 12rem); font: 12.5px/1.4 var(--f-mono, ui-monospace, monospace); color: var(--ink-2, #555b66); text-align: center; overflow-wrap: anywhere; }\n.kit-qr-acts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }\n.kit-qr-end { justify-content: flex-end; width: 100%; }\n.kit-qr-btn { font: 500 13px/1.2 var(--f-ui, system-ui, sans-serif); color: var(--ink, #16181d); background: var(--panel, #fff); border: 1px solid var(--rule, #c9ced6); border-radius: var(--radius, 6px); padding: 6px 12px; cursor: pointer; }\n.kit-qr-btn:hover { filter: brightness(.97); }\n.kit-qr-pri { color: var(--on-accent, #fff); background: var(--accent, #2f3b9c); border-color: var(--accent, #2f3b9c); }\n.kit-qr-btn:focus-visible { outline: 3px solid var(--accent, #2f3b9c); outline-offset: 2px; }\n.kit-qr-said { font-size: 12.5px; color: var(--ink-2, #555b66); }\n.kit-qr-err { margin: 0; padding: 8px 10px; border: 1px solid var(--rule, #c9ced6); border-left: 3px solid var(--danger, var(--ink)); border-radius: var(--radius, 6px); color: var(--ink, #16181d); }\n.kit-qr-back { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(10, 10, 12, .72); }\n.kit-qr-sheet { display: grid; gap: 12px; justify-items: center; max-width: min(36rem, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 18px; background: var(--panel, #fff); color: var(--ink, #16181d); border: 1px solid var(--rule, #c9ced6); border-radius: var(--radius-lg, 10px); box-shadow: var(--shadow, none); font-family: var(--f-ui, system-ui, sans-serif); }\n.kit-qr-sheet .kit-qr { justify-items: center; }\n.kit-qr-title { margin: 0; font-size: 1.15em; text-align: center; }\n.kit-qr-hint { margin: 0; color: var(--ink-2, #555b66); text-align: center; max-width: 30rem; }\n/* /part:page.style.kit.qr-code */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-qr-code-c184a68c/chunks",
+   "id": "2",
+   "data": {
+    "path": "kit/qr-code.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.kit.qr-code */\n/**\n * QR code\n * Kit.qrCode.mount(box, {text}) draws a QR code for a link or any text, as crisp SVG, with the text under it, a Copy button and a PNG download. Kit.qrCode.open({text}) shows it large on a sheet, for holding a screen up to a phone. Kit.qrCode.encode(text) is the encoder alone: it returns the module grid, so a page can draw it any way it likes. Everything runs in the page: no server, no network, no library.\n *\n * What it is: the hand-off from a screen to a phone. A signer link, a Wi-Fi guest network, a table's menu, an event check-in, a contact card. The encoder is the ISO/IEC 18004 one in byte mode (UTF-8): versions 1 to 40, error correction L, M, Q or H, the eight masks scored by the four penalty rules. It is checked module for module against a reference encoder at every version and level.\n * The code is always dark on light whatever the theme: scanners need that contrast, so the colours are options, not tokens.\n * API (small and stable):\n *   Kit.qrCode.encode(text, {ecc, minVersion, mask}) -> {version, size, ecc, mask, bytes, modules}\n *     ecc         \"L\" | \"M\" (default) | \"Q\" | \"H\": how much of the code may be damaged and still read (7, 15, 25, 30 %)\n *     minVersion  smallest version to use (default 1); mask 0..7 forces a mask (default: the lowest penalty)\n *     modules     size x size array of rows of booleans, true = dark; throws RangeError when the text does not fit version 40\n *   Kit.qrCode.svg(textOrQr, {quiet, dark, light, title}) -> SVG markup string; quiet is the margin in modules (default 4, the standard)\n *   Kit.qrCode.png(textOrQr, {scale, quiet, dark, light}) -> data URL (scale = pixels per module, default 8)\n *   Kit.qrCode.mount(box, {text, ecc, label, caption, size, quiet, copy, download, filename, onCopy}) -> {qr, update(opts), destroy()}\n *     caption     the line under the code (default: the text itself; false hides it); copy/download false hide the buttons\n *     size        CSS size of the code (default \"12rem\"); label: its accessible name (default \"QR code\")\n *   Kit.qrCode.open({text, title, hint, ecc, caption, from}) -> Promise (resolves when the sheet closes); Escape or Close closes it\n *     the sheet takes the theme tokens of from (default: the element that had focus), since it sits on <body>\n *\n * @id        kit.qr-code\n * @kind      component\n * @group     Kit\n * @status    new\n * @version   0.1.0\n * @updated   2026-11-21\n * @summary   A QR code made in the page for a link or any text: crisp SVG with the text, Copy and a PNG download, a large sheet to scan from, and the encoder alone.\n * @tags      qr, qr code, barcode, link, share, phone, scan, wifi, ticket, menu, contact, vcard, svg, png, encoder\n * @requires  none\n * @files     kit/qr-code.css, kit/samples/qr-code.json, kit/previews/qr-code.js\n * @provides  Kit.qrCode.encode, Kit.qrCode.svg, Kit.qrCode.png, Kit.qrCode.mount, Kit.qrCode.open\n * @config    Kit.qrCode.mount(box, opts) | text, ecc (L, M, Q, H), label, caption (string or false), size (CSS, default 12rem), quiet (modules, default 4), copy, download (false hides), filename, onCopy(text)\n * @config    Kit.qrCode.open(opts) | text, title, hint, ecc, caption, from (element whose theme the sheet wears); resolves when closed\n * @config    Kit.qrCode.encode(text, opts) | ecc, minVersion, mask; returns {version, size, ecc, mask, bytes, modules}\n * @tokens    --panel --ink --ink-2 --rule --accent --f-ui --f-mono --radius? --on-accent? --shadow?\n * @globals   none\n * @db        none\n * @source    Catalog harvest, 2026-11-21 | an agreement review board | the signer link shown as a QR code on the desk, made in the page instead of on a server\n * @preview   {\"render\": \"kit.qr-code\", \"samples\": [\"kit/samples/qr-code.json\"]}\n */\n(function () {\n'use strict';\nconst Kit = window.Kit = window.Kit || { version: '0.1.0' };\n\n// ---------------------------------------------------------------- tables (index 0 unused), per level L, M, Q, H\nconst LEVELS = { L: 0, M: 1, Q: 2, H: 3 };\nconst FORMAT_BITS = [1, 0, 3, 2];\nconst ECC_PER_BLOCK = [\n  [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],\n  [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28],\n  [-1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28, 28, 26, 30, 28, 30, 30, 30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],\n  [-1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]];\nconst BLOCKS = [\n  [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],\n  [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49],\n  [-1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25, 27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68],\n  [-1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30, 32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81]];\n\n// modules left for data and error correction once the function patterns are drawn\nfunction rawModules(v) {\n  let n = (16 * v + 128) * v + 64;\n  if (v >= 2) { const a = Math.floor(v / 7) + 2; n -= (25 * a - 10) * a - 55; if (v >= 7) n -= 36; }\n  return n;\n}\nconst dataCodewords = (v, e) => Math.floor(rawModules(v) / 8) - ECC_PER_BLOCK[e][v] * BLOCKS[e][v];\nconst countBits = v => v <= 9 ? 8 : 16;      // byte mode\n\nfunction alignment(v) {\n  if (v === 1) return [];\n  const n = Math.floor(v / 7) + 2, size = v * 4 + 17;\n  const step = v === 32 ? 26 : Math.ceil((v * 4 + 4) / (n * 2 - 2)) * 2;\n  const out = [6];\n  for (let p = size - 7; out.length < n; p -= step) out.splice(1, 0, p);\n  return out;\n}\n\n// ---------------------------------------------------------------- Reed-Solomon over GF(2^8), polynomial 0x11D\nfunction mul(x, y) { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z & 0xFF; }\nfunction divisor(d) {\n  const r = new Array(d).fill(0); r[d - 1] = 1; let root = 1;\n  for (let i = 0; i < d; i++) { for (let j = 0; j < d; j++) { r[j] = mul(r[j], root); if (j + 1 < d) r[j] ^= r[j + 1]; } root = mul(root, 2); }\n  return r;\n}\nfunction remainder(data, div) {\n  const r = new Array(div.length).fill(0);\n  for (const b of data) { const f = b ^ r.shift(); r.push(0); div.forEach((c, i) => { r[i] ^= mul(c, f); }); }\n  return r;\n}\n\nconst utf8 = s => Array.from(new TextEncoder().encode(String(s)));\n\n// ---------------------------------------------------------------- encode\nfunction encode(text, opts = {}) {\n  const ecc = String(opts.ecc || 'M').toUpperCase(), e = LEVELS[ecc];\n  if (e === undefined) throw new RangeError('ecc must be L, M, Q or H');\n  const bytes = utf8(text), minV = Math.max(1, Math.min(40, opts.minVersion | 0 || 1));\n  let v = minV;\n  for (; v <= 40; v++) if (4 + countBits(v) + 8 * bytes.length <= dataCodewords(v, e) * 8) break;\n  if (v > 40) throw new RangeError('Too long for a QR code: ' + bytes.length + ' bytes; the most at level ' + ecc + ' is ' + (dataCodewords(40, e) - 3) + '.');\n\n  // the bit stream: mode 0100, count, bytes, terminator, padding\n  const bits = [];\n  const put = (val, n) => { for (let i = n - 1; i >= 0; i--) bits.push((val >>> i) & 1); };\n  put(4, 4); put(bytes.length, countBits(v)); bytes.forEach(b => put(b, 8));\n  const cap = dataCodewords(v, e) * 8;\n  put(0, Math.min(4, cap - bits.length)); put(0, (8 - bits.length % 8) % 8);\n  for (let pad = 0xEC; bits.length < cap; pad ^= 0xEC ^ 0x11) put(pad, 8);\n  const data = [];\n  for (let i = 0; i < bits.length; i += 8) data.push(bits.slice(i, i + 8).reduce((a, b) => (a << 1) | b, 0));\n\n  // blocks with their error correction, interleaved\n  const nb = BLOCKS[e][v], el = ECC_PER_BLOCK[e][v], raw = Math.floor(rawModules(v) / 8);\n  const short = nb - raw % nb, shortLen = Math.floor(raw / nb), div = divisor(el), blocks = [];\n  for (let i = 0, k = 0; i < nb; i++) {\n    const dat = data.slice(k, k + shortLen - el + (i < short ? 0 : 1)); k += dat.length;\n    const blk = dat.concat(remainder(dat, div)); if (i < short) blk.splice(dat.length, 0, 0); blocks.push(blk);\n  }\n  const words = [];\n  for (let i = 0; i < blocks[0].length; i++) blocks.forEach((b, j) => { if (i !== shortLen - el || j >= short) words.push(b[i]); });\n\n  // the grid: function patterns first, then the codewords, then the best mask\n  const size = v * 4 + 17;\n  const grid = Array.from({ length: size }, () => new Array(size).fill(false));\n  const fn = Array.from({ length: size }, () => new Array(size).fill(false));\n  const set = (x, y, dark) => { grid[y][x] = dark; fn[y][x] = true; };\n  for (let i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }\n  [[3, 3], [size - 4, 3], [3, size - 4]].forEach(([cx, cy]) => {\n    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {\n      const d = Math.max(Math.abs(dx), Math.abs(dy)), x = cx + dx, y = cy + dy;\n      if (x >= 0 && x < size && y >= 0 && y < size) set(x, y, d !== 2 && d !== 4);\n    }\n  });\n  const al = alignment(v), last = al.length - 1;\n  al.forEach((ax, i) => al.forEach((ay, j) => {\n    if ((i === 0 && j === 0) || (i === 0 && j === last) || (i === last && j === 0)) return;\n    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);\n  }));\n  const format = mask => {\n    const d = (FORMAT_BITS[e] << 3) | mask; let r = d;\n    for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);\n    const b = ((d << 10) | r) ^ 0x5412, bit = i => ((b >>> i) & 1) !== 0;\n    for (let i = 0; i <= 5; i++) set(8, i, bit(i));\n    set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));\n    for (let i = 9; i < 15; i++) set(14 - i, 8, bit(i));\n    for (let i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));\n    for (let i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));\n    set(8, size - 8, true);\n  };\n  format(0);\n  if (v >= 7) {\n    let r = v; for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25);\n    const b = (v << 12) | r;\n    for (let i = 0; i < 18; i++) { const dark = ((b >>> i) & 1) !== 0, a = size - 11 + i % 3, c = Math.floor(i / 3); set(a, c, dark); set(c, a, dark); }\n  }\n  let i = 0;\n  for (let right = size - 1; right >= 1; right -= 2) {\n    if (right === 6) right = 5;\n    for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {\n      const x = right - j, y = ((right + 1) & 2) === 0 ? size - 1 - vert : vert;\n      if (!fn[y][x] && i < words.length * 8) { grid[y][x] = ((words[i >>> 3] >>> (7 - (i & 7))) & 1) !== 0; i++; }\n    }\n  }\n  const MASKS = [(x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, x => x % 3 === 0, (x, y) => (x + y) % 3 === 0,\n    (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => x * y % 2 + x * y % 3 === 0,\n    (x, y) => (x * y % 2 + x * y % 3) % 2 === 0, (x, y) => ((x + y) % 2 + x * y % 3) % 2 === 0];\n  const apply = m => { for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!fn[y][x] && MASKS[m](x, y)) grid[y][x] = !grid[y][x]; };\n  let mask = Number.isInteger(opts.mask) && opts.mask >= 0 && opts.mask <= 7 ? opts.mask : -1;   // null, undefined or junk: choose\n  if (mask < 0) {\n    let best = Infinity;\n    for (let m = 0; m < 8; m++) { apply(m); format(m); const p = penalty(grid); if (p < best) { best = p; mask = m; } apply(m); }\n  }\n  apply(mask); format(mask);\n  return { version: v, size, ecc, mask, bytes: bytes.length, modules: grid };\n}\n\n// the four penalty rules: runs, 2x2 blocks, finder-like patterns, dark balance\nfunction penalty(g) {\n  const n = g.length; let p = 0, dark = 0;\n  const line = get => {\n    let run = 1;\n    for (let i = 1; i <= n; i++) {\n      if (i < n && get(i) === get(i - 1)) run++;\n      else { if (run >= 5) p += 3 + run - 5; run = 1; }\n    }\n    for (let i = 0; i + 7 <= n; i++) {\n      if (get(i) && !get(i + 1) && get(i + 2) && get(i + 3) && get(i + 4) && !get(i + 5) && get(i + 6)) {\n        const light = (a, b) => { for (let k = a; k < b; k++) if (k >= 0 && k < n && get(k)) return false; return true; };\n        if (light(i - 4, i) || light(i + 7, i + 11)) p += 40;\n      }\n    }\n  };\n  for (let y = 0; y < n; y++) line(x => g[y][x]);\n  for (let x = 0; x < n; x++) line(y => g[y][x]);\n  for (let y = 0; y < n - 1; y++) for (let x = 0; x < n - 1; x++) { const c = g[y][x]; if (c === g[y][x + 1] && c === g[y + 1][x] && c === g[y + 1][x + 1]) p += 3; }\n  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (g[y][x]) dark++;\n  const total = n * n;\n  return p + (Math.ceil(Math.abs(dark * 20 - total * 10) / total) - 1) * 10;\n}\n\n// ---------------------------------------------------------------- drawing\nconst qrOf = (t, o) => (t && t.modules ? t : encode(t, o));\nconst escAttr = s => String(s).replace(/[&<>\"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[c]));\nfunction svg(t, o = {}) {\n  const q = qrOf(t, o), m = o.quiet == null ? 4 : o.quiet, w = q.size + 2 * m;\n  let d = '';\n  q.modules.forEach((row, y) => { let x = 0; while (x < q.size) { if (!row[x]) { x++; continue; } let s = x; while (x < q.size && row[x]) x++; d += 'M' + (s + m) + ' ' + (y + m) + 'h' + (x - s) + 'v1h-' + (x - s) + 'z'; } });\n  return '<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ' + w + ' ' + w + '\" shape-rendering=\"crispEdges\" role=\"img\"' +\n    (o.title ? ' aria-label=\"' + escAttr(o.title) + '\"' : '') + '><rect width=\"' + w + '\" height=\"' + w + '\" fill=\"' + escAttr(o.light || '#fff') + '\"/><path d=\"' + d + '\" fill=\"' + escAttr(o.dark || '#000') + '\"/></svg>';\n}\nfunction png(t, o = {}) {\n  const q = qrOf(t, o), m = o.quiet == null ? 4 : o.quiet, s = o.scale || 8, w = (q.size + 2 * m) * s;\n  const c = document.createElement('canvas'); c.width = c.height = w; const x = c.getContext('2d');\n  x.fillStyle = o.light || '#fff'; x.fillRect(0, 0, w, w); x.fillStyle = o.dark || '#000';\n  q.modules.forEach((row, y) => row.forEach((on, i) => { if (on) x.fillRect((i + m) * s, (y + m) * s, s, s); }));\n  return c.toDataURL('image/png');\n}\n\nconst TOKENS = ['--panel', '--ink', '--ink-2', '--rule', '--accent', '--on-accent', '--danger', '--f-ui', '--f-mono', '--radius', '--radius-lg', '--shadow'];\nconst el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };\nconst button = (txt, cls, fn) => { const b = el('button', 'kit-qr-btn' + (cls ? ' ' + cls : ''), txt); b.type = 'button'; b.onclick = fn; return b; };\nasync function copyText(t) {\n  try { await navigator.clipboard.writeText(t); return true; } catch (e) {\n    const ta = el('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0'; document.body.append(ta); ta.select();\n    let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { ok = false; } ta.remove(); return ok;\n  }\n}\n\nfunction mount(box, opts) {\n  const o = Object.assign({ text: '', ecc: 'M', label: 'QR code', caption: undefined, size: '12rem', quiet: 4, copy: true, download: true, filename: 'qr-code.png', onCopy: null }, opts);\n  box.classList.add('kit-qr');\n  const api = { qr: null };\n  function draw() {\n    box.textContent = ''; box.style.setProperty('--kit-qr-size', o.size);\n    let q;\n    try { q = encode(o.text, { ecc: o.ecc }); } catch (e) { box.append(el('p', 'kit-qr-err', e.message)); api.qr = null; return; }\n    api.qr = q;\n    const fig = el('figure', 'kit-qr-fig'), art = el('div', 'kit-qr-code');\n    art.innerHTML = svg(q, { quiet: o.quiet, title: o.label }); fig.append(art);\n    const cap = o.caption === false ? null : (o.caption == null ? String(o.text) : o.caption);\n    if (cap) fig.append(el('figcaption', 'kit-qr-cap', cap));\n    box.append(fig);\n    if (o.copy || o.download) {\n      const acts = el('div', 'kit-qr-acts'), said = el('span', 'kit-qr-said'); said.setAttribute('aria-live', 'polite');\n      if (o.copy) acts.append(button('Copy', '', async () => { const ok = await copyText(String(o.text)); said.textContent = ok ? 'Copied' : 'Copy did not work here'; if (ok && o.onCopy) o.onCopy(String(o.text)); setTimeout(() => { said.textContent = ''; }, 2000); }));\n      if (o.download) acts.append(button('Download PNG', '', () => { const a = el('a'); a.href = png(q, { quiet: o.quiet }); a.download = o.filename; document.body.append(a); a.click(); a.remove(); }));\n      acts.append(said); box.append(acts);\n    }\n  }\n  draw();\n  api.update = next => { Object.assign(o, next || {}); draw(); return api; };\n  api.destroy = () => { box.textContent = ''; box.classList.remove('kit-qr'); box.style.removeProperty('--kit-qr-size'); };\n  return api;\n}\n\nfunction open(opts = {}) {\n  return new Promise(resolve => {\n    const prev = document.activeElement;\n    const back = el('div', 'kit-qr-back'), sheet = el('div', 'kit-qr-sheet');\n    // the sheet sits on <body>, outside whatever box the theme's tokens are set on: carry them over from where it was opened\n    const from = opts.from || (prev && prev.nodeType === 1 ? prev : document.body), cs = getComputedStyle(from);\n    TOKENS.forEach(t => { const v = cs.getPropertyValue(t).trim(); if (v) back.style.setProperty(t, v); });\n    back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true');\n    const h = el('h3', 'kit-qr-title', opts.title || 'Scan with a phone'); h.id = 'kit-qr-t' + Math.random().toString(36).slice(2, 7); back.setAttribute('aria-labelledby', h.id);\n    sheet.append(h); if (opts.hint) sheet.append(el('p', 'kit-qr-hint', opts.hint));\n    const box = el('div'); sheet.append(box);\n    const close = () => { document.removeEventListener('keydown', esc); back.remove(); if (prev && prev.focus) prev.focus(); resolve(); };\n    const esc = e => { if (e.key === 'Escape') close(); };\n    mount(box, { text: opts.text, ecc: opts.ecc || 'M', caption: opts.caption, size: 'min(78vw, 62vh, 30rem)', download: false, label: opts.title || 'QR code' });\n    const row = el('div', 'kit-qr-acts kit-qr-end'), x = button('Close', 'kit-qr-pri', close); row.append(x); sheet.append(row);\n    back.addEventListener('click', e => { if (e.target === back) close(); });\n    document.addEventListener('keydown', esc);\n    back.append(sheet); document.body.append(back); x.focus();\n  });\n}\n\nKit.qrCode = Object.freeze({ encode, svg, png, mount, open });\n})();\n/* /part:page.script.kit.qr-code */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-qr-code-c184a68c/chunks",
+   "id": "3",
+   "data": {
+    "path": "kit/samples/qr-code.json",
+    "n": 0,
+    "of": 1,
+    "content": "{\n \"component\": \"qr-code\",\n \"file\": \"kit/qr-code.js\",\n \"about\": \"Five things a screen hands to a phone. The kit is the same in each; the page decides what the text is and what scanning it does. All addresses and names are invented.\",\n \"cases\": [\n  {\n   \"id\": \"signer\",\n   \"label\": \"Signer link\",\n   \"context\": \"A desk shows a tenant the link to their own signing page, so they sign on their phone.\",\n   \"text\": \"https://192.0.2.10:8766/s/k3Jd9-xQ2mZ\",\n   \"ecc\": \"M\",\n   \"title\": \"Jane Sample signs here\",\n   \"hint\": \"Open the camera on your phone and point it at the code.\"\n  },\n  {\n   \"id\": \"wifi\",\n   \"label\": \"Wi-Fi guest network\",\n   \"context\": \"A café shows its guest network. Phones join it from the code without typing the password.\",\n   \"text\": \"WIFI:T:WPA;S:Cafe Guest;P:espresso42;;\",\n   \"ecc\": \"Q\",\n   \"caption\": \"Cafe Guest (WPA)\",\n   \"title\": \"Join Cafe Guest\",\n   \"hint\": \"Scanning joins the network; the password is in the code.\"\n  },\n  {\n   \"id\": \"menu\",\n   \"label\": \"Table menu\",\n   \"context\": \"A printed card on table 12 opens the menu for that table. Level H survives a coffee stain.\",\n   \"text\": \"https://menu.example/table/12\",\n   \"ecc\": \"H\",\n   \"title\": \"Menu for table 12\",\n   \"hint\": \"Order from your phone.\"\n  },\n  {\n   \"id\": \"ticket\",\n   \"label\": \"Event check-in\",\n   \"context\": \"A ticket page shows the code the door scanner reads. The text is the ticket number, not a link.\",\n   \"text\": \"TICKET 2026-0417 ROW F SEAT 12 GATE B\",\n   \"ecc\": \"L\",\n   \"title\": \"Your ticket\",\n   \"hint\": \"Show this at gate B.\"\n  },\n  {\n   \"id\": \"contact\",\n   \"label\": \"Contact card\",\n   \"context\": \"A badge page shares a contact card. Phones offer to save it as a contact.\",\n   \"text\": \"MECARD:N:Example,Priya;TEL:+15550100;EMAIL:priya@example.org;;\",\n   \"ecc\": \"M\",\n   \"caption\": \"Priya Example, contact card\",\n   \"title\": \"Save Priya as a contact\",\n   \"hint\": \"Scanning offers to add the contact.\"\n  }\n ]\n}\n"
+   }
+  },
+  {
+   "collection": "incoming",
+   "id": "p-catalog-kit-qr-code-c184a68c",
+   "data": {
+    "by": "catalog",
+    "at": "",
+    "summary": "Kit kit.qr-code 0.1.0 (4 files)",
+    "threads": [],
+    "base": {
+     "version": "",
+     "page_hash": "",
+     "docs": {}
+    },
+    "parts": [],
+    "files": [
+     {
+      "path": "kit/previews/qr-code.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "21c4b1c2d8988279f08e24c075434c36d79a325ae1fe1b92cad82252977a680f",
+      "size": 3284,
+      "chunks": 1
+     },
+     {
+      "path": "kit/qr-code.css",
+      "ifMatch": null,
+      "contentType": "text/css",
+      "sha256": "6e6014fc20bc2afce81f2eb58884717b01204769391b29a5f10c02ad2d135d1b",
+      "size": 2940,
+      "chunks": 1
+     },
+     {
+      "path": "kit/qr-code.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "641f15f2da3ec5e8bef35b4af84251fa90eae5a1efc3a41a8d5e041d8cb0d166",
+      "size": 18758,
+      "chunks": 1
+     },
+     {
+      "path": "kit/samples/qr-code.json",
+      "ifMatch": null,
+      "contentType": "application/json",
+      "sha256": "730c09d86fa4eafc8f782f91eb2d67779047899e7b8ea8129e0c8859d09edf3e",
+      "size": 1915,
+      "chunks": 1
+     }
+    ],
+    "live_files": {},
+    "status": "new",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    },
+    "entry": {
+     "id": "kit.qr-code",
+     "kind": "component",
+     "group": "Kit",
+     "name": "QR code",
+     "summary": "A QR code made in the page for a link or any text: crisp SVG with the text, Copy and a PNG download, a large sheet to scan from, and the encoder alone.",
+     "tags": [
+      "qr",
+      "qr code",
+      "barcode",
+      "link",
+      "share",
+      "phone",
+      "scan",
+      "wifi",
+      "ticket",
+      "menu",
+      "contact",
+      "vcard",
+      "svg",
+      "png",
+      "encoder"
+     ],
+     "status": "new",
+     "version": "0.1.0",
+     "requires": [],
+     "globals": [],
+     "provides": [
+      "Kit.qrCode.encode",
+      "Kit.qrCode.svg",
+      "Kit.qrCode.png",
+      "Kit.qrCode.mount",
+      "Kit.qrCode.open"
+     ],
+     "main": "kit/qr-code.js",
+     "files": [
+      {
+       "path": "kit/qr-code.js",
+       "role": "script",
+       "sha256": "641f15f2da3ec5e8bef35b4af84251fa90eae5a1efc3a41a8d5e041d8cb0d166",
+       "bytes": 18758
+      },
+      {
+       "path": "kit/qr-code.css",
+       "role": "style",
+       "sha256": "6e6014fc20bc2afce81f2eb58884717b01204769391b29a5f10c02ad2d135d1b",
+       "bytes": 2940
+      },
+      {
+       "path": "kit/samples/qr-code.json",
+       "role": "sample",
+       "sha256": "730c09d86fa4eafc8f782f91eb2d67779047899e7b8ea8129e0c8859d09edf3e",
+       "bytes": 1915
+      },
+      {
+       "path": "kit/previews/qr-code.js",
+       "role": "preview",
+       "sha256": "21c4b1c2d8988279f08e24c075434c36d79a325ae1fe1b92cad82252977a680f",
+       "bytes": 3284
+      }
+     ],
+     "hash": "19f58fe0c944"
+    }
+   }
+  }
+ ]
+}

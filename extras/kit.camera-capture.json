@@ -1,0 +1,164 @@
+{
+ "schema": "adp-seed/2",
+ "pack": 1,
+ "of": 1,
+ "docs": [
+  {
+   "collection": "incoming/p-catalog-kit-camera-capture-0994796c/chunks",
+   "id": "0",
+   "data": {
+    "path": "kit/camera-capture.css",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.style.kit.camera-capture */\n/* Kit css: Camera capture with consent    kit version 0.2.1    pairs with kit/camera-capture.js\n   A sheet over the page; the camera stage is black in both themes.\n   Reads --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui, each with a plain fallback (the sheet sits on <body>); --shadow and --radius optional. */\n.kit-cam { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px;\n  background: rgba(10, 10, 12, .72); }\n.kit-cam-sheet { width: 100%; max-width: 640px; max-height: calc(100vh - 32px); overflow: auto; background: var(--panel, #fff); color: var(--ink, #16181d);\n  border: 1px solid var(--rule, #c9ced6); border-radius: var(--radius-lg, 8px); padding: 16px; font: 15px/1.5 var(--f-ui, system-ui, sans-serif); box-shadow: var(--shadow, none); }\n.kit-cam-title { margin: 0 0 4px; font-size: 1.1em; }\n.kit-cam-hint { margin: 0 0 10px; color: var(--ink-3, #6b7280); font-size: .92em; }\n.kit-cam-consent { display: grid; gap: 10px; }\n.kit-cam-check { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; background: var(--sunk, #f2f3f5); border: 1px solid var(--rule, #c9ced6); border-radius: var(--radius, 4px); }\n.kit-cam-check input { margin-top: .3em; width: 18px; height: 18px; flex: none; }\n.kit-cam-name { font: inherit; color: inherit; background: var(--panel, #fff); border: 1px solid var(--rule, #c9ced6); border-radius: var(--radius, 4px); padding: 6px 10px; }\n.kit-cam-stage { position: relative; background: #000; border-radius: var(--radius, 4px); overflow: hidden; line-height: 0; }\n.kit-cam-stage video, .kit-cam-stage canvas { width: 100%; max-height: 62vh; object-fit: contain; }\n.kit-cam-guide { position: absolute; border: 2px solid rgba(255, 255, 255, .85); border-radius: 10px; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .35); pointer-events: none; }\n.kit-cam-guide-card { left: 12%; right: 12%; top: 50%; aspect-ratio: 85.6 / 54; transform: translateY(-50%); }\n.kit-cam-guide-page { left: 22%; right: 22%; top: 5%; bottom: 5%; border-radius: 3px; }\n.kit-cam-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }\n.kit-cam-grow { flex: 1; }\n.kit-cam-btn { font: inherit; color: var(--ink, #16181d); background: var(--panel, #fff); border: 1px solid var(--rule, #c9ced6); border-radius: var(--radius, 4px); padding: 6px 14px; cursor: pointer; }\n.kit-cam-btn:disabled { opacity: .5; cursor: default; }\n.kit-cam-btn[hidden] { display: none; }\n.kit-cam-primary { background: var(--accent, #2f3b9c); color: var(--accent-ink, #fff); border-color: var(--accent, #2f3b9c); }\n.kit-cam-btn:focus-visible, .kit-cam-check input:focus-visible { outline: 2px solid var(--accent, #2f3b9c); outline-offset: 2px; }\n/* /part:page.style.kit.camera-capture */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-camera-capture-0994796c/chunks",
+   "id": "1",
+   "data": {
+    "path": "kit/camera-capture.js",
+    "n": 0,
+    "of": 1,
+    "content": "/**\n * Camera capture with consent\n * Kit.cameraCapture.open(opts) opens a sheet that asks for consent first (when you give it consent text), then shows the live camera, takes one photo, lets the person retake it, and resolves to {blob, consent} or null. It prefers the back camera for documents and the front one for a person, switches between them, and falls back to the system camera picker when the browser gives no live camera. The consent record says what was agreed, by whom and when.\n *\n * What it is: the one place a page takes a photo of an ID card, a land title, a room or a person. The camera only opens after the consent box is ticked, the consent words travel\n * with the photo, and the stream is stopped the moment the sheet closes. Live camera needs a secure context (https or localhost); elsewhere it uses the file input's capture.\n * API (small and stable):\n *   Kit.cameraCapture.open({title, hint, facing, consent, who, quality, maxSide, guide}) -> Promise<{blob, consent, width, height} | null>\n *     title     the sheet's heading (default \"Take a photo\")\n *     hint      one line under it (e.g. \"Fill the frame, avoid glare\")\n *     facing    'environment' (default, documents) or 'user' (a person)\n *     consent   the words the person agrees to; when given the camera opens only after the box is ticked. Omit it to skip the step\n *     who       true: the consent step also asks for the name of the person consenting (required)\n *     quality   JPEG quality 0..1 (default 0.9); maxSide: scale the long side down to this many pixels (default 2400)\n *     guide     'card' draws an ID-card frame over the preview, 'page' a document frame, none by default\n *     from      the element whose theme tokens the sheet wears (default: the element that had focus); the sheet sits on <body>\n *   consent record: {given: true, text, who, at (ISO), facing}\n *   Kit.cameraCapture.supported() -> boolean    a live camera can be asked for here\n *\n * @id        kit.camera-capture\n * @kind      component\n * @group     Kit\n * @status    new\n * @version   0.2.1\n * @updated   2026-11-21\n * @summary   Take one photo after a recorded consent: live camera with a card or page frame, front and back switch, retake, the file picker as fallback, and a consent record with the photo.\n * @tags      camera, photo, consent, id card, document, capture, getusermedia, privacy, kyc, insurance, inspection\n * @requires  none\n * @files     kit/camera-capture.css, kit/samples/camera-capture.json, kit/previews/camera-capture.js\n * @provides  Kit.cameraCapture.open, Kit.cameraCapture.supported\n * @config    Kit.cameraCapture.open(opts) | title, hint, facing (environment or user), consent (text; the step is skipped without it), who (ask the consenting name), quality, maxSide, guide (card or page), from (element whose theme the sheet wears)\n * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --accent-ink --f-ui --shadow? --radius? --radius-lg?\n * @globals   none\n * @db        none\n * @source    Catalog harvest, 2026-11-19 | an agreement review board | ID photos on the signer page and consented photos on the board\n * @preview   {\"render\": \"kit.camera-capture\", \"samples\": [\"kit/samples/camera-capture.json\"]}\n * @changed   0.2.1: the sheet carries the theme tokens of the element that opened it, and every token has a plain fallback; before, a page that set its tokens on a box rather than :root got a see-through sheet.\n */\n(function () {\n'use strict';\nconst Kit = window.Kit = window.Kit || { version: '0.1.0' };\n\nconst TOKENS = ['--panel', '--sunk', '--ink', '--ink-2', '--ink-3', '--rule', '--accent', '--accent-ink', '--f-ui', '--shadow', '--radius', '--radius-lg'];\nconst supported = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && window.isSecureContext !== false;\n\nfunction el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }\nfunction btn(txt, cls) { const b = el('button', 'kit-cam-btn' + (cls ? ' ' + cls : ''), txt); b.type = 'button'; return b; }\n\nfunction picker(facing) {\n  return new Promise(resolve => {\n    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';\n    inp.setAttribute('capture', facing === 'user' ? 'user' : 'environment');\n    inp.addEventListener('change', () => resolve(inp.files[0] || null), { once: true });\n    inp.addEventListener('cancel', () => resolve(null), { once: true });\n    inp.click();\n  });\n}\n\nfunction capture(opts = {}) {\n  let facing = opts.facing === 'user' ? 'user' : 'environment';\n  const quality = opts.quality || 0.9, maxSide = opts.maxSide || 2400;\n  return new Promise(resolve => {\n    const prev = document.activeElement;\n    const back = el('div', 'kit-cam'); back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true');\n    // the sheet sits on <body>, outside whatever box the theme's tokens are set on: carry them over from where it was opened\n    const cs = getComputedStyle(opts.from || (prev && prev.nodeType === 1 ? prev : document.body));\n    TOKENS.forEach(t => { const v = cs.getPropertyValue(t).trim(); if (v) back.style.setProperty(t, v); });\n    const sheet = el('div', 'kit-cam-sheet');\n    const h = el('h3', 'kit-cam-title', opts.title || 'Take a photo'); h.id = 'kit-cam-t' + Math.random().toString(36).slice(2, 7);\n    back.setAttribute('aria-labelledby', h.id);\n    sheet.append(h);\n    if (opts.hint) sheet.append(el('p', 'kit-cam-hint', opts.hint));\n    back.append(sheet); document.body.append(back);\n    let stream = null, consent = null;\n    const stop = () => { if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };\n    const finish = v => { stop(); back.remove(); document.removeEventListener('keydown', esc); if (prev && prev.focus) prev.focus(); resolve(v); };\n    const esc = e => { if (e.key === 'Escape') finish(null); };\n    document.addEventListener('keydown', esc);\n\n    function consentStep() {\n      const box = el('div', 'kit-cam-consent');\n      const lab = el('label', 'kit-cam-check'); const cb = el('input'); cb.type = 'checkbox';\n      lab.append(cb, el('span', null, opts.consent));\n      box.append(lab);\n      let name = null;\n      if (opts.who) { name = el('input', 'kit-cam-name'); name.placeholder = 'Name of the person consenting'; name.autocomplete = 'name'; box.append(name); }\n      const row = el('div', 'kit-cam-row'), go = btn('Continue to the camera', 'kit-cam-primary'), no = btn('Cancel');\n      go.disabled = true;\n      const ok = () => { go.disabled = !(cb.checked && (!name || name.value.trim())); };\n      cb.addEventListener('change', ok); if (name) name.addEventListener('input', ok);\n      no.addEventListener('click', () => finish(null));\n      go.addEventListener('click', () => {\n        consent = { given: true, text: opts.consent, who: name ? name.value.trim() : null, at: new Date().toISOString() };\n        box.remove(); cameraStep();\n      });\n      row.append(go, el('span', 'kit-cam-grow'), no); box.append(row); sheet.append(box); cb.focus();\n    }\n\n    function cameraStep() {\n      const stage = el('div', 'kit-cam-stage'); const video = el('video'); video.playsInline = true; video.muted = true; video.autoplay = true;\n      const still = el('canvas'); still.hidden = true;\n      stage.append(video, still);\n      if (opts.guide === 'card' || opts.guide === 'page') stage.append(el('div', 'kit-cam-guide kit-cam-guide-' + opts.guide));\n      const msg = el('p', 'kit-cam-hint', 'Starting the camera…');\n      const row = el('div', 'kit-cam-row');\n      const snap = btn('Take photo', 'kit-cam-primary'), flip = btn('Switch camera'), redo = btn('Retake'), use = btn('Use this photo', 'kit-cam-primary'), no = btn('Cancel');\n      redo.hidden = use.hidden = true;\n      row.append(snap, flip, redo, use, el('span', 'kit-cam-grow'), no); sheet.append(stage, msg, row);\n      let blob = null;\n      const done = b => finish(b ? { blob: b, consent: consent ? { ...consent, facing } : null, width: still.width, height: still.height } : null);\n      async function start() {\n        stop();\n        try {\n          stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false });\n          video.srcObject = stream; msg.textContent = ''; snap.focus();\n        } catch (e) {\n          msg.textContent = 'No live camera here (' + (e.name || 'refused') + '). Opening the camera picker instead.';\n          stop(); const f = await picker(facing); if (!f) return finish(null);\n          finish({ blob: f, consent: consent ? { ...consent, facing } : null, width: 0, height: 0 });\n        }\n      }\n      no.addEventListener('click', () => finish(null));\n      flip.addEventListener('click', () => { facing = facing === 'user' ? 'environment' : 'user'; start(); });\n      snap.addEventListener('click', () => {\n        const w = video.videoWidth, hh = video.videoHeight; if (!w) return;\n        const k = Math.min(1, maxSide / Math.max(w, hh));\n        still.width = Math.round(w * k); still.height = Math.round(hh * k);\n        still.getContext('2d').drawImage(video, 0, 0, still.width, still.height);\n        still.toBlob(b => { blob = b; video.hidden = true; still.hidden = false; snap.hidden = flip.hidden = true; redo.hidden = use.hidden = false; use.focus(); }, 'image/jpeg', quality);\n      });\n      redo.addEventListener('click', () => { blob = null; video.hidden = false; still.hidden = true; snap.hidden = flip.hidden = false; redo.hidden = use.hidden = true; });\n      use.addEventListener('click', () => done(blob));\n      if (supported()) start();\n      else { msg.textContent = 'Opening the camera picker…'; picker(facing).then(f => f ? finish({ blob: f, consent: consent ? { ...consent, facing } : null, width: 0, height: 0 }) : finish(null)); }\n    }\n\n    if (opts.consent) consentStep(); else cameraStep();\n  });\n}\n\nKit.cameraCapture = Object.freeze({ open: capture, supported });\n})();\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-camera-capture-0994796c/chunks",
+   "id": "2",
+   "data": {
+    "path": "kit/previews/camera-capture.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.preview.kit.camera-capture */\n/* The catalog's live preview of kit.camera-capture. It rides with the kit and only the catalog page loads it: `adp.py take` leaves it out. */\n(function () {\n'use strict';\nconst { html, useState, useEffect } = window.htmPreact;\nconst P = window.CatalogPreviews = window.CatalogPreviews || {};\nconst K = () => window.Kit;\nconst first = (samples, part) => samples[Object.keys(samples).find(k => k.endsWith('/' + part + '.json'))];\nconst Json = ({ value, label }) => html`<pre class=\"pv-json\" tabindex=\"0\" aria-label=${label}>${JSON.stringify(value, null, 1)}</pre>`;\nconst Sim = ({ children }) => html`<p class=\"pv-sim\"><b>Sandbox</b> ${children}</p>`;\nconst Cases = ({ d, value, set, label = 'Use case' }) => html`<div class=\"pv-row\" role=\"group\" aria-label=${label}><span class=\"pv-label\">${label}</span>\n  ${d.cases.map(c => html`<button type=\"button\" key=${c.id} class=${'pv-btn' + (c.id === value ? ' pri' : '')} aria-pressed=${c.id === value} onClick=${() => set(c.id)}>${c.label}</button>`)}</div>`;\n\nP['kit.camera-capture'] = ({ samples }) => {\n  const d = first(samples, 'camera-capture');\n  const [id, setId] = useState(d.cases[0].id);\n  const [res, setRes] = useState(null);\n  const [url, setUrl] = useState('');\n  useEffect(() => () => { if (url) URL.revokeObjectURL(url); }, [url]);\n  useEffect(() => { setRes(null); setUrl(''); }, [id]);\n  const c = d.cases.find(x => x.id === id);\n  async function go() {\n    const r = await K().cameraCapture.open({ title: c.title, hint: c.hint, facing: c.facing, consent: c.consent, who: !!c.who, guide: c.guide });\n    setRes(r ? { consent: r.consent, size: r.blob.size, width: r.width, height: r.height } : { cancelled: true });\n    setUrl(r ? URL.createObjectURL(r.blob) : '');\n  }\n  return html`<div class=\"pv-stack\">\n    <${Cases} d=${d} value=${id} set=${setId}/>\n    <${Sim}>the photo and its consent record stay in this tab. ${K().cameraCapture.supported() ? 'This browser can open a live camera.' : 'No live camera here: the kit opens the camera picker instead.'}<//>\n    <div class=\"pv-two\">\n      <section><p class=\"pv-label\">${c.consent ? 'The consent words' : 'No consent step'}</p>\n        <p style=\"margin:0\">${c.consent || 'Nothing personal is photographed, so the page passes no consent text and the camera opens at once.'}</p>\n        <p class=\"pv-label\">facing ${c.facing}${c.guide ? ', ' + c.guide + ' frame' : ''}${c.who ? ', asks who consents' : ''}</p>\n        <div><button type=\"button\" class=\"pv-btn pri\" onClick=${go}>${c.title}</button></div></section>\n      <section><p class=\"pv-label\">What the page gets back</p>\n        ${url ? html`<img style=\"max-width:100%;max-height:260px;border-radius:8px;border:1px solid var(--rule)\" src=${url} alt=\"The photo taken\"/>` : ''}\n        ${res ? html`<${Json} value=${res} label=\"The result\"/>` : html`<p class=\"pv-label\">Nothing yet.</p>`}</section>\n    </div></div>`;\n};\n})();\n/* /part:page.script.preview.kit.camera-capture */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-camera-capture-0994796c/chunks",
+   "id": "3",
+   "data": {
+    "path": "kit/samples/camera-capture.json",
+    "n": 0,
+    "of": 1,
+    "content": "{\n \"component\": \"camera-capture\",\n \"file\": \"kit/camera-capture.js\",\n \"about\": \"Five reasons a page asks for one photo, each with its own camera, frame and consent words, and one that needs no consent at all.\",\n \"cases\": [\n  {\n   \"id\": \"kyc\",\n   \"label\": \"ID card for an account\",\n   \"title\": \"Photograph your ID card\",\n   \"hint\": \"Lay it flat, fill the frame, no glare.\",\n   \"facing\": \"environment\",\n   \"guide\": \"card\",\n   \"consent\": \"I agree that a photo of my ID card is kept with my account to confirm who I am.\"\n  },\n  {\n   \"id\": \"claim\",\n   \"label\": \"Damage for an insurance claim\",\n   \"title\": \"Photograph the damage\",\n   \"hint\": \"Step back so the whole panel is in view.\",\n   \"facing\": \"environment\",\n   \"consent\": \"The owner of the vehicle agrees that it is photographed for this claim.\",\n   \"who\": true\n  },\n  {\n   \"id\": \"title\",\n   \"label\": \"Land title page\",\n   \"title\": \"Photograph the land title\",\n   \"hint\": \"The whole page, straight on, every corner in view.\",\n   \"facing\": \"environment\",\n   \"guide\": \"page\",\n   \"consent\": \"The owner of this document agrees that it is photographed for the tenancy file.\",\n   \"who\": true\n  },\n  {\n   \"id\": \"release\",\n   \"label\": \"Photo release at an event\",\n   \"title\": \"A photo of you\",\n   \"hint\": \"Face the camera in good light.\",\n   \"facing\": \"user\",\n   \"consent\": \"I agree that this photo of me may be used in the event's newsletter.\",\n   \"who\": true\n  },\n  {\n   \"id\": \"meter\",\n   \"label\": \"Meter reading\",\n   \"title\": \"Photograph the meter\",\n   \"hint\": \"The dial and the serial number, both readable.\",\n   \"facing\": \"environment\"\n  }\n ]\n}\n"
+   }
+  },
+  {
+   "collection": "incoming",
+   "id": "p-catalog-kit-camera-capture-0994796c",
+   "data": {
+    "by": "catalog",
+    "at": "",
+    "summary": "Kit kit.camera-capture 0.2.1 (4 files)",
+    "threads": [],
+    "base": {
+     "version": "",
+     "page_hash": "",
+     "docs": {}
+    },
+    "parts": [],
+    "files": [
+     {
+      "path": "kit/camera-capture.css",
+      "ifMatch": null,
+      "contentType": "text/css",
+      "sha256": "551d63ee70f3a244505740ce9304d7ed4810463a4e3ab574fe9f23885359a22d",
+      "size": 2846,
+      "chunks": 1
+     },
+     {
+      "path": "kit/camera-capture.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "1ffeff23211f7e6930f0d25082ae396140989ecd4e3e4765869f5f8283498fa4",
+      "size": 10036,
+      "chunks": 1
+     },
+     {
+      "path": "kit/previews/camera-capture.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "52bdf692eaf7857caf37bc4e9533844276b1cadf296ee9163ea9cc9515d883c6",
+      "size": 2996,
+      "chunks": 1
+     },
+     {
+      "path": "kit/samples/camera-capture.json",
+      "ifMatch": null,
+      "contentType": "application/json",
+      "sha256": "d0eeaa7a9c156465243cc7faea49adb0a84af51a87b7ec23c363820829f0f37d",
+      "size": 1592,
+      "chunks": 1
+     }
+    ],
+    "live_files": {},
+    "status": "new",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    },
+    "entry": {
+     "id": "kit.camera-capture",
+     "kind": "component",
+     "group": "Kit",
+     "name": "Camera capture with consent",
+     "summary": "Take one photo after a recorded consent: live camera with a card or page frame, front and back switch, retake, the file picker as fallback, and a consent record with the photo.",
+     "tags": [
+      "camera",
+      "photo",
+      "consent",
+      "id card",
+      "document",
+      "capture",
+      "getusermedia",
+      "privacy",
+      "kyc",
+      "insurance",
+      "inspection"
+     ],
+     "status": "new",
+     "version": "0.2.1",
+     "requires": [],
+     "globals": [],
+     "provides": [
+      "Kit.cameraCapture.open",
+      "Kit.cameraCapture.supported"
+     ],
+     "main": "kit/camera-capture.js",
+     "files": [
+      {
+       "path": "kit/camera-capture.js",
+       "role": "script",
+       "sha256": "1ffeff23211f7e6930f0d25082ae396140989ecd4e3e4765869f5f8283498fa4",
+       "bytes": 10036
+      },
+      {
+       "path": "kit/camera-capture.css",
+       "role": "style",
+       "sha256": "551d63ee70f3a244505740ce9304d7ed4810463a4e3ab574fe9f23885359a22d",
+       "bytes": 2846
+      },
+      {
+       "path": "kit/samples/camera-capture.json",
+       "role": "sample",
+       "sha256": "d0eeaa7a9c156465243cc7faea49adb0a84af51a87b7ec23c363820829f0f37d",
+       "bytes": 1592
+      },
+      {
+       "path": "kit/previews/camera-capture.js",
+       "role": "preview",
+       "sha256": "52bdf692eaf7857caf37bc4e9533844276b1cadf296ee9163ea9cc9515d883c6",
+       "bytes": 2996
+      }
+     ],
+     "hash": "e9d61b673796"
+    }
+   }
+  }
+ ]
+}

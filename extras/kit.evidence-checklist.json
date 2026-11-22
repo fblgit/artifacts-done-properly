@@ -1,0 +1,165 @@
+{
+ "schema": "adp-seed/2",
+ "pack": 1,
+ "of": 1,
+ "docs": [
+  {
+   "collection": "incoming/p-catalog-kit-evidence-checklist-5a908218/chunks",
+   "id": "0",
+   "data": {
+    "path": "kit/evidence-checklist.css",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.style.kit.evidence-checklist */\n/* Kit css: Evidence checklist    kit version 0.1.0    pairs with kit/evidence-checklist.js\n   .kit-ev > p.kit-ev-sum, ol.kit-ev-stages (button.kit-ev-stage), div.kit-ev-body > ul.kit-ev-list (li.kit-ev-grp, button.kit-ev-item[data-status]) + section.kit-ev-pane\n   The list and the pane sit side by side and stack below about 38rem (a container query), so it also works in a narrow pane.\n   Needs from the board: --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-mono; optional --ok --warn --radius --on-accent */\n.kit-ev { container-type: inline-size; display: grid; gap: 12px; min-width: 0; font: 15px/1.45 var(--f-ui); color: var(--ink); }\n.kit-ev-sum { margin: 0; font: 600 14px/1.3 var(--f-ui); color: var(--ink-2); }\n.kit-ev-stages { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: kit-ev; }\n.kit-ev-stages li { flex: 1 1 9rem; min-width: 0; }\n.kit-ev-stage { width: 100%; display: grid; gap: 2px; text-align: left; padding: 8px 12px; border: 1px solid var(--rule); border-top: 3px solid var(--warn, var(--accent)); border-radius: var(--radius, 6px); background: var(--panel); color: var(--ink); font: inherit; cursor: pointer; }\n.kit-ev-stage.kit-ev-clear { border-top-color: var(--ok, var(--rule)); }\n.kit-ev-stage[aria-current] { background: var(--sunk); box-shadow: inset 0 0 0 1px var(--ink-2); }\n.kit-ev-sl { font-weight: 600; overflow-wrap: anywhere; } .kit-ev-sn { font: 12.5px/1.3 var(--f-mono); color: var(--ink-2); }\n.kit-ev-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 14px; align-items: start; }\n.kit-ev-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; min-width: 0; }\n.kit-ev-grp { margin: 10px 0 2px; font: 600 12.5px/1.3 var(--f-mono); color: var(--ink-2); } .kit-ev-grp:first-child { margin-top: 0; }\n.kit-ev-item { width: 100%; display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 8px 10px; border: 1px solid transparent; border-radius: var(--radius, 6px); background: transparent; color: var(--ink); font: inherit; cursor: pointer; }\n.kit-ev-item:hover { background: var(--sunk); }\n.kit-ev-item[aria-current=\"true\"] { background: var(--panel); border-color: var(--rule); box-shadow: inset 3px 0 0 var(--accent); }\n.kit-ev-it { display: grid; gap: 1px; min-width: 0; } .kit-ev-il { overflow-wrap: anywhere; }\n.kit-ev-it small { font-size: 12.5px; color: var(--ink-2); overflow-wrap: anywhere; }\n.kit-ev-dot { flex: none; width: 12px; height: 12px; margin-top: 4px; border-radius: 50%; border: 2px solid var(--warn, var(--ink-2)); }\n.kit-ev-item[data-status=\"provided\"] .kit-ev-dot { background: var(--ok, var(--ink-2)); border-color: var(--ok, var(--ink-2)); }\n.kit-ev-item[data-status=\"not_needed\"] .kit-ev-dot { border-style: dashed; border-color: var(--ink-3, var(--rule)); }\n.kit-ev-item[data-status=\"not_needed\"] .kit-ev-il { color: var(--ink-2); }\n.kit-ev-pane { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid var(--rule); border-radius: var(--radius, 8px); background: var(--panel); min-width: 0; }\n.kit-ev-st { margin: 0; font: 600 12.5px/1.3 var(--f-mono); color: var(--warn, var(--ink-2)); }\n.kit-ev-st-provided { color: var(--ok, var(--ink-2)); } .kit-ev-st-not_needed { color: var(--ink-2); }\n.kit-ev-h { margin: 0; font: 600 17px/1.3 var(--f-display, var(--f-ui)); overflow-wrap: anywhere; }\n.kit-ev-why { margin: 0; color: var(--ink-2); }\n.kit-ev-files { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }\n.kit-ev-files li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 6px 10px; border-radius: var(--radius, 6px); background: var(--sunk); min-width: 0; }\n.kit-ev-files a, .kit-ev-files span { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; color: var(--ink); }\n.kit-ev-files small { color: var(--ink-2); }\n.kit-ev-drop { display: grid; gap: 8px; justify-items: center; text-align: center; padding: 16px 12px; border: 2px dashed var(--rule); border-radius: var(--radius, 8px); color: var(--ink-2); }\n.kit-ev-drop p { margin: 0; } .kit-ev-over { border-color: var(--accent); background: var(--sunk); }\n.kit-ev-link { display: grid; gap: 4px; font-size: 13.5px; color: var(--ink-2); }\n.kit-ev-link select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: var(--radius, 6px); padding: 6px 8px; max-width: 100%; }\n.kit-ev-acts { display: flex; flex-wrap: wrap; gap: 6px; }\n.kit-ev-btn { font: 500 13.5px/1.2 var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius, 6px); padding: 7px 12px; cursor: pointer; }\n.kit-ev-btn:hover { background: var(--sunk); }\n.kit-ev-pri { color: var(--on-accent, #fff); background: var(--accent); border-color: var(--accent); } .kit-ev-pri:hover { background: var(--accent); filter: brightness(1.08); }\n.kit-ev-plain { background: transparent; border-color: transparent; color: var(--ink-2); text-decoration: underline; padding-inline: 4px; }\n.kit-ev button:focus-visible, .kit-ev select:focus-visible, .kit-ev a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }\n@container (max-width: 38rem) { .kit-ev-body { grid-template-columns: minmax(0, 1fr); } }\n/* /part:page.style.kit.evidence-checklist */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-evidence-checklist-5a908218/chunks",
+   "id": "1",
+   "data": {
+    "path": "kit/evidence-checklist.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.kit.evidence-checklist */\n/**\n * Evidence checklist\n * Kit.evidenceChecklist.mount(box, opts) lists the documents a file must hold, grouped, each with why it is needed and at which stage, and shows how many are still missing per stage. Picking an item opens its pane: what it is for, the files linked to it, a drop zone and a file picker to add one, a list of loose files to link instead, \"Take a photo\" when kit.camera-capture is loaded, and \"Not needed here\". The stages are data too, so \"Before signing\" in one case is \"Before applying\" in another.\n *\n * What it is: the to-do list of proof behind a decision (a visa, a supplier, a tenancy, a loan, a claim). An item counts as on file when a file is linked to it, as not needed when the page says so, and as missing otherwise.\n * The kit keeps no data: it reports what the person did (onAdd, onLink, onUnlink, onStatus) and the page stores it and calls update() with the new lists. It never uploads anything.\n * API (small and stable):\n *   Kit.evidenceChecklist.mount(box, {stages, requirements, files, selected, label, accept, camera, words, onSelect, onAdd, onLink, onUnlink, onStatus}) -> {update(opts), select(id), destroy()}\n *     stages        [{id, label}]                       in order; \"label\" reads after \"needed\", so write \"Before applying\"\n *     requirements  [{id, group, label, why, stage, status, consent}]   status \"missing\" (default) | \"not_needed\"; a linked file makes it \"provided\"\n *                   consent: the words the camera asks agreement to when the photo is of a person or their document\n *     files         [{id, name, req, url, note}]        req is the requirement id it proves, or empty for a loose file\n *     selected      the requirement id to open first (default: the first missing one)\n *     accept        the file picker's accept (default \"image/*,application/pdf\"); camera false hides \"Take a photo\"\n *     words         {missing, provided, not_needed}     the status words (default \"Missing\", \"On file\", \"Not needed here\")\n *     onSelect(req)  onAdd(req, File, capture)  onLink(req, file)  onUnlink(req, file)  onStatus(req, \"missing\" | \"not_needed\")\n *                   capture is camera-capture's result (with its consent record) when the file came from \"Take a photo\"\n *   select(id) opens an item from outside (a link in the page, a search).\n *\n * @id        kit.evidence-checklist\n * @kind      component\n * @group     Kit\n * @status    new\n * @version   0.1.0\n * @updated   2026-11-21\n * @summary   The documents a file must hold, grouped, with why and when each is needed and how many are missing per stage; each opens a pane to add, link or photograph the file.\n * @tags      checklist, evidence, documents, requirements, upload, attachments, kyc, onboarding, visa, compliance, due diligence, stages, drop zone\n * @requires  none\n * @files     kit/evidence-checklist.css, kit/samples/evidence-checklist.json, kit/previews/evidence-checklist.js\n * @provides  Kit.evidenceChecklist.mount\n * @config    Kit.evidenceChecklist.mount(box, opts) | stages [{id, label}], requirements [{id, group, label, why, stage, status, consent}], files [{id, name, req, url, note}], selected, accept, camera, words; returns {update(opts), select(id), destroy()}\n * @config    events | onSelect(req), onAdd(req, File, capture), onLink(req, file), onUnlink(req, file), onStatus(req, \"missing\" | \"not_needed\"); the kit stores nothing\n * @config    optional | Kit.cameraCapture (kit.camera-capture) adds \"Take a photo\"\n * @tokens    --bg --panel --sunk --ink --ink-2 --ink-3 --rule --accent --ok? --warn? --f-ui --f-mono --radius?\n * @globals   none\n * @db        none\n * @source    Catalog harvest, 2026-11-21 | an agreement review board | the documents a file needs before and after signing\n * @preview   {\"render\": \"kit.evidence-checklist\", \"samples\": [\"kit/samples/evidence-checklist.json\"], \"uses\": [\"kit.camera-capture\"]}\n */\n(function () {\n'use strict';\nconst Kit = window.Kit = window.Kit || { version: '0.1.0' };\nconst el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };\nconst btn = (txt, cls, fn) => { const b = el('button', 'kit-ev-btn' + (cls ? ' ' + cls : ''), txt); b.type = 'button'; b.onclick = fn; return b; };\nconst WORDS = { missing: 'Missing', provided: 'On file', not_needed: 'Not needed here' };\nconst lower = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : '';\n\nfunction mount(box, opts) {\n  const o = Object.assign({ stages: [], requirements: [], files: [], selected: null, label: 'Documents', accept: 'image/*,application/pdf', camera: true, words: {} }, opts);\n  let sel = o.selected, uid = 0;\n  const pre = 'kit-ev-' + Math.random().toString(36).slice(2, 7) + '-';\n  box.classList.add('kit-ev');\n  const words = () => Object.assign({}, WORDS, o.words);\n  const filesOf = r => o.files.filter(f => f.req === r.id);\n  const statusOf = r => r.status === 'not_needed' ? 'not_needed' : filesOf(r).length ? 'provided' : 'missing';\n  const stageOf = r => o.stages.find(s => s.id === r.stage);\n  const missing = () => o.requirements.filter(r => statusOf(r) === 'missing');\n\n  function stagebar() {\n    const nav = el('ol', 'kit-ev-stages'); nav.setAttribute('aria-label', 'Stages');\n    o.stages.forEach(s => {\n      const reqs = o.requirements.filter(r => r.stage === s.id), n = reqs.filter(r => statusOf(r) === 'missing').length;\n      const cur = sel && (o.requirements.find(r => r.id === sel) || {}).stage === s.id;\n      const li = el('li'); const b = btn('', 'kit-ev-stage' + (n ? '' : ' kit-ev-clear'), () => { const r = reqs.find(x => statusOf(x) === 'missing') || reqs[0]; if (r) pick(r.id, true); });\n      if (cur) b.setAttribute('aria-current', 'step');\n      b.append(el('span', 'kit-ev-sl', s.label), el('span', 'kit-ev-sn', reqs.length ? (n ? n + ' missing' : 'all in') : 'nothing needed'));\n      li.append(b); nav.append(li);\n    });\n    return nav;\n  }\n  function list() {\n    const ul = el('ul', 'kit-ev-list'); ul.setAttribute('aria-label', o.label);\n    const groups = [...new Set(o.requirements.map(r => r.group || ''))];\n    groups.forEach(g => {\n      if (g) ul.append(el('li', 'kit-ev-grp', g));\n      o.requirements.filter(r => (r.group || '') === g).forEach(r => {\n        const st = statusOf(r), fs = filesOf(r), li = el('li');\n        const b = btn('', 'kit-ev-item', () => pick(r.id, true)); b.dataset.status = st; b.dataset.id = r.id;\n        if (r.id === sel) b.setAttribute('aria-current', 'true');\n        const txt = el('span', 'kit-ev-it'); txt.append(el('span', 'kit-ev-il', r.label), el('small', null, st === 'provided' ? words().provided + ': ' + fs.map(f => f.name).join(', ') : words()[st]));\n        const dot = el('span', 'kit-ev-dot'); dot.setAttribute('aria-hidden', 'true');\n        b.append(dot, txt); li.append(b); ul.append(li);\n      });\n    });\n    return ul;\n  }\n  function pane(r) {\n    const p = el('section', 'kit-ev-pane'), st = statusOf(r), stage = stageOf(r), hid = pre + 'h' + (++uid);\n    p.setAttribute('aria-labelledby', hid);\n    p.append(el('p', 'kit-ev-st kit-ev-st-' + st, words()[st] + (st === 'missing' && stage ? ', needed ' + lower(stage.label) : '')));\n    const h = el('h4', 'kit-ev-h', r.label); h.id = hid; p.append(h);\n    if (r.why) p.append(el('p', 'kit-ev-why', r.why));\n    const fs = filesOf(r);\n    if (fs.length) {\n      const ul = el('ul', 'kit-ev-files');\n      fs.forEach(f => {\n        const li = el('li'); const n = f.url ? el('a', null, f.name) : el('span', null, f.name); if (f.url) { n.href = f.url; n.target = '_blank'; n.rel = 'noopener'; }\n        li.append(n); if (f.note) li.append(el('small', null, f.note));\n        if (o.onUnlink) li.append(btn('Unlink', 'kit-ev-plain', () => o.onUnlink(r, f)));\n        ul.append(li);\n      });\n      p.append(ul);\n    }\n    if (st !== 'not_needed') {\n      if (o.onAdd) {\n        const drop = el('div', 'kit-ev-drop'), inp = el('input'); inp.type = 'file'; inp.accept = o.accept; inp.multiple = true; inp.hidden = true;\n        inp.onchange = () => { [...inp.files].forEach(f => o.onAdd(r, f)); inp.value = ''; };\n        drop.append(el('p', null, fs.length ? 'Drop another file here' : 'Drop the file here'));\n        const acts = el('div', 'kit-ev-acts'); acts.append(btn('Choose a file', 'kit-ev-pri', () => inp.click()));\n        if (o.camera && Kit.cameraCapture) acts.append(btn('Take a photo', '', async () => {\n          const got = await Kit.cameraCapture.open({ title: r.label, hint: r.why, consent: r.consent });\n          if (got) o.onAdd(r, new File([got.blob], (r.id || 'photo') + '.jpg', { type: got.blob.type || 'image/jpeg' }), got);\n        }));\n        drop.append(acts, inp);\n        drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('kit-ev-over'); });\n        drop.addEventListener('dragleave', () => drop.classList.remove('kit-ev-over'));\n        drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('kit-ev-over'); [...(e.dataTransfer && e.dataTransfer.files || [])].forEach(f => o.onAdd(r, f)); });\n        p.append(drop);\n      }\n      const loose = o.files.filter(f => !f.req);\n      if (o.onLink && loose.length) {\n        const row = el('div', 'kit-ev-link'), id = pre + 'l' + uid, lab = el('label', null, 'Or link a file already here'); lab.htmlFor = id;\n        const s = el('select'); s.id = id; s.append(el('option', null, 'Choose…')); s.firstChild.value = '';\n        loose.forEach(f => { const op = el('option', null, f.name); op.value = f.id; s.append(op); });\n        s.onchange = () => { const f = loose.find(x => x.id === s.value); if (f) o.onLink(r, f); };\n        row.append(lab, s); p.append(row);\n      }\n    }\n    if (o.onStatus) {\n      const acts = el('div', 'kit-ev-acts');\n      if (st === 'not_needed') acts.append(btn('Needed after all', '', () => o.onStatus(r, 'missing')));\n      else if (st === 'missing') acts.append(btn(words().not_needed, 'kit-ev-plain', () => o.onStatus(r, 'not_needed')));\n      if (acts.childNodes.length) p.append(acts);\n    }\n    return p;\n  }\n  function draw(focusSel) {\n    if (!o.requirements.find(r => r.id === sel)) sel = (missing()[0] || o.requirements[0] || {}).id;\n    box.textContent = ''; uid = 0;\n    const left = o.requirements.length - missing().length;\n    const head = el('p', 'kit-ev-sum'); head.setAttribute('aria-live', 'polite');\n    head.textContent = missing().length ? left + ' of ' + o.requirements.length + ' settled, ' + missing().length + ' missing' : 'Everything needed is on file';\n    const body = el('div', 'kit-ev-body'), r = o.requirements.find(x => x.id === sel);\n    body.append(list()); if (r) body.append(pane(r));\n    box.append(head, stagebar(), body);\n    if (focusSel) { const b = box.querySelector('.kit-ev-item[aria-current=\"true\"]'); if (b) b.focus(); }\n  }\n  function pick(id, user) { sel = id; draw(user); if (o.onSelect) o.onSelect(o.requirements.find(r => r.id === id)); }\n  draw();\n  return {\n    update(next) { Object.assign(o, next || {}); if (next && next.selected) sel = next.selected; draw(); },\n    select(id) { pick(id, false); },\n    destroy() { box.textContent = ''; box.classList.remove('kit-ev'); }\n  };\n}\nKit.evidenceChecklist = Object.freeze({ mount });\n})();\n/* /part:page.script.kit.evidence-checklist */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-evidence-checklist-5a908218/chunks",
+   "id": "2",
+   "data": {
+    "path": "kit/previews/evidence-checklist.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.preview.kit.evidence-checklist */\n/* The catalog's live preview of kit.evidence-checklist. It rides with the kit and only the catalog page loads it: `adp.py take` leaves it out. */\n(function () {\n'use strict';\nconst { html, useState, useEffect, useRef } = window.htmPreact;\nconst P = window.CatalogPreviews = window.CatalogPreviews || {};\nconst K = () => window.Kit;\nconst first = (samples, part) => samples[Object.keys(samples).find(k => k.endsWith('/' + part + '.json'))];\nconst clone = v => v === undefined ? undefined : JSON.parse(JSON.stringify(v));\nconst Sim = ({ children }) => html`<p class=\"pv-sim\"><b>Sandbox</b> ${children}</p>`;\nconst Cases = ({ d, value, set, label = 'Use case' }) => html`<div class=\"pv-row\" role=\"group\" aria-label=${label}><span class=\"pv-label\">${label}</span>\n  ${d.cases.map(c => html`<button type=\"button\" key=${c.id} class=${'pv-btn' + (c.id === value ? ' pri' : '')} aria-pressed=${c.id === value} onClick=${() => set(c.id)}>${c.label}</button>`)}</div>`;\nconst LOG = 'margin:0;font:13px/1.45 var(--f-ui);color:var(--ink-2);min-width:0;flex:1 1 14rem';\n\n// the kit stores nothing: this preview keeps the files and statuses the way a page would, and logs each event\nP['kit.evidence-checklist'] = ({ samples }) => {\n  const d = first(samples, 'evidence-checklist');\n  const [id, setId] = useState(d.cases[0].id);\n  const c = d.cases.find(x => x.id === id);\n  const box = useRef(null), ev = useRef(null);\n  const [st, setSt] = useState(() => ({ reqs: clone(c.requirements), files: clone(c.files) }));\n  const [log, setLog] = useState([]);\n  const note = (what, r) => setLog(l => [what + ': ' + r.label, ...l].slice(0, 4));\n  const events = {\n    onAdd: (r, f, cap) => { setSt(s => ({ ...s, files: [...s.files, { id: 'n' + Date.now() + Math.random(), name: f.name, req: r.id, url: URL.createObjectURL(f), note: cap && cap.consent ? 'photo, consent recorded' : Math.round(f.size / 1024) + ' kB' }] })); note('onAdd', r); },\n    onLink: (r, f) => { setSt(s => ({ ...s, files: s.files.map(x => x.id === f.id ? { ...x, req: r.id } : x) })); note('onLink', r); },\n    onUnlink: (r, f) => { setSt(s => ({ ...s, files: s.files.map(x => x.id === f.id ? { ...x, req: '' } : x) })); note('onUnlink', r); },\n    onStatus: (r, v) => { setSt(s => ({ ...s, reqs: s.reqs.map(x => x.id === r.id ? { ...x, status: v } : x) })); note('onStatus ' + v, r); }\n  };\n  useEffect(() => { const s = { reqs: clone(c.requirements), files: clone(c.files) }; setSt(s); setLog([]);\n    ev.current = K().evidenceChecklist.mount(box.current, { stages: c.stages, requirements: s.reqs, files: s.files, label: c.label, ...events });\n    return () => ev.current.destroy(); }, [id]);\n  useEffect(() => { if (ev.current) ev.current.update({ requirements: st.reqs, files: st.files }); }, [st]);\n  return html`<div class=\"pv-stack\">\n    <${Cases} d=${d} value=${id} set=${setId}/>\n    <${Sim}>files stay in this tab. ${K().cameraCapture ? '\"Take a photo\" is there because kit.camera-capture is loaded too.' : ''}<//>\n    <div ref=${box}></div>\n    <p style=${LOG}>${log.length ? 'Events, newest first: ' + log.join(' · ') : 'Pick an item, add or link a file, or mark it not needed: the page gets an event and calls update().'}</p>\n  </div>`;\n};\n})();\n/* /part:page.script.preview.kit.evidence-checklist */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-evidence-checklist-5a908218/chunks",
+   "id": "3",
+   "data": {
+    "path": "kit/samples/evidence-checklist.json",
+    "n": 0,
+    "of": 1,
+    "content": "{\n \"component\": \"evidence-checklist\",\n \"file\": \"kit/evidence-checklist.js\",\n \"about\": \"Invented cases: the proof behind a visa, a new supplier, a tenancy and a home loan. Stages are data, so each case names its own.\",\n \"cases\": [\n  {\n   \"id\": \"visa\",\n   \"label\": \"Visa application\",\n   \"stages\": [\n    {\n     \"id\": \"before\",\n     \"label\": \"Before applying\"\n    },\n    {\n     \"id\": \"at\",\n     \"label\": \"At the appointment\"\n    },\n    {\n     \"id\": \"after\",\n     \"label\": \"After approval\"\n    }\n   ],\n   \"requirements\": [\n    {\n     \"id\": \"passport\",\n     \"group\": \"You\",\n     \"label\": \"Passport, valid 6 months beyond the trip\",\n     \"why\": \"The consulate will not issue a visa into a passport that expires during the stay.\",\n     \"stage\": \"before\",\n     \"consent\": \"I agree to a photo of my passport's photo page being kept with this application.\"\n    },\n    {\n     \"id\": \"funds\",\n     \"group\": \"Money\",\n     \"label\": \"Bank statements, last 6 months\",\n     \"why\": \"Shows you can support yourself for the length of the stay.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"employer\",\n     \"group\": \"Money\",\n     \"label\": \"Employer's letter\",\n     \"why\": \"Confirms your job and your leave, so you are expected back.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"bio\",\n     \"group\": \"The trip\",\n     \"label\": \"Biometrics receipt\",\n     \"why\": \"Fingerprints and a photo are taken at the appointment; keep the receipt.\",\n     \"stage\": \"at\"\n    },\n    {\n     \"id\": \"flight\",\n     \"group\": \"The trip\",\n     \"label\": \"Flight booking\",\n     \"why\": \"Book only once the visa is granted.\",\n     \"stage\": \"after\",\n     \"status\": \"not_needed\"\n    }\n   ],\n   \"files\": [\n    {\n     \"id\": \"f1\",\n     \"name\": \"passport-photo-page.jpg\",\n     \"req\": \"passport\"\n    },\n    {\n     \"id\": \"f2\",\n     \"name\": \"payslip-october.pdf\",\n     \"req\": \"\"\n    }\n   ]\n  },\n  {\n   \"id\": \"supplier\",\n   \"label\": \"Supplier onboarding\",\n   \"stages\": [\n    {\n     \"id\": \"before\",\n     \"label\": \"Before the first order\"\n    },\n    {\n     \"id\": \"at\",\n     \"label\": \"At contract\"\n    },\n    {\n     \"id\": \"after\",\n     \"label\": \"Every year\"\n    }\n   ],\n   \"requirements\": [\n    {\n     \"id\": \"inc\",\n     \"group\": \"The company\",\n     \"label\": \"Certificate of incorporation\",\n     \"why\": \"Confirms the company exists under the name on the invoice.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"tax\",\n     \"group\": \"The company\",\n     \"label\": \"Tax registration\",\n     \"why\": \"Needed to reclaim the tax on its invoices.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"pl\",\n     \"group\": \"Insurance\",\n     \"label\": \"Public liability certificate\",\n     \"why\": \"Its staff work on our premises.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"dpa\",\n     \"group\": \"Data\",\n     \"label\": \"Signed data processing agreement\",\n     \"why\": \"It will handle our customers' addresses.\",\n     \"stage\": \"at\"\n    },\n    {\n     \"id\": \"pl2\",\n     \"group\": \"Insurance\",\n     \"label\": \"Renewed liability certificate\",\n     \"why\": \"Cover lapses yearly; a new certificate is needed each time.\",\n     \"stage\": \"after\"\n    }\n   ],\n   \"files\": [\n    {\n     \"id\": \"f1\",\n     \"name\": \"incorporation.pdf\",\n     \"req\": \"inc\"\n    },\n    {\n     \"id\": \"f2\",\n     \"name\": \"vat-certificate.pdf\",\n     \"req\": \"\"\n    },\n    {\n     \"id\": \"f3\",\n     \"name\": \"insurance-schedule.pdf\",\n     \"req\": \"\"\n    }\n   ]\n  },\n  {\n   \"id\": \"tenancy\",\n   \"label\": \"Tenancy\",\n   \"stages\": [\n    {\n     \"id\": \"before\",\n     \"label\": \"Before signing\"\n    },\n    {\n     \"id\": \"at\",\n     \"label\": \"At signing\"\n    },\n    {\n     \"id\": \"after\",\n     \"label\": \"After signing\"\n    }\n   ],\n   \"requirements\": [\n    {\n     \"id\": \"title\",\n     \"group\": \"The property\",\n     \"label\": \"Land title or an official title search\",\n     \"why\": \"Shows the landlord named in the agreement is the registered owner.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"lid\",\n     \"group\": \"The parties\",\n     \"label\": \"Landlord's ID\",\n     \"why\": \"Ties the landlord on the signing page to the owner on the title.\",\n     \"stage\": \"before\",\n     \"consent\": \"I agree to a photo of my ID being kept with this tenancy file.\"\n    },\n    {\n     \"id\": \"tid\",\n     \"group\": \"The parties\",\n     \"label\": \"Tenant's ID\",\n     \"why\": \"Ties the tenant on the signing page to a real person.\",\n     \"stage\": \"at\",\n     \"consent\": \"I agree to a photo of my ID being kept with this tenancy file.\"\n    },\n    {\n     \"id\": \"stamp\",\n     \"group\": \"After signing\",\n     \"label\": \"Stamp duty certificate\",\n     \"why\": \"An unstamped agreement may not be accepted as evidence; stamp it within the deadline.\",\n     \"stage\": \"after\"\n    },\n    {\n     \"id\": \"taxbill\",\n     \"group\": \"After signing\",\n     \"label\": \"Property tax bill\",\n     \"why\": \"Only needed when the tenant pays the property tax.\",\n     \"stage\": \"after\",\n     \"status\": \"not_needed\"\n    }\n   ],\n   \"files\": [\n    {\n     \"id\": \"f1\",\n     \"name\": \"landlord-id.jpg\",\n     \"req\": \"lid\"\n    }\n   ]\n  },\n  {\n   \"id\": \"loan\",\n   \"label\": \"Home loan\",\n   \"stages\": [\n    {\n     \"id\": \"before\",\n     \"label\": \"Before the offer\"\n    },\n    {\n     \"id\": \"at\",\n     \"label\": \"Before completion\"\n    },\n    {\n     \"id\": \"after\",\n     \"label\": \"After completion\"\n    }\n   ],\n   \"requirements\": [\n    {\n     \"id\": \"income\",\n     \"group\": \"Income\",\n     \"label\": \"Last three payslips\",\n     \"why\": \"The lender works out what you can borrow from them.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"p60\",\n     \"group\": \"Income\",\n     \"label\": \"Last year's tax summary\",\n     \"why\": \"Confirms the yearly income the payslips suggest.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"valuation\",\n     \"group\": \"The home\",\n     \"label\": \"Valuation report\",\n     \"why\": \"The lender lends against what the home is worth, not its price.\",\n     \"stage\": \"before\"\n    },\n    {\n     \"id\": \"insurance\",\n     \"group\": \"The home\",\n     \"label\": \"Buildings insurance\",\n     \"why\": \"Must be in place on the day the loan pays out.\",\n     \"stage\": \"at\"\n    },\n    {\n     \"id\": \"deed\",\n     \"group\": \"The home\",\n     \"label\": \"Registered charge\",\n     \"why\": \"Proof the lender's charge is on the title.\",\n     \"stage\": \"after\"\n    }\n   ],\n   \"files\": [\n    {\n     \"id\": \"f1\",\n     \"name\": \"payslip-aug.pdf\",\n     \"req\": \"income\"\n    },\n    {\n     \"id\": \"f2\",\n     \"name\": \"payslip-sep.pdf\",\n     \"req\": \"income\"\n    },\n    {\n     \"id\": \"f3\",\n     \"name\": \"payslip-oct.pdf\",\n     \"req\": \"income\"\n    }\n   ]\n  }\n ]\n}\n"
+   }
+  },
+  {
+   "collection": "incoming",
+   "id": "p-catalog-kit-evidence-checklist-5a908218",
+   "data": {
+    "by": "catalog",
+    "at": "",
+    "summary": "Kit kit.evidence-checklist 0.1.0 (4 files)",
+    "threads": [],
+    "base": {
+     "version": "",
+     "page_hash": "",
+     "docs": {}
+    },
+    "parts": [],
+    "files": [
+     {
+      "path": "kit/evidence-checklist.css",
+      "ifMatch": null,
+      "contentType": "text/css",
+      "sha256": "d7d53d9bdfcde35c6b7a74106008f1bd261375eed0bea06a97376bdb02105fc5",
+      "size": 5380,
+      "chunks": 1
+     },
+     {
+      "path": "kit/evidence-checklist.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "62cfaf3eb8e1c62ae9d087f6ff306cf0f689fd8dbfe66055cf8b074b7237a645",
+      "size": 11356,
+      "chunks": 1
+     },
+     {
+      "path": "kit/previews/evidence-checklist.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "b6ae8056e900cab9b99f0f18b71ebfd18989aa3085878d06fb2d0fecb2459395",
+      "size": 3322,
+      "chunks": 1
+     },
+     {
+      "path": "kit/samples/evidence-checklist.json",
+      "ifMatch": null,
+      "contentType": "application/json",
+      "sha256": "12675d9de3481a1ac1fb003c5bd4a2100e30795649f710f46799c183b76ac3f4",
+      "size": 6412,
+      "chunks": 1
+     }
+    ],
+    "live_files": {},
+    "status": "new",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    },
+    "entry": {
+     "id": "kit.evidence-checklist",
+     "kind": "component",
+     "group": "Kit",
+     "name": "Evidence checklist",
+     "summary": "The documents a file must hold, grouped, with why and when each is needed and how many are missing per stage; each opens a pane to add, link or photograph the file.",
+     "tags": [
+      "checklist",
+      "evidence",
+      "documents",
+      "requirements",
+      "upload",
+      "attachments",
+      "kyc",
+      "onboarding",
+      "visa",
+      "compliance",
+      "due diligence",
+      "stages",
+      "drop zone"
+     ],
+     "status": "new",
+     "version": "0.1.0",
+     "requires": [],
+     "globals": [],
+     "provides": [
+      "Kit.evidenceChecklist.mount"
+     ],
+     "main": "kit/evidence-checklist.js",
+     "files": [
+      {
+       "path": "kit/evidence-checklist.js",
+       "role": "script",
+       "sha256": "62cfaf3eb8e1c62ae9d087f6ff306cf0f689fd8dbfe66055cf8b074b7237a645",
+       "bytes": 11356
+      },
+      {
+       "path": "kit/evidence-checklist.css",
+       "role": "style",
+       "sha256": "d7d53d9bdfcde35c6b7a74106008f1bd261375eed0bea06a97376bdb02105fc5",
+       "bytes": 5380
+      },
+      {
+       "path": "kit/samples/evidence-checklist.json",
+       "role": "sample",
+       "sha256": "12675d9de3481a1ac1fb003c5bd4a2100e30795649f710f46799c183b76ac3f4",
+       "bytes": 6412
+      },
+      {
+       "path": "kit/previews/evidence-checklist.js",
+       "role": "preview",
+       "sha256": "b6ae8056e900cab9b99f0f18b71ebfd18989aa3085878d06fb2d0fecb2459395",
+       "bytes": 3322
+      }
+     ],
+     "hash": "8d1bd39e59ec"
+    }
+   }
+  }
+ ]
+}

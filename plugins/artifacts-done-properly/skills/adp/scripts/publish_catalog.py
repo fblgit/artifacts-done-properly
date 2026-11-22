@@ -5,8 +5,8 @@ Run it as python3 -I <adp skill folder>/scripts/publish_catalog.py COMMAND ... (
 The catalog goes up packed. Published directly, as real files: the page (index.html, adp.js, content.js, parts/, styles/), catalog.json, and the
 kit files the inbox needs to run (the closure of BOOT_ENTRY). Everything else under kit/ rides the seed (seed.json and seed/ packs, made by
 `adp.py seed --data`) as ONE PROPOSAL PER KIT FOLDER: an incoming/<pid> doc and its incoming/<pid>/chunks docs, the shape `adp.py propose` writes.
-adp.js's loader writes them to the db on the first open by an editor; the page's Incoming panel (Kit.inbox) lists them, and an editor's Apply
-publishes each folder's files with an ifMatch per file and records it in What changed, with its real version. Nothing else unpacks.
+adp.js's loader writes them to the db on the first open by an editor; the page's Incoming panel (Kit.inbox) lists them and, in that editor's tab,
+applies them itself: it publishes each folder's files with an ifMatch per file and records it in What changed, with its real version. Nothing else unpacks.
 
   welcome [--url URL] [--out D]      one self-contained About ADP page as OUT/tree/index.html, to publish first: it gives the artifact its URL
   plan --url URL [--catalog-dir D] [--out D]
@@ -16,6 +16,9 @@ publishes each folder's files with an ifMatch per file and records it in What ch
                                      the day-2 plan: the repo against the local copy of the live catalog (D, default ~/.adp/catalog: adp.py catalog
                                      fetches it) as inbox proposals with the live sha as ifMatch for every changed or removed kit file, written as
                                      ArtifactData batches (OUT/update-NN.json); the page applies them when an editor has it open
+  kit pack ID ... [--catalog-dir D] [--out D]
+                                     one seed pack per entry, D/<ID>.json (default ./extras, docs/kit-json.md): one proposal holding the entry's own
+                                     files and its index record. An entry that lists a file another entry lists too is refused
   set-url URL                        stamp URL into the repo's catalog.json and the index.html comment (a commit once the catalog is live)
   check URL                          exit 1 if either place differs from URL
 """
@@ -115,12 +118,12 @@ def texts(catalog, paths):
     return out
 
 
-def proposals(items, label="Catalog kit files"):
-    """One proposal per folder from ITEMS [{path, ifMatch, text, reason}] (text None: the file is removed, as adp.py propose writes it):
+def proposals(items, label="Catalog kit files", group=None):
+    """One proposal per folder (or per GROUP(path)) from ITEMS [{path, ifMatch, text, reason}] (text None: the file is removed, as adp.py propose writes it):
     [(pid, folder, files, docs)], docs being the incoming/<pid> doc and its chunk docs as {collection, id, data}."""
     groups = {}
     for it in sorted(items, key=lambda i: i["path"]):
-        groups.setdefault(folder_of(it["path"]), []).append(it)
+        groups.setdefault((group or folder_of)(it["path"]), []).append(it)
     parts = []      # a folder over the caps becomes several proposals (patterns-1, patterns-2, ...): one Apply is one publish call
     for name in sorted(groups):
         cur, size, pieces = [], 0, []
@@ -242,6 +245,31 @@ def cmd_plan(a):
     for pid, folder, fl, _docs in props:
         print("  %-10s %3d files %8d bytes  %s" % (folder, len(fl), sum(f["size"] for f in fl), pid))
     print("publish: %s (%d files)" % (out / "publish.json", len(staged)))
+    return 0
+
+
+def cmd_kit_pack(a):
+    catalog, out = Path(a.catalog_dir).resolve(), Path(a.out).resolve()
+    entries = json.loads(read_text(catalog / "catalog.json"))["entries"]
+    for i in a.ids:
+        e = next((x for x in entries if x["id"] == i), None)
+        if not e:
+            raise Fail("no entry %s in %s" % (i, catalog / "catalog.json"))
+        listed = {f["path"]: (f["sha256"], f["bytes"]) for f in e["files"]}
+        shared = sorted({f["path"] for x in entries if x["id"] != i for f in x["files"]} & set(listed))
+        if shared or not all(p.startswith("kit/") for p in listed):
+            raise Fail("%s: a kit holds only its own files under kit/ (shared with another entry: %s)" % (i, ", ".join(shared) or "none"))
+        got = proposals(texts(catalog, listed), group=lambda _p: i.replace(".", "-"))
+        if len(got) != 1:
+            raise Fail("%s is too large for one proposal (%d files or %d KB at most)" % (i, MAX_FILES, MAX_BYTES // 1024))
+        files, docs = got[0][2:]
+        if {f["path"]: (f["sha256"], f["size"]) for f in files} != listed:
+            raise Fail("%s: its files differ from its record in catalog.json: run adp_catalog.py build" % i)
+        # the page adds this record to catalog.json once the files are applied (parts/catalog.js)
+        docs[-1]["data"].update(entry=e, summary="Kit %s %s (%d files)" % (i, e.get("version", ""), len(files)))
+        out.mkdir(parents=True, exist_ok=True)
+        write_text(out / (i + ".json"), json.dumps({"schema": "adp-seed/2", "pack": 1, "of": 1, "docs": docs}, ensure_ascii=False, indent=1) + "\n")
+        print("%s %s: %d files -> %s" % (i, e.get("version", ""), len(files), out / (i + ".json")))
     return 0
 
 
@@ -373,6 +401,12 @@ def main(argv=None):
         p.add_argument("url")
         p.add_argument("--catalog-dir", default=str(DEFAULT_CATALOG))
         p.set_defaults(fn=fn)
+    kit = sub.add_parser("kit").add_subparsers(dest="kit_cmd", required=True)
+    p = kit.add_parser("pack")
+    p.add_argument("ids", nargs="+")
+    p.add_argument("--catalog-dir", default=str(DEFAULT_CATALOG))
+    p.add_argument("--out", default=str(Path.cwd() / "extras"))
+    p.set_defaults(fn=cmd_kit_pack)
     a = ap.parse_args(argv)
     try:
         return a.fn(a)

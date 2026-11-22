@@ -1,0 +1,164 @@
+{
+ "schema": "adp-seed/2",
+ "pack": 1,
+ "of": 1,
+ "docs": [
+  {
+   "collection": "incoming/p-catalog-kit-signing-track-247c6930/chunks",
+   "id": "0",
+   "data": {
+    "path": "kit/previews/signing-track.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.preview.kit.signing-track */\n/* The catalog's live preview of kit.signing-track. It rides with the kit and only the catalog page loads it: `adp.py take` leaves it out. */\n(function () {\n'use strict';\nconst { html, useState, useEffect, useRef } = window.htmPreact;\nconst P = window.CatalogPreviews = window.CatalogPreviews || {};\nconst K = () => window.Kit;\nconst first = (samples, part) => samples[Object.keys(samples).find(k => k.endsWith('/' + part + '.json'))];\nconst clone = v => v === undefined ? undefined : JSON.parse(JSON.stringify(v));\nconst Sim = ({ children }) => html`<p class=\"pv-sim\"><b>Sandbox</b> ${children}</p>`;\nconst Cases = ({ d, value, set, label = 'Use case' }) => html`<div class=\"pv-row\" role=\"group\" aria-label=${label}><span class=\"pv-label\">${label}</span>\n  ${d.cases.map(c => html`<button type=\"button\" key=${c.id} class=${'pv-btn' + (c.id === value ? ' pri' : '')} aria-pressed=${c.id === value} onClick=${() => set(c.id)}>${c.label}</button>`)}</div>`;\nconst LOG = 'margin:0;font:13px/1.45 var(--f-ui);color:var(--ink-2);min-width:0;flex:1 1 14rem';\n\nP['kit.signing-track'] = ({ samples }) => {\n  const d = first(samples, 'signing-track');\n  const [id, setId] = useState(d.cases[0].id);\n  const c = d.cases.find(x => x.id === id);\n  const box = useRef(null), tr = useRef(null);\n  const [said, setSaid] = useState('');\n  const [signers, setSigners] = useState(() => clone(c.signers));\n  // \"Next step\" stands in for the signer doing it on their phone: the page moves the step and calls update()\n  const advance = () => setSigners(ss => { const out = clone(ss); for (const s of out) { const i = s.steps.findIndex(x => x.state !== 'done'); if (i < 0) continue;\n    const of = out.find(o => o.key === s.witnesses); if (of && i === s.steps.length - 1 && of.steps[of.steps.length - 1].state !== 'done') continue;\n    const x = s.steps[i]; if (x.of && (x.done || 0) < x.of) { x.done = (x.done || 0) + 1; x.state = x.done === x.of ? 'done' : 'now'; } else x.state = 'done';\n    if (x.state === 'done' && s.steps[i + 1]) s.steps[i + 1].state = 'now'; return out; } return out; });\n  useEffect(() => { const s = clone(c.signers); setSigners(s); setSaid('');\n    tr.current = K().signingTrack.mount(box.current, { signers: s, label: c.label, onAction: (sg, a) => setSaid('onAction(' + sg.name + ', \"' + a + '\"): the page makes the link or QR code') });\n    return () => tr.current.destroy(); }, [id]);\n  useEffect(() => { if (tr.current) tr.current.update({ signers }); }, [signers]);\n  return html`<div class=\"pv-stack\">\n    <${Cases} d=${d} value=${id} set=${setId}/>\n    <${Sim}>${c.context}<//>\n    <div ref=${box}></div>\n    <div class=\"pv-row\"><button type=\"button\" class=\"pv-btn\" onClick=${advance}>Next step</button><button type=\"button\" class=\"pv-btn\" onClick=${() => setSigners(clone(c.signers))}>Reset</button>\n      <span style=${LOG}>${said || 'Next step plays the first open step, as a signer would; a witness waits for the person they witness.'}</span></div>\n  </div>`;\n};\n})();\n/* /part:page.script.preview.kit.signing-track */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-signing-track-247c6930/chunks",
+   "id": "1",
+   "data": {
+    "path": "kit/samples/signing-track.json",
+    "n": 0,
+    "of": 1,
+    "content": "{\n \"component\": \"signing-track\",\n \"file\": \"kit/signing-track.js\",\n \"about\": \"Invented signing rounds. The steps are data: an offer letter needs two, a witnessed tenancy four.\",\n \"cases\": [\n  {\n   \"id\": \"offer\",\n   \"label\": \"Employment offer\",\n   \"context\": \"A new hire signs an offer letter; HR countersigns. No ID photos or initials, so two steps each.\",\n   \"signers\": [\n    {\n     \"key\": \"hire\",\n     \"name\": \"Priya Example\",\n     \"label\": \"New hire\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"read\",\n       \"label\": \"Read the offer\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"now\"\n      }\n     ]\n    },\n    {\n     \"key\": \"hr\",\n     \"name\": \"Sam Placeholder\",\n     \"label\": \"HR, countersigns\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"read\",\n       \"label\": \"Read the offer\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"todo\"\n      }\n     ]\n    }\n   ]\n  },\n  {\n   \"id\": \"board\",\n   \"label\": \"Board resolution\",\n   \"context\": \"Three directors approve a resolution. One signed before the amount was corrected, so their signature has to be redone.\",\n   \"signers\": [\n    {\n     \"key\": \"d1\",\n     \"name\": \"Director One\",\n     \"label\": \"Chair\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"read\",\n       \"label\": \"Read it\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"done\"\n      }\n     ]\n    },\n    {\n     \"key\": \"d2\",\n     \"name\": \"Director Two\",\n     \"label\": \"Director\",\n     \"witnesses\": \"\",\n     \"note\": \"Signed version 2; the amount changed in version 3.\",\n     \"steps\": [\n      {\n       \"id\": \"read\",\n       \"label\": \"Read it\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"stale\"\n      }\n     ]\n    },\n    {\n     \"key\": \"d3\",\n     \"name\": \"Director Three\",\n     \"label\": \"Director\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"read\",\n       \"label\": \"Read it\",\n       \"state\": \"now\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"todo\"\n      }\n     ]\n    }\n   ]\n  },\n  {\n   \"id\": \"tenancy\",\n   \"label\": \"Tenancy with witnesses\",\n   \"context\": \"An invented tenancy: each party initials every page and signs; a witness signs after the person they witness.\",\n   \"signers\": [\n    {\n     \"key\": \"landlord\",\n     \"name\": \"Tan Example\",\n     \"label\": \"Landlord\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"consent\",\n       \"label\": \"Agreed to photos\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"id\",\n       \"label\": \"ID photos\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"initials\",\n       \"label\": \"Initials\",\n       \"state\": \"done\",\n       \"done\": 4,\n       \"of\": 4\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"done\"\n      }\n     ]\n    },\n    {\n     \"key\": \"tenant\",\n     \"name\": \"Jane Sample\",\n     \"label\": \"Tenant\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"consent\",\n       \"label\": \"Agreed to photos\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"id\",\n       \"label\": \"ID photos\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"initials\",\n       \"label\": \"Initials\",\n       \"state\": \"stale\",\n       \"done\": 2,\n       \"of\": 4\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"todo\"\n      }\n     ]\n    },\n    {\n     \"key\": \"w-landlord\",\n     \"name\": \"Lee Witness\",\n     \"label\": \"Witness for the landlord\",\n     \"witnesses\": \"landlord\",\n     \"steps\": [\n      {\n       \"id\": \"consent\",\n       \"label\": \"Agreed to photos\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"id\",\n       \"label\": \"ID photos\",\n       \"state\": \"now\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"todo\"\n      }\n     ]\n    },\n    {\n     \"key\": \"w-tenant\",\n     \"name\": \"Kim Witness\",\n     \"label\": \"Witness for the tenant\",\n     \"witnesses\": \"tenant\",\n     \"steps\": [\n      {\n       \"id\": \"consent\",\n       \"label\": \"Agreed to photos\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"id\",\n       \"label\": \"ID photos\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"todo\"\n      }\n     ]\n    }\n   ]\n  },\n  {\n   \"id\": \"consent\",\n   \"label\": \"Clinic consent\",\n   \"context\": \"A patient consents to a procedure; the clinician and an interpreter sign too. The interpreter witnesses the patient.\",\n   \"signers\": [\n    {\n     \"key\": \"patient\",\n     \"name\": \"A. Patient\",\n     \"label\": \"Patient\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"read\",\n       \"label\": \"Explained and read\",\n       \"state\": \"done\"\n      },\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"done\"\n      }\n     ]\n    },\n    {\n     \"key\": \"interp\",\n     \"name\": \"B. Interpreter\",\n     \"label\": \"Interpreter, witnesses the patient\",\n     \"witnesses\": \"patient\",\n     \"steps\": [\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"now\"\n      }\n     ]\n    },\n    {\n     \"key\": \"doc\",\n     \"name\": \"Dr C. Clinician\",\n     \"label\": \"Clinician\",\n     \"witnesses\": \"\",\n     \"steps\": [\n      {\n       \"id\": \"sign\",\n       \"label\": \"Signed\",\n       \"state\": \"todo\"\n      }\n     ]\n    }\n   ]\n  }\n ]\n}\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-signing-track-247c6930/chunks",
+   "id": "2",
+   "data": {
+    "path": "kit/signing-track.css",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.style.kit.signing-track */\n/* Kit css: Signing track    kit version 0.1.0    pairs with kit/signing-track.js\n   .kit-st > p.kit-st-sum, div.kit-st-meter, ol.kit-st-list > li.kit-st-row(.kit-st-wit) > div.kit-st-who + ol.kit-st-steps (li.kit-st-step[data-state]) + div.kit-st-acts\n   step states: done, now, todo, stale (signed on an older text), wait (a witness waiting for the person they witness)\n   Below about 34rem (a container query) the rail drops under the name and the buttons under the rail.\n   Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-mono; optional --ok --warn --danger --radius --on-accent */\n.kit-st { container-type: inline-size; display: grid; gap: 10px; min-width: 0; font: 15px/1.4 var(--f-ui); color: var(--ink); }\n.kit-st-sum { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; color: var(--ink-2); }\n.kit-st-sum b { color: var(--ink); font-size: 1.15em; }\n.kit-st-stale { color: var(--danger, var(--ink)); font-weight: 600; }\n.kit-st-meter { height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden; }\n.kit-st-meter span { display: block; height: 100%; background: var(--ok, var(--accent)); transition: width .3s; }\n.kit-st-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }\n.kit-st-row { display: grid; grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; padding: 10px 12px; border: 1px solid var(--rule); border-radius: var(--radius, 8px); background: var(--panel); min-width: 0; }\n.kit-st-wit { margin-left: 28px; position: relative; background: transparent; border-style: dashed; }\n.kit-st-wit::before { content: \"\"; position: absolute; left: -18px; top: -7px; width: 12px; height: calc(50% + 7px); border-left: 2px solid var(--rule); border-bottom: 2px solid var(--rule); border-bottom-left-radius: 6px; }\n.kit-st-who { display: grid; gap: 1px; min-width: 0; } .kit-st-who b { overflow-wrap: anywhere; }\n.kit-st-who small { font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }\n.kit-st-note { font-style: italic; }\n.kit-st-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 0; min-width: 0; }\n.kit-st-step { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 6px; align-items: center; padding-right: 22px; font-size: 13.5px; color: var(--ink-2); min-width: 0; }\n.kit-st-step:not(:last-child)::after { content: \"\"; position: absolute; right: 6px; top: 50%; width: 10px; border-top: 2px solid var(--rule); }\n.kit-st-step:not(:last-child)[data-state=\"done\"]::after { border-top-color: var(--ok, var(--ink-2)); }\n.kit-st-step i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink-3, var(--rule)); background: transparent; }\n.kit-st-step small { grid-column: 2; font-size: 12px; }\n.kit-st-step[data-state=\"done\"] { color: var(--ink); } .kit-st-step[data-state=\"done\"] i { background: var(--ok, var(--ink-2)); border-color: var(--ok, var(--ink-2)); }\n.kit-st-step[data-state=\"now\"] { color: var(--ink); font-weight: 600; } .kit-st-step[data-state=\"now\"] i { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }\n.kit-st-step[data-state=\"stale\"] { color: var(--danger, var(--ink)); } .kit-st-step[data-state=\"stale\"] i { border-color: var(--danger, var(--ink)); background: repeating-linear-gradient(45deg, var(--danger, var(--ink)) 0 2px, transparent 2px 4px); }\n.kit-st-step[data-state=\"wait\"] i { border-style: dashed; }\n.kit-st-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }\n.kit-st-finished .kit-st-who b::after { content: \" ✓\"; color: var(--ok, var(--ink-2)); }\n.kit-st-acts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }\n.kit-st-btn { font: 500 13px/1.2 var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius, 6px); padding: 6px 11px; cursor: pointer; white-space: nowrap; }\n.kit-st-btn:hover { background: var(--sunk); }\n.kit-st-pri { color: var(--on-accent, #fff); background: var(--accent); border-color: var(--accent); } .kit-st-pri:hover { background: var(--accent); filter: brightness(1.08); }\n.kit-st-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }\n@container (max-width: 44rem) { .kit-st-row { grid-template-columns: minmax(0, 1fr) auto; } .kit-st-steps { grid-column: 1 / -1; grid-row: 2; } }\n@container (max-width: 30rem) { .kit-st-row { grid-template-columns: minmax(0, 1fr); } .kit-st-acts { justify-content: flex-start; } .kit-st-wit { margin-left: 18px; } .kit-st-wit::before { left: -12px; width: 8px; } }\n@media (prefers-reduced-motion: reduce) { .kit-st-meter span { transition: none; } }\n/* /part:page.style.kit.signing-track */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-signing-track-247c6930/chunks",
+   "id": "3",
+   "data": {
+    "path": "kit/signing-track.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.kit.signing-track */\n/**\n * Signing track\n * Kit.signingTrack.mount(box, {signers}) shows everyone who signs or witnesses a document, in signing order, each with a rail of their steps and how far they are. A witness sits under the person they witness, and their signing step waits until that person has signed. A step made on an older text shows as stale (\"text changed, sign again\"). The steps are data, so a case without ID photos or initials simply has fewer.\n *\n * What it is: the progress board of a signing round (an offer letter, a board resolution, a tenancy with witnesses, a consent form). It shows; it decides nothing.\n * The page owns the links: the kit reports onAction(signer, action) for buttons like \"Copy link\" or \"Show QR code\", and the page makes and shows them.\n * API (small and stable):\n *   Kit.signingTrack.mount(box, {signers, actions, label, words, onAction}) -> {update(opts), destroy()}\n *     signers  [{key, name, label, witnesses, note, steps: [{id, label, state, done, of}]}]\n *              witnesses  the key of the signer this one witnesses (\"\" for a party); the row moves under that signer\n *              state      \"done\" | \"now\" | \"todo\" | \"stale\"; done/of show a count (initials on 2 of 4 pages)\n *              the last step is the signature: a signer has signed when it is done\n *     actions  [{id, label, when}] buttons per signer (default Copy link, Show QR code); when \"open\" (default) shows them only\n *              to a signer who has not finished, \"always\" to everyone\n *     words    {stale, waits, signed, of}   replace the kit's words (\"text changed, sign again\", \"after\", \"have signed\", \"of\")\n *     onAction(signer, actionId)\n *\n * @id        kit.signing-track\n * @kind      component\n * @group     Kit\n * @status    new\n * @version   0.1.0\n * @updated   2026-11-21\n * @summary   Everyone who signs or witnesses, in signing order, with a rail of their steps; witnesses wait for the person they witness, and a signature on an older text shows as stale.\n * @tags      signing, signature, witness, progress, steps, signers, contract, consent, board resolution, offer letter, e-sign, roster\n * @requires  none\n * @files     kit/signing-track.css, kit/samples/signing-track.json, kit/previews/signing-track.js\n * @provides  Kit.signingTrack.mount\n * @config    Kit.signingTrack.mount(box, opts) | signers [{key, name, label, witnesses, note, steps: [{id, label, state, done, of}]}], actions [{id, label, when}], label, words; returns {update(opts), destroy()}\n * @config    events | onAction(signer, actionId); the kit makes no links itself\n * @tokens    --panel --sunk --ink --ink-2 --ink-3 --rule --accent --ok? --warn? --danger? --f-ui --f-mono --radius? --on-accent?\n * @globals   none\n * @db        none\n * @source    Catalog harvest, 2026-11-21 | an agreement review board | the signers, witnesses and their steps\n * @preview   {\"render\": \"kit.signing-track\", \"samples\": [\"kit/samples/signing-track.json\"]}\n */\n(function () {\n'use strict';\nconst Kit = window.Kit = window.Kit || { version: '0.1.0' };\nconst el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };\nconst WORDS = { stale: 'text changed, sign again', waits: 'after', signed: 'have signed', of: 'of' };\nconst ACTIONS = [{ id: 'link', label: 'Copy link' }, { id: 'qr', label: 'Show QR code' }];\nconst last = s => (s.steps || [])[(s.steps || []).length - 1];\nconst signed = s => { const l = last(s); return !!l && l.state === 'done'; };\n\n// parties in the order given, each followed by the people who witness them\nfunction ordered(signers) {\n  const keys = new Set(signers.map(s => s.key)), out = [];\n  const add = s => { out.push(s); signers.filter(w => w.witnesses && w.witnesses === s.key).forEach(add); };\n  signers.filter(s => !s.witnesses || !keys.has(s.witnesses)).forEach(add);\n  return out;\n}\n\nfunction mount(box, opts) {\n  const o = Object.assign({ signers: [], actions: ACTIONS, label: 'Signers', words: {}, onAction: null }, opts);\n  box.classList.add('kit-st');\n  function row(s, byKey) {\n    const w = Object.assign({}, WORDS, o.words), of = byKey[s.witnesses];\n    const li = el('li', 'kit-st-row' + (of ? ' kit-st-wit' : '')); li.dataset.key = s.key || '';\n    const steps = (s.steps || []).map(x => Object.assign({}, x));\n    const sig = steps[steps.length - 1];\n    if (of && sig && sig.state !== 'done' && !signed(of)) { sig.state = 'wait'; sig.waits = of.name; }\n    const open = steps.find(x => x.state !== 'done');\n    if (!open) li.classList.add('kit-st-finished');\n    const who = el('div', 'kit-st-who'); who.append(el('b', null, s.name || ''), el('small', null, s.label || ''));\n    if (s.note) who.append(el('small', 'kit-st-note', s.note));\n    const ol = el('ol', 'kit-st-steps'); ol.setAttribute('aria-label', 'Steps for ' + (s.name || ''));\n    steps.forEach(x => {\n      const st = el('li', 'kit-st-step'); st.dataset.state = x.state || 'todo';\n      if (x.state === 'now') st.setAttribute('aria-current', 'step');\n      const dot = el('i'); dot.setAttribute('aria-hidden', 'true');\n      let t = x.label || ''; if (x.of) t += ' ' + (x.done || 0) + '/' + x.of;\n      const state = { done: 'done', now: 'in progress', todo: 'to do', stale: w.stale, wait: w.waits + ' ' + (x.waits || '') }[x.state || 'todo'];\n      const sr = el('span', 'kit-st-sr', ', ' + state);\n      st.append(dot, el('span', 'kit-st-sl', t));\n      if (x.state === 'stale' || x.state === 'wait') st.append(el('small', null, x.state === 'stale' ? w.stale : w.waits + ' ' + x.waits)); else st.append(sr);\n      ol.append(st);\n    });\n    li.append(who, ol);\n    if (o.onAction && o.actions.length) {\n      const acts = el('div', 'kit-st-acts'), shown = o.actions.filter(a => (a.when || 'open') === 'always' || open);\n      shown.forEach((a, i) => {\n        const b = el('button', 'kit-st-btn' + (i === 0 && open && (open.state === 'now' || open.state === 'stale') ? ' kit-st-pri' : ''), a.label); b.type = 'button';\n        b.setAttribute('aria-label', a.label + ': ' + (s.name || '')); b.onclick = () => o.onAction(s, a.id); acts.append(b);\n      });\n      if (shown.length) li.append(acts);\n    }\n    return li;\n  }\n  function draw() {\n    box.textContent = '';\n    const w = Object.assign({}, WORDS, o.words), byKey = {};\n    o.signers.forEach(s => { if (s.key) byKey[s.key] = s; });\n    const n = o.signers.filter(signed).length, stale = o.signers.filter(s => (s.steps || []).some(x => x.state === 'stale')).length;\n    const sum = el('p', 'kit-st-sum'); sum.setAttribute('aria-live', 'polite');\n    sum.append(el('b', null, n + ' ' + w.of + ' ' + o.signers.length), document.createTextNode(' ' + w.signed));\n    if (stale) sum.append(el('span', 'kit-st-stale', stale + ' to redo: ' + w.stale));\n    const bar = el('div', 'kit-st-meter'); bar.setAttribute('aria-hidden', 'true'); const fill = el('span'); fill.style.width = (o.signers.length ? n / o.signers.length * 100 : 0) + '%'; bar.append(fill);\n    const ul = el('ol', 'kit-st-list'); ul.setAttribute('aria-label', o.label);\n    ordered(o.signers).forEach(s => ul.append(row(s, byKey)));\n    box.append(sum, bar, ul);\n  }\n  draw();\n  return { update(next) { Object.assign(o, next || {}); draw(); }, destroy() { box.textContent = ''; box.classList.remove('kit-st'); } };\n}\nKit.signingTrack = Object.freeze({ mount });\n})();\n/* /part:page.script.kit.signing-track */\n"
+   }
+  },
+  {
+   "collection": "incoming",
+   "id": "p-catalog-kit-signing-track-247c6930",
+   "data": {
+    "by": "catalog",
+    "at": "",
+    "summary": "Kit kit.signing-track 0.1.0 (4 files)",
+    "threads": [],
+    "base": {
+     "version": "",
+     "page_hash": "",
+     "docs": {}
+    },
+    "parts": [],
+    "files": [
+     {
+      "path": "kit/previews/signing-track.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "03481463cc2d966ce178d5b772e57c5a3621694f1c15633f5679709b9d06a89c",
+      "size": 3085,
+      "chunks": 1
+     },
+     {
+      "path": "kit/samples/signing-track.json",
+      "ifMatch": null,
+      "contentType": "application/json",
+      "sha256": "27ed276f0464e0dd3f1b22f546776db9e7c6a8dbe93e4698a146a583161d6775",
+      "size": 5376,
+      "chunks": 1
+     },
+     {
+      "path": "kit/signing-track.css",
+      "ifMatch": null,
+      "contentType": "text/css",
+      "sha256": "dad993ff6df47bdd8fa73aaaf1a94241d722fb26dec947c6d83d87af277e140f",
+      "size": 4902,
+      "chunks": 1
+     },
+     {
+      "path": "kit/signing-track.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "48c471abab066b155f6bc52c5ba8a8079514edabe21aea290feb38f781a97b7d",
+      "size": 7450,
+      "chunks": 1
+     }
+    ],
+    "live_files": {},
+    "status": "new",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    },
+    "entry": {
+     "id": "kit.signing-track",
+     "kind": "component",
+     "group": "Kit",
+     "name": "Signing track",
+     "summary": "Everyone who signs or witnesses, in signing order, with a rail of their steps; witnesses wait for the person they witness, and a signature on an older text shows as stale.",
+     "tags": [
+      "signing",
+      "signature",
+      "witness",
+      "progress",
+      "steps",
+      "signers",
+      "contract",
+      "consent",
+      "board resolution",
+      "offer letter",
+      "e-sign",
+      "roster"
+     ],
+     "status": "new",
+     "version": "0.1.0",
+     "requires": [],
+     "globals": [],
+     "provides": [
+      "Kit.signingTrack.mount"
+     ],
+     "main": "kit/signing-track.js",
+     "files": [
+      {
+       "path": "kit/signing-track.js",
+       "role": "script",
+       "sha256": "48c471abab066b155f6bc52c5ba8a8079514edabe21aea290feb38f781a97b7d",
+       "bytes": 7450
+      },
+      {
+       "path": "kit/signing-track.css",
+       "role": "style",
+       "sha256": "dad993ff6df47bdd8fa73aaaf1a94241d722fb26dec947c6d83d87af277e140f",
+       "bytes": 4902
+      },
+      {
+       "path": "kit/samples/signing-track.json",
+       "role": "sample",
+       "sha256": "27ed276f0464e0dd3f1b22f546776db9e7c6a8dbe93e4698a146a583161d6775",
+       "bytes": 5376
+      },
+      {
+       "path": "kit/previews/signing-track.js",
+       "role": "preview",
+       "sha256": "03481463cc2d966ce178d5b772e57c5a3621694f1c15633f5679709b9d06a89c",
+       "bytes": 3085
+      }
+     ],
+     "hash": "acb9a7285c05"
+    }
+   }
+  }
+ ]
+}

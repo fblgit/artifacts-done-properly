@@ -146,6 +146,19 @@ class PlanTests(Base):
         self.assertIn("nothing to update", same[1])
         self.assertEqual(run("update", "--url", URL1, "--live", str(self.tmp / "none"), "--out", str(self.out))[0], 1)      # no copy of the live catalog
 
+    def test_kit_pack_writes_one_seed_pack_holding_one_proposal_that_carries_its_record(self):
+        real = REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "catalog"
+        ext = self.tmp / "extras"
+        self.assertEqual(run("kit", "pack", "kit.dom", "--catalog-dir", str(real), "--out", str(ext))[0], 0)
+        pack = json.loads((ext / "kit.dom.json").read_text())
+        chunk, prop = pack["docs"]      # the proposal's doc after its chunks, as adp.js's seed loader reads them
+        self.assertEqual((pack["schema"], chunk["collection"], prop["collection"]), ("adp-seed/2", "incoming/%s/chunks" % prop["id"], "incoming"))
+        self.assertEqual(chunk["data"]["content"], (real / "kit" / "dom.js").read_text(encoding="utf-8"))
+        entry = next(e for e in json.loads((real / "catalog.json").read_text())["entries"] if e["id"] == "kit.dom")
+        self.assertEqual((prop["data"]["entry"], prop["data"]["status"], prop["data"]["files"][0]["ifMatch"]), (entry, "new", None))
+        code, _, err = run("kit", "pack", "kit.table", "--catalog-dir", str(real), "--out", str(ext))      # its sample is a key of a shared bundle
+        self.assertEqual((code, "kit/samples/kit.json" in err), (1, True))
+
     def test_a_file_that_is_not_text_stops_the_plan(self):
         cj = json.loads((self.cat / "catalog.json").read_text())
         cj["entries"] = [{"id": pc.BOOT_ENTRY, "files": [], "requires": []}]

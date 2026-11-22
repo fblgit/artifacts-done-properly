@@ -1,0 +1,165 @@
+{
+ "schema": "adp-seed/2",
+ "pack": 1,
+ "of": 1,
+ "docs": [
+  {
+   "collection": "incoming/p-catalog-kit-redline-65a223ae/chunks",
+   "id": "0",
+   "data": {
+    "path": "kit/previews/redline.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.preview.kit.redline */\n/* The catalog's live preview of kit.redline. It rides with the kit and only the catalog page loads it: `adp.py take` leaves it out. */\n(function () {\n'use strict';\nconst { html, useState, useEffect, useRef } = window.htmPreact;\nconst P = window.CatalogPreviews = window.CatalogPreviews || {};\nconst K = () => window.Kit;\nconst first = (samples, part) => samples[Object.keys(samples).find(k => k.endsWith('/' + part + '.json'))];\nconst Cases = ({ d, value, set, label = 'Use case' }) => html`<div class=\"pv-row\" role=\"group\" aria-label=${label}><span class=\"pv-label\">${label}</span>\n  ${d.cases.map(c => html`<button type=\"button\" key=${c.id} class=${'pv-btn' + (c.id === value ? ' pri' : '')} aria-pressed=${c.id === value} onClick=${() => set(c.id)}>${c.label}</button>`)}</div>`;\n\nP['kit.redline'] = ({ samples }) => {\n  const d = first(samples, 'redline');\n  const [id, setId] = useState(d.cases[0].id);\n  const c = d.cases.find(x => x.id === id);\n  const [mode, setMode] = useState('inline');\n  const [after, setAfter] = useState(c.after);\n  const box = useRef(null), rl = useRef(null);\n  const [st, setSt] = useState(null);\n  useEffect(() => { setAfter(c.after); }, [id]);\n  useEffect(() => {\n    rl.current = K().redline.mount(box.current, { before: c.before, after: c.after, mode, labels: c.labels, by: c.by });\n    setSt(rl.current.stats);\n    return () => rl.current.destroy();\n  }, [id]);\n  useEffect(() => { setSt(rl.current.update({ after, mode }).stats); }, [after, mode]);\n  return html`<div class=\"pv-stack\">\n    <${Cases} d=${d} value=${id} set=${setId}/>\n    <div class=\"pv-row\" role=\"group\" aria-label=\"Mode\"><span class=\"pv-label\">Mode</span>${['inline', 'split'].map(m => html`<button type=\"button\" key=${m} class=${'pv-btn' + (mode === m ? ' pri' : '')} aria-pressed=${mode === m} onClick=${() => setMode(m)}>${m}</button>`)}</div>\n    <div ref=${box}></div>\n    <label class=\"pv-field\"><span>${c.labels[1]}: edit it and the markup follows${c.by === 'char' ? ' (compared letter by letter)' : ''}</span>\n      <textarea style=\"width:100%;min-height:90px;font:14px/1.5 var(--f-ui);color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px 10px\" value=${after} onInput=${e => setAfter(e.target.value)}></textarea></label>\n    ${st ? html`<p class=\"pv-label\">stats(): ${JSON.stringify(st)}</p>` : ''}\n  </div>`;\n};\n})();\n/* /part:page.script.preview.kit.redline */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-redline-65a223ae/chunks",
+   "id": "1",
+   "data": {
+    "path": "kit/redline.css",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.style.kit.redline */\n/* Kit css: Redline    kit version 0.1.0    pairs with kit/redline.js\n   Removed text struck through in --danger on its soft tint, added text underlined in --ok on its soft tint: the marks read without colour too.\n   Needs from the board: --ink --ink-3 --rule --ok --ok-soft --danger --danger-soft --f-ui --f-mono. */\n.kit-rl { font-family: var(--f-ui); color: var(--ink); min-width: 0; }\n.kit-rl-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }\n.kit-rl ins.kit-rl-ins, ins.kit-rl-ins { background: var(--ok-soft); color: var(--ok); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }\n.kit-rl del.kit-rl-del, del.kit-rl-del { background: var(--danger-soft); color: var(--danger); text-decoration: line-through; text-decoration-thickness: 1px; }\n.kit-rl-stats { font: 12.5px/1.4 var(--f-mono); color: var(--ink-3); margin-bottom: 6px; }\n.kit-rl-n-ins { color: var(--ok); } .kit-rl-n-del { color: var(--danger); margin-left: 8px; }\n.kit-rl-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }\n.kit-rl-split > div { min-width: 0; padding-left: 12px; border-left: 1px solid var(--rule); }\n.kit-rl-head { font-variant-caps: all-small-caps; letter-spacing: .04em; color: var(--ink-3); margin-bottom: 4px; }\n@media (max-width: 640px) { .kit-rl-split { grid-template-columns: minmax(0, 1fr); } }\n/* /part:page.style.kit.redline */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-redline-65a223ae/chunks",
+   "id": "2",
+   "data": {
+    "path": "kit/redline.js",
+    "n": 0,
+    "of": 1,
+    "content": "/**\n * Redline\n * Kit.redline compares two versions of a text the way a lawyer marks up a draft: words struck through in red where they went, underlined in green where they came in, whitespace kept. Kit.redline.diff gives the operations, Kit.redline.html the escaped markup, and Kit.redline.mount draws it into an element inline or side by side, with a count of words added and removed. Numbers and amounts are compared as whole tokens, so \"TWO (1)\" to \"ONE (1)\" marks the word, not the letters.\n *\n * What it is: the comparison every edited clause, proposed wording and version history needs. A longest-common-subsequence over word and whitespace tokens, after trimming the\n * common head and tail, so a one-word change in a long clause costs almost nothing. Above a size limit it falls back to \"all removed, all added\" rather than freeze the page.\n * Every string is escaped; a diff can show any text safely.\n * API (small and stable):\n *   Kit.redline.diff(a, b, {by = 'word', limit = 4e6}) -> [[op, text], ...]   op is '=' kept, '-' removed, '+' added; by 'char' compares characters\n *   Kit.redline.html(ops) -> string                 <span>kept</span>, <del class=\"kit-rl-del\">, <ins class=\"kit-rl-ins\">, all text escaped\n *   Kit.redline.stats(ops) -> {added, removed, kept} counted in words\n *   Kit.redline.mount(el, {before, after, mode = 'inline', stats = true, labels = ['Before', 'After'], by}) -> {ops, stats, update(opts), destroy()}\n *     update(opts) merges the options (a new after, another mode) and redraws; destroy() empties el\n *     mode 'inline' one column with both marks; 'split' the old text with its removals beside the new text with its additions\n *\n * @id        kit.redline\n * @kind      component\n * @group     Kit\n * @status    new\n * @version   0.2.0\n * @updated   2026-11-20\n * @summary   A lawyer's markup of two versions: removed words struck in red, added words underlined in green, inline or side by side, with word counts; all text escaped.\n * @tags      diff, redline, compare, versions, track changes, markup, contract, policy, release notes, history\n * @requires  none\n * @files     kit/redline.css, kit/samples/redline.json, kit/previews/redline.js\n * @provides  Kit.redline.diff, Kit.redline.html, Kit.redline.stats, Kit.redline.mount\n * @config    Kit.redline.mount(el, opts) | before, after (the two texts), mode (inline or split), stats (true shows the count line), labels (the two column heads), by (word or char)\n * @config    Kit.redline.diff(a, b, opts) | by (word or char), limit (cells of the comparison table before the fallback, default 4e6)\n * @tokens    --ink --ink-3 --rule --ok --ok-soft --danger --danger-soft --f-ui --f-mono\n * @globals   none\n * @db        none\n * @source    Catalog harvest, 2026-11-19 | an agreement review board | clause history, proposed wording and the version-to-version redline\n * @preview   {\"render\": \"kit.redline\", \"samples\": [\"kit/samples/redline.json\"]}\n */\n(function () {\n'use strict';\nconst Kit = window.Kit = window.Kit || { version: '0.1.0' };\nconst esc = s => String(s).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]));\nconst tokens = (s, by) => by === 'char' ? Array.from(s || '') : ((s || '').match(/\\s+|[^\\s]+/g) || []);\n\nfunction diff(a, b, { by = 'word', limit = 4e6 } = {}) {\n  const ta = tokens(a, by), tb = tokens(b, by);\n  let head = 0; while (head < ta.length && head < tb.length && ta[head] === tb[head]) head++;\n  let tail = 0; while (tail < ta.length - head && tail < tb.length - head && ta[ta.length - 1 - tail] === tb[tb.length - 1 - tail]) tail++;\n  const A = ta.slice(head, ta.length - tail), B = tb.slice(head, tb.length - tail);\n  const ops = [];\n  const push = (op, s) => { if (!s) return; const l = ops[ops.length - 1]; if (l && l[0] === op) l[1] += s; else ops.push([op, s]); };\n  push('=', ta.slice(0, head).join(''));\n  const n = A.length, m = B.length;\n  if (n * m > limit) { push('-', A.join('')); push('+', B.join('')); }\n  else {\n    const dp = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));\n    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);\n    let i = 0, j = 0;\n    while (i < n && j < m) {\n      if (A[i] === B[j]) { push('=', A[i]); i++; j++; }\n      else if (dp[i + 1][j] >= dp[i][j + 1]) push('-', A[i++]);\n      else push('+', B[j++]);\n    }\n    while (i < n) push('-', A[i++]);\n    while (j < m) push('+', B[j++]);\n  }\n  push('=', ta.slice(ta.length - tail).join(''));\n  // a change that is only whitespace between two changes reads better inside them\n  for (let k = 1; k < ops.length - 1; k++) {\n    if (ops[k][0] === '=' && /^\\s+$/.test(ops[k][1]) && ops[k - 1][0] !== '=' && ops[k + 1][0] !== '=') {\n      const s = ops[k][1]; ops.splice(k, 1, ['-', s], ['+', s]);\n    }\n  }\n  const out = []; // merge neighbours again, removals before additions\n  for (let k = 0; k < ops.length; k++) {\n    if (ops[k][0] === '=') { out.push(ops[k]); continue; }\n    let del = '', ins = ''; while (k < ops.length && ops[k][0] !== '=') { if (ops[k][0] === '-') del += ops[k][1]; else ins += ops[k][1]; k++; } k--;\n    if (del) out.push(['-', del]); if (ins) out.push(['+', ins]);\n  }\n  return out;\n}\n\nconst html = ops => ops.map(([op, s]) => op === '=' ? `<span>${esc(s)}</span>` : op === '+' ? `<ins class=\"kit-rl-ins\">${esc(s)}</ins>` : `<del class=\"kit-rl-del\">${esc(s)}</del>`).join('');\nconst words = s => (s.match(/\\S+/g) || []).length;\nfunction stats(ops) {\n  const r = { added: 0, removed: 0, kept: 0 };\n  ops.forEach(([op, s]) => { r[op === '+' ? 'added' : op === '-' ? 'removed' : 'kept'] += words(s); });\n  return r;\n}\n\nfunction render(el, a, b, { mode = 'inline', stats: showStats = true, labels = ['Before', 'After'], by } = {}) {\n  const ops = diff(a, b, { by }), st = stats(ops);\n  el.classList.add('kit-rl');\n  let body;\n  if (mode === 'split') {\n    const left = ops.filter(o => o[0] !== '+'), right = ops.filter(o => o[0] !== '-');\n    body = `<div class=\"kit-rl-split\"><div><div class=\"kit-rl-head\">${esc(labels[0])}</div><div class=\"kit-rl-text\">${html(left)}</div></div>\n      <div><div class=\"kit-rl-head\">${esc(labels[1])}</div><div class=\"kit-rl-text\">${html(right)}</div></div></div>`;\n  } else body = `<div class=\"kit-rl-text\">${html(ops)}</div>`;\n  const line = !showStats ? '' : (st.added || st.removed)\n    ? `<div class=\"kit-rl-stats\"><span class=\"kit-rl-n-ins\">+${st.added} word${st.added === 1 ? '' : 's'}</span> <span class=\"kit-rl-n-del\">−${st.removed} word${st.removed === 1 ? '' : 's'}</span></div>`\n    : `<div class=\"kit-rl-stats\">No change.</div>`;\n  el.innerHTML = line + body;\n  return { ops, stats: st };\n}\n\nfunction mount(el, opts = {}) {\n  let o = { ...opts }, last;\n  const draw = () => (last = render(el, o.before || '', o.after || '', o));\n  draw();\n  return {\n    get ops() { return last.ops; },\n    get stats() { return last.stats; },\n    update(next = {}) { o = { ...o, ...next }; return draw(); },\n    destroy() { el.classList.remove('kit-rl'); el.replaceChildren(); },\n  };\n}\n\nKit.redline = Object.freeze({ diff, html, stats, mount });\n})();\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-redline-65a223ae/chunks",
+   "id": "3",
+   "data": {
+    "path": "kit/samples/redline.json",
+    "n": 0,
+    "of": 1,
+    "content": "{\n \"component\": \"redline\",\n \"file\": \"kit/redline.js\",\n \"about\": \"Four kinds of text that get amended: a contract clause, a privacy notice, a release note and a bank detail compared letter by letter.\",\n \"cases\": [\n  {\n   \"id\": \"clause\",\n   \"label\": \"Contract clause\",\n   \"labels\": [\n    \"As drafted (v3)\",\n    \"Amended (v4)\"\n   ],\n   \"before\": \"That the Landlord will on the written request of the Tenant made not less than TWO (2) calendar months before the expiration of the tenancy grant to the Tenant a tenancy for a further term of TWO (1) year at a rent to be mutually agreed. Late rent bears interest at ten percent (10%) per month.\",\n   \"after\": \"That the Landlord will on the written request of the Tenant made not less than TWO (2) calendar months before the expiration of the tenancy grant to the Tenant a tenancy for a further term of ONE (1) year at the prevailing market rent. Late rent bears interest at ten percent (10%) per annum.\"\n  },\n  {\n   \"id\": \"privacy\",\n   \"label\": \"Privacy notice\",\n   \"labels\": [\n    \"Published 1 March\",\n    \"Proposed\"\n   ],\n   \"before\": \"We keep your order history for as long as your account is open and share it with our delivery partners and selected advertisers.\",\n   \"after\": \"We keep your order history for 24 months after your last order and share it only with our delivery partners, to deliver your orders.\"\n  },\n  {\n   \"id\": \"release\",\n   \"label\": \"Release note\",\n   \"labels\": [\n    \"Draft\",\n    \"Reviewed\"\n   ],\n   \"before\": \"Exports are now faster. Large files over 2 GB may fail; retry the export.\",\n   \"after\": \"Exports of large files are now up to three times faster. Files over 2 GB are split into parts instead of failing.\"\n  },\n  {\n   \"id\": \"iban\",\n   \"label\": \"Bank detail, letter by letter\",\n   \"by\": \"char\",\n   \"labels\": [\n    \"On the invoice\",\n    \"On file\"\n   ],\n   \"before\": \"GB82 WEST 1234 5698 7654 32\",\n   \"after\": \"GB82 WEST 1234 5689 7654 32\"\n  }\n ]\n}\n"
+   }
+  },
+  {
+   "collection": "incoming",
+   "id": "p-catalog-kit-redline-65a223ae",
+   "data": {
+    "by": "catalog",
+    "at": "",
+    "summary": "Kit kit.redline 0.2.0 (4 files)",
+    "threads": [],
+    "base": {
+     "version": "",
+     "page_hash": "",
+     "docs": {}
+    },
+    "parts": [],
+    "files": [
+     {
+      "path": "kit/previews/redline.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "2266e72dbd9c128d9e698ad31ec773e5c84df53844ab84b474e382c5f6da4975",
+      "size": 2469,
+      "chunks": 1
+     },
+     {
+      "path": "kit/redline.css",
+      "ifMatch": null,
+      "contentType": "text/css",
+      "sha256": "2313a9b417cbcf4e6427dbfe224f6740039e3d10b62c00c48ba695dc2e412450",
+      "size": 1458,
+      "chunks": 1
+     },
+     {
+      "path": "kit/redline.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "94b8e04f9f73635ae0192339f3406de0896506f9b42f3ce29fcb0cd2d6210c0e",
+      "size": 7191,
+      "chunks": 1
+     },
+     {
+      "path": "kit/samples/redline.json",
+      "ifMatch": null,
+      "contentType": "application/json",
+      "sha256": "3605e70564d254d946fcc0f45a61b218ea5ce87c4eb5010ac3844eee16d8caf8",
+      "size": 1924,
+      "chunks": 1
+     }
+    ],
+    "live_files": {},
+    "status": "new",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    },
+    "entry": {
+     "id": "kit.redline",
+     "kind": "component",
+     "group": "Kit",
+     "name": "Redline",
+     "summary": "A lawyer's markup of two versions: removed words struck in red, added words underlined in green, inline or side by side, with word counts; all text escaped.",
+     "tags": [
+      "diff",
+      "redline",
+      "compare",
+      "versions",
+      "track changes",
+      "markup",
+      "contract",
+      "policy",
+      "release notes",
+      "history"
+     ],
+     "status": "new",
+     "version": "0.2.0",
+     "requires": [],
+     "globals": [],
+     "provides": [
+      "Kit.redline.diff",
+      "Kit.redline.html",
+      "Kit.redline.stats",
+      "Kit.redline.mount"
+     ],
+     "main": "kit/redline.js",
+     "files": [
+      {
+       "path": "kit/redline.js",
+       "role": "script",
+       "sha256": "94b8e04f9f73635ae0192339f3406de0896506f9b42f3ce29fcb0cd2d6210c0e",
+       "bytes": 7191
+      },
+      {
+       "path": "kit/redline.css",
+       "role": "style",
+       "sha256": "2313a9b417cbcf4e6427dbfe224f6740039e3d10b62c00c48ba695dc2e412450",
+       "bytes": 1458
+      },
+      {
+       "path": "kit/samples/redline.json",
+       "role": "sample",
+       "sha256": "3605e70564d254d946fcc0f45a61b218ea5ce87c4eb5010ac3844eee16d8caf8",
+       "bytes": 1924
+      },
+      {
+       "path": "kit/previews/redline.js",
+       "role": "preview",
+       "sha256": "2266e72dbd9c128d9e698ad31ec773e5c84df53844ab84b474e382c5f6da4975",
+       "bytes": 2469
+      }
+     ],
+     "hash": "077d0b934260"
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,164 @@
+{
+ "schema": "adp-seed/2",
+ "pack": 1,
+ "of": 1,
+ "docs": [
+  {
+   "collection": "incoming/p-catalog-kit-signature-pad-6c0b75e2/chunks",
+   "id": "0",
+   "data": {
+    "path": "kit/previews/signature-pad.js",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.script.preview.kit.signature-pad */\n/* The catalog's live preview of kit.signature-pad. It rides with the kit and only the catalog page loads it: `adp.py take` leaves it out. */\n(function () {\n'use strict';\nconst { html, useState, useEffect, useRef } = window.htmPreact;\nconst P = window.CatalogPreviews = window.CatalogPreviews || {};\nconst K = () => window.Kit;\nconst first = (samples, part) => samples[Object.keys(samples).find(k => k.endsWith('/' + part + '.json'))];\nconst Sim = ({ children }) => html`<p class=\"pv-sim\"><b>Sandbox</b> ${children}</p>`;\nconst Cases = ({ d, value, set, label = 'Use case' }) => html`<div class=\"pv-row\" role=\"group\" aria-label=${label}><span class=\"pv-label\">${label}</span>\n  ${d.cases.map(c => html`<button type=\"button\" key=${c.id} class=${'pv-btn' + (c.id === value ? ' pri' : '')} aria-pressed=${c.id === value} onClick=${() => set(c.id)}>${c.label}</button>`)}</div>`;\nconst OUT = 'background:#fff;border:1px dashed var(--rule);border-radius:8px;min-height:70px;display:flex;align-items:center;justify-content:center;padding:8px';\n\nP['kit.signature-pad'] = ({ samples }) => {\n  const d = first(samples, 'signature-pad');\n  const [id, setId] = useState(d.cases[0].id);\n  const c = d.cases.find(x => x.id === id);\n  const host = useRef(null);\n  const [out, setOut] = useState({});\n  useEffect(() => {\n    setOut({});\n    const pads = c.boxes.map(b => K().signaturePad.mount(host.current.querySelector(`[data-box=\"${b.id}\"]`), { label: b.label, caption: b.caption, height: b.height,\n      onChange: p => setOut(o => ({ ...o, [b.id]: p.isEmpty() ? null : { png: p.toPNG(), strokes: p.toJSON().strokes.length } })) }));\n    return () => pads.forEach(p => p.destroy());\n  }, [id]);\n  return html`<div class=\"pv-stack\">\n    <${Cases} d=${d} value=${id} set=${setId}/>\n    <${Sim}>${c.context} The page binds each PNG to <code>${c.bind}</code>; the kit only draws and exports.<//>\n    <div class=\"pv-two\">\n      <section ref=${host}>${c.boxes.map(b => html`<div key=${id + b.id}><p class=\"pv-label\">${b.label}</p><div data-box=${b.id}></div></div>`)}</section>\n      <section>${c.boxes.map(b => html`<div key=${id + b.id}><p class=\"pv-label\">${b.label}: toPNG()</p>\n        <div style=${OUT}>${out[b.id] ? html`<img style=\"max-width:100%;max-height:160px\" src=${out[b.id].png} alt=${b.label + ' as exported'}/>` : html`<span class=\"pv-label\">empty: toPNG() gives null</span>`}</div>\n        ${out[b.id] ? html`<p class=\"pv-label\">${out[b.id].strokes} stroke(s) kept as data</p>` : ''}</div>`)}</section>\n    </div></div>`;\n};\n})();\n/* /part:page.script.preview.kit.signature-pad */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-signature-pad-6c0b75e2/chunks",
+   "id": "1",
+   "data": {
+    "path": "kit/samples/signature-pad.json",
+    "n": 0,
+    "of": 1,
+    "content": "{\n \"component\": \"signature-pad\",\n \"file\": \"kit/signature-pad.js\",\n \"about\": \"Four places a page asks someone to sign or initial. The kit is the same in each; the page decides what the PNG is bound to.\",\n \"cases\": [\n  {\n   \"id\": \"delivery\",\n   \"label\": \"Proof of delivery\",\n   \"context\": \"A courier hands parcel 4 of 4 to the person at the door, who signs on the courier's phone.\",\n   \"bind\": \"delivery DLV-20931, 14:02\",\n   \"boxes\": [\n    {\n     \"id\": \"signature\",\n     \"label\": \"Received by\",\n     \"caption\": \"Signature of the person receiving\",\n     \"height\": 160\n    }\n   ]\n  },\n  {\n   \"id\": \"consent\",\n   \"label\": \"Clinic consent form\",\n   \"context\": \"A patient signs a consent sheet for a minor procedure on a tablet; the clinician initials that it was explained.\",\n   \"bind\": \"consent sheet v2, content hash 9c41e0a7\",\n   \"boxes\": [\n    {\n     \"id\": \"signature\",\n     \"label\": \"Patient\",\n     \"caption\": \"Signature of the patient\",\n     \"height\": 170\n    },\n    {\n     \"id\": \"initials\",\n     \"label\": \"Clinician's initials\",\n     \"caption\": \"Explained by\",\n     \"height\": 100\n    }\n   ]\n  },\n  {\n   \"id\": \"tenancy\",\n   \"label\": \"Tenancy agreement\",\n   \"context\": \"Ada Rahman initials page 3 of 7 of an invented tenancy, then signs it.\",\n   \"bind\": \"page hash 3f9a1c07d2b4e815\",\n   \"boxes\": [\n    {\n     \"id\": \"initials\",\n     \"label\": \"Initials, page 3\",\n     \"caption\": \"Initials, page 3 of 7\",\n     \"height\": 110\n    },\n    {\n     \"id\": \"signature\",\n     \"label\": \"Signature\",\n     \"caption\": \"Ada Rahman, Tenant\",\n     \"height\": 180\n    }\n   ]\n  },\n  {\n   \"id\": \"inspection\",\n   \"label\": \"Inspection sign-off\",\n   \"context\": \"A safety inspector signs off fire door FD-12 as checked, on a tablet in the corridor.\",\n   \"bind\": \"inspection FD-12, checklist rev 5\",\n   \"boxes\": [\n    {\n     \"id\": \"signature\",\n     \"label\": \"Inspector\",\n     \"caption\": \"Checked and passed\",\n     \"height\": 150\n    }\n   ]\n  }\n ]\n}\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-signature-pad-6c0b75e2/chunks",
+   "id": "2",
+   "data": {
+    "path": "kit/signature-pad.css",
+    "n": 0,
+    "of": 1,
+    "content": "/* part:page.style.kit.signature-pad */\n/* Kit css: Signature pad    kit version 0.1.0    pairs with kit/signature-pad.js\n   The signing box stays white in both themes: ink on paper is what gets exported, and the PNG is on white.\n   Needs from the board: --panel --ink-2 --ink-3 --rule --f-ui; --radius optional. */\n.kit-sig { position: relative; display: grid; gap: 6px; min-width: 0; }\n.kit-sig-canvas { display: block; width: 100%; height: var(--kit-sig-h, 180px); background: #fff; border: 1px solid var(--rule);\n  border-radius: var(--radius, 4px); cursor: crosshair; touch-action: none; }\n.kit-sig-canvas:focus-visible { outline: 2px solid var(--accent, currentColor); outline-offset: 2px; }\n.kit-sig-base { position: absolute; left: 16px; right: 16px; top: calc(var(--kit-sig-h, 180px) * .72); height: 0;\n  border-top: 1px dashed #9a9488; pointer-events: none; }\n.kit-sig-base::before { content: \"×\"; position: absolute; left: 0; bottom: 2px; color: #9a9488; font: 18px/1 var(--f-ui); }\n.kit-sig-foot { display: flex; align-items: center; gap: 10px; font: 13px/1.4 var(--f-ui); color: var(--ink-3); }\n.kit-sig-cap { flex: 1; min-width: 0; }\n.kit-sig-clear { font: inherit; color: var(--ink-2); background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius, 4px);\n  padding: 3px 10px; cursor: pointer; }\n.kit-sig:not(.kit-sig-inked) .kit-sig-clear { visibility: hidden; }\n/* /part:page.style.kit.signature-pad */\n"
+   }
+  },
+  {
+   "collection": "incoming/p-catalog-kit-signature-pad-6c0b75e2/chunks",
+   "id": "3",
+   "data": {
+    "path": "kit/signature-pad.js",
+    "n": 0,
+    "of": 1,
+    "content": "/**\n * Signature pad\n * Kit.signaturePad.mount(el, opts) draws a signing box in el: a canvas with a baseline and a caption, and a Clear button. It takes a finger, pen or mouse through pointer events (no scrolling while drawing), keeps the strokes as data, redraws them when the box is resized, and gives the result as a PNG trimmed to the ink on a white ground, or as stroke JSON. Kit.signaturePad.create(canvas, opts) is the same engine on a canvas you already have.\n *\n * What it is: the drawing surface for a signature or initials on a phone or a desktop. It records points, not pixels, so a resize or a rotation of the phone loses nothing,\n * and a stroke can be replayed. It decides nothing about what a signature means: bind the PNG to the text it signs (a content hash) in the page that uses it.\n * API (small and stable):\n *   Kit.signaturePad.mount(el, {label, caption, height, ink, onChange}) -> pad     builds .kit-sig in el: the box, the baseline, the caption and a Clear button\n *   Kit.signaturePad.create(canvas, {ink, width, onChange}) -> pad                 the engine alone on a canvas element\n *   pad.isEmpty() -> boolean          true until the first stroke\n *   pad.clear()                       forget every stroke\n *   pad.toPNG({trim = true, pad = 12, background = '#fff'}) -> data URL or null (null when empty)\n *   pad.toJSON() -> {w, h, strokes: [[[x, y, t], ...], ...]}   points in CSS pixels of the box, t in ms from the first point\n *   pad.fromJSON(data)                replay strokes (scaled to the box)\n *   pad.destroy()                     remove listeners (mount also removes its markup)\n * The ink colour defaults to a dark blue-black that reads as ink on paper and prints well; it is a drawing colour, not a theme token.\n *\n * @id        kit.signature-pad\n * @kind      component\n * @group     Kit\n * @status    new\n * @version   0.1.1\n * @updated   2026-11-20\n * @summary   A box to sign or initial with a finger, pen or mouse: strokes kept as data, redrawn on resize, exported as a trimmed PNG on white or as stroke JSON.\n * @tags      signature, initials, sign, canvas, pointer, touch, pen, consent, delivery, contract, png\n * @requires  none\n * @files     kit/signature-pad.css, kit/samples/signature-pad.json, kit/previews/signature-pad.js\n * @provides  Kit.signaturePad.mount, Kit.signaturePad.create\n * @config    Kit.signaturePad.mount(el, opts) | label (aria label, default \"Signature\"), caption (under the baseline), height (px, default 180), ink (CSS colour), onChange(pad)\n * @config    Kit.signaturePad.create(canvas, opts) | ink, width (stroke px, default 2.4), onChange(pad)\n * @tokens    --panel --ink-2 --ink-3 --rule --f-ui --radius?\n * @globals   none\n * @db        none\n * @source    Catalog harvest, 2026-11-19 | an agreement review board's signer page | the initials and signature boxes\n * @preview   {\"render\": \"kit.signature-pad\", \"samples\": [\"kit/samples/signature-pad.json\"]}\n */\n(function () {\n'use strict';\nconst Kit = window.Kit = window.Kit || { version: '0.1.0' };\nconst INK = '#10204a';\n\nfunction create(canvas, opts = {}) {\n  const ctx = canvas.getContext('2d');\n  const ink = opts.ink || INK, width = opts.width || 2.4;\n  let strokes = [], cur = null, t0 = 0, box = { w: 0, h: 0 };\n  canvas.style.touchAction = 'none';\n\n  function fit() {\n    const r = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;\n    if (!r.width || !r.height) return;\n    const old = { ...box };\n    box = { w: r.width, h: r.height };\n    canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);\n    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n    if (old.w && (old.w !== box.w || old.h !== box.h)) {\n      const sx = box.w / old.w, sy = box.h / old.h;\n      strokes = strokes.map(s => s.map(([x, y, t]) => [x * sx, y * sy, t]));\n    }\n    paint();\n  }\n  function line(s) {\n    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.lineJoin = 'round';\n    if (s.length === 1) { ctx.beginPath(); ctx.arc(s[0][0], s[0][1], width / 2, 0, Math.PI * 2); ctx.fill(); return; }\n    ctx.beginPath(); ctx.moveTo(s[0][0], s[0][1]);\n    for (let i = 1; i < s.length - 1; i++) { // smoothed through midpoints\n      const mx = (s[i][0] + s[i + 1][0]) / 2, my = (s[i][1] + s[i + 1][1]) / 2;\n      ctx.quadraticCurveTo(s[i][0], s[i][1], mx, my);\n    }\n    const l = s[s.length - 1]; ctx.lineTo(l[0], l[1]); ctx.stroke();\n  }\n  function paint() { ctx.clearRect(0, 0, box.w, box.h); strokes.forEach(line); }\n  const pos = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top, t0 ? Math.round(performance.now() - t0) : 0]; };\n  const changed = () => opts.onChange && opts.onChange(api);\n\n  function down(e) {\n    if (e.button > 0) return;\n    if (!t0) t0 = performance.now();\n    cur = [pos(e)]; strokes.push(cur);\n    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}\n    paint(); e.preventDefault();\n  }\n  function move(e) { if (!cur) return; cur.push(pos(e)); paint(); e.preventDefault(); }\n  function up() { if (!cur) return; cur = null; changed(); }\n  canvas.addEventListener('pointerdown', down);\n  canvas.addEventListener('pointermove', move);\n  ['pointerup', 'pointercancel'].forEach(t => canvas.addEventListener(t, up));\n  const ro = window.ResizeObserver ? new ResizeObserver(fit) : null;\n  if (ro) ro.observe(canvas); else window.addEventListener('resize', fit);\n  fit();\n\n  const api = {\n    isEmpty: () => strokes.length === 0,\n    clear() { strokes = []; t0 = 0; paint(); changed(); },\n    toJSON: () => ({ w: box.w, h: box.h, strokes: strokes.map(s => s.map(p => p.slice())) }),\n    fromJSON(d) {\n      const sx = d && d.w ? box.w / d.w : 1, sy = d && d.h ? box.h / d.h : 1;\n      strokes = ((d && d.strokes) || []).map(s => s.map(([x, y, t]) => [x * sx, y * sy, t || 0]));\n      paint(); changed();\n    },\n    toPNG({ trim = true, pad = 12, background = '#fff' } = {}) {\n      if (!strokes.length) return null;\n      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;\n      strokes.flat().forEach(([x, y]) => { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); });\n      if (!trim) { x0 = 0; y0 = 0; x1 = box.w; y1 = box.h; pad = 0; }\n      const scale = 2, w = Math.ceil(x1 - x0 + pad * 2 + width), h = Math.ceil(y1 - y0 + pad * 2 + width);\n      const out = document.createElement('canvas'); out.width = w * scale; out.height = h * scale;\n      const o = out.getContext('2d'); o.scale(scale, scale);\n      if (background) { o.fillStyle = background; o.fillRect(0, 0, w, h); }\n      o.translate(pad - x0 + width / 2, pad - y0 + width / 2);\n      const draw = s => { o.strokeStyle = ink; o.fillStyle = ink; o.lineWidth = width; o.lineCap = 'round'; o.lineJoin = 'round';\n        if (s.length === 1) { o.beginPath(); o.arc(s[0][0], s[0][1], width / 2, 0, Math.PI * 2); o.fill(); return; }\n        o.beginPath(); o.moveTo(s[0][0], s[0][1]);\n        for (let i = 1; i < s.length - 1; i++) o.quadraticCurveTo(s[i][0], s[i][1], (s[i][0] + s[i + 1][0]) / 2, (s[i][1] + s[i + 1][1]) / 2);\n        o.lineTo(s[s.length - 1][0], s[s.length - 1][1]); o.stroke(); };\n      strokes.forEach(draw);\n      return out.toDataURL('image/png');\n    },\n    destroy() {\n      canvas.removeEventListener('pointerdown', down); canvas.removeEventListener('pointermove', move);\n      ['pointerup', 'pointercancel'].forEach(t => canvas.removeEventListener(t, up));\n      if (ro) ro.disconnect(); else window.removeEventListener('resize', fit);\n    },\n    canvas,\n  };\n  return api;\n}\n\nfunction mount(el, opts = {}) {\n  const wrap = document.createElement('div'); wrap.className = 'kit-sig';\n  wrap.style.setProperty('--kit-sig-h', (opts.height || 180) + 'px');\n  const canvas = document.createElement('canvas'); canvas.className = 'kit-sig-canvas';\n  canvas.setAttribute('role', 'img'); canvas.setAttribute('aria-label', opts.label || 'Signature');\n  const base = document.createElement('div'); base.className = 'kit-sig-base'; base.setAttribute('aria-hidden', 'true'); base.textContent = '×';\n  const foot = document.createElement('div'); foot.className = 'kit-sig-foot';\n  const cap = document.createElement('span'); cap.className = 'kit-sig-cap'; cap.textContent = opts.caption || 'Sign above the line';\n  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'kit-sig-clear'; btn.textContent = 'Clear';\n  foot.append(cap, btn); wrap.append(canvas, base, foot); el.append(wrap);\n  const pad = create(canvas, { ink: opts.ink, width: opts.width, onChange: p => { wrap.classList.toggle('kit-sig-inked', !p.isEmpty()); opts.onChange && opts.onChange(p); } });\n  btn.addEventListener('click', () => pad.clear());\n  const destroy = pad.destroy;\n  pad.destroy = () => { destroy(); wrap.remove(); };\n  pad.el = wrap;\n  return pad;\n}\n\nKit.signaturePad = Object.freeze({ mount, create });\n})();\n"
+   }
+  },
+  {
+   "collection": "incoming",
+   "id": "p-catalog-kit-signature-pad-6c0b75e2",
+   "data": {
+    "by": "catalog",
+    "at": "",
+    "summary": "Kit kit.signature-pad 0.1.1 (4 files)",
+    "threads": [],
+    "base": {
+     "version": "",
+     "page_hash": "",
+     "docs": {}
+    },
+    "parts": [],
+    "files": [
+     {
+      "path": "kit/previews/signature-pad.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "17d5731ce81c0c5166ac5a4cfc4751463bc368b3c93cf4ef30f3467ad605b7ae",
+      "size": 2630,
+      "chunks": 1
+     },
+     {
+      "path": "kit/samples/signature-pad.json",
+      "ifMatch": null,
+      "contentType": "application/json",
+      "sha256": "412111aaf090e40aa474fc9b90836008c89333a318fe861e9ca7eefb47e83e3e",
+      "size": 1919,
+      "chunks": 1
+     },
+     {
+      "path": "kit/signature-pad.css",
+      "ifMatch": null,
+      "contentType": "text/css",
+      "sha256": "e75119634dd4775a189410f504544f11e7747d471e951cf4f679910259625ff0",
+      "size": 1443,
+      "chunks": 1
+     },
+     {
+      "path": "kit/signature-pad.js",
+      "ifMatch": null,
+      "contentType": "text/javascript",
+      "sha256": "11e9f155a33439f073b56d5df13d48d6877f4f09aa5af0e4073ee1de5e0ff4a4",
+      "size": 8924,
+      "chunks": 1
+     }
+    ],
+    "live_files": {},
+    "status": "new",
+    "decided": {
+     "by": "",
+     "at": "",
+     "reason": ""
+    },
+    "applied": {
+     "version": "",
+     "at": ""
+    },
+    "entry": {
+     "id": "kit.signature-pad",
+     "kind": "component",
+     "group": "Kit",
+     "name": "Signature pad",
+     "summary": "A box to sign or initial with a finger, pen or mouse: strokes kept as data, redrawn on resize, exported as a trimmed PNG on white or as stroke JSON.",
+     "tags": [
+      "signature",
+      "initials",
+      "sign",
+      "canvas",
+      "pointer",
+      "touch",
+      "pen",
+      "consent",
+      "delivery",
+      "contract",
+      "png"
+     ],
+     "status": "new",
+     "version": "0.1.1",
+     "requires": [],
+     "globals": [],
+     "provides": [
+      "Kit.signaturePad.mount",
+      "Kit.signaturePad.create"
+     ],
+     "main": "kit/signature-pad.js",
+     "files": [
+      {
+       "path": "kit/signature-pad.js",
+       "role": "script",
+       "sha256": "11e9f155a33439f073b56d5df13d48d6877f4f09aa5af0e4073ee1de5e0ff4a4",
+       "bytes": 8924
+      },
+      {
+       "path": "kit/signature-pad.css",
+       "role": "style",
+       "sha256": "e75119634dd4775a189410f504544f11e7747d471e951cf4f679910259625ff0",
+       "bytes": 1443
+      },
+      {
+       "path": "kit/samples/signature-pad.json",
+       "role": "sample",
+       "sha256": "412111aaf090e40aa474fc9b90836008c89333a318fe861e9ca7eefb47e83e3e",
+       "bytes": 1919
+      },
+      {
+       "path": "kit/previews/signature-pad.js",
+       "role": "preview",
+       "sha256": "17d5731ce81c0c5166ac5a4cfc4751463bc368b3c93cf4ef30f3467ad605b7ae",
+       "bytes": 2630
+      }
+     ],
+     "hash": "866a1008f4c6"
+    }
+   }
+  }
+ ]
+}
