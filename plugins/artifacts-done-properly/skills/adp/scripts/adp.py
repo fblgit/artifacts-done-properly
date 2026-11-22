@@ -173,14 +173,29 @@ def is_seed(p):
     p = p.replace(os.sep, '/'); return p == SEED or p.startswith(SEED_DIR + '/')
 
 
+SKELETON = re.compile(rb'^<!doctype html><html><head><meta charset=utf8>.*?</style></head><body>(.*)</body></html>\s*$', re.S | re.I)
+
+
+def unwrap(b):
+    """the page as published carries the Artifact tool's document skeleton around it; the folder holds it bare, and
+    every command reads and hashes it bare (load), so a seed, a record and an export agree on one page"""
+    m = SKELETON.match(b)
+    if not m: return b
+    b = m.group(1)                                         # the wrapper puts one newline after <body> and one before </body>
+    if b.startswith(b'\n'): b = b[1:]
+    if b.endswith(b'\n'): b = b[:-1]
+    return b
+
+
 def load(d):
-    """A DIR -> (files {path: sha12}, marked {path: text}); dotfiles, the root seed.json and seed/ skipped."""
+    """A DIR -> (files {path: sha12}, marked {path: text}); dotfiles, the root seed.json and seed/ skipped; the root index.html is read bare (unwrap)."""
     files, marked = {}, {}
     for root, dirs, names in os.walk(d):
         dirs[:] = sorted(x for x in dirs if not x.startswith('.'))
         for n in sorted(names):
             if n.startswith('.') or is_seed(os.path.relpath(os.path.join(root, n), d)): continue
             p = os.path.relpath(os.path.join(root, n), d); b = Path(os.path.join(root, n)).read_bytes()
+            if p == 'index.html': b = unwrap(b)
             files[p] = hashlib.sha256(b).hexdigest()[:12]
             if p.endswith(TEXT) and MARK.search(t := b.decode('utf-8', 'replace')): marked[p] = t
     return files, marked

@@ -61,8 +61,8 @@ class Cmd(Base):
     def writes_of(self, out):
         return [w for b in out['batches'] for w in b]
 
-    def exported(self, name='proj'):
-        """a project whose export came from a fake remote: the files and the seed docs of the project itself"""
+    def exported(self, name='proj', record=None):
+        """a project whose export came from a fake remote: the files and the seed docs of the project itself; record(manifest) edits manifest/current first"""
         d = self.new_project(name)
         ad = d + '.adp'
         os.makedirs(os.path.join(ad, 'incoming'))
@@ -75,6 +75,7 @@ class Cmd(Base):
         for pk in sorted(glob.glob(os.path.join(d, 'seed', 'pack-*.json'))):
             for x in json.loads(Path(pk).read_text())['docs']:
                 docs.setdefault(x['collection'], []).append({'id': x['id'], 'data': x['data'], 'version': 1})
+        if record: [record(m['data']) for m in docs['manifest'] if m['id'] == 'current']
         self.docs = docs
         Path(os.path.join(ad, 'docs.json')).write_text(json.dumps(docs))
         out = self.ok('export', d, '--url', URL)
@@ -524,6 +525,12 @@ class ProposeAckTests(Cmd):
         out = self.ok('propose', d, '--by', 'me', '--summary', 's')
         self.assertEqual(out['nothing'], 'work equals live')
         self.assertEqual(glob.glob(d + '.adp/propose-*'), [])
+
+    def test_parts_the_record_lacks_in_unchanged_files_are_not_new(self):
+        # a record that names half the page's parts and hashes index.html's rest its own way (the catalog writer's): exported() asserts clean
+        d = self.exported(record=lambda m: m.update(parts={**{k: v for i, (k, v) in enumerate(sorted(m['parts'].items())) if i % 2}, '_rest:index.html': 'f' * 12}))
+        self.edit(d); out, where = self.ok('export', d, '--url', URL)['report'], self.ok('manifest', d)['part_file']
+        self.assertEqual({where.get(x, x) for x in out['ours'] + out['new']}, {'parts/app.js'})      # only the edited file and its parts
 
     def test_a_stale_fallback_copy_does_not_revert_live_content(self):
         d = self.exported()

@@ -761,7 +761,7 @@ def inventory(root):
     return out
 
 
-PAGE_FILES = {'index.html', 'catalog.json', 'content.js', 'adp.js', 'styles/catalog.css'}
+PAGE_FILES = {'index.html', 'welcome.html', 'catalog.json', 'content.js', 'adp.js', 'styles/catalog.css'}
 
 
 def check_catalog(argv):

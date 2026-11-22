@@ -283,6 +283,7 @@ class SampleBundles(unittest.TestCase):
     def test_two_entries_share_a_bundle(self):
         root = self.two()
         self.assertEqual(self.cmd('build', root)[0], 0)
+        self.put(root, 'welcome.html', '<p>About ADP</p>')      # the page's own About file, published beside it: not an orphan
         code, out = self.cmd(root)
         self.assertEqual((code, out[:2]), (0, 'OK'), out)
         with open(os.path.join(root, 'catalog.json'), encoding='utf-8') as f:

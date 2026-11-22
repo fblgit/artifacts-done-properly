@@ -161,19 +161,6 @@ def listing(path):
             if not A.is_seed(x['path'])]   # the seed (seed.json, seed/) is read once by an empty db, never a part of the page: not in the manifest, not in the loop
 
 
-SKELETON = re.compile(rb'^<!doctype html><html><head><meta charset=utf8>.*?</style></head><body>(.*)</body></html>\s*$', re.S | re.I)
-
-
-def unwrap(b):
-    """the page as published carries the Artifact tool's document skeleton around it; the folder holds it bare"""
-    m = SKELETON.match(b)
-    if not m: return b
-    b = m.group(1)                                         # the wrapper puts one newline after <body> and one before </body>
-    if b.startswith(b'\n'): b = b[1:]
-    if b.endswith(b'\n'): b = b[:-1]
-    return b
-
-
 def fragments(d):
     """{part id: html}: DIR/content/<id>.html when present, else split out of content.js"""
     cd = os.path.join(d, 'content')
@@ -199,9 +186,15 @@ def cmanifest(m, files=None):
             'parents': dict(m.get('parents') or {})}
 
 
-def work_manifest(d, refs):
+def work_manifest(d, refs, live):
+    """the folder's manifest as classify reads it. A part in a file whose hash equals live's keeps the hash live records, or is left
+    out when live records none: the record holds the parts of the files the page loads, not of every file it only serves, and a
+    file unchanged since export is never new or ours"""
     m = A.manifest_dir(d)
-    return {**cmanifest(m), 'files': {k: v for k, v in m['files'].items() if k not in refs and not k.startswith('content/')}}
+    same = lambda p: (f := m['part_file'].get(p, '')) in live['files'] and live['files'][f] == m['files'].get(f)
+    parts = {p: live['parts'].get(p) if same(p) else h for p, h in m['parts'].items()}
+    return {**cmanifest(m), 'parts': {p: h for p, h in parts.items() if h},
+            'files': {k: v for k, v in m['files'].items() if k not in refs and not k.startswith('content/')}}
 
 
 # ---- export ----
@@ -230,7 +223,7 @@ def export(a):
         if not f['ref'] and os.path.isfile(src):
             b = Path(src).read_bytes()
             if f['path'] == 'index.html':                          # stored and hashed bare, so it compares with the folder's
-                if unwrap(b) != b: b = unwrap(b); Path(src).write_bytes(b)
+                if A.unwrap(b) != b: b = A.unwrap(b); Path(src).write_bytes(b)
                 live_sha['index.html'] = hashlib.sha256(b).hexdigest()   # also when an earlier export already stored it bare
             live_tree['files/' + f['path']] = b
             live_sha[f['path']] = hashlib.sha256(b).hexdigest()     # a listing printed as text carries no hash
@@ -264,7 +257,7 @@ def export(a):
                 os.makedirs(os.path.dirname(os.path.join(d, f['path'])) or d, exist_ok=True); shutil.copyfile(src, os.path.join(d, f['path']))
     wm, wtree = work_tree(d, refs)
     commit_tree(repo, 'work', wtree, 'work', db_from='live')
-    wman = work_manifest(d, refs)
+    wman = work_manifest(d, refs, live_m)
     rep = classify(cmanifest(base['manifest']), live_m, wman)
     merged = None
     if not rep['held']:
@@ -323,9 +316,9 @@ def propose(a):
     _, conflicts = merge3(repo, 'base', 'work', 'live')
     conflict = bool(conflicts)
     retire = dict(zip(A.optall(a, '--retire'), A.optall(a, '--reason') + [''] * len(A.optall(a, '--retire'))))
-    wman = {**work_manifest(d, refs), 'retired': {k: v for k, v in retire.items() if v}}
     base = cmanifest(st['base']['manifest'])
     live_m = json.loads(Path(os.path.join(ad, 'incoming', 'live-manifest.json')).read_text()) if os.path.isfile(os.path.join(ad, 'incoming', 'live-manifest.json')) else base
+    wman = {**work_manifest(d, refs, live_m), 'retired': {k: v for k, v in retire.items() if v}}
     rep = classify(base, live_m, wman)
     stop = []
     if conflict: stop.append({'error': 'merge conflict with live', 'detail': conflicts[-5:]})
