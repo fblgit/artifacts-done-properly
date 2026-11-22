@@ -20,6 +20,9 @@ Minor release on v2.2.0. Install and verify as before; `adp.skill.sha256` on the
 - **`adp.py record`** clears only the recording agent's own holds (`--holds`, or the parts it edited); a parent that changed only through a child keeps its holder (#108).
 - **`layout.margin-notes` 0.2.0:** review notes on a clause (severity, highlighted words, a suggestion, `onAction`) and printed section and clause numbers.
 - **Docs and catalog text.** Host-adapter and transport docs tightened; a local path and project names removed from guides, a template header and viz samples (#107, #108).
+- **`export` and `propose` no longer report an unchanged file's unrecorded parts as new.** A catalog's record holds only the parts of the files its page loads; an import reported every kit file's parts as new, and `propose` sent them all. A part in a file equal to the live one now keeps the hash live records, or is left out (#110).
+- **`index.html` is hashed one way everywhere.** `export` hashed the page without the Artifact tool's skeleton and the other commands with it, so `seed`, `record` and `export` gave one page two hashes. Every command now reads the root `index.html` bare (#110).
+- **The catalog check no longer calls `welcome.html` an orphan** (#110).
 
 ### Known gaps
 
