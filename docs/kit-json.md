@@ -33,7 +33,7 @@ built catalog folder that holds the entry.
 
 ## Push
 
-One ArtifactData batch per kit, one kit at a time: every doc of the pack, in file order, as `{op: "set", collection, doc_id: <id>, data}`.
+ArtifactData batches: every doc of each pack, in file order, as `{op: "set", collection, doc_id: <id>, data}`. Several kits fit one batch (at most 50 writes and 1 MiB).
 
 The catalog does the rest while an editor has it open: the inbox publishes the files and records it in `What changed`, then the page adds
 `entry` to its own `catalog.json` through the same inbox. Nobody sends `catalog.json`. A catalog whose page predates this (`parts/catalog.js`)
