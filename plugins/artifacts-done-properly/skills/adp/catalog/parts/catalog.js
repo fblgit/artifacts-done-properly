@@ -85,7 +85,7 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
     Kit.inbox.mount(box, { db, autoApply: true, onAutoApplied: () => setTimeout(() => location.reload(), 1500) });
   }, () => {});
   // an extra kit (docs/kit-json.md) arrives as a proposal that carries its index record (entry). Once its files are applied the page proposes
-  // catalog.json with that record, and the inbox applies it like any file: What changed and the manifest follow. One index proposal at a time.
+  // catalog.json with that record, and the inbox applies it like any file: What changed and the manifest follow. It is computed once nothing is pending, on the merged catalog.json.
   const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
   let indexing = false;
   db.collection('incoming').onSnapshot(async snap => {
@@ -95,7 +95,7 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
     todo.forEach(d => { kits[d.entry.id] = d.entry; });      // the newest applied record of each kit
     const at = d => (d.applied || {}).at || '';      // Landing's "New entries": the applied kits, newest first
     set({ added: docs.filter(d => d.status === 'applied' && d.entry && ID.test(d.entry.id || '')).sort((a, b) => (at(a) < at(b) ? 1 : -1)).map(d => d.entry).filter((e, i, l) => l.findIndex(x => x.id === e.id) === i).slice(0, 20) });
-    if (indexing || !Object.keys(kits).length || docs.some(d => d.pid.startsWith('p-index-') && (d.status === 'new' || d.status === 'merged'))) return;
+    if (indexing || !Object.keys(kits).length || docs.some(d => d.status === 'new' || d.status === 'merged')) return;      // the index is computed after every pending proposal is merged
     indexing = true;
     try {
       const text = await (await fetch('catalog.json', { cache: 'no-store' })).text(), cat = JSON.parse(text), base = await sha(text);
