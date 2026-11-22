@@ -8,6 +8,18 @@ metadata:
 
 # ADP: Artifacts Done Properly
 
+## What ADP is
+
+A protocol and a framework for structured artifacts. The page is a thin shell. The record lives in the artifact's database, mapped to the page's regions (parts). Changes are records, not republishes. Because it runs on claude.ai's own features (conversations, comments anchored to parts, the watcher, the picker), a person and an agent edit the same page together.
+
+## How it runs
+
+1. Publish: one Artifact call for the shell (the About page), then one ArtifactData write with the seeds. The page expands them, its inbox applies the proposals, and it maintains its own `catalog.json`. Nothing else.
+2. Edit: work locally in `.adp/`, as if it were the artifact itself. One command computes the diff by part and file hash and writes a seed-like JSON. That goes in through ArtifactData. No republish.
+3. Build: write kits, templates, themes, patterns, viz, components and pages, reusing what the catalog already has, with the page's own style in its custom CSS. Kits are versioned, files hashed, and headers carry the metadata that ties the system together.
+
+Why it is efficient: the agent never retypes, re-reads or republishes what the system already holds. It sends small hashed records, and the page does the conversion, publishing and bookkeeping itself.
+
 ADP makes a shared Artifact safe to edit: every piece of the page is a part with a stable id and a content hash, comments anchor to part ids, and one ArtifactData layout records every change under a read, hold, publish, record protocol. New artifacts use the adp/2 layout (a thin shell plus files per part, copy stored as data). `adp.py` computes hashes and diffs and prints the exact Artifact and ArtifactData calls, so nothing is retyped by hand.
 
 ## Run the tool
