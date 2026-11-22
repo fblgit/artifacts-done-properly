@@ -98,16 +98,18 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
     if (indexing || !Object.keys(kits).length || docs.some(d => d.pid.startsWith('p-index-') && (d.status === 'new' || d.status === 'merged'))) return;
     indexing = true;
     try {
-      const text = await (await fetch('catalog.json', { cache: 'no-store' })).text(), cat = JSON.parse(text);
+      const text = await (await fetch('catalog.json', { cache: 'no-store' })).text(), cat = JSON.parse(text), base = await sha(text);
+      const mr = await db.doc('manifest/current').get(), mv = (mr.exists && mr.data()) || {}, rec = ((mv.data && !mv.parts ? mv.data : mv).files || {})['catalog.json'];
+      if (rec && base.slice(0, 12) !== rec) return;      // this tab reads an older catalog.json than the record holds: a current tab proposes
       const add = Object.values(kits).filter(e => !cat.entries.some(x => x.id === e.id && x.hash === e.hash));
       // settled: the index holds the record, or a newer proposal of the same kit replaced it. A held index proposal leaves its kit to be proposed again
       const settled = todo.filter(d => kits[d.entry.id] !== d.entry || !add.includes(d.entry));
       cat.entries = cat.entries.filter(x => !add.some(e => e.id === x.id)).concat(add);
-      const content = JSON.stringify(cat, null, 1) + '\n', pid = 'p-index-' + (await sha(content)).slice(0, 8), N = 100000, n = Math.ceil(content.length / N);
-      if (add.length && !docs.some(d => d.pid === pid)) {      // a held or declined index proposal is a person's to settle
+      const content = JSON.stringify(cat, null, 1) + '\n', pid = 'p-index-' + (await sha(base + content)).slice(0, 8), N = 100000, n = Math.ceil(content.length / N);
+      if (add.length && !docs.some(d => d.pid === pid)) {      // a held or declined index proposal is a person's to settle; the id covers the base, so a stale one never blocks a current one
         for (let i = 0; i < n; i++) await db.doc('incoming/' + pid + '/chunks/' + i).set({ path: 'catalog.json', n: i, of: n, content: content.slice(i * N, (i + 1) * N) });
         await db.doc('incoming/' + pid).set({ by: 'catalog', at: new Date().toISOString(), summary: 'Catalog index: ' + add.map(e => e.id).join(', '), threads: [], parts: [], live_files: {}, status: 'new',
-          files: [{ path: 'catalog.json', ifMatch: await sha(text), contentType: 'application/json', sha256: await sha(content), size: new TextEncoder().encode(content).length, chunks: n }] });
+          files: [{ path: 'catalog.json', ifMatch: base, contentType: 'application/json', sha256: await sha(content), size: new TextEncoder().encode(content).length, chunks: n }] });
       }
       for (const d of settled) await db.doc('incoming/' + d.pid).update({ indexed: true });
     } catch (_) {} finally { indexing = false; }      // a viewer cannot write: an editor's tab does it
