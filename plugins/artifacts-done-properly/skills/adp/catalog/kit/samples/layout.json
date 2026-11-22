@@ -1524,7 +1524,196 @@
      }
     ]
    }
-  ]
+  ],
+  "review": {
+   "note": "Invented review cases for 0.2: notes pinned to quoted words, with a suggestion where there is one.",
+   "cases": [
+    {
+     "id": "contract",
+     "label": "Contract review",
+     "context": "A tenant's reviewer reads clause 2 of an invented tenancy before it is signed.",
+     "sections": [
+      {
+       "id": "c2",
+       "no": "2",
+       "title": "Tenant's covenants",
+       "intro": "The Tenant agrees with the Landlord:",
+       "clauses": [
+        {
+         "id": "c2a",
+         "no": "(a)",
+         "text": "to pay the Rent on the due date without deduction;"
+        },
+        {
+         "id": "c2b",
+         "no": "(b)",
+         "text": "to pay interest at 10% per month on Rent unpaid for 14 days;",
+         "notes": [
+          {
+           "id": "n1",
+           "severity": "high",
+           "title": "Interest of 10% per month",
+           "body": "That is about 120% a year, likely unenforceable as a penalty; per annum was probably meant.",
+           "quote": "per month",
+           "suggestion": "per annum"
+          }
+         ]
+        },
+        {
+         "id": "c2c",
+         "no": "(c)",
+         "text": "to yield up the Premises on ____________ in good repair.",
+         "notes": [
+          {
+           "id": "n2",
+           "severity": "medium",
+           "title": "The hand-back date is blank",
+           "body": "Without it the tenancy has no end date to hold the tenant to.",
+           "quote": "____________",
+           "suggestion": ""
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "privacy",
+     "label": "Privacy notice",
+     "context": "A data-protection officer reviews a shop's draft privacy notice before it is published.",
+     "sections": [
+      {
+       "id": "p3",
+       "no": "3",
+       "title": "How long we keep your data",
+       "clauses": [
+        {
+         "id": "p3a",
+         "no": "",
+         "text": "We keep your order history for as long as necessary and may share it with selected partners.",
+         "notes": [
+          {
+           "id": "n1",
+           "severity": "high",
+           "title": "“As long as necessary” is not a period",
+           "body": "The notice must say how long, or how the period is decided.",
+           "quote": "as long as necessary",
+           "suggestion": "24 months after your last order"
+          },
+          {
+           "id": "n2",
+           "severity": "medium",
+           "title": "Which partners?",
+           "body": "Name the kinds of partner and why they get the data.",
+           "quote": "selected partners",
+           "suggestion": "our delivery partners, to deliver your orders"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "p4",
+       "no": "4",
+       "title": "Your rights",
+       "clauses": [
+        {
+         "id": "p4a",
+         "no": "",
+         "text": "You can ask for a copy of your data by writing to us.",
+         "notes": [
+          {
+           "id": "n3",
+           "severity": "low",
+           "title": "Offer email too",
+           "body": "Writing by post only makes the right harder to use than it should be.",
+           "quote": "by writing to us",
+           "suggestion": "by writing to us or emailing privacy@shop.example"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "paper",
+     "label": "Peer review of a paper",
+     "context": "A reviewer annotates the abstract of an invented study before sending it back to the authors.",
+     "sections": [
+      {
+       "id": "abs",
+       "no": "",
+       "title": "Abstract",
+       "clauses": [
+        {
+         "id": "a1",
+         "no": "",
+         "text": "In a survey of 12 cafés, those with outdoor seating sold more cold drinks. This proves that outdoor seating causes higher drink sales.",
+         "notes": [
+          {
+           "id": "n1",
+           "severity": "high",
+           "title": "An observation cannot prove a cause",
+           "body": "The survey shows a link; the weather, the street or the menu could explain it.",
+           "quote": "proves that outdoor seating causes",
+           "suggestion": "suggests that outdoor seating is linked to"
+          },
+          {
+           "id": "n2",
+           "severity": "low",
+           "title": "Twelve cafés is a small sample",
+           "body": "Say so in the abstract, or widen the survey.",
+           "quote": "12 cafés",
+           "suggestion": ""
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "release",
+     "label": "Release note",
+     "context": "A support lead checks a release note before it goes to customers. One note was already judged not a problem.",
+     "sections": [
+      {
+       "id": "r1",
+       "no": "",
+       "title": "Version 4.2",
+       "clauses": [
+        {
+         "id": "r1a",
+         "no": "",
+         "text": "Exports are now faster. The legacy API has been removed. Contact support if anything breaks.",
+         "notes": [
+          {
+           "id": "n1",
+           "severity": "high",
+           "title": "Removing an API needs a date and a path",
+           "body": "Customers on the legacy API need to know when it stops and what to move to.",
+           "quote": "The legacy API has been removed.",
+           "suggestion": "The legacy API stops on 1 March; move to the v2 API (see the migration guide)."
+          },
+          {
+           "id": "n2",
+           "severity": "low",
+           "title": "“Faster” by how much?",
+           "body": "A number would make the claim checkable.",
+           "quote": "now faster",
+           "suggestion": "",
+           "state": "dismissed"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
  },
  "stack": {
   "note": "Invented: the plan for a repair-cafe season, four stacked sections. The third is taller than the screen.",

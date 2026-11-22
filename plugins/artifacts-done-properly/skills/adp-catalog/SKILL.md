@@ -2,7 +2,7 @@
 name: adp-catalog
 description: "Find, use and add components, themes, layouts and guides from the ADP catalog (the shared library of reusable artifact parts). Load it whenever an artifact needs a component, theme, layout or pattern that may already exist, when the user says take, reuse, catalog, kit or theme, or when a new reusable piece should be added. Covers search, taking entries by reference with the files map, and the catalog rules. Also load it when the user wants their own, a separate or a private copy of the catalog."
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
 ---
 
 # ADP catalog
@@ -71,3 +71,5 @@ An HTTPS `*.chatgpt.site` catalog uses authenticated HTTP reads, not Claude serv
 ## Add or update entries
 
 No `adp.py` command adds an entry. An entry is files under `catalog/kit/`, the main one with a header comment (id, kind, group, status, version, updated, summary, tags, requires, files and the rest: the format is the repo's `docs/catalog-header.md`; a theme also `@fonts`, the url in its json). `python3 -I <adp skill folder>/scripts/adp_catalog.py build` writes the entry's record into `catalog.json` from that header, and `python3 -I <adp skill folder>/scripts/adp_catalog.py` must pass. The catalog artifact is planned by `python3 -I <adp skill folder>/scripts/publish_catalog.py` (the steps are in the repo's `docs/RELEASING.md`, "Publish the catalog"). Never publish over, test on or republish a catalog others use: ask the user first, and try anything on a scratch artifact.
+
+An entry kept outside the base catalog is one seed pack in the repo's `extras/`, written by `publish_catalog.py kit pack ID`: one inbox proposal with the entry's own files (sample and preview included) and its index record. Push its docs unchanged as one ArtifactData batch; the catalog applies it and lists it by itself (`docs/kit-json.md`).

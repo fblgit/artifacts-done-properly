@@ -29,8 +29,8 @@
  * @kind      component
  * @group     Patterns
  * @status    new
- * @version   0.2.4
- * @updated   2026-11-16
+ * @version   0.2.5
+ * @updated   2026-11-23
  * @summary   The page end of the loop: the proposals in incoming/, classified on open, each part as before and after, held items with both versions and a recorded pick, Apply through the files form with an ifMatch per file, Decline with a reason, and who is watching.
  * @tags      inbox, proposal, loop, apply, conflict, classify, merge, publish, presence
  * @requires  kit.tokens, kit.dom
@@ -45,7 +45,7 @@
  * @source    ADP 0.3.0, 2026-10-27 | the explainer's proposed-version card | one proposal applied by a person, generalised to the inbox
  * @preview   {"render": "pattern.inbox", "samples": ["kit/samples/patterns.json#inbox"]}
  * @samples   inbox
- * @changed   autoApply and onAutoApplied (opt-in): a page that ships its own files as proposals applies them itself, one at a time, retries a failed one once, warns and does not call onAutoApplied while one is failed or held, and a successful Apply, by the page or by a press, sends no wake-up comment (held and declined still do); the default stays an editor's press.
+ * @changed   Apply refuses a file whose delivered text does not match the sha256 its proposal states.
  */
 (function () {
 'use strict';
@@ -191,8 +191,12 @@ function mount(root, opts) {
       let res = { version: '', shas: {} };
       if (files.length) {
         const req = {};
-        for (const f of files) req[f.path] = gone(f) ? (f.ifMatch ? { delete: true, ifMatch: f.ifMatch } : null)
-          : { content: await fileContent(p, f), contentType: f.contentType || 'text/plain', ifMatch: f.ifMatch == null ? null : f.ifMatch };
+        for (const f of files) {
+          if (gone(f)) { req[f.path] = f.ifMatch ? { delete: true, ifMatch: f.ifMatch } : null; continue; }
+          const content = await fileContent(p, f);      // what is published is what the proposal declared: a stated sha256 must match the delivered text
+          if (f.sha256 && !(await sha(content)).startsWith(String(f.sha256))) throw new Error(f.path + ' does not match its sha256');
+          req[f.path] = { content, contentType: f.contentType || 'text/plain', ifMatch: f.ifMatch == null ? null : f.ifMatch };
+        }
         res = await art.publish(req);
       }
       const at = new Date().toISOString(), cur = data(await D.doc('manifest/current').get()) || {}, m = cur.data && !cur.parts ? cur.data : cur;

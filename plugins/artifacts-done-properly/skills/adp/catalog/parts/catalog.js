@@ -20,7 +20,7 @@ const ls = { get(k, d) { try { const v = localStorage.getItem('kitcat:' + k); re
   set(k, v) { try { localStorage.setItem('kitcat:' + k, JSON.stringify(v)); } catch (_) {} } };
 
 // ---------------------------------------------------------------- state
-const S = { entries: [], src: 'loading', self: { url: '', ver: '' }, q: '', group: 'all', sel: null, tab: 'preview',
+const S = { entries: [], added: [], src: 'loading', self: { url: '', ver: '' }, q: '', group: 'all', sel: null, tab: 'preview',
   theme: ls.get('theme', 'theme.journey-whiteboard'), mode: ls.get('mode', 'page'), err: '' };
 const subs = new Set(); let raf = 0, ver = 0;
 const set = p => { Object.assign(S, p); ver++; if (!raf) raf = requestAnimationFrame(() => { raf = 0; subs.forEach(f => f()); }); };
@@ -83,6 +83,48 @@ fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise
     inbox = true; sec.hidden = false;
     // bootstrap: the packed catalog's kit folders are applied by the page itself, then it reloads to load them
     Kit.inbox.mount(box, { db, autoApply: true, onAutoApplied: () => setTimeout(() => location.reload(), 1500) });
+  }, () => {});
+  // an extra kit (docs/kit-json.md) arrives as a proposal that carries its index record (entry). Once its files are applied the page proposes
+  // catalog.json with that record, and the inbox applies it like any file: What changed and the manifest follow. It is computed once nothing is pending, on the merged catalog.json.
+  const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
+  let indexing = false;
+  const note = (...m) => {      // why the index did not change, in the Incoming panel: an editor's tab only (a viewer never writes)
+    m = m.filter(Boolean).join(' · ');
+    if (!sec || !(window.ADP && ADP.user && ADP.user.canEdit)) return;
+    let p = sec.querySelector('.index-note');
+    if (!p) { p = document.createElement('p'); p.className = 'index-note'; p.setAttribute('role', 'status'); sec.prepend(p); }
+    p.textContent = m; p.hidden = !m; if (m) sec.hidden = false;
+  };
+  // a record is indexed only when the proposal delivered every file it lists, with the same sha256
+  const delivered = d => (d.entry.files || []).every(f => (d.files || []).some(x => x.path === f.path && x.sha256 === f.sha256));
+  db.collection('incoming').onSnapshot(async snap => {
+    const docs = snap.docs.filter(d => d.exists).map(d => Object.assign({}, d.data(), { pid: d.id })), kits = {};
+    // each kit proposal is indexed once: a later removal or update of that kit is never undone from its old record
+    const due = docs.filter(d => d.status === 'applied' && !d.indexed && d.entry && ID.test(d.entry.id || ''));
+    const bad = due.filter(d => !delivered(d)), warn = bad.length ? 'index not updated for ' + bad.map(d => d.entry.id).join(', ') + ': its record lists files or hashes its proposal did not deliver' : '';
+    const todo = due.filter(delivered).sort((a, b) => ((a.applied || {}).at > (b.applied || {}).at ? 1 : -1));
+    todo.forEach(d => { kits[d.entry.id] = d.entry; });      // the newest applied record of each kit
+    const at = d => (d.applied || {}).at || '';      // Landing's "New entries": the applied kits, newest first
+    set({ added: docs.filter(d => d.status === 'applied' && d.entry && ID.test(d.entry.id || '')).sort((a, b) => (at(a) < at(b) ? 1 : -1)).map(d => d.entry).filter((e, i, l) => l.findIndex(x => x.id === e.id) === i).slice(0, 20) });
+    if (!indexing) note(warn);
+    if (indexing || !Object.keys(kits).length || docs.some(d => d.status === 'new' || d.status === 'merged')) return;      // the index is computed after every pending proposal is merged
+    indexing = true;
+    try {
+      const text = await (await fetch('catalog.json', { cache: 'no-store' })).text(), cat = JSON.parse(text), base = await sha(text);
+      const mr = await db.doc('manifest/current').get(), mv = (mr.exists && mr.data()) || {}, rec = ((mv.data && !mv.parts ? mv.data : mv).files || {})['catalog.json'];
+      if (rec && base.slice(0, 12) !== rec) return note(warn, 'index not updated: this tab reads an older catalog.json, reload it');      // this tab reads an older catalog.json than the record holds: a current tab proposes
+      const add = Object.values(kits).filter(e => !cat.entries.some(x => x.id === e.id && x.hash === e.hash));
+      // settled: the index holds the record, or a newer proposal of the same kit replaced it. A held index proposal leaves its kit to be proposed again
+      const settled = todo.filter(d => kits[d.entry.id] !== d.entry || !add.includes(d.entry));
+      cat.entries = cat.entries.filter(x => !add.some(e => e.id === x.id)).concat(add);
+      const content = JSON.stringify(cat, null, 1) + '\n', pid = 'p-index-' + (await sha(base + content)).slice(0, 8), N = 100000, n = Math.ceil(content.length / N);
+      if (add.length && !docs.some(d => d.pid === pid)) {      // a held or declined index proposal is a person's to settle; the id covers the base, so a stale one never blocks a current one
+        for (let i = 0; i < n; i++) await db.doc('incoming/' + pid + '/chunks/' + i).set({ path: 'catalog.json', n: i, of: n, content: content.slice(i * N, (i + 1) * N) });
+        await db.doc('incoming/' + pid).set({ by: 'catalog', at: new Date().toISOString(), summary: 'Catalog index: ' + add.map(e => e.id).join(', '), threads: [], parts: [], live_files: {}, status: 'new',
+          files: [{ path: 'catalog.json', ifMatch: base, contentType: 'application/json', sha256: await sha(content), size: new TextEncoder().encode(content).length, chunks: n }] });
+      }
+      for (const d of settled) await db.doc('incoming/' + d.pid).update({ indexed: true });
+    } catch (err) { note(warn, 'index not updated (' + ((err && err.message) || err) + '): reload this tab'); } finally { indexing = false; }      // a viewer cannot write: an editor's tab does it
   }, () => {});
 })();
 
@@ -219,7 +261,7 @@ function Howto() {
 function Landing() {
   const s = useS();
   const k = Object.keys(KIND).map(x => [x, s.entries.filter(e => e.kind === x)]).filter(([, l]) => l.length);
-  const fresh = s.entries.filter(e => e.status === 'new').slice(0, 20);      // the index carries no date: new is a status
+  const fresh = s.added.map(e => byId(e.id)).filter(Boolean);      // the kits applied through the inbox that the catalog still holds, newest first
   return html`<section class="sheet" data-part="catalog.landing" data-comment-target aria-label="Catalog">
     <div class="land">
       <h2>Take a part instead of rebuilding it</h2>
@@ -271,6 +313,7 @@ async function prepare(e) {
   const chain = closure(e).concat((e.preview && e.preview.uses || []).flatMap(u => closure(byId(u) || {})).filter(Boolean));
   for (const x of chain) for (const f of x.files || []) if (f.role === 'style' && f.path.endsWith('.css') && x.kind !== 'theme') await loadFile(f.path);
   for (const x of chain) for (const f of x.files || []) if (f.role === 'script' && x.id !== 'runtime.adp') await loadFile(f.path);
+  for (const f of e.files || []) if (f.role === 'preview') await loadFile(f.path);      // a kit that brings its own preview (docs/kit-json.md)
   const samples = {};
   for (const p of (e.preview && e.preview.samples) || []) {
     const at = p.indexOf('#');
@@ -364,7 +407,7 @@ function takeFiles(e, withReq) {
   const out = [];
   for (const x of chain) for (const f of x.files || []) {
     if (x.id !== e.id && f.role === 'sample') continue;
-    if (f.role === 'template') continue;
+    if (f.role === 'template' || f.role === 'preview') continue;
     out.push({ entry: x, f });
   }
   return out;

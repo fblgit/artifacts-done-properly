@@ -5,17 +5,21 @@ Run it as python3 -I <adp skill folder>/scripts/publish_catalog.py COMMAND ... (
 The catalog goes up packed. Published directly, as real files: the page (index.html, adp.js, content.js, parts/, styles/), catalog.json, and the
 kit files the inbox needs to run (the closure of BOOT_ENTRY). Everything else under kit/ rides the seed (seed.json and seed/ packs, made by
 `adp.py seed --data`) as ONE PROPOSAL PER KIT FOLDER: an incoming/<pid> doc and its incoming/<pid>/chunks docs, the shape `adp.py propose` writes.
-adp.js's loader writes them to the db on the first open by an editor; the page's Incoming panel (Kit.inbox) lists them, and an editor's Apply
-publishes each folder's files with an ifMatch per file and records it in What changed, with its real version. Nothing else unpacks.
+adp.js's loader writes them to the db on the first open by an editor; the page's Incoming panel (Kit.inbox) lists them and, in that editor's tab,
+applies them itself: it publishes each folder's files with an ifMatch per file and records it in What changed, with its real version. Nothing else unpacks.
 
   welcome [--url URL] [--out D]      one self-contained About ADP page as OUT/tree/index.html, to publish first: it gives the artifact its URL
   plan --url URL [--catalog-dir D] [--out D]
                                      stage the page and the seed under OUT/tree with URL stamped into the staged catalog.json and index.html
                                      (the working tree is not touched), add welcome.html, write OUT/publish.json (the Artifact publish call)
-  update --url URL [--live D] [--catalog-dir D] [--out D]
+  update --url URL [--live D] [--catalog-dir D] [--out D] [--remove ID ...]
                                      the day-2 plan: the repo against the local copy of the live catalog (D, default ~/.adp/catalog: adp.py catalog
                                      fetches it) as inbox proposals with the live sha as ifMatch for every changed or removed kit file, written as
-                                     ArtifactData batches (OUT/update-NN.json); the page applies them when an editor has it open
+                                     ArtifactData batches (OUT/update-NN.json); the page applies them when an editor has it open. An entry only the
+                                     live catalog holds (an extra kit) keeps its files and record; --remove ID removes it
+  kit pack ID ... [--catalog-dir D] [--out D]
+                                     one seed pack per entry, D/<ID>.json (default ./extras, docs/kit-json.md): one proposal holding the entry's own
+                                     files and its index record. An entry that lists a file another entry lists too is refused
   set-url URL                        stamp URL into the repo's catalog.json and the index.html comment (a commit once the catalog is live)
   check URL                          exit 1 if either place differs from URL
 """
@@ -43,6 +47,7 @@ REPO = "https://github.com/fblgit/artifacts-done-properly"
 WELCOME = Path(__file__).with_name("welcome.html")
 BOOT_ENTRY = "pattern.inbox"     # the entry the page runs to apply the proposals: it and its requires are published directly
 MAX_FILES, MAX_BYTES = 60, 600 * 1024      # one proposal = one publish call; a real call of 100 files / 900 KB went through, so stay well under it
+BATCH_WRITES, BATCH_BYTES = 50, 700 * 1024      # an ArtifactData batch holds at most 50 writes and 1 MiB: stay under it
 CHUNK = 100 * 1024     # a chunk doc holds this many characters of a file (adp_loop.propose splits at CHUNK // 2 of 200 KB)
 CTYPE = {".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".md": "text/markdown", ".txt": "text/plain", ".html": "text/html"}
 CAPABILITIES = {
@@ -115,12 +120,12 @@ def texts(catalog, paths):
     return out
 
 
-def proposals(items, label="Catalog kit files"):
-    """One proposal per folder from ITEMS [{path, ifMatch, text, reason}] (text None: the file is removed, as adp.py propose writes it):
+def proposals(items, label="Catalog kit files", group=None):
+    """One proposal per folder (or per GROUP(path)) from ITEMS [{path, ifMatch, text, reason}] (text None: the file is removed, as adp.py propose writes it):
     [(pid, folder, files, docs)], docs being the incoming/<pid> doc and its chunk docs as {collection, id, data}."""
     groups = {}
     for it in sorted(items, key=lambda i: i["path"]):
-        groups.setdefault(folder_of(it["path"]), []).append(it)
+        groups.setdefault((group or folder_of)(it["path"]), []).append(it)
     parts = []      # a folder over the caps becomes several proposals (patterns-1, patterns-2, ...): one Apply is one publish call
     for name in sorted(groups):
         cur, size, pieces = [], 0, []
@@ -245,6 +250,34 @@ def cmd_plan(a):
     return 0
 
 
+def cmd_kit_pack(a):
+    catalog, out = Path(a.catalog_dir).resolve(), Path(a.out).resolve()
+    entries = json.loads(read_text(catalog / "catalog.json"))["entries"]
+    for i in a.ids:
+        e = next((x for x in entries if x["id"] == i), None)
+        if not e:
+            raise Fail("no entry %s in %s" % (i, catalog / "catalog.json"))
+        listed = {f["path"]: (f["sha256"], f["bytes"]) for f in e["files"]}
+        shared = sorted({f["path"] for x in entries if x["id"] != i for f in x["files"]} & set(listed))
+        if shared or not all(p.startswith("kit/") for p in listed):
+            raise Fail("%s: a kit holds only its own files under kit/ (shared with another entry: %s)" % (i, ", ".join(shared) or "none"))
+        got = proposals(texts(catalog, listed), group=lambda _p: i.replace(".", "-"))
+        if len(got) != 1:
+            raise Fail("%s is too large for one proposal (%d files or %d KB at most)" % (i, MAX_FILES, MAX_BYTES // 1024))
+        files, docs = got[0][2:]
+        if {f["path"]: (f["sha256"], f["size"]) for f in files} != listed:
+            raise Fail("%s: its files differ from its record in catalog.json: run adp_catalog.py build" % i)
+        # the page adds this record to catalog.json once the files are applied (parts/catalog.js)
+        docs[-1]["data"].update(entry=e, summary="Kit %s %s (%d files)" % (i, e.get("version", ""), len(files)))
+        size = len(json.dumps(docs, ensure_ascii=False).encode("utf-8"))
+        if len(docs) > BATCH_WRITES or size > BATCH_BYTES:      # docs/kit-json.md: one kit is one batch
+            raise Fail("%s needs %d writes / %d KB: one batch takes %d / %d KB" % (i, len(docs), size // 1024, BATCH_WRITES, BATCH_BYTES // 1024))
+        out.mkdir(parents=True, exist_ok=True)
+        write_text(out / (i + ".json"), json.dumps({"schema": "adp-seed/2", "pack": 1, "of": 1, "docs": docs}, ensure_ascii=False, indent=1) + "\n")
+        print("%s %s: %d files, %d writes -> %s" % (i, e.get("version", ""), len(files), len(docs), out / (i + ".json")))
+    return 0
+
+
 def cmd_update(a):
     """The day-2 plan: the repo against the live catalog, as inbox proposals with an ifMatch (the live sha) for every changed or removed file."""
     catalog, out = Path(a.catalog_dir).resolve(), Path(a.out).resolve()
@@ -254,7 +287,14 @@ def cmd_update(a):
     if not (live_dir / "catalog.json").is_file():
         raise Fail("no copy of the live catalog in %s: run `adp.py catalog <url>` and its reads first (My Own Kit)" % live_dir)
     live_cj = read_text(live_dir / "catalog.json")
-    live = {f["path"]: f["sha256"] for e in json.loads(live_cj)["entries"] for f in e["files"]}
+    live_entries = json.loads(live_cj)["entries"]
+    live = {f["path"]: f["sha256"] for e in live_entries for f in e["files"]}
+    known = {e["id"] for e in json.loads(read_text(catalog / "catalog.json"))["entries"]}
+    if set(a.remove) - {e["id"] for e in live_entries} or set(a.remove) & known:
+        raise Fail("--remove takes a live entry the repo catalog does not hold: %s" % ", ".join(sorted(a.remove)))
+    # an entry only the live catalog holds (an extra kit, docs/kit-json.md) is kept, files and record, unless --remove names it
+    kept = [e for e in live_entries if e["id"] not in known and e["id"] not in a.remove]
+    keep = {f["path"] for e in kept for f in e["files"]}
     now = sorted(p for p in walk(catalog) if p.startswith("kit/"))
     items, n = [], {"changed": 0, "new": 0, "removed": 0}
     for it in texts(catalog, now):
@@ -264,11 +304,15 @@ def cmd_update(a):
         it["ifMatch"] = old
         n["changed" if old else "new"] += 1
         items.append(it)
-    for p in sorted(set(live) - set(now)):
+    for p in sorted(set(live) - set(now) - keep):
         if p.startswith("kit/"):
             items.append({"path": p, "ifMatch": live[p], "text": None, "reason": "removed from the catalog"})
             n["removed"] += 1
     new_cj = stamp(catalog, a.url)[0]
+    if kept:
+        obj = json.loads(new_cj)
+        obj["entries"] += kept
+        new_cj = json.dumps(obj, indent=1, ensure_ascii=False) + "\n"
     if new_cj != live_cj:
         items.append({"path": "catalog.json", "ifMatch": hashlib.sha256(live_cj.encode("utf-8")).hexdigest(), "text": new_cj})
         n["changed"] += 1
@@ -281,15 +325,17 @@ def cmd_update(a):
         shutil.rmtree(out)
     out.mkdir(parents=True)
     batches, cur, size = [], [], 0
-    for w in writes:      # an ArtifactData batch holds at most 50 writes and 1 MiB; the order is kept (a proposal's chunks first, its doc last)
+    for w in writes:      # the order is kept (a proposal's chunks first, its doc last)
         n_bytes = len(json.dumps(w, ensure_ascii=False).encode("utf-8"))
-        if cur and (len(cur) >= 50 or size + n_bytes > 700 * 1024):
+        if cur and (len(cur) >= BATCH_WRITES or size + n_bytes > BATCH_BYTES):
             batches.append(cur); cur, size = [], 0
         cur.append(w); size += n_bytes
     batches.append(cur)
     for k, b in enumerate(batches, 1):
         write_text(out / ("update-%02d.json" % k), json.dumps({"url": a.url, "action": "batch", "writes": b}, ensure_ascii=False) + "\n")
     print("update: %d changed, %d new, %d removed -> %d proposals, %d batches in %s" % (n["changed"], n["new"], n["removed"], len(props), len(batches), out))
+    if kept:
+        print("  kept (live only; --remove ID drops one): %s" % ", ".join(e["id"] for e in kept))
     for _pid, folder, fl, _docs in props:
         print("  %-10s %3d files  %s" % (folder, len(fl), _pid))
     print("write update-01.json ... in order with ArtifactData (action batch); the catalog page applies them when an editor has it open.\n"
@@ -362,6 +408,7 @@ def main(argv=None):
     p.add_argument("--live", default=str(Path(os.environ.get("ADP_HOME") or Path.home() / ".adp") / "catalog"))
     p.add_argument("--catalog-dir", default=str(DEFAULT_CATALOG))
     p.add_argument("--out", default=str(DEFAULT_OUT))
+    p.add_argument("--remove", action="append", default=[], metavar="ID")
     p.set_defaults(fn=cmd_update)
     p = sub.add_parser("welcome")
     p.add_argument("--url", default=None)
@@ -373,6 +420,12 @@ def main(argv=None):
         p.add_argument("url")
         p.add_argument("--catalog-dir", default=str(DEFAULT_CATALOG))
         p.set_defaults(fn=fn)
+    kit = sub.add_parser("kit").add_subparsers(dest="kit_cmd", required=True)
+    p = kit.add_parser("pack")
+    p.add_argument("ids", nargs="+")
+    p.add_argument("--catalog-dir", default=str(DEFAULT_CATALOG))
+    p.add_argument("--out", default=str(Path.cwd() / "extras"))
+    p.set_defaults(fn=cmd_kit_pack)
     a = ap.parse_args(argv)
     try:
         return a.fn(a)

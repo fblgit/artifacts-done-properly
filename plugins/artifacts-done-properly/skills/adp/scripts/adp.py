@@ -55,8 +55,8 @@ Build and record (each prints what the Artifact / ArtifactData call needs, so no
                                                     list or {docs} of {collection, id, data}, or a DIR of collection/id.json); the page
                                                     expands them on its first open by an editor. --data docs in a generated collection
                                                     merge into the generated doc (a parts title, the change summary). Empty content is
-                                                    skipped (skipped_empty). --batches: the same docs as ArtifactData batches instead, for
-                                                    an agent that writes them itself; --dry-run: counts only
+                                                    skipped (skipped_empty). --batches: the same docs as ArtifactData batches instead, only
+                                                    when nobody can open the page as an editor; --dry-run: counts only
   adp.py suggest CATALOG --for "free words" [--n 3] [--kind K]
                                                     catalog entries ranked by overlap with tags, name, summary, id, provides and about, grouped by kind prefix (no model call)
   adp.py kit list [CATALOG] [--kind K] [--tag T]    one JSON line per entry; CATALOG defaults to - (the saved catalog)
@@ -716,7 +716,7 @@ def new(a):
                    'Design it: read `design` above, take a theme and the layouts the content needs from the catalog, then write page.css and the views for this content (a script that emits them beats typing)' if design and not built else '',
                    'Artifact publish with the `publish` arguments (first publish: add icon; label "adp/2 start"); its files already carry the kit entries' if merged else 'Artifact publish with the `publish` arguments (first publish: add icon; label "adp/2 start")',
                    ('adp.py take ' + (saved or '<catalog url>') + ' ' + ' '.join(tk) + ', then publish those files to the same url') if tk and not merged else '',
-                   'Open the page as an editor (you, or the owner): it expands seed.json and seed/ into its database on that first open and shows what ADP is while it does. Only when nobody can open it: adp.py seed ' + d + ' --batches prints the ArtifactData batches']
+                   'Nothing to seed by hand: the page expands seed.json and seed/ into its database on its first open by an editor (a client set to open pages on publish does that at once) and shows what ADP is while it does. Only when nobody can open it: adp.py seed ' + d + ' --batches prints the ArtifactData batches']
     out['next'] = [x for x in out['next'] if x]
     return emit(out)
 
@@ -754,7 +754,7 @@ def take(a):
     m = {}
     for i in order:
         for f in by[i]['files']:
-            if f.get('role') == 'sample' and (i not in pos[1:] or f['path'] in idle.get(i, ())): continue
+            if f.get('role') == 'preview' or f.get('role') == 'sample' and (i not in pos[1:] or f['path'] in idle.get(i, ())): continue
             m[f['path']] = dict({'artifact': url, 'path': f['path']}, **({'ver': f['ver']} if f.get('ver') else {}))
     info = {'url': url, 'index': os.path.abspath(idx), 'live': live, 'ver': cat.get('ver') or None, 'built': cat.get('built')}
     if not live: info['warning'] = 'a local index is a build, not the live catalog: a file it lists may be missing there. adp.py take <catalog url> ... reads the fetched live index'
@@ -837,7 +837,7 @@ def suggest(a):
         seen = {f: want & set(WORD.findall(v.lower())) for f, v in fields.items()}
         score = 3 * len(hit) + len(seen['name/summary']) + len(seen['id']) + 2 * len(seen['provides']) + len(seen['about'])
         if score: groups.setdefault(kind, []).append((score, e['id'], {'id': e['id'], 'kind': kind, 'why': '; '.join(([f"tags: {', '.join(hit)}"] if hit else []) + [f"{f}: {', '.join(sorted(w))}" for f, w in seen.items() if w]),
-                  'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') != 'sample'])}))
+                  'requires': e.get('requires', []), 'takes': len([f for f in e['files'] if f.get('role') not in ('sample', 'preview')])}))
     out = [x[2] for k in sorted(groups) for x in sorted(groups[k], key=lambda t: (-t[0], t[1]))[:n]]
     if warn: sys.stderr.write('warning: ' + warn + '\n')
     if missing:
@@ -859,7 +859,7 @@ def kit(a):
             emit({'id': e['id'], 'kind': e['id'].split('.')[0], 'name': e.get('name'), 'summary': e.get('summary'), 'tags': e.get('tags', [])})
         return 0
     e = next((x for x in cat['entries'] if x['id'] == pos[1]), None) or sys.exit(f'no entry {pos[1]} in the catalog')
-    paths = [f['path'] for f in e['files'] if f.get('role') != 'sample']; sample = [f['path'] for f in e['files'] if f.get('role') == 'sample']
+    paths = [f['path'] for f in e['files'] if f.get('role') not in ('sample', 'preview')]; sample = [f['path'] for f in e['files'] if f.get('role') == 'sample']
     heads, missing, calls = read_headers(src, [e]); h = heads.get(e['id'], {})      # about, db, config, source and changes live in the main-file header
     if missing and not calls: sys.stderr.write('note: the main-file header is not on disk, so about and the header fields are missing\n')      # a local catalog: no call to offer
     note = {'note': 'the main-file header is not on disk, so about and the header fields are missing; read it, then run the command again', 'fetch': calls} if calls else {}
@@ -1042,7 +1042,7 @@ def seed(a):
     idx = read_seed(d)[0]
     return emit({'seed': os.path.join(d, SEED), 'written': written, 'docs': idx['docs'], 'collections': idx['collections'], 'packs': idx['packs'],
                  'bytes': sum(os.path.getsize(os.path.join(d, p)) for p in idx['packs']), 'skipped_empty': empty,
-                 'next': 'publish DIR (seed.json and seed/ go up with the files) and open the page once as an editor: it expands the packs into its database'})
+                 'next': 'publish DIR (seed.json and seed/ go up with the files): the page expands the packs into its database on its first open by an editor'})
 
 
 # The core switches: key -> (type, default, enum options). assets/adp.js is the source of truth; the two must agree.

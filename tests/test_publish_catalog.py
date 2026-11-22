@@ -144,7 +144,33 @@ class PlanTests(Base):
         shutil.rmtree(self.out)
         same = run("update", "--url", URL1, "--live", str(live), "--catalog-dir", str(live), "--out", str(self.out))
         self.assertIn("nothing to update", same[1])
+        shutil.copytree(live, self.tmp / "repo")      # an extra kit only the live catalog holds: kept, files and record, unless --remove names it
+        (live / "kit" / "extra.js").write_text("E")
+        cj = json.loads((live / "catalog.json").read_text()); cj["entries"].append({"id": "kit.extra", "files": [{"path": "kit/extra.js", "sha256": sha("kit/extra.js")}]})
+        pc.write_text(live / "catalog.json", json.dumps(cj, indent=1, ensure_ascii=False) + "\n")
+        up = lambda *x: run("update", "--url", URL1, "--live", str(live), "--catalog-dir", str(self.tmp / "repo"), "--out", str(self.out), *x)[1]
+        self.assertIn("nothing to update", up())
+        self.assertIn("1 changed, 0 new, 1 removed", up("--remove", "kit.extra"))
         self.assertEqual(run("update", "--url", URL1, "--live", str(self.tmp / "none"), "--out", str(self.out))[0], 1)      # no copy of the live catalog
+
+    def test_kit_pack_writes_one_seed_pack_holding_one_proposal_that_carries_its_record(self):
+        real = REPO / "plugins" / "artifacts-done-properly" / "skills" / "adp" / "catalog"
+        ext = self.tmp / "extras"
+        self.assertEqual(run("kit", "pack", "kit.dom", "--catalog-dir", str(real), "--out", str(ext))[0], 0)
+        pack = json.loads((ext / "kit.dom.json").read_text())
+        chunk, prop = pack["docs"]      # the proposal's doc after its chunks, as adp.js's seed loader reads them
+        self.assertEqual((pack["schema"], chunk["collection"], prop["collection"]), ("adp-seed/2", "incoming/%s/chunks" % prop["id"], "incoming"))
+        self.assertEqual(chunk["data"]["content"], (real / "kit" / "dom.js").read_text(encoding="utf-8"))
+        entry = next(e for e in json.loads((real / "catalog.json").read_text())["entries"] if e["id"] == "kit.dom")
+        self.assertEqual((prop["data"]["entry"], prop["data"]["status"], prop["data"]["files"][0]["ifMatch"]), (entry, "new", None))
+        code, _, err = run("kit", "pack", "kit.table", "--catalog-dir", str(real), "--out", str(ext))      # its sample is a key of a shared bundle
+        self.assertEqual((code, "kit/samples/kit.json" in err), (1, True))
+        files = [{"path": "kit/big/%02d.js" % k, "sha256": hashlib.sha256(b"x").hexdigest(), "bytes": 1} for k in range(50)]      # 50 chunks + the proposal: 51 writes
+        (self.cat / "kit" / "big").mkdir(parents=True)
+        for f in files: (self.cat / f["path"]).write_text("x")
+        (self.cat / "catalog.json").write_text(json.dumps({"entries": [{"id": "kit.big", "files": files}]}))
+        code, _, err = run("kit", "pack", "kit.big", "--catalog-dir", str(self.cat), "--out", str(ext))
+        self.assertEqual((code, "51 writes" in err), (1, True))
 
     def test_a_file_that_is_not_text_stops_the_plan(self):
         cj = json.loads((self.cat / "catalog.json").read_text())

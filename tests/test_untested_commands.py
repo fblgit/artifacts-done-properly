@@ -212,6 +212,13 @@ assert.equal(JSON.parse(takeRef({},true,{self:{url:'https://claude.ai/artifact/d
         self.assertEqual(out['samples'], {'viz.chips': ['kit/samples/viz.json#viz-chips']})      # the output names its own key, never the other samples
         self.assertNotIn('viz-other', json.dumps(out))
 
+    def test_a_preview_file_is_never_taken(self):      # docs/kit-json.md: the catalog page loads it; take, describe and suggest leave it out
+        cat = json.loads(json.dumps(SLIM)); cat['entries'][0]['files'].append({'path': 'kit/previews/chips.js', 'role': 'preview'})
+        src = self.write_json('pv/catalog.json', cat)
+        self.assertEqual(list(self.ok('take', src, 'viz.chips', '--url', self.URL)['files']), ['kit/viz/chips.js'])
+        self.assertEqual(self.ok('kit', 'describe', 'viz.chips', src)['files'], ['kit/viz/chips.js'])
+        self.assertEqual(self.ok('suggest', src, '--for', 'chips')[0]['takes'], 1)
+
     def test_take_of_an_entry_that_owns_no_sample_names_none(self):
         out = self.ok('take', self.bundled(), 'viz.timeline', '--url', self.URL)
         self.assertEqual([p for p in out['files'] if p.startswith('kit/samples/')], [])

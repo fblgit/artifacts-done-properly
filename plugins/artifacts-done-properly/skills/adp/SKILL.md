@@ -3,12 +3,32 @@ name: adp
 description: "ADP (Artifacts Done Properly) is the standard for shared Claude Artifacts and Sites pages that collect comments or requests from people, or that are built from shared catalog components. Load it FIRST, before writing any HTML and before calling the Artifact or ArtifactData tools, whenever the user wants a new artifact page, board, tracker, dashboard, assistant or record that will be kept, shared or edited again; wants to edit, republish or answer comments on an artifact that already exists or that another session touched; says ADP, adp.py, catalog, kit, theme, template, part id, watch the artifact, requests or presence; wants an existing artifact put on ADP; or is setting ADP up for the first time. Skipping it risks a stale copy overwriting newer versions and rebuilding by hand what the catalog already has."
 license: Apache-2.0
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
 ---
 
 # ADP: Artifacts Done Properly
 
-ADP makes a shared Artifact safe to edit: every piece of the page is a part with a stable id and a content hash, comments anchor to part ids, and one ArtifactData layout records every change under a read, hold, publish, record protocol. New artifacts use the adp/2 layout (a thin shell plus files per part, copy stored as data). `adp.py` computes hashes and diffs and prints the exact Artifact and ArtifactData calls, so nothing is retyped by hand.
+## What ADP is
+
+A protocol and a framework for structured artifacts. The page is a thin shell. The record lives in the artifact's database, mapped to the page's regions (parts). Changes are records, not republishes. Because it runs on claude.ai's own features (conversations, comments anchored to parts, the watcher, the picker), a person and an agent edit the same page together.
+
+## How it runs
+
+1. Publish: one Artifact call for the shell (the About page), then one ArtifactData write with the seeds. The page expands them, its inbox applies the proposals, and it maintains its own `catalog.json`. Nothing else.
+2. Edit: work locally in `.adp/`, as if it were the artifact itself. One command computes the diff by part and file hash and writes a seed-like JSON. That goes in through ArtifactData. No republish.
+3. Build: write kits, templates, themes, patterns, viz, components and pages, reusing what the catalog already has, with the page's own style in its custom CSS. Kits are versioned, files hashed, and headers carry the metadata that ties the system together.
+
+Why it is efficient: the agent never retypes, re-reads or republishes what the system already holds. It sends small hashed records, and the page does the conversion, publishing and bookkeeping itself.
+
+Where each change goes:
+- The page's own files and parts (`index.html`, `adp.js`, `parts/`, `styles/`) are recorded in `manifest/current`. They change by the loop: `adp.py export`, edit in `.adp/`, `adp.py propose`, one ArtifactData batch. The page's inbox classifies the proposal against the manifest and applies it.
+- Kits, templates, themes, patterns and viz change as catalog entries, by proposal. A page's own look goes in its custom CSS, not into a kit.
+- `catalog.json` is the catalog page's own: it updates it after applying a kit. Never send it.
+- Concurrency is claude.ai's own: `if_version` pins each ArtifactData write and `ifMatch` each published file, so a stale write is refused, and the inbox holds a proposal whose files moved.
+
+Nothing here is a gap to work around by hand or by a republish. If a step seems missing, read `adp.js` and the inbox (`kit/patterns/inbox.js`) before adding one.
+
+ADP makes a shared Artifact safe to edit: every piece of the page is a part with a stable id and a content hash, comments anchor to part ids, and one ArtifactData layout records every change. New artifacts use the adp/2 layout (a thin shell plus files per part, copy stored as data). `adp.py` computes hashes and diffs and prints the exact Artifact and ArtifactData calls, so nothing is retyped by hand.
 
 ## Run the tool
 
@@ -54,5 +74,5 @@ Every `adp.py` command appends one JSON line to `log.jsonl`: in `./.adp/` when a
 
 ## Always
 
-- Read the latest version of an artifact before touching it; a local copy from an earlier session may predate other people's work, and publishing from it overwrites theirs.
+- Work from the live record: `adp.py export` before you edit. claude.ai refuses a stale write by itself (`if_version` on every ArtifactData write, a conflict on a publish over a newer version, `ifMatch` on each published file): re-read and redo, never force.
 - Say what a command or a read did not confirm when you tell the user, so they know what to check; this includes whether this session is watching an artifact (only the publish result or the ArtifactComments tool says so). A publish result that says live subscription is not supported from this session means you are not watching: tell the owner in one line, read `requests/` when they say go, and carry on.

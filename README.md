@@ -5,7 +5,7 @@ The iteration ends. The value stays.
 
 Your next project starts further ahead.
 
-**Try it:** [ADP: Catalog v2.1.1](https://claude.ai/artifact/F3Do218c6gJXcvV5FkxGhZ) · [ADP: Assistant v2.1.1](https://claude.ai/artifact/F42c7ZcRDKptdaTA5TAqZB) (claude.ai artifacts).
+**Try it:** [ADP: Catalog v2.3.0](https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX) · [ADP: Assistant v2.3.0](https://claude.ai/artifact/VRXuLLQ3dGfMLuDE8h1D9W) (claude.ai artifacts).
 
 **KnowledgeBase:** [ADP: KnowledgeBase v2.1.1](https://claude.ai/artifact/RTYshZxMp1x97a7paUGBX1) · [codex version](https://adp-knowledgebase.primmaple1.chatgpt.site/).
 

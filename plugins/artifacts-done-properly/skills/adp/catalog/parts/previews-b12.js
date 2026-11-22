@@ -116,12 +116,45 @@ function MarginFrame({ d }) {
   const ref = useMount(el => K().marginNotes.mount(el, { sections: d.sections, words: d.words, label: 'House rules of a repair cafe' }), []);
   return html`<div ref=${ref}></div>`;
 }
+// 0.2 review notes: the page owns the text; onAction is applied here the way a page would, and logged
+function ReviewFrame({ r }) {
+  const [id, setId] = useState(r.cases[0].id);
+  const c = r.cases.find(x => x.id === id);
+  const [secs, setSecs] = useState(() => JSON.parse(JSON.stringify(c.sections)));
+  const [log, setLog] = useState([]);
+  const [fill, setFill] = useState(null);
+  const [word, setWord] = useState('');
+  useEffect(() => { setSecs(JSON.parse(JSON.stringify(c.sections))); setLog([]); setFill(null); }, [id]);
+  const change = (cid, nid, fn) => setSecs(ss => ss.map(s => ({ ...s, clauses: s.clauses.map(cl => cl.id !== cid ? cl : fn(cl, (cl.notes || []).find(n => n.id === nid))) })));
+  const setNote = (cl, n, patch) => ({ ...cl, notes: cl.notes.map(x => x === n ? { ...x, ...patch } : x) });
+  const replace = (cid, nid, by) => change(cid, nid, (cl, n) => setNote({ ...cl, text: cl.text.replace(n.quote, by) }, n, { state: 'applied' }));
+  const onAction = ({ clause, note, action }) => {
+    setLog(l => [{ action, title: note.title }, ...l].slice(0, 5));
+    if (action === 'apply') replace(clause.id, note.id, note.suggestion);
+    else if (action === 'dismiss') change(clause.id, note.id, (cl, n) => setNote(cl, n, { state: 'dismissed' }));
+    else if (action === 'reopen') change(clause.id, note.id, (cl, n) => setNote(cl, n, { state: 'open' }));
+    else if (action === 'fill') { setFill({ cid: clause.id, nid: note.id, quote: note.quote }); setWord(note.quote || ''); }
+  };
+  const ref = useRef(null), mn = useRef(null);
+  useEffect(() => { mn.current = K().marginNotes.mount(ref.current, { sections: secs, label: c.label, onAction }); return () => mn.current.destroy(); }, [id]);
+  useEffect(() => { if (mn.current) mn.current.update({ sections: secs, onAction }); }, [secs]);
+  return html`<div class="pv12-twin">
+    <div class="pv12-bar"><span class="pv12-h">Use case</span><${Seg} label="Use case" value=${id} set=${setId} items=${r.cases.map(x => [x.id, x.label])}/></div>
+    <p class="pv12-p">${c.context}</p>
+    <div ref=${ref}></div>
+    ${fill ? html`<form class="pv12-bar" onSubmit=${e => { e.preventDefault(); replace(fill.cid, fill.nid, word); setFill(null); }}>
+      <label class="pv12-p">New wording for “${fill.quote}” <input value=${word} onInput=${e => setWord(e.target.value)} style="font:inherit;padding:6px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--panel);color:var(--ink);min-width:min(100%,16rem)"/></label>
+      <button class="pv12-btn primary" type="submit">Use it</button><button class="pv12-btn" type="button" onClick=${() => setFill(null)}>Cancel</button></form>` : ''}
+    <div><p class="pv12-h">onAction, newest first</p>${log.length ? html`<ul class="pv12-feed">${log.map((x, i) => html`<li key=${i}><code>${x.action}</code><span>${x.title}</span></li>`)}</ul>` : html`<p class="pv12-ro">Nothing yet: the kit changes no text itself.</p>`}</div>
+  </div>`;
+}
 P['layout.margin-notes'] = ({ samples, dark }) => {
   const d = first(samples, 'margin-notes');
   const vars = useThemeVars('kit/themes/manuscript.json', dark);
   return html`<div class="pv12-frame pv12-twin">
     <div><p class="pv12-h">On this stage's theme</p><${MarginFrame} d=${d}/></div>
     <div class="pv12-under" style=${vars + ';background:var(--bg)'}><p class="pv12-h">Under Manuscript, the theme it was taken from</p><${MarginFrame} d=${d} key=${vars}/></div>
+    ${d.review ? html`<div class="pv12-under"><p class="pv12-h">Review notes (0.2): pinned to the words, a fix one click away</p><${ReviewFrame} r=${d.review}/></div>` : ''}
   </div>`;
 };
 

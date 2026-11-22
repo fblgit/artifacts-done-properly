@@ -345,6 +345,8 @@ def _role(path):
     low = path.lower()
     if path.startswith('kit/samples/'):
         return 'sample'
+    if path.startswith('kit/previews/'):      # an extra kit's own catalog preview (docs/kit-json.md): the catalog page loads it, take leaves it out
+        return 'preview'
     return next((r for x, r in ROLES if low.endswith(x)), 'data')
 
 

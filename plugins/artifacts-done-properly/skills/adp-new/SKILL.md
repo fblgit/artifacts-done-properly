@@ -2,7 +2,7 @@
 name: adp-new
 description: "Create a brand new Claude Artifact or Sites page on ADP (adp/2): a page, board, tracker, assistant or record page that people and Claude will keep editing. Load it whenever the user asks for a new artifact that should be shared, commented on, built from catalog parts or edited by more than one agent, before writing any HTML. Covers the starter and assistant templates, taking a theme from the catalog, the first publish, and the one-time editor open that seeds the database."
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
 ---
 
 # New ADP artifact
@@ -41,7 +41,7 @@ Default to the assistant when people and Claude use the page together. Ask the u
 
 ## 4. Seed the database
 
-The page expands `seed.json` and `seed/` into the database itself when an editor opens it, and the owner's browser may open it on publish. Until it is seeded the db has no `manifest/current`, and the edit road cannot hold or record anything. Read first: ArtifactData `get` on collection `manifest`, doc `current`. If it exists, the page is seeded: write nothing, because an unpinned batch onto existing documents is refused (observed: `parts/page.changes` already existed and nothing was written). If it is absent, ask the owner to open the artifact once as an editor: the page then writes the record itself, so you run nothing. Only when nobody can open it as an editor, run `ADP seed DIR --by <you> --batches` and write the printed ArtifactData batches yourself (the db rules let an editor write them); the page then does not expand the seed again. Tell the owner in one line which case you found. If you cannot write to the db either, say so.
+You run nothing: the page expands `seed.json` and `seed/` into the database itself on its first open by an editor, and a client set to open pages on publish does that at once. Until it is seeded the db has no `manifest/current`, and the edit road cannot hold or record anything. If you need to know, read ArtifactData `get` on collection `manifest`, doc `current`. If it exists, the page is seeded: write nothing, because an unpinned batch onto existing documents is refused (observed: `parts/page.changes` already existed and nothing was written). Only when it is absent and nobody can open the page as an editor, run `ADP seed DIR --by <you> --batches` and write the printed ArtifactData batches yourself (the db rules let an editor write them); the page then does not expand the seed again. Tell the owner in one line which case you found. If you cannot write to the db either, say so.
 
 ## Page code
 

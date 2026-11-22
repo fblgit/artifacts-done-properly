@@ -68,7 +68,7 @@ The record of a page is a set of ArtifactData collections. `adp.py` prints write
 
 `manifest/current` fields (`man_doc` in `adp.py`): `schema`, `version`, `page_hash`, `parts {id: hash}`, `elements`, `files {path: first 12 hex}`, `part_file`, `content {part id: H(html) of the content.js entry}` (hashed raw, without `norm`), `at`, `by`.
 
-In the table, *the loader* is `seedFromFile` in `adp.js` (section 5): `adp.py new` and `seed` only write the first docs into the `seed/` packs, and the page writes them to the db on the first open by an editor; `adp.py seed --batches` prints them as ArtifactData batches instead.
+In the table, *the loader* is `seedFromFile` in `adp.js` (section 5): `adp.py new` and `seed` only write the first docs into the `seed/` packs, and the page writes them to the db on the first open by an editor; `adp.py seed --batches` prints them as ArtifactData batches instead, only when nobody can open the page as an editor.
 
 | Collection / doc | Written by | Read by | Fields (from the code) |
 |---|---|---|---|
