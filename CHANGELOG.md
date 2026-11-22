@@ -13,6 +13,7 @@ Minor release on v2.2.0. Install and verify as before; `adp.skill.sha256` on the
 
 ### Changed
 
+- **New published catalog and assistant.** ADP: Catalog v2.3.0 (`https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX`), with the nine extra kits (150 entries), and ADP: Assistant v2.3.0 (`https://claude.ai/artifact/VRXuLLQ3dGfMLuDE8h1D9W`). The shipped `catalog.json` and the catalog page carry the new catalog URL.
 - **The catalog page indexes a kit only on evidence.** A record is added only when its proposal delivered every file it lists, with the same sha256, and only from the current `catalog.json` once nothing is pending. When it does not index, the Incoming panel says why. "New entries" lists only kits the catalog still holds.
 - **`pattern.inbox` 0.2.5.** Apply refuses a file whose delivered text does not match the sha256 its proposal states.
 - **`publish_catalog.py update`** keeps an entry only the live catalog holds (an extra kit), its files and its record; `--remove ID` removes one on purpose.
