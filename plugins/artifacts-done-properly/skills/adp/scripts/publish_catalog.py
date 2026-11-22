@@ -12,10 +12,11 @@ applies them itself: it publishes each folder's files with an ifMatch per file a
   plan --url URL [--catalog-dir D] [--out D]
                                      stage the page and the seed under OUT/tree with URL stamped into the staged catalog.json and index.html
                                      (the working tree is not touched), add welcome.html, write OUT/publish.json (the Artifact publish call)
-  update --url URL [--live D] [--catalog-dir D] [--out D]
+  update --url URL [--live D] [--catalog-dir D] [--out D] [--remove ID ...]
                                      the day-2 plan: the repo against the local copy of the live catalog (D, default ~/.adp/catalog: adp.py catalog
                                      fetches it) as inbox proposals with the live sha as ifMatch for every changed or removed kit file, written as
-                                     ArtifactData batches (OUT/update-NN.json); the page applies them when an editor has it open
+                                     ArtifactData batches (OUT/update-NN.json); the page applies them when an editor has it open. An entry only the
+                                     live catalog holds (an extra kit) keeps its files and record; --remove ID removes it
   kit pack ID ... [--catalog-dir D] [--out D]
                                      one seed pack per entry, D/<ID>.json (default ./extras, docs/kit-json.md): one proposal holding the entry's own
                                      files and its index record. An entry that lists a file another entry lists too is refused
@@ -286,7 +287,14 @@ def cmd_update(a):
     if not (live_dir / "catalog.json").is_file():
         raise Fail("no copy of the live catalog in %s: run `adp.py catalog <url>` and its reads first (My Own Kit)" % live_dir)
     live_cj = read_text(live_dir / "catalog.json")
-    live = {f["path"]: f["sha256"] for e in json.loads(live_cj)["entries"] for f in e["files"]}
+    live_entries = json.loads(live_cj)["entries"]
+    live = {f["path"]: f["sha256"] for e in live_entries for f in e["files"]}
+    known = {e["id"] for e in json.loads(read_text(catalog / "catalog.json"))["entries"]}
+    if set(a.remove) - {e["id"] for e in live_entries} or set(a.remove) & known:
+        raise Fail("--remove takes a live entry the repo catalog does not hold: %s" % ", ".join(sorted(a.remove)))
+    # an entry only the live catalog holds (an extra kit, docs/kit-json.md) is kept, files and record, unless --remove names it
+    kept = [e for e in live_entries if e["id"] not in known and e["id"] not in a.remove]
+    keep = {f["path"] for e in kept for f in e["files"]}
     now = sorted(p for p in walk(catalog) if p.startswith("kit/"))
     items, n = [], {"changed": 0, "new": 0, "removed": 0}
     for it in texts(catalog, now):
@@ -296,11 +304,15 @@ def cmd_update(a):
         it["ifMatch"] = old
         n["changed" if old else "new"] += 1
         items.append(it)
-    for p in sorted(set(live) - set(now)):
+    for p in sorted(set(live) - set(now) - keep):
         if p.startswith("kit/"):
             items.append({"path": p, "ifMatch": live[p], "text": None, "reason": "removed from the catalog"})
             n["removed"] += 1
     new_cj = stamp(catalog, a.url)[0]
+    if kept:
+        obj = json.loads(new_cj)
+        obj["entries"] += kept
+        new_cj = json.dumps(obj, indent=1, ensure_ascii=False) + "\n"
     if new_cj != live_cj:
         items.append({"path": "catalog.json", "ifMatch": hashlib.sha256(live_cj.encode("utf-8")).hexdigest(), "text": new_cj})
         n["changed"] += 1
@@ -322,6 +334,8 @@ def cmd_update(a):
     for k, b in enumerate(batches, 1):
         write_text(out / ("update-%02d.json" % k), json.dumps({"url": a.url, "action": "batch", "writes": b}, ensure_ascii=False) + "\n")
     print("update: %d changed, %d new, %d removed -> %d proposals, %d batches in %s" % (n["changed"], n["new"], n["removed"], len(props), len(batches), out))
+    if kept:
+        print("  kept (live only; --remove ID drops one): %s" % ", ".join(e["id"] for e in kept))
     for _pid, folder, fl, _docs in props:
         print("  %-10s %3d files  %s" % (folder, len(fl), _pid))
     print("write update-01.json ... in order with ArtifactData (action batch); the catalog page applies them when an editor has it open.\n"
@@ -394,6 +408,7 @@ def main(argv=None):
     p.add_argument("--live", default=str(Path(os.environ.get("ADP_HOME") or Path.home() / ".adp") / "catalog"))
     p.add_argument("--catalog-dir", default=str(DEFAULT_CATALOG))
     p.add_argument("--out", default=str(DEFAULT_OUT))
+    p.add_argument("--remove", action="append", default=[], metavar="ID")
     p.set_defaults(fn=cmd_update)
     p = sub.add_parser("welcome")
     p.add_argument("--url", default=None)

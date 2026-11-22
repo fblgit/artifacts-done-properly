@@ -144,6 +144,13 @@ class PlanTests(Base):
         shutil.rmtree(self.out)
         same = run("update", "--url", URL1, "--live", str(live), "--catalog-dir", str(live), "--out", str(self.out))
         self.assertIn("nothing to update", same[1])
+        shutil.copytree(live, self.tmp / "repo")      # an extra kit only the live catalog holds: kept, files and record, unless --remove names it
+        (live / "kit" / "extra.js").write_text("E")
+        cj = json.loads((live / "catalog.json").read_text()); cj["entries"].append({"id": "kit.extra", "files": [{"path": "kit/extra.js", "sha256": sha("kit/extra.js")}]})
+        pc.write_text(live / "catalog.json", json.dumps(cj, indent=1, ensure_ascii=False) + "\n")
+        up = lambda *x: run("update", "--url", URL1, "--live", str(live), "--catalog-dir", str(self.tmp / "repo"), "--out", str(self.out), *x)[1]
+        self.assertIn("nothing to update", up())
+        self.assertIn("1 changed, 0 new, 1 removed", up("--remove", "kit.extra"))
         self.assertEqual(run("update", "--url", URL1, "--live", str(self.tmp / "none"), "--out", str(self.out))[0], 1)      # no copy of the live catalog
 
     def test_kit_pack_writes_one_seed_pack_holding_one_proposal_that_carries_its_record(self):

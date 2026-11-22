@@ -39,11 +39,10 @@ fit one while their writes total 50 or fewer and 1 MiB.
 
 The catalog does the rest while an editor has it open: the inbox publishes the files and records it in `What changed`, then the page adds
 `entry` to its own `catalog.json` through the same inbox. Nobody sends `catalog.json`. A catalog whose page predates this (`parts/catalog.js`)
-publishes the files and never lists the kit. The page indexes a record only when its proposal delivered every file the record lists, with
-the same sha256; when it does not index, the Incoming panel says why.
+publishes the files and never lists the kit. The page indexes a record only when its proposal lists every file the record lists, with
+the same sha256, and the inbox publishes a file only when its delivered text matches that sha256; when it does not index, the Incoming panel says why.
 
 ## Update
 
 None yet. A pack proposes new files (`ifMatch: null`), so a new version of an installed kit is held, never applied. `publish_catalog.py update`
-is no route either: it compares the base catalog with the live one, so it proposes removing an installed kit's files and drops its record from
-`catalog.json`.
+leaves an installed kit alone, its files and its record, because the base catalog does not hold it; `--remove ID` removes it on purpose.
