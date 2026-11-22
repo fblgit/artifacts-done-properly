@@ -2,6 +2,28 @@
 
 What each release of Artifacts Done Properly (ADP) brings, newest first. The release page of each version carries `adp.skill` and its SHA-256.
 
+## v2.3.0
+
+Minor release on v2.2.0. Install and verify as before; `adp.skill.sha256` on the release page is the authoritative hash.
+
+### Added
+
+- **Extra kits.** `extras/<id>.json` holds a catalog entry kept outside the base catalog, as a seed pack with one inbox proposal. Pushed as one ArtifactData batch, the catalog page applies its files and adds its record to its own `catalog.json`; nobody sends `catalog.json` (`docs/kit-json.md`). Nine kits: camera capture, combobox, date picker, evidence checklist, QR code, redline, signature pad, signing track and split pane. `publish_catalog.py kit pack` writes a pack and refuses one over a batch (50 writes / 700 KB). A kit may bring its own catalog preview (`kit/previews/`, role `preview`): the page loads it; `take`, `kit describe` and `suggest` leave it out (#109).
+- **The adp skill opens with what ADP is**, how it runs, and where each change goes.
+
+### Changed
+
+- **The catalog page indexes a kit only on evidence.** A record is added only when its proposal delivered every file it lists, with the same sha256, and only from the current `catalog.json` once nothing is pending. When it does not index, the Incoming panel says why. "New entries" lists only kits the catalog still holds.
+- **`pattern.inbox` 0.2.5.** Apply refuses a file whose delivered text does not match the sha256 its proposal states.
+- **`publish_catalog.py update`** keeps an entry only the live catalog holds (an extra kit), its files and its record; `--remove ID` removes one on purpose.
+- **`adp.py record`** clears only the recording agent's own holds (`--holds`, or the parts it edited); a parent that changed only through a child keeps its holder (#108).
+- **`layout.margin-notes` 0.2.0:** review notes on a clause (severity, highlighted words, a suggestion, `onAction`) and printed section and clause numbers.
+- **Docs and catalog text.** Host-adapter and transport docs tightened; a local path and project names removed from guides, a template header and viz samples (#107, #108).
+
+### Known gaps
+
+- An installed extra kit has no update path yet: a pack proposes new files (`ifMatch: null`), so a new version is held.
+
 ## v2.2.0
 
 Minor release on v2.1.2. Install and verify as before; `adp.skill.sha256` on the release page is the authoritative hash.
