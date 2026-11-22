@@ -362,6 +362,12 @@ class Diffs(Untested):
         self.assertEqual(out['deepest'], ['home.welcome'])
         self.assertTrue(any(x.startswith('+') and 'EDITED' in x for x in out['detail']['home.welcome']))
 
+    def test_a_page_inside_the_artifact_skeleton_is_the_same_page(self):
+        d = self.new_project('one'); shutil.copytree(d, self.p('two')); ix = os.path.join(self.p('two'), 'index.html')
+        Path(ix).write_text('<!doctype html><html><head><meta charset=utf8><style>*{margin:0}</style></head><body>\n' + Path(ix).read_text() + '\n</body></html>')
+        out = self.ok('diff-pages', d, self.p('two'))
+        self.assertEqual((out['added'], out['removed'], out['changed'], out['files'], out['page_hash'][0]), ([], [], [], {}, out['page_hash'][1]))
+
 
 class FilesBatches(Untested):
     def test_over_n_files_becomes_batches_written_to_disk_page_first(self):

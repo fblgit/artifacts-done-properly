@@ -161,19 +161,6 @@ def listing(path):
             if not A.is_seed(x['path'])]   # the seed (seed.json, seed/) is read once by an empty db, never a part of the page: not in the manifest, not in the loop
 
 
-SKELETON = re.compile(rb'^<!doctype html><html><head><meta charset=utf8>.*?</style></head><body>(.*)</body></html>\s*$', re.S | re.I)
-
-
-def unwrap(b):
-    """the page as published carries the Artifact tool's document skeleton around it; the folder holds it bare"""
-    m = SKELETON.match(b)
-    if not m: return b
-    b = m.group(1)                                         # the wrapper puts one newline after <body> and one before </body>
-    if b.startswith(b'\n'): b = b[1:]
-    if b.endswith(b'\n'): b = b[:-1]
-    return b
-
-
 def fragments(d):
     """{part id: html}: DIR/content/<id>.html when present, else split out of content.js"""
     cd = os.path.join(d, 'content')
@@ -236,7 +223,7 @@ def export(a):
         if not f['ref'] and os.path.isfile(src):
             b = Path(src).read_bytes()
             if f['path'] == 'index.html':                          # stored and hashed bare, so it compares with the folder's
-                if unwrap(b) != b: b = unwrap(b); Path(src).write_bytes(b)
+                if A.unwrap(b) != b: b = A.unwrap(b); Path(src).write_bytes(b)
                 live_sha['index.html'] = hashlib.sha256(b).hexdigest()   # also when an earlier export already stored it bare
             live_tree['files/' + f['path']] = b
             live_sha[f['path']] = hashlib.sha256(b).hexdigest()     # a listing printed as text carries no hash
