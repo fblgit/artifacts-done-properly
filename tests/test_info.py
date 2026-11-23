@@ -83,8 +83,8 @@ class Panel(Cmd, Shared):
         self.check_panel(panel)
         self.assertIn('Artifacts Done Properly %s ' % skill_version(), pane(panel, 'about'))      # the version it names is the skill's
         help_ = pane(panel, 'help')
-        self.assertLess(help_.index('Clone this artifact and make it yours.'), help_.index(INSTALL))      # the journey: clone first, then install, then point ADP at the copy
-        self.assertLess(help_.index(INSTALL), help_.index('scripts/adp.py catalog'))
+        self.assertLess(help_.index(INSTALL), help_.index('Make this catalog yours'))      # the Home page's journey: set up, make the catalog yours, point ADP at the copy
+        self.assertLess(help_.index('Make this catalog yours'), help_.index('scripts/adp.py catalog &lt;the link of your copy&gt;'))
         sha = sha256_of(os.path.join(SKILL, 'catalog', 'adp.js'))
         self.assertIn(sha, pane(panel, 'status'))             # the hash it shows is the hash of the runtime the page loads
         self.assertEqual(len(re.findall(r"This artifact's own URL is the catalog URL: \S+$", text, re.M)), 1)      # publish_catalog.py set-url stamps this line
