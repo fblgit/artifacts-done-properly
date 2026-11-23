@@ -146,7 +146,7 @@ P.theme = ({ e, theme, dark, samples }) => {
 function toc(md) { return String(md).split('\n').filter(l => l.startsWith('## ')).map(l => l.slice(3).trim()); }
 const slug = s => 'g-' + s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 P.guide = ({ samples }) => {
-  const md = samples[Object.keys(samples)[0]] || '';
+  const md = (samples[Object.keys(samples)[0]] || '').replace(/^---\n[\s\S]*?\n---\n/, '');   // the guide's front matter is for skills, not readers
   let body = '';
   try { body = window.DOMPurify.sanitize(window.marked.parse(md)).replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, '<figure class="kit-mmd-frame"><div class="kit-mmd-scroll"><pre class="kit-mmd">$1</pre></div></figure>'); } catch (_) { const d = document.createElement('div'); d.textContent = md; body = '<pre>' + d.innerHTML + '</pre>'; }
   const heads = toc(md);

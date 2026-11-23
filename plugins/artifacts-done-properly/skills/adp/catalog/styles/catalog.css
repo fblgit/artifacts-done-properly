@@ -44,6 +44,7 @@
 /* the Incoming panel (kit/patterns/inbox) reads the same standard tokens */
 .incoming { --bg: var(--cat-ground); --panel: var(--cat-sheet); --sunk: var(--cat-sunk); --ink: var(--cat-ink); --ink-2: var(--cat-ink-2); --ink-3: var(--cat-ink-3); --rule: var(--cat-rule);
   --accent-ink: var(--cat-accent-ink); --ok: var(--cat-ok); --warn: var(--cat-warn); --danger: var(--cat-bad); --f-ui: var(--cat-f-body); --f-mono: var(--cat-f-mono); padding-block: 14px 4px; }
+.cat-md { --bg: var(--cat-ground); --panel: var(--cat-sheet); --sunk: var(--cat-sunk); --ink: var(--cat-ink); --ink-2: var(--cat-ink-2); --ink-3: var(--cat-ink-3); --rule: var(--cat-rule); --accent-ink: var(--cat-accent-ink); --accent-soft: var(--cat-accent-soft); --f-ui: var(--cat-f-body); }   /* kit tokens for the guide's kit.mermaid diagrams */
 * { box-sizing: border-box; }
 body { background: var(--cat-ground); color: var(--cat-ink); font: 15px/1.55 var(--cat-f-body); -webkit-font-smoothing: antialiased; }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--cat-ground); }
