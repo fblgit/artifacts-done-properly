@@ -1,6 +1,6 @@
 # ADP: Artifacts Done Properly
 
-ADP is a standard and a shared component catalog for claude.ai Artifacts and Sites pages that people and several agents keep editing.
+ADP is a protocol and framework for structured claude.ai Artifacts and Sites pages, with a shared component catalog: the record lives in the page's database, mapped to its parts, and changes are records rather than republishes.
 This plugin gives Claude five skills: `adp` (the base skill, with the `adp.py` command line, templates and the catalog) and the four road
 skills `adp-new`, `adp-catalog`, `adp-edit` and `adp-adopt`.
 

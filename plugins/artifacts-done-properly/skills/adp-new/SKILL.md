@@ -1,6 +1,6 @@
 ---
 name: adp-new
-description: "Create a brand new Claude Artifact or Sites page on ADP (adp/2): a page, board, tracker, assistant or record page that people and Claude will keep editing. Load it whenever the user asks for a new artifact that should be shared, commented on, built from catalog parts or edited by more than one agent, before writing any HTML. Covers the starter and assistant templates, taking a theme from the catalog, the first publish, and the one-time editor open that seeds the database."
+description: "Create a brand new Claude Artifact or Sites page on ADP (adp/2): a page, board, tracker, assistant or record page that people and Claude will keep editing. Load it whenever the user asks for a new artifact that will be kept, changed again, commented on or built from catalog parts, before writing any HTML. Covers the starter and assistant templates, taking a theme from the catalog, the first publish, and the one-time editor open that seeds the database."
 metadata:
   version: "2.3.0"
 ---

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ADP parts tool, adp/2 layout (artifact-dataplane skill; it still reads adp/1 pages): part markers -> per-part hashes -> manifest -> diff.
+"""ADP parts tool, adp/2 layout (guide.artifact-dataplane; it still reads adp/1 pages): part markers -> per-part hashes -> manifest -> diff.
 
   adp.py setup --scope user|project|local [--yes]   copy refs/<name>/ to the skills folder, write the config, print (--yes: write) the CLAUDE.md pointer
   adp.py setup [--scope ...] --dry-run              what setup would do (scope user when not given); writes nothing. Without --scope or --dry-run, setup prints its usage and writes nothing

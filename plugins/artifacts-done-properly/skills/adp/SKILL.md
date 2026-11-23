@@ -1,6 +1,6 @@
 ---
 name: adp
-description: "ADP (Artifacts Done Properly) is the standard for shared Claude Artifacts and Sites pages that collect comments or requests from people, or that are built from shared catalog components. Load it FIRST, before writing any HTML and before calling the Artifact or ArtifactData tools, whenever the user wants a new artifact page, board, tracker, dashboard, assistant or record that will be kept, shared or edited again; wants to edit, republish or answer comments on an artifact that already exists or that another session touched; says ADP, adp.py, catalog, kit, theme, template, part id, watch the artifact, requests or presence; wants an existing artifact put on ADP; or is setting ADP up for the first time. Skipping it risks a stale copy overwriting newer versions and rebuilding by hand what the catalog already has."
+description: "ADP (Artifacts Done Properly) is a protocol and framework for structured Claude Artifacts and Sites pages: a thin shell, the record in the artifact's database mapped to the page's parts, changes sent as records instead of republishes, and pages built from a shared catalog of kits, themes and templates. Load it FIRST, before writing any HTML and before calling the Artifact or ArtifactData tools, whenever the user wants a new artifact page, board, tracker, dashboard, assistant or record that will be kept or changed again; wants to edit, republish or answer comments on an ADP artifact; says ADP, adp.py, catalog, kit, theme, template, part id, watch the artifact, requests or presence; wants an existing artifact put on ADP; or is setting ADP up for the first time. Skipping it means republishing and rebuilding by hand what the record and the catalog already hold."
 license: Apache-2.0
 metadata:
   version: "2.3.0"
@@ -28,7 +28,7 @@ Where each change goes:
 
 Nothing here is a gap to work around by hand or by a republish. If a step seems missing, read `adp.js` and the inbox (`kit/patterns/inbox.js`) before adding one.
 
-ADP makes a shared Artifact safe to edit: every piece of the page is a part with a stable id and a content hash, comments anchor to part ids, and one ArtifactData layout records every change. New artifacts use the adp/2 layout (a thin shell plus files per part, copy stored as data). `adp.py` computes hashes and diffs and prints the exact Artifact and ArtifactData calls, so nothing is retyped by hand.
+Every piece of the page is a part with a stable id and a content hash, comments anchor to part ids, and one ArtifactData layout holds the record. claude.ai's version pins (`if_version` on a db write, `ifMatch` on a file) let several editors work on one page safely. New artifacts use the adp/2 layout (a thin shell plus files per part, copy stored as data). `adp.py` computes hashes and diffs and prints the exact Artifact and ArtifactData calls, so nothing is retyped by hand.
 
 ## Run the tool
 
