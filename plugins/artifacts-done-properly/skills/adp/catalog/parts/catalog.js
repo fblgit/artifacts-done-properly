@@ -253,11 +253,20 @@ function Index() {
 // ---------------------------------------------------------------- landing
 /* part:catalog.howto */
 function Howto() {
-  const s = useS(), h = (window.ADP && window.ADP.content) ? window.ADP.content('catalog.howto') : '';
-  const text = t => new DOMParser().parseFromString(t, 'text/html').documentElement.textContent.replace(/\{\{catalog\}\}/g, s.self.url || "this page's link");
-  // a <pre><code> block in the copy becomes a Code block with its Copy button; the rest stays the copy's own HTML
-  return html`<div class="howto" data-part="catalog.howto" data-comment-target>${h.split(/<pre><code>([\s\S]*?)<\/code><\/pre>/).map((x, i) =>
-    i % 2 ? html`<${Code} text=${text(x)}/>` : html`<div style="display:contents" dangerouslySetInnerHTML=${{ __html: x }}></div>`)}</div>`;
+  const s = useS(), ref = useRef(null), h = (window.ADP && window.ADP.content) ? window.ADP.content('catalog.howto') : '';
+  // adp.js paints the live copy into this element's innerHTML, so the HTML stays the runtime's: after each paint,
+  // every <pre> gets a Copy button and {{catalog}} becomes the catalog's own link
+  useEffect(() => {
+    const el = ref.current, url = s.self.url || "this page's link";
+    const fill = pre => { pre.textContent = pre.dataset.raw.replace(/\{\{catalog\}\}/g, url); render(html`<${Copy} text=${pre.textContent} pre=${{ current: pre }}/>`, pre.nextSibling); };
+    const dress = () => el.querySelectorAll('pre:not([data-raw])').forEach(pre => {
+      pre.dataset.raw = pre.textContent; pre.tabIndex = 0;
+      const box = document.createElement('div'); box.className = 'code'; pre.replaceWith(box); box.append(pre, document.createElement('span')); fill(pre);
+    });
+    dress(); el.querySelectorAll('pre[data-raw]').forEach(fill);
+    const mo = new MutationObserver(dress); mo.observe(el, { childList: true }); return () => mo.disconnect();
+  }, [s.self.url]);
+  return html`<div class="howto" ref=${ref} data-part="catalog.howto" data-comment-target dangerouslySetInnerHTML=${{ __html: h }}></div>`;
 }
 /* /part:catalog.howto */
 /* part:catalog.landing */
