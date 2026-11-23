@@ -253,8 +253,11 @@ function Index() {
 // ---------------------------------------------------------------- landing
 /* part:catalog.howto */
 function Howto() {
-  const h = (window.ADP && window.ADP.content) ? window.ADP.content('catalog.howto') : '';
-  return html`<div class="howto" data-part="catalog.howto" data-comment-target dangerouslySetInnerHTML=${{ __html: h }}></div>`;
+  const s = useS(), h = (window.ADP && window.ADP.content) ? window.ADP.content('catalog.howto') : '';
+  const text = t => new DOMParser().parseFromString(t, 'text/html').documentElement.textContent.replace(/\{\{catalog\}\}/g, s.self.url || "this page's link");
+  // a <pre><code> block in the copy becomes a Code block with its Copy button; the rest stays the copy's own HTML
+  return html`<div class="howto" data-part="catalog.howto" data-comment-target>${h.split(/<pre><code>([\s\S]*?)<\/code><\/pre>/).map((x, i) =>
+    i % 2 ? html`<${Code} text=${text(x)}/>` : html`<div style="display:contents" dangerouslySetInnerHTML=${{ __html: x }}></div>`)}</div>`;
 }
 /* /part:catalog.howto */
 /* part:catalog.landing */
