@@ -31,7 +31,10 @@ const win = {addEventListener:noop, document:{querySelector:()=>null,getElementB
  crypto:require('crypto').webcrypto,TextEncoder,MutationObserver:class{observe(){}},location:{href:'https://x/',search:'',hash:''},navigator:{},console,setTimeout:()=>0,clearTimeout:noop};
 win.window=win; win.self=win;
 const mode = process.argv[1];
-const connection = {id:'test',db,user};
+const connection = {id:'test',db,user}, wc = {};
+if(mode==='changes'){const q=docs=>({onSnapshot:fn=>{fn({...snap,docs});return noop;},orderBy:()=>q(docs),limit:k=>q(docs.slice(0,k))});
+ db.collection=n=>n==='changes'?q(Array.from({length:12},(_,i)=>({id:'c'+i,exists:true,data:()=>({at:'2026-11-'+(10+i)})}))):query;
+ win.document.getElementById=k=>/^wc(N|Changes|Decisions|Incoming)?$/.test(k)?(wc[k]??={textContent:'',replaceChildren(...c){this.n=c.length;},querySelector:()=>null,prepend:noop}):null;}
 if(/user-no-id/.test(mode)) delete user.id;
 if(mode==='bad-ref') connection.db={doc:()=>({}),collection:()=>({})};
 if(mode==='no-db') delete connection.db;
@@ -55,7 +58,7 @@ let ns=false;try{ns=!!win.ADP.ns('app').doc('x');}catch(e){}
 const acc=typeof win.ADP.claude; if(acc==='function') await win.ADP.claude('artifact');
 const h=(await Promise.all([win.ADP.agent(),win.ADP.publish(),win.ADP.ask()].map(p=>Promise.race([p,new Promise(r=>setTimeout(()=>r('slow'),60))])))).map(x=>x&&typeof x);
 const can=await win.ADP.user.can('data.write');
-console.log(JSON.stringify({can,host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,acc,calls,h}));})().catch(e=>{console.error(e);process.exitCode=1;});
+console.log(JSON.stringify({can,host:win.ADP.host,user:win.ADP.user,db:!!win.ADP.db,ns,acc,calls,h,wc:{n:wc.wcN?.textContent,shown:wc.wcChanges?.n}}));})().catch(e=>{console.error(e);process.exitCode=1;});
 '''
 
 
@@ -105,6 +108,9 @@ class HostConnection(unittest.TestCase):
         result = self.run_case('static')
         self.assertEqual(result['host']['id'], 'static')
         self.assertFalse(result['db'] or result['ns'])
+
+    def test_what_changed_counts_every_change_and_lists_the_last_ten(self):
+        self.assertEqual(self.run_case('changes')['wc'], {'n': '12', 'shown': 10})
 
     def test_a_claude_user_without_id_still_connects(self):
         for mode in ('legacy-user-no-id', 'adapter-user-no-id'):      # id() exists only when the page declares the user capability
