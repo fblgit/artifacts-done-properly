@@ -822,6 +822,7 @@ def check_catalog(argv):
         for which, rx in ((':root', r'(?:^|[;}\s]):root\s*\{'), ('@media (prefers-color-scheme: dark)', r'@media[^{]*prefers-color-scheme\s*:\s*dark'),
                           (':root[data-theme="dark"]', r':root\[data-theme=["\']?dark["\']?\]\s*\{')):
             errors += [f"{e['id']}: theme: no {which} block"] if css and not re.search(rx, t) else []
+        errors += [f"{e['id']}: theme: it lists no JSON file"] * (not any(f.get('role') == 'data' for f in e['files']))
         j = json.loads(data.read_text(encoding='utf-8')) if data else {}
         if data and not (isinstance(j.get('light'), dict) and isinstance(j.get('dark'), dict) and j.get('fonts') == e.get('fonts')):
             errors.append(f"{e['id']}: theme: its JSON lacks light, dark or the entry's fonts url")
