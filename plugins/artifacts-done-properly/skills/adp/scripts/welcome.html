@@ -90,11 +90,11 @@ footer .ok{color:var(--ok)}
 <section>
   <h2>The catalog</h2>
   <ul class="stats">
-    <li><b>{{ENTRIES}}</b><span>entries</span></li>
-    <li><b>{{COMPONENTS}}</b><span>components</span></li>
-    <li><b>{{THEMES}}</b><span>themes</span></li>
-    <li><b>{{TEMPLATES}}</b><span>templates</span></li>
-    <li><b>{{GUIDES}}</b><span>guides</span></li>
+    <li><b data-count="entries">{{ENTRIES}}</b><span>entries</span></li>
+    <li><b data-count="component">{{COMPONENTS}}</b><span>components</span></li>
+    <li><b data-count="theme">{{THEMES}}</b><span>themes</span></li>
+    <li><b data-count="template">{{TEMPLATES}}</b><span>templates</span></li>
+    <li><b data-count="guide">{{GUIDES}}</b><span>guides</span></li>
   </ul>
   <p class="about">Take a part instead of rebuilding it: a taken part costs a few tokens, a written one costs thousands. Charts, layouts, patterns and a canvas, each with a preview, what it needs, its files and the exact line to take it.</p>
 </section>
@@ -112,9 +112,19 @@ footer .ok{color:var(--ok)}
 </main>
 
 <footer><div class="wrap">
-  <b>catalog</b> built {{BUILT}} · schema {{SCHEMA}} · {{FILES}} files, {{BYTES}}<br>
+  <b>catalog</b> built <span data-built>{{BUILT}}</span> · schema {{SCHEMA}} · {{FILES}} files, {{BYTES}}<br>
   <b>source</b> commit {{COMMIT}} · planned {{PLANNED}}<br>
   <b>artifact</b> {{URL}}
 </div></footer>
+<script>
+// the stats follow the catalog as it is now (extras added, entries removed): counted from the sibling catalog.json, the stamped numbers stay as the fallback
+fetch('catalog.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(d => {
+  if (!d || !Array.isArray(d.entries)) return;
+  const n = { entries: d.entries.length };
+  d.entries.forEach(e => { n[e.kind] = (n[e.kind] || 0) + 1; });
+  document.querySelectorAll('[data-count]').forEach(b => { b.textContent = n[b.dataset.count] || 0; });
+  const t = document.querySelector('[data-built]'); if (t && d.built) t.textContent = d.built;
+}, () => {});
+</script>
 </body>
 </html>

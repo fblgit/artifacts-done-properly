@@ -117,8 +117,8 @@ class PlanTests(Base):
         page = (self.out / "tree" / "index.html").read_text()
         self.assertNotIn("{{", page)
         entries = json.loads((real / "catalog.json").read_text())["entries"]
-        self.assertIn("<b>%d</b><span>entries</span>" % len(entries), page)
-        self.assertIn("<b>%d</b><span>themes</span>" % sum(e["kind"] == "theme" for e in entries), page)
+        self.assertIn('<b data-count="entries">%d</b><span>entries</span>' % len(entries), page)      # the fallback; the page recounts from catalog.json
+        self.assertIn('<b data-count="theme">%d</b><span>themes</span>' % sum(e["kind"] == "theme" for e in entries), page)
         self.assertEqual(json.loads((self.out / "publish.json").read_text())["files"], {})      # one file: the page, whose publish gives the artifact its URL
 
     def test_update_makes_proposals_with_the_live_sha_for_changed_new_and_removed_files(self):
