@@ -19,8 +19,11 @@ For Claude catalogs, the user's whole catalog lives on disk in `~/.adp/catalog/`
 
 When the user wants their own, a separate or a private catalog: after setup the shipped catalog is already in `~/.adp/catalog`, so nothing needs downloading to start.
 
-1. Clone first. The user clones the catalog artifact in claude.ai (their own copy, with its own link). You cannot do it: ask them to, and wait for the link. A clone carries every file, the seed packs and the first-open bootstrap, and it opens like the original. Then run `ADP catalog <the clone's link>`.
-2. Only when cloning is not possible: publish from `~/.adp/catalog` with `python3 -I <adp skill folder>/scripts/publish_catalog.py`. `welcome --out DIR` makes the first page: publish it as a new artifact, with the capabilities it lists, to get the link. `plan --url <that link> --out DIR` writes the packed publish: publish its `publish.json` once, into that artifact, then hand off: the page applies the proposals itself and reloads. The steps are in the repo's `docs/RELEASING.md`, "Publish the catalog".
+Publish it from `~/.adp/catalog` with `python3 -I <adp skill folder>/scripts/publish_catalog.py`. `welcome --out DIR` makes the first page: publish it as a new artifact, with the capabilities it lists, to get the link. `plan --url <that link> --out DIR` writes the packed publish, with that link stamped in: publish its `publish.json` once, into that artifact, then hand off: the page applies the proposals itself and reloads. Then run `ADP catalog <its link>`. The steps are in the repo's `docs/RELEASING.md`, "Publish the catalog".
+
+Then ask the user whether to add the extra kits: entries kept outside the base catalog, one seed pack each in the repo's `extras/` folder (https://github.com/fblgit/artifacts-done-properly/tree/main/extras); list them by id. For each one the user picks, download `https://raw.githubusercontent.com/fblgit/artifacts-done-properly/main/extras/<id>.json` and write its docs as one ArtifactData batch (the repo's `docs/kit-json.md`, "Push"). The page applies them while an editor has it open and adds them to its index.
+
+- Never have the user clone a catalog artifact: a clone carries the original's `catalog.json` link and none of its db, so its start prompt and Take it references point at the original.
 
 - Never download the whole catalog to publish a copy of it.
 - Never publish a files map of hundreds of references: an upload takes at most about 250 files, and a catalog copy by reference has no bootstrap.
