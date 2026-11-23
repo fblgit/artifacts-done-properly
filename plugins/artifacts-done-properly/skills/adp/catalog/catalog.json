@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX",
  "ver": "",
- "built": "2026-11-22T20:37:37Z",
+ "built": "2026-11-23T15:04:06Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -24,7 +24,7 @@
     "seed"
    ],
    "status": "stable",
-   "version": "2.1.0",
+   "version": "2.1.1",
    "requires": [],
    "globals": [],
    "provides": [
@@ -52,11 +52,11 @@
     {
      "path": "adp.js",
      "role": "script",
-     "sha256": "253cc7d9b462773ca00a4a13f29f2120c9b57bfd743c03af5b22a5a821f112a6",
-     "bytes": 45400
+     "sha256": "3f2d627fa0e3ff9843c85566507c81d441d4ca32862615b3e43f1e9e5656f349",
+     "bytes": 45422
     }
    ],
-   "hash": "9f0eea375f3a"
+   "hash": "48fbe26ebf81"
   },
   {
    "id": "kit.callout-refusal",

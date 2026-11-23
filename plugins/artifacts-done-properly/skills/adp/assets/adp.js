@@ -8,8 +8,8 @@
  * @kind      component
  * @group     Runtime
  * @status    stable
- * @version   2.1.0
- * @updated   2026-11-16
+ * @version   2.1.1
+ * @updated   2026-11-23
  * @summary   The adp/2 page runtime: the What changed panel, content as data, part-id comment anchors, page integrity, settings (ADP.config), the viewer (ADP.user), namespaced data (ADP.ns), seeding on first open and the page self-check.
  * @tags      adp, dataplane, runtime, comments, anchors, content, self-check, what changed, config, integrity, seed
  * @requires  none
@@ -24,7 +24,7 @@
  * @db        reads content; changes; decisions; incoming; manifest/current; config/current / writes status/integrity (attempted for any viewer with a db: it lands only where the db rules allow); checks/latest (editors only); config/current and a changes/d-<time> record when a setting is saved; the seed docs on first open
  * @source    this repository | skill/assets/adp.js | the same bytes
  * @preview   {"render": "runtime.adp", "samples": []}
- * @changed   Adds an explicit host connection boundary while preserving the legacy Claude default, and the host's agent, publish and ask handles (ADP.agent(), ADP.publish(), ADP.ask(): a promise of the handle or null).
+ * @changed   The What changed count is every recorded change; it read 10 on any page with ten or more. The list still shows the latest ten.
  */
 (function(){
 'use strict';
@@ -166,9 +166,10 @@ function changesPanel(){
   const partsOf = a => { const w = mk('div', 'wc-parts'); (Array.isArray(a) ? a : []).slice(0, 12).forEach(x => { const id = typeof x === 'string' ? x : (x && x.id); if (id) w.append(mk('code', '', id)); }); return w.childNodes.length ? w : null; };
   note($('wcChanges'), 'Loading…'); note($('wcDecisions'), 'Loading…');
   try {
-    db.collection('changes').orderBy('at', 'desc').limit(10).onSnapshot(snap => {
-      const docs = snap.docs.filter(d => d.exists), box = $('wcChanges');
-      $('wcN').textContent = docs.length ? String(docs.length) : '';
+    db.collection('changes').onSnapshot(snap => {
+      const all = snap.docs.filter(d => d.exists), box = $('wcChanges');
+      const docs = all.sort((a, b) => String((b.data() || {}).at || '').localeCompare(String((a.data() || {}).at || ''))).slice(0, 10);
+      $('wcN').textContent = all.length ? String(all.length) : '';
       if (!docs.length) return note(box, 'Nothing recorded yet.');
       box.replaceChildren(...docs.map(d => { const c = d.data() || {}, li = mk('li'), h = mk('div', 'wc-h');
         h.append(mk('b', '', c.version ? 'Version ' + c.version : Array.isArray(c.parts) && !c.parts.length ? 'Data change' : d.id), mk('span', '', [when(c.at), c.by].filter(Boolean).join(' · ')));
