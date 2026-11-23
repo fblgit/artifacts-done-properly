@@ -4,7 +4,7 @@ description: "ADP: how it works. The quickstart a model reads first: what ADP is
 ---
 <!--
 ADP: how it works
-The quickstart a model reads first, mostly diagrams and no code: the pieces of an ADP artifact, where each change goes, the first publish, the edit loop the page's inbox applies, building from the catalog, comments, and where the detail lives.
+The quickstart a model reads first, mostly Mermaid diagrams and no code: the pieces of an ADP artifact, where each change goes, the first publish, the edit loop the page's inbox applies, building from the catalog, comments, and where the detail lives.
 
 Provides (no global): the protocol.
 
@@ -23,8 +23,8 @@ Provides (no global): the protocol.
 @globals   none
 @db        none
 @source    ADP | the artifact dataplane standard | reduced to the standard itself
-@preview   {"render": "guide", "samples": ["kit/guides/artifact-dataplane.md"]}
-@changed   Rewritten as the quickstart a model reads first: what ADP is, in diagrams and without code, the edit loop the page's inbox applies, where each job goes next, and the two repositories. The many-editors framing is gone; concurrency is one section.
+@preview   {"render": "guide", "samples": ["kit/guides/artifact-dataplane.md"], "uses": ["kit.mermaid"]}
+@changed   Rewritten as the quickstart a model reads first: what ADP is, in Mermaid diagrams and without code, the edit loop the page's inbox applies, where each job goes next, and the two repositories. The many-editors framing is gone; concurrency is one section.
 -->
 
 # ADP: how it works
@@ -35,19 +35,14 @@ Read this guide first. Each section is one idea and one diagram; the last sectio
 
 ## 1. The pieces
 
-```text
-┌───────────────────── the artifact ─────────────────────┐
-│                                                        │
-│   thin shell ──► runtime (adp.js) ──► part files       │
-│                        │                               │
-│                        ▼                               │
-│                    the page ◄──── database (record)    │
-│                                                        │
-└────────────────────────▲───────────────────────────────┘
-                         │ files taken by reference
-                   ┌─────┴─────┐
-                   │  catalog  │  kits · themes · templates · guides
-                   └───────────┘
+```mermaid
+flowchart LR
+  subgraph A["the artifact"]
+    shell["thin shell"] --> rt["runtime adp.js"] --> parts["part files"]
+    rt --> page["the page"]
+    db[("database: the record")] -->|"copy and record"| page
+  end
+  cat["catalog: kits, themes, templates, guides"] -->|"files taken by reference"| A
 ```
 
 - **Shell.** A small `index.html` that loads the runtime and the part files.
@@ -57,46 +52,40 @@ Read this guide first. Each section is one idea and one diagram; the last sectio
 
 ## 2. Where each change goes
 
-```text
-what changes                    where it goes                     who publishes
-──────────────────────────────  ────────────────────────────────  ─────────────
-wording of a part          ──►  its copy doc in the database      nobody
-the page's own data        ──►  the page's own collections        nobody
-a part's structure or style──►  a proposal the page applies       the page
-a kit, theme or template   ──►  the catalog, by proposal          the catalog
-the page's own look        ──►  its custom stylesheet, proposed   the page
+```mermaid
+flowchart LR
+  w["wording of a part"] --> cd[("its copy doc: nobody publishes")]
+  d["the page's own data"] --> nd[("the page's own collections: nobody publishes")]
+  s["a part's structure or style"] --> pr["a proposal"] --> pg["the page applies and publishes it"]
+  l["the page's own look"] --> css["its custom stylesheet"] --> pr
+  k["a kit, theme or template"] --> cp["a catalog proposal"] --> cg["the catalog applies and publishes it"]
 ```
 
 A kit is never edited inside a page: fix it in the catalog and take it again, so the next page gets the fix.
 
 ## 3. A new page: first publish and seeding
 
-```text
-agent                        claude.ai                    the page, first opened by an editor
-─────                        ─────────                    ───────────────────────────────────
-start from a template
-take a theme and kits
-write the views and copy
-        │
-        └── one publish ───► the artifact: shell,
-                             parts, seed packs
-                                    │
-                                    └──────────────────►  reads the seed packs and writes
-                                                          them as database docs: manifest,
-                                                          parts, copy, the first change
+```mermaid
+sequenceDiagram
+  participant A as agent
+  participant C as claude.ai
+  participant P as the page, opened by an editor
+  A->>A: start from a template, take a theme and kits, write the views and copy
+  A->>C: one publish: shell, parts, seed packs
+  C->>P: first open by an editor
+  P->>C: the seed packs become database docs: manifest, parts, copy, the first change
 ```
 
 The agent never writes the first record by hand: the page seeds itself on its first open by an editor. A client set to open pages on publish does that at once.
 
 ## 4. Changing a page: the loop
 
-```text
-┌───────────┐   ┌──────────────┐   ┌───────────┐   ┌──────────────────────────────┐
-│  export   │──►│ edit locally │──►│  propose  │──►│ the page's inbox:            │
-│ live copy │   │ parts, files │   │ one write │   │ classify ─► Apply ─► record  │
-└───────────┘   └──────────────┘   └───────────┘   └──────────────┬───────────────┘
-      ▲                                                           │
-      └────────── acknowledge; the next export starts from live ◄─┘
+```mermaid
+flowchart LR
+  ex["export the live copy"] --> ed["edit locally: parts, files"] --> pr["propose: one write"] --> ib{"the page's inbox classifies it"}
+  ib -->|"merged"| ap["Apply: publish the files in one call, record the change"]
+  ib -->|"held, something moved"| ex
+  ap --> ack["acknowledge"] --> ex
 ```
 
 - **Export** lays out the live files locally, beside the record they belong to.
@@ -109,11 +98,9 @@ A part someone else holds is left alone: propose stops and names it.
 
 ## 5. Building from the catalog
 
-```text
-search the catalog ──► pick an entry ──► its files map ──► publish with it
-                            │             (required entries
-                            │              first, in load order)
-                            └── requires ──► those entries come with it
+```mermaid
+flowchart LR
+  s["search the catalog"] --> e["pick an entry"] --> r["its required entries come with it"] --> f["files map, required entries first, in load order"] --> p["publish with it"]
 ```
 
 - Take entries **by reference**: the files map names the catalog's files and the server copies them. Nothing is retyped or downloaded.
@@ -122,10 +109,15 @@ search the catalog ──► pick an entry ──► its files map ──► pub
 
 ## 6. Comments and requests
 
-```text
-a comment on a part ──► its anchor is the part id ──► the part is found
-                                                            │
-the reply names the version and part ids ◄── the change goes through the loop
+```mermaid
+sequenceDiagram
+  participant V as a person
+  participant P as the page
+  participant M as Claude
+  V->>P: a comment on a part
+  P->>M: the anchor is the part id
+  M->>P: the change goes through the loop
+  M->>V: the reply names the version and part ids
 ```
 
 Anchors are part ids, not positions on the screen, so a comment stays on its part when the layout changes. A request from the page's Claude pane is a database doc, and its answer is a write to that doc.

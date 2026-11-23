@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX",
  "ver": "",
- "built": "2026-11-23T21:12:38Z",
+ "built": "2026-11-23T21:16:51Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -614,11 +614,11 @@
     {
      "path": "kit/guides/artifact-dataplane.md",
      "role": "doc",
-     "sha256": "9ddf8a352dab803c9e561beb51de114b025f00d9f75a2d94e0af923d08454d26",
-     "bytes": 10545
+     "sha256": "1f09f5b92475270c3a7257d206bbcf3f05c2224c1a8ef5aaa2992ce0b370cd31",
+     "bytes": 8536
     }
    ],
-   "hash": "0ebc5d6910d7"
+   "hash": "cd620729ec65"
   },
   {
    "id": "guide.component-inventory",
