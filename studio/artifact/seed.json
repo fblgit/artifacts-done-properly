@@ -1,0 +1,18 @@
+{
+ "schema": "adp-seed/2",
+ "version": "1",
+ "by": "claude",
+ "at": "2026-11-15T14:17:57Z",
+ "docs": 105,
+ "collections": {
+  "parts": 67,
+  "content": 35,
+  "changes": 1,
+  "agents": 1,
+  "manifest": 1
+ },
+ "packs": [
+  "seed/pack-001.json"
+ ],
+ "overrides": []
+}
