@@ -145,12 +145,14 @@ P.theme = ({ e, theme, dark, samples }) => {
 // ---------------------------------------------------------------- guides, templates, the runtime
 function toc(md) { return String(md).split('\n').filter(l => l.startsWith('## ')).map(l => l.slice(3).trim()); }
 const slug = s => 'g-' + s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-P.guide = ({ samples }) => {
-  const md = samples[Object.keys(samples)[0]] || '';
+P.guide = ({ samples, theme, dark }) => {
+  const md = (samples[Object.keys(samples)[0]] || '').replace(/^---\n[\s\S]*?\n---\n/, '');   // the guide's front matter is for skills, not readers
+  const vars = theme ? Object.entries(Object.assign({}, theme.light, dark ? theme.dark : {})).map(([k, v]) => k + ':' + v).join(';').replace(/"/g, '&quot;') : '';      // the guide view has no theme stage: its diagrams wear the chosen theme
   let body = '';
-  try { body = window.DOMPurify.sanitize(window.marked.parse(md)); } catch (_) { const d = document.createElement('div'); d.textContent = md; body = '<pre>' + d.innerHTML + '</pre>'; }
+  try { body = window.DOMPurify.sanitize(window.marked.parse(md)).replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, '<figure class="kit-mmd-frame" style="' + vars + '"><div class="kit-mmd-scroll"><pre class="kit-mmd">$1</pre></div></figure>'); } catch (_) { const d = document.createElement('div'); d.textContent = md; body = '<pre>' + d.innerHTML + '</pre>'; }
   const heads = toc(md);
   useEffect(() => { document.querySelectorAll('.cat-md h2').forEach(h => { h.id = slug(h.textContent); }); }, [body]);
+  useEffect(() => { const a = body.includes('kit-mmd') && window.Kit && window.Kit.mermaid && document.querySelector('.cat-md'), m = a && window.Kit.mermaid.mount(a); return () => m && m.destroy(); }, [body]);      // the guide's ```mermaid blocks, drawn by kit.mermaid (its preview "uses")
   return html`<div class="reader">
     <article class="cat-md" dangerouslySetInnerHTML=${{ __html: body }}></article>
     ${heads.length ? html`<nav class="toc" aria-label="Sections">${heads.map(h => html`<a href=${'#' + slug(h)} onClick=${ev => { ev.preventDefault(); const el = document.getElementById(slug(h)); el && el.scrollIntoView({ block: 'start' }); }}>${h}</a>`)}</nav>` : ''}

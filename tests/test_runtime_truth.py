@@ -44,7 +44,7 @@ class RuntimeTruth(unittest.TestCase):
 
     def test_dataplane_guide_namespace(self):
         g = read(CAT / "kit/guides/artifact-dataplane.md")
-        self.assertIn('"ns/users/{self}"', g)
+        self.assertIn('ns/users/{self}', g)
         self.assertNotIn("data/users/{self}", g)
 
 

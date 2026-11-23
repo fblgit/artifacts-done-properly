@@ -1,6 +1,6 @@
 ---
 name: adp-edit
-description: "Edit, publish or answer comments on an ADP artifact that more than one agent or session works on. Load it before ANY edit, publish or comment reply on an artifact that has a manifest or db (adp/2), or when the user says several agents are editing, a comment was sent to Claude, or asks what changed. Gives the export, hold, publish, record protocol with version pins so a stale copy never overwrites newer work."
+description: "Edit, publish or answer comments on an ADP artifact (adp/2: it has a manifest and a db). Load it before ANY edit, publish or comment reply on such an artifact, when a comment was sent to Claude, or when the user asks what changed. Gives the loop: export to a local copy, edit, then propose (the page's inbox applies it) or publish and record, each write pinned to the version read."
 metadata:
   version: "2.3.0"
 ---
@@ -11,7 +11,7 @@ metadata:
 use its native Sites calls and separate source/record revisions instead of the
 Claude Artifact/ArtifactData calls below.
 
-Why: several agents change the page over many versions. The only lock is the `if_version` pin on a db write; a refused write means someone wrote first. Full text: `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there), read only if this road leaves a question open.
+Changes are records: the page's record lives in its db, and every write to it is pinned to the version read (`if_version`); a refused write means someone wrote first. Full text: `~/.adp/catalog/kit/guides/artifact-dataplane.md` (setup puts it there), read only if this road leaves a question open.
 
 `ADP` means `python3 -I <adp skill folder>/scripts/adp.py`. DIR is the artifact laid out at its published paths and must hold EVERY published file. Batches are written to files (`--out`, default `DIR.adp/`) and printed as `writes` lists whose entries carry `file_path`. P.json maps `"collection/doc"` to the version you read, e.g. `{"manifest/current": 4, "parts/home": 2}`.
 

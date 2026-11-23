@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX",
  "ver": "",
- "built": "2026-11-23T15:04:06Z",
+ "built": "2026-11-23T21:26:00Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -592,20 +592,19 @@
    "id": "guide.artifact-dataplane",
    "kind": "guide",
    "group": "Guides",
-   "name": "Artifact dataplane (ADP)",
-   "summary": "The standard every shared artifact follows: part ids, hashes, the db layout, the read, hold, publish, record protocol, and the adp/2 layout.",
+   "name": "ADP: how it works",
+   "summary": "The quickstart a model reads first: what ADP is, in diagrams, and where to go for each job.",
    "tags": [
     "adp",
-    "standard",
     "protocol",
     "guide",
+    "quickstart",
     "db",
-    "hashes",
     "parts",
     "adp/2"
    ],
    "status": "stable",
-   "version": "0.1.1",
+   "version": "0.2.0",
    "requires": [],
    "globals": [],
    "provides": [],
@@ -614,11 +613,11 @@
     {
      "path": "kit/guides/artifact-dataplane.md",
      "role": "doc",
-     "sha256": "f8883b69921ad4f0770cbda0da662a940c0b332388edea4c9be63f0da0080909",
-     "bytes": 15223
+     "sha256": "6408d64d370e3610431e3e380a786af2055cff264c1bcb50ae45acb9d123d960",
+     "bytes": 8742
     }
    ],
-   "hash": "dc0af4d47856"
+   "hash": "35d53e0bc60b"
   },
   {
    "id": "guide.component-inventory",
