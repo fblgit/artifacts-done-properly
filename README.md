@@ -1,4 +1,4 @@
-# Artifacts Done Properly (ADP) v2.1
+# Artifacts Done Properly (ADP: ArtifactDataProtocol)
 
 **Great work deserves a second life.**
 The iteration ends. The value stays.
@@ -11,9 +11,18 @@ Your next project starts further ahead.
 
 **Get it now!**: Install the plugin, your AI agent will take care of it.
 
+Add our marketplace if you haven't already:
 ```
 /plugin marketplace add fblgit/artifacts-done-properly
+```
+
+Install the plugin:
+```
 /plugin install artifacts-done-properly@fblgit-adp
+```
+
+And finish the simple setup:
+```
 /adp setup
 ```
 
@@ -29,9 +38,10 @@ Underneath, every piece of a page is a part with a stable id and a content hash,
 
 - **4** road skills: new, edit, adopt, catalog
 - **3** templates: starter, assistant, default
-- **141** entries in the base catalog
+- **140** entries in the base catalog
+- **optional** any extra kit
 
-## 01 / Bring it in: give good work a home
+## Bring it in: give good work a home
 
 Bring interfaces, records, and artifacts into a project with your agents. Make the useful parts discoverable instead of burying them in a chat.
 
@@ -47,7 +57,7 @@ Bring interfaces, records, and artifacts into a project with your agents. Make t
 
 An artifact you already have goes through the `adp-adopt` road. It wraps each view and section in part markers, checks them, and seeds the record, without changing how the page looks or behaves. That first step alone gives the page part ids and comment anchors.
 
-## 02 / Make it reusable: keep the mechanics
+## Make it reusable: keep the mechanics
 
 A kit carries more than pixels: an interface, declared dependencies, and examples another agent can inspect and compose.
 
@@ -84,7 +94,7 @@ The entry also lists its files with a role each: here a script, a style and a sa
 
 Components use design tokens only, so a theme changes the look without touching the kit files.
 
-## 03 / Keep the gain: build on your best version
+## Keep the gain: build on your best version
 
 A growing catalog gives you more to start from. Refinement becomes an investment you can carry across pages and projects.
 
@@ -102,20 +112,7 @@ It ranks entries by how well they match on tags, name, summary and what they pro
 
 Not there yet: `adp.py new --tier full`, the tier meant to start a page from the published catalog (it exits with "not available yet"), and a command to add catalog entries. For now, an entry is added by editing files under `catalog/kit/` and then running `adp_catalog.py build`.
 
-## Journeys
-
-Eight real runs with Claude, from setting up ADP to remaking an existing artifact on it. Each one shows a beat of the pitch.
-
-1. **Zero to setup.** An agent opens an ADP page and finds the note its authors left in the source. It tells its user the page was built with ADP and asks if they want it. Only after their yes is ADP installed, on a fresh machine. *Bring it in.*
-2. **New artifact.** A new multi-view page composed from the catalog, then pushed through two rounds of "is this the best you can ship?". *Keep the gain.*
-3. **Catalog road.** Planning a page: which catalog parts fit, what they need, and the exact way to take them. Nothing is built. *Make it reusable.*
-4. **Edit protocol.** Renaming a column on a page other sessions also edit, the safe way: read, hold, publish, record. *Bring it in.*
-5. **Adopt road.** A plain reading list with search, filters, notes and its own data, put on ADP without changing its look. *Bring it in.*
-6. **Finesse rounds.** Requests sent from the page's Work with Claude pane, one round each: structure and type, themes with a live switcher, surfaces and colour, motion and states, interaction, and the last 1%. *Keep the gain.*
-7. **Harvest into the catalog.** The reusable parts of an existing artifact become catalog entries, then a fresh page takes one of them by reference. *Make it reusable and Keep the gain.*
-8. **Remake on ADP.** An existing plan reimagined as a new ADP page that drives the initiative to completion, while the original stays untouched. *Keep the gain.*
-
-## Install
+## Installation
 
 ADP comes in two forms:
 
@@ -130,18 +127,6 @@ ADP comes in two forms:
 
 Requirements, manual steps, the `python3` commands, first run, the catalog and updates are in [docs/installation.md](docs/installation.md).
 
-## Development
-
-`pip install pre-commit && pre-commit install` runs ruff (pyflakes errors), SKILL.md frontmatter validation and the catalog sha256 check on every commit, and gitleaks (secrets, whole history) on every push. CI runs the same checks, plus the unit tests and the bundle build. See `docs/RELEASING.md` for releases.
-
-## License
-
-Apache License 2.0, see `LICENSE`. Redistributions keep `NOTICE`; the `adp.skill` bundle carries both files.
-
-## Citing
-
-`CITATION.cff` has the citation (GitHub shows it as "Cite this repository").
-
 ## Host adapter work
 
 The experimental [host adapter contract](docs/host-adapters.md) separates the
@@ -152,3 +137,28 @@ A page's records move between Claude and Sites with the shared records shell
 (`adp.py bundle`, `import-plan`, `import-ack`; [docs/adp-export-import.md](docs/adp-export-import.md)): it prints the
 native calls and an authorized agent runs them, nothing syncs by itself. The opt-in
 [Claude adapter](docs/claude-host-adapter.md) lists what it does and what it does not cover.
+
+## Development
+
+`pip install pre-commit && pre-commit install` runs ruff (pyflakes errors), SKILL.md frontmatter validation and the catalog sha256 check on every commit, and gitleaks (secrets, whole history) on every push. CI runs the same checks, plus the unit tests and the bundle build. See `docs/RELEASING.md` for releases.
+
+### Sampled Journeys
+
+Eight real runs with Claude, from setting up ADP to remaking an existing artifact on it. Each one shows a beat of the pitch.
+
+1. **Zero to setup.** An agent opens an ADP page and finds the note its authors left in the source. It tells its user the page was built with ADP and asks if they want it. Only after their yes is ADP installed, on a fresh machine. *Bring it in.*
+2. **New artifact.** A new multi-view page composed from the catalog, then pushed through two rounds of "is this the best you can ship?". *Keep the gain.*
+3. **Catalog road.** Planning a page: which catalog parts fit, what they need, and the exact way to take them. Nothing is built. *Make it reusable.*
+4. **Edit protocol.** Renaming a column on a page other sessions also edit, the safe way: read, hold, publish, record. *Bring it in.*
+5. **Adopt road.** A plain reading list with search, filters, notes and its own data, put on ADP without changing its look. *Bring it in.*
+6. **Finesse rounds.** Requests sent from the page's Work with Claude pane, one round each: structure and type, themes with a live switcher, surfaces and colour, motion and states, interaction, and the last 1%. *Keep the gain.*
+7. **Harvest into the catalog.** The reusable parts of an existing artifact become catalog entries, then a fresh page takes one of them by reference. *Make it reusable and Keep the gain.*
+8. **Remake on ADP.** An existing plan reimagined as a new ADP page that drives the initiative to completion, while the original stays untouched. *Keep the gain.*
+
+## License
+
+Apache License 2.0, see `LICENSE`. Redistributions keep `NOTICE`; the `adp.skill` bundle carries both files.
+
+## Citing
+
+`CITATION.cff` has the citation (GitHub shows it as "Cite this repository").
