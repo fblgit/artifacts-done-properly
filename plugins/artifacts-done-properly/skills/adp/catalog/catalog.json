@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX",
  "ver": "",
- "built": "2026-11-23T21:16:51Z",
+ "built": "2026-11-23T21:26:00Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -596,7 +596,6 @@
    "summary": "The quickstart a model reads first: what ADP is, in diagrams, and where to go for each job.",
    "tags": [
     "adp",
-    "standard",
     "protocol",
     "guide",
     "quickstart",
@@ -614,11 +613,11 @@
     {
      "path": "kit/guides/artifact-dataplane.md",
      "role": "doc",
-     "sha256": "1f09f5b92475270c3a7257d206bbcf3f05c2224c1a8ef5aaa2992ce0b370cd31",
-     "bytes": 8536
+     "sha256": "6408d64d370e3610431e3e380a786af2055cff264c1bcb50ae45acb9d123d960",
+     "bytes": 8742
     }
    ],
-   "hash": "cd620729ec65"
+   "hash": "35d53e0bc60b"
   },
   {
    "id": "guide.component-inventory",

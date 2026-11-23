@@ -14,7 +14,7 @@ A protocol and a framework for structured artifacts. The page is a thin shell. T
 
 ## How it runs
 
-1. Publish: one Artifact call for the shell (the About page), then one ArtifactData write with the seeds. The page expands them, its inbox applies the proposals, and it maintains its own `catalog.json`. Nothing else.
+1. Publish: one Artifact call publishes the shell with its seed packs beside it. The page expands them into its database on its first open by an editor, its inbox applies the proposals, and it maintains its own `catalog.json`. Nothing else.
 2. Edit: work locally in `.adp/`, as if it were the artifact itself. One command computes the diff by part and file hash and writes a seed-like JSON. That goes in through ArtifactData. No republish.
 3. Build: write kits, templates, themes, patterns, viz, components and pages, reusing what the catalog already has, with the page's own style in its custom CSS. Kits are versioned, files hashed, and headers carry the metadata that ties the system together.
 

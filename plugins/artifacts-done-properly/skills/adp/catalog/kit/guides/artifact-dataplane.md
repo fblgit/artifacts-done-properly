@@ -6,7 +6,7 @@ description: "ADP: how it works. The quickstart a model reads first: what ADP is
 ADP: how it works
 The quickstart a model reads first, mostly Mermaid diagrams and no code: the pieces of an ADP artifact, where each change goes, the first publish, the edit loop the page's inbox applies, building from the catalog, comments, and where the detail lives.
 
-Provides (no global): the protocol.
+Provides (no global): the quickstart.
 
 @id        guide.artifact-dataplane
 @kind      guide
@@ -15,14 +15,14 @@ Provides (no global): the protocol.
 @version   0.2.0
 @updated   2026-11-24
 @summary   The quickstart a model reads first: what ADP is, in diagrams, and where to go for each job.
-@tags      adp, standard, protocol, guide, quickstart, db, parts, adp/2
+@tags      adp, protocol, guide, quickstart, db, parts, adp/2
 @requires  none
 @files     none
 @provides  none
 @tokens    none
 @globals   none
 @db        none
-@source    ADP | the artifact dataplane standard | reduced to the standard itself
+@source    ADP | the artifact dataplane standard | rewritten as the quickstart a model reads first
 @preview   {"render": "guide", "samples": ["kit/guides/artifact-dataplane.md"], "uses": ["kit.mermaid"]}
 @changed   Rewritten as the quickstart a model reads first: what ADP is, in Mermaid diagrams and without code, the edit loop the page's inbox applies, where each job goes next, and the two repositories. The many-editors framing is gone; concurrency is one section.
 -->
@@ -54,11 +54,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  w["wording of a part"] --> cd[("its copy doc: nobody publishes")]
-  d["the page's own data"] --> nd[("the page's own collections: nobody publishes")]
-  s["a part's structure or style"] --> pr["a proposal"] --> pg["the page applies and publishes it"]
-  l["the page's own look"] --> css["its custom stylesheet"] --> pr
-  k["a kit, theme or template"] --> cp["a catalog proposal"] --> cg["the catalog applies and publishes it"]
+  w["wording of a part"] --> cd[("copy doc: no publish")]
+  d["the page's own data"] --> nd[("own collections: no publish")]
+  l["the page's own look"] --> css["custom stylesheet"] --> pr
+  s["a part's structure or style"] --> pr["proposal"] --> pg["the page publishes it"]
+  k["a kit, theme or template"] --> cp["catalog proposal"] --> cg["the catalog publishes it"]
 ```
 
 A kit is never edited inside a page: fix it in the catalog and take it again, so the next page gets the fix.
@@ -69,11 +69,11 @@ A kit is never edited inside a page: fix it in the catalog and take it again, so
 sequenceDiagram
   participant A as agent
   participant C as claude.ai
-  participant P as the page, opened by an editor
-  A->>A: start from a template, take a theme and kits, write the views and copy
-  A->>C: one publish: shell, parts, seed packs
-  C->>P: first open by an editor
-  P->>C: the seed packs become database docs: manifest, parts, copy, the first change
+  participant P as the page
+  A->>A: template, theme, kits, views, copy
+  A->>C: one publish with the seed packs
+  C->>P: an editor opens it
+  P->>C: seed packs become database docs
 ```
 
 The agent never writes the first record by hand: the page seeds itself on its first open by an editor. A client set to open pages on publish does that at once.
@@ -81,7 +81,7 @@ The agent never writes the first record by hand: the page seeds itself on its fi
 ## 4. Changing a page: the loop
 
 ```mermaid
-flowchart LR
+flowchart TD
   ex["export the live copy"] --> ed["edit locally: parts, files"] --> pr["propose: one write"] --> ib{"the page's inbox classifies it"}
   ib -->|"merged"| ap["Apply: publish the files in one call, record the change"]
   ib -->|"held, something moved"| ex
@@ -94,12 +94,12 @@ flowchart LR
 - **The inbox** is the catalog's inbox pattern, and every template mounts it. When an editor opens the page, it classifies the proposal against the manifest as merged or held. Apply, pressed by an editor or automatic where the page turns that on, publishes the files in one call and records the change in What changed.
 - **Held** means something moved since the export. The inbox names it; export again and propose again.
 
-A part someone else holds is left alone: propose stops and names it.
+Propose stops and names what it cannot send: a part that changed live as well as locally since the export, and a deleted part given no reason.
 
 ## 5. Building from the catalog
 
 ```mermaid
-flowchart LR
+flowchart TD
   s["search the catalog"] --> e["pick an entry"] --> r["its required entries come with it"] --> f["files map, required entries first, in load order"] --> p["publish with it"]
 ```
 
@@ -139,11 +139,13 @@ claude.ai provides the lock. Every database read returns a version, and a write 
 | `incoming/<pid>` | proposals and their status: new, merged, held, applied, declined |
 | `agents/<name>`, `presence/` | who works on the page, and who is watching it |
 | `config/current`, `checks/latest` | the page's switches and its self-check |
-| `ns/shared/`, `ns/users/{self}` | the page's own data: shared, and each viewer's own |
+| `ns/shared/`, `ns/users/{self}` | the page's own data, by the namespaces pattern: shared, and each viewer's own |
 
 Part ids are lowercase kebab words joined by dots, view first: `home`, `triage.keys-table`.
 
 ## 9. Where to go next
+
+The skills come with the two plugins in the repositories below, and they must be installed before any of this runs; the Home's start prompt offers that. With either plugin, start at the skill `adp`: it routes to the right one. In the catalog's plugin the routes are:
 
 | the job | read |
 |---|---|
