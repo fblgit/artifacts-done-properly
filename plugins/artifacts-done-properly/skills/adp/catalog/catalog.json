@@ -2,7 +2,7 @@
  "schema": "kit-catalog/2",
  "url": "https://claude.ai/artifact/78c81bkKeRVaSUxXPVcVLX",
  "ver": "",
- "built": "2026-11-22T17:16:45Z",
+ "built": "2026-11-22T20:37:37Z",
  "entries": [
   {
    "id": "runtime.adp",
@@ -552,9 +552,8 @@
     "fleck"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "requires": [
-    "theme.glaze-depth",
     "kit.tokens"
    ],
    "globals": [],
@@ -571,14 +570,14 @@
     {
      "path": "kit/glaze-surfaces.js",
      "role": "script",
-     "sha256": "74ae57ed839cf2921d171ab82c89541297095e60db773d416f16242af0fc62f8",
-     "bytes": 8900
+     "sha256": "e039bf1b0864bdbb89deec5c2c2ae1cdc8e78224e9f66aa5fc93d8a05c800830",
+     "bytes": 8920
     },
     {
      "path": "kit/glaze-surfaces.css",
      "role": "style",
-     "sha256": "3234cc580c8c9e9650810b130ec505ff26a83c2cb99151d55695a685cc796019",
-     "bytes": 15656
+     "sha256": "32675912bfe5f982f9f6ff3c55b2cf9ff556c1ca6d0e2e7c9c45ce029cf849b0",
+     "bytes": 15658
     },
     {
      "path": "kit/samples/kit.json",
@@ -587,7 +586,7 @@
      "bytes": 33634
     }
    ],
-   "hash": "4be05442269f"
+   "hash": "e2435ed7a476"
   },
   {
    "id": "guide.artifact-dataplane",
@@ -4379,7 +4378,7 @@
     "page"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "requires": [
     "kit.tokens",
     "kit.vocab",
@@ -4401,8 +4400,8 @@
     {
      "path": "kit/templates/expiry-board.html.txt",
      "role": "template",
-     "sha256": "d75ff7452bb808c232018c6f1f53125b77b36d7a0e8e1d9c1505680c778ab6fc",
-     "bytes": 8408
+     "sha256": "65f9167adebf2205e7c1d164b0cabcaa55987ddfc327998930e3896753d5d168",
+     "bytes": 8458
     },
     {
      "path": "kit/templates/expiry-board.css",
@@ -4423,7 +4422,7 @@
      "bytes": 11920
     }
    ],
-   "hash": "e6294eb3e495"
+   "hash": "8ce14af59a78"
   },
   {
    "id": "template.record",
@@ -4548,7 +4547,7 @@
     "adr"
    ],
    "status": "new",
-   "version": "0.2.0",
+   "version": "0.2.1",
    "requires": [],
    "globals": [],
    "provides": [],
@@ -4558,14 +4557,14 @@
     {
      "path": "kit/themes/adr-drafting-table.css",
      "role": "style",
-     "sha256": "2e6c70cb254ad9c70fe385d012f41972070d7c115531960183d938d36f5ea135",
-     "bytes": 8113
+     "sha256": "0944717e2739910e059f01f1e0923c36258c46a6c196107f409965c9b67f25bc",
+     "bytes": 8116
     },
     {
      "path": "kit/themes/adr-drafting-table.json",
      "role": "data",
-     "sha256": "53ced87c1d7c176f3a22c8d65ff37916fc5dac39f8ad41e10a5802fbcc0c594a",
-     "bytes": 6196
+     "sha256": "b108ee78501f13ef00c37a7f173815ad6eaa928f71f0c17103b9e12e76683c1e",
+     "bytes": 6100
     },
     {
      "path": "kit/samples/viz.json",
@@ -4574,7 +4573,7 @@
      "bytes": 127807
     }
    ],
-   "hash": "785ab91a59d6"
+   "hash": "eef3e0e8012f"
   },
   {
    "id": "theme.blueprint",
@@ -4750,48 +4749,6 @@
    "hash": "a0016f82a8ac"
   },
   {
-   "id": "theme.glaze-depth",
-   "kind": "theme",
-   "group": "Themes",
-   "name": "Glaze depth",
-   "summary": "The tokens the glossy Glaze parts read and the flat Glaze lacks: a lit rim, a pooled foot, gold seam stops, a bead and an ink for each meaning, neutral kind greys.",
-   "tags": [
-    "glaze",
-    "depth",
-    "porcelain",
-    "tenmoku",
-    "gold seam",
-    "bead",
-    "tokens",
-    "gloss"
-   ],
-   "status": "new",
-   "version": "0.1.2",
-   "requires": [
-    "theme.glaze",
-    "kit.tokens"
-   ],
-   "globals": [],
-   "provides": [],
-   "fonts": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap",
-   "main": "kit/themes/glaze-depth.css",
-   "files": [
-    {
-     "path": "kit/themes/glaze-depth.css",
-     "role": "style",
-     "sha256": "0090b9a39d0e0e87f714bd4c3831d271f774ede5a1167dea103974750c0fa425",
-     "bytes": 6942
-    },
-    {
-     "path": "kit/themes/glaze-depth.json",
-     "role": "data",
-     "sha256": "ce728a90199a827c58466c16f381bbdb39e0c418913e13d6c1bf469ad79bb333",
-     "bytes": 6385
-    }
-   ],
-   "hash": "23a5fa06bedc"
-  },
-  {
    "id": "theme.glaze",
    "kind": "theme",
    "group": "Themes",
@@ -4889,7 +4846,7 @@
     "whiteboard"
    ],
    "status": "new",
-   "version": "0.2.0",
+   "version": "0.2.1",
    "requires": [],
    "globals": [],
    "provides": [],
@@ -4899,13 +4856,13 @@
     {
      "path": "kit/themes/journey-whiteboard.css",
      "role": "style",
-     "sha256": "204e2283ea83df4dd036393fc8025a43018d93ca87ef2e4606c2504367b8e6b7",
-     "bytes": 5890
+     "sha256": "458ec18956ed25a7c067d4e6b1121834bdd43c5aac9aa82d28aa49d87e4d9616",
+     "bytes": 5879
     },
     {
      "path": "kit/themes/journey-whiteboard.json",
      "role": "data",
-     "sha256": "fa17873f370068ca94be6d09d79ce480e37f049c2a66733a535dce36687013f2",
+     "sha256": "0992941e134ecf78001001af7e00178afb658f04712b448987982dd715799d3b",
      "bytes": 3403
     },
     {
@@ -4915,7 +4872,7 @@
      "bytes": 127807
     }
    ],
-   "hash": "e8abc056aaba"
+   "hash": "eb1f214dcfb4"
   },
   {
    "id": "theme.kanban",
@@ -5972,11 +5929,10 @@
     "status"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "requires": [
     "kit.vocab",
-    "kit.glaze-surfaces",
-    "theme.glaze-depth"
+    "kit.glaze-surfaces"
    ],
    "globals": [],
    "provides": [
@@ -5989,8 +5945,8 @@
     {
      "path": "kit/viz/pebble-map.js",
      "role": "script",
-     "sha256": "3e00f2e50b6fa7519e9dc581618a11ce9ce4ac3a9fdff0658122f8e6d4987e44",
-     "bytes": 19387
+     "sha256": "ef55dc3e66faa61e86a0d0f363dcce16f1390585aa5e10ce7258805da37ca885",
+     "bytes": 19358
     },
     {
      "path": "kit/viz/pebble-map.css",
@@ -6005,7 +5961,7 @@
      "bytes": 127807
     }
    ],
-   "hash": "13e53f25bd1d"
+   "hash": "4c09419a95ec"
   },
   {
    "id": "viz.phase-strip",
@@ -6172,10 +6128,9 @@
     "porcelain"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "requires": [
-    "kit.vocab",
-    "theme.glaze-depth"
+    "kit.vocab"
    ],
    "globals": [],
    "provides": [
@@ -6192,14 +6147,14 @@
     {
      "path": "kit/viz/seal.js",
      "role": "script",
-     "sha256": "9c66e0d1ce44b4bc51057254989c34eb269b59c8ff638976a034bf86e0afe921",
-     "bytes": 14728
+     "sha256": "3762542c3002b3133c362d8bf4cf56a8066fb136f49b410ca52372376cf18e35",
+     "bytes": 14709
     },
     {
      "path": "kit/viz/seal.css",
      "role": "style",
-     "sha256": "9ed2f34cce5627f799f76ea8b5cc623e63f275e0f75ffabd41c8f30f481b46ec",
-     "bytes": 6854
+     "sha256": "42694a4e7160a71dce4f3a562541681a7352268b7615d1205c4fe6d06d542a5e",
+     "bytes": 6895
     },
     {
      "path": "kit/samples/viz.json",
@@ -6208,7 +6163,7 @@
      "bytes": 127807
     }
    ],
-   "hash": "f15a2f522523"
+   "hash": "b042d73e0b6b"
   },
   {
    "id": "viz.shelf",
@@ -6620,13 +6575,12 @@
     "porcelain"
    ],
    "status": "new",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "requires": [
     "viz.seal",
     "kit.vocab",
     "kit.callout",
-    "kit.glaze-surfaces",
-    "theme.glaze-depth"
+    "kit.glaze-surfaces"
    ],
    "globals": [],
    "provides": [
@@ -6638,8 +6592,8 @@
     {
      "path": "kit/viz/trust-tree.js",
      "role": "script",
-     "sha256": "4156f0231cb424613b2498adf43d34c1f2fd1336a0a926a12e62f4f23ad378ef",
-     "bytes": 40148
+     "sha256": "da404e5496fd7aff8f32d0bd2d25e48975f2daddf97b2ca964956392306fa641",
+     "bytes": 40114
     },
     {
      "path": "kit/viz/trust-tree.css",
@@ -6654,7 +6608,7 @@
      "bytes": 127807
     }
    ],
-   "hash": "5593f0335269"
+   "hash": "49154a29932b"
   },
   {
    "id": "viz.version-compare",

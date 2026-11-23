@@ -120,7 +120,7 @@ class ThemeTags(Cmd):
         r = self.run_adp('new', 'starter', 'no', '--theme', 'nope', '--catalog', real, '--url', KITURL)
         self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
         self.assertIn('--theme nope: the catalog has no such theme. It has: ', r.stderr)
-        self.assertIn('glaze-depth', r.stderr)      # the names it does have, short
+        self.assertIn('journey-whiteboard', r.stderr)      # the names it does have, short
         self.assertFalse(os.path.exists(self.p('no')))
 
     def test_new_with_any_theme_links_its_web_fonts_once_before_the_page_css(self):
@@ -141,6 +141,6 @@ class ThemeTags(Cmd):
     def test_take_prints_the_fonts_of_the_themes_it_takes(self):
         real = os.path.join(os.path.dirname(self.adp), '..', 'catalog', 'catalog.json')
         by = {e['id']: e for e in json.loads(Path(real).read_text(encoding='utf-8'))['entries']}
-        out = self.ok('take', real, 'theme.glaze-depth', '--url', KITURL)
-        self.assertEqual(out['fonts'], {'theme.glaze': by['theme.glaze']['fonts'], 'theme.glaze-depth': by['theme.glaze-depth']['fonts']})
+        out = self.ok('take', real, 'template.tester', '--url', KITURL)      # a theme it requires is taken, and its fonts printed
+        self.assertEqual(out['fonts'], {'theme.default': by['theme.default']['fonts']})
         self.assertNotIn('fonts', self.ok('take', real, 'kit.dom', '--url', KITURL))

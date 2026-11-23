@@ -304,6 +304,18 @@ class RealCatalogTests(unittest.TestCase):
                     self.assertEqual(self.out["convention"][s], sorted(j[s]))
                     self.assertEqual({k for k in t if t[k]["convention"][s]}, set(j[s]))
 
+    def test_every_theme_keeps_the_theme_rules(self):
+        """Its stylesheet sets the convention (light; dark: the default's dark names), both dark rules alike, tokens only; its json equals the
+        stylesheet; text reads at 4.5:1 or more. No theme is exempt."""
+        conv = self.out["convention"]
+        for i, t in self.out["themes"].items():
+            self.assertEqual([b for b in t["blocks"] if b["scheme"] not in ("light", "dark-media", "dark-attr") or b["other"]], [], i)
+            self.assertEqual((t["media_differs"], [x for x in t["contrast"] if x[3] < 4.5]), ([], []), i)
+            for s in ("light", "dark"):
+                own = {k for k, v in t["declares"].items() if v[s] or s == "dark" and "dark_via" in v}      # dark_via: it changes with them
+                self.assertEqual(t["json"][s], {"only_css": [], "only_json": [], "differ": []}, (i, s))
+                self.assertLessEqual(set(conv[s]), own, (i, s))      # a name set as var(--x) counts as set
+
     def test_stylesheet_reads_equal_a_plain_regex_count(self):
         for i, x in self.all:
             for f in x["files"]:

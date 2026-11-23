@@ -4,6 +4,7 @@ import hashlib
 import io
 import json
 import os
+import shutil
 import sys
 import tempfile
 import unittest
@@ -290,6 +291,15 @@ class SampleBundles(unittest.TestCase):
             idx = json.load(f)
         self.assertEqual([[f['path'] for f in e['files']] for e in idx['entries']], [['kit/a.js', self.BUNDLE], ['kit/b.js', self.BUNDLE]])
         self.assertEqual({f['role'] for e in idx['entries'] for f in e['files'] if f['path'] == self.BUNDLE}, {'sample'})
+
+    def test_a_theme_without_a_dark_block_or_its_json_maps_fails(self):
+        root = shutil.copytree(Path(cc.HERE).parent / 'catalog', Path(tempfile.mkdtemp()) / 'catalog')
+        css = root / 'kit/themes/default.css'
+        css.write_text(css.read_text(encoding='utf-8').replace(':root[data-theme="dark"]', ':root.x'), encoding='utf-8')
+        (root / 'kit/themes/default.json').write_text('{}', encoding='utf-8')
+        out = self.cmd(str(root))[1]
+        for m in ('no :root[data-theme="dark"] block', "its JSON lacks light, dark or the entry's fonts url"):
+            self.assertIn('theme.default: theme: ' + m, out)
 
     def test_a_key_that_is_not_in_the_bundle_fails_the_build(self):
         code, out = self.cmd('build', self.two(**{'as': [self.BUNDLE + '#zzz']}))

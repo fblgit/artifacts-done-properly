@@ -4,7 +4,7 @@
    .kit-sl-arc-box (the action fan) with .kit-sl-q (a round action, --a its angle)   .kit-sl-mini (the ring in a row)
    The ring, the crackle and the glyph take the tone of the state: [data-vo-tone] on .kit-sl-wrap sets --vo-c (kit/vocab.css). --vo-c is the plain meaning colour, 3:1 on the panel; the number
    and the unit are --ink and --ink-2. Size: --kit-sl-size on the wrap (124px).
-   Depth: with theme.glaze-depth the disc is lit and pooled; every depth token has a flat fallback built from the contract, so other themes draw a plain disc.
+   Depth: where a page sets the depth tokens the disc is lit and pooled (no catalog theme sets them); every depth token has a flat fallback built from the contract, so every theme draws a plain disc.
    Needs from the board: --panel --sunk --ink --ink-2 --ink-3 --rule --accent --f-ui --f-display, optional --shadow --pebble-hi --rim --pool --glz-sh-1 --glz-sh-2 --edge-gold --seam */
 .kit-sl-wrap { --kit-sl-size: 124px; --sl-c: var(--vo-c, var(--ink-2)); --sl-edge: var(--edge-gold, var(--seam, var(--accent)));
   position: relative; display: grid; justify-items: center; align-content: start; width: calc(var(--kit-sl-size) + 26px); padding-top: 48px; min-width: 0; font-family: var(--f-ui); color: var(--ink); }

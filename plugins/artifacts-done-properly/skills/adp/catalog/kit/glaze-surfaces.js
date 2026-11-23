@@ -1,7 +1,7 @@
 /* part:page.script.kit.glaze-surfaces */
 /**
  * Glaze surfaces
- * Shape and light for the Glaze look, all from tokens: kit-orb (a breathing bead, a hollow ring for waiting), kit-chip, kit-btn (primary lacquer, ghost, danger, small, icon, loading), kit-field with kit-input, kit-select and kit-area, kit-switch, kit-seg, kit-card, kit-facts, kit-row, kit-ava and kit-empty. A state is a cascade: put kit-is-ok, kit-is-warn, kit-is-bad, kit-is-info, kit-is-wait or kit-is-idle on any part or ancestor. Kit.glaze adds the three things CSS cannot: the svg defs for the gold and pebble gradients and the fleck filter, the switch and segmented-control wiring, and a button's busy state. The fleck layer is opt in. Without theme.glaze-depth every part falls back to a flat look from the contract tokens. Motion is short, answers an action, and stops under prefers-reduced-motion.
+ * Shape and light for the Glaze look, all from tokens: kit-orb (a breathing bead, a hollow ring for waiting), kit-chip, kit-btn (primary lacquer, ghost, danger, small, icon, loading), kit-field with kit-input, kit-select and kit-area, kit-switch, kit-seg, kit-card, kit-facts, kit-row, kit-ava and kit-empty. A state is a cascade: put kit-is-ok, kit-is-warn, kit-is-bad, kit-is-info, kit-is-wait or kit-is-idle on any part or ancestor. Kit.glaze adds the three things CSS cannot: the svg defs for the gold and pebble gradients and the fleck filter, the switch and segmented-control wiring, and a button's busy state. The fleck layer is opt in. Without the depth tokens (no catalog theme sets them), every part falls back to a flat look from the contract tokens. Motion is short, answers an action, and stops under prefers-reduced-motion.
  *
  * API (small and stable):
  *   Kit.glaze.defs(host?) -> {gold, pebble, speckle}   once per page: adds a hidden svg (to host or document.body) with a gold gradient (#kit-g-gold), a pebble gradient (#kit-g-pebble;
@@ -12,18 +12,18 @@
  *   Kit.glaze.segOf(box, {value, onChange(id)})        -> {get(), set(id), destroy()}   buttons with data-id inside .kit-seg; one pressed; arrow keys move
  *   Kit.glaze.busy(btn, on, {label})                   toggles kit-loading, aria-busy and aria-disabled on a button; label (optional) replaces its text while busy
  *
- * The optional tokens are the ones theme.glaze-depth sets.
+ * The optional tokens are depth tokens no catalog theme sets; each read has a flat fallback.
  * Also provides (not globals): the classes .kit-orb .kit-chip .kit-btn .kit-field .kit-switch .kit-seg .kit-card .kit-row .kit-ava .kit-empty.
  *
  * @id        kit.glaze-surfaces
  * @kind      component
  * @group     Board kit
  * @status    new
- * @version   0.1.0
- * @updated   2026-10-24
+ * @version   0.1.1
+ * @updated   2026-11-23
  * @summary   Porcelain-made parts in CSS: glossy beads, lacquer buttons, sunken fields, a switch, soft rows, lit cards with a pooled foot, an avatar disc and the kiln fleck layer.
  * @tags      glaze, button, orb, chip, switch, segmented, card, row, avatar, empty state, porcelain, fleck
- * @requires  theme.glaze-depth, kit.tokens
+ * @requires  kit.tokens
  * @files     kit/glaze-surfaces.css, kit/samples/kit.json
  * @provides  Kit.glaze.defs, Kit.glaze.speck, Kit.glaze.tone, Kit.glaze.switchOf, Kit.glaze.segOf, Kit.glaze.busy
  * @config    classes | kit-orb, kit-chip, kit-btn, kit-input, kit-switch, kit-seg, kit-card, kit-facts, kit-row, kit-ava, kit-empty; the state on the part or an ancestor: kit-is-ok | warn | bad | info | wait | idle
@@ -35,7 +35,7 @@
  * @source    Catalog harvest, 2026-10-25 | the same console's controls add-on | button and form edges, the loading button
  * @preview   {"render": "kit.glaze-surfaces", "samples": ["kit/samples/kit.json#glaze-surfaces"]}
  * @samples   glaze-surfaces
- * @changed   Re-prefixed to kit-, scoped by the kit's token contract instead of a skin attribute; every depth token has a fallback built from the contract tokens.
+ * @changed   Requires no theme: theme.glaze-depth is deleted, so every depth token takes its flat fallback on every theme, Glaze included.
  */
 (function () {
 'use strict';

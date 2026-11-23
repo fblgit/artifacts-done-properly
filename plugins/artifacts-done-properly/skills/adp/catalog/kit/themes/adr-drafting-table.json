@@ -48,7 +48,7 @@
   "--f-display": "\"Archivo\", \"Arial Narrow\", \"Helvetica Neue\", Arial, sans-serif",
   "--f-body": "\"Public Sans\", \"Helvetica Neue\", Arial, sans-serif",
   "--f-hand": "\"Kalam\", \"Segoe Print\", \"Comic Sans MS\", cursive",
-  "--f-code": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
+  "--f-code": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
   "--r-s": "4px",
   "--r-m": "8px",
   "--bg": "#e9ece6",
@@ -134,8 +134,6 @@
   "--bg": "#151c19",
   "--panel": "#1c2522",
   "--ok": "#7fcaa2",
-  "--f-ui": "\"Public Sans\", \"Helvetica Neue\", Arial, sans-serif",
-  "--f-mono": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
   "--canvas": "#17211d",
   "--dot": "rgba(150, 200, 175, .07)",
   "--c-red": "#f0907f",
@@ -205,6 +203,8 @@
   "--fs-eyebrow": "11.5px",
   "--h-md": "34px",
   "--h-sm": "28px",
-  "--h-xs": "24px"
+  "--h-xs": "24px",
+  "--nav-w": "276px",
+  "--side-w": "380px"
  }
 }
