@@ -47,7 +47,7 @@ Bring interfaces, records, and artifacts into a project with your agents. Make t
 
 **Every piece gets an address.** On ADP, every piece of a page is a part: a block with a stable id, such as `triage.keys-table`, and a hash of its content. The id never changes once the page is published, so anything that points at it keeps pointing at the right place. That is what makes the page a place to work in rather than a file to replace. A comment anchors to a part id, not to a position on the screen. A change shows up on the part it touched and on every part that contains it.
 
-**Every change goes on the record.** One ArtifactData layout records every change under a read, hold, publish, record protocol. Before anyone edits, they read the latest version, because a copy from an earlier session may predate other people's work. After they publish, the change is recorded with who made it, the parts it touched and a summary. The page shows the newest of those in its What changed panel.
+**Every change goes on the record.** One ArtifactData layout records every change under an export, edit, propose loop. Before anyone edits, they export the latest version, because a copy from an earlier session may predate other people's work. The page's inbox applies the proposal and records it with who made it, the parts it touched and a summary. The page shows the newest of those in its What changed panel.
 
 **Your agents work in it with you.** The assistant template adds a Work with Claude pane. Pick a block, say what you want (a change, a fix, a design note or a question) and send it. The request is a record on the page, so you can follow it on Requests: queued, seen, working, done. A line in the header says whether a Claude Code session is watching. Without one, Ask now still answers straight away, and anything you send waits in the queue.
 
@@ -149,7 +149,7 @@ Eight real runs with Claude, from setting up ADP to remaking an existing artifac
 1. **Zero to setup.** An agent opens an ADP page and finds the note its authors left in the source. It tells its user the page was built with ADP and asks if they want it. Only after their yes is ADP installed, on a fresh machine. *Bring it in.*
 2. **New artifact.** A new multi-view page composed from the catalog, then pushed through two rounds of "is this the best you can ship?". *Keep the gain.*
 3. **Catalog road.** Planning a page: which catalog parts fit, what they need, and the exact way to take them. Nothing is built. *Make it reusable.*
-4. **Edit protocol.** Renaming a column on a page other sessions also edit, the safe way: read, hold, publish, record. *Bring it in.*
+4. **Edit protocol.** Renaming a column on a page, the safe way: export, edit, propose. *Bring it in.*
 5. **Adopt road.** A plain reading list with search, filters, notes and its own data, put on ADP without changing its look. *Bring it in.*
 6. **Finesse rounds.** Requests sent from the page's Work with Claude pane, one round each: structure and type, themes with a live switcher, surfaces and colour, motion and states, interaction, and the last 1%. *Keep the gain.*
 7. **Harvest into the catalog.** The reusable parts of an existing artifact become catalog entries, then a fresh page takes one of them by reference. *Make it reusable and Keep the gain.*
